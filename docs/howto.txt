@@ -1,0 +1,8 @@
+Menambah aplikasi baru:
+1. tambah baris baru di table maxon_apps dan is_active=1
+2. buatkan modul dan anaknya minimal satu baris di setting->modules
+3. buatkan job baru dan dipilih modul2 di atas
+4. set user untuk job tersebut
+5. buat folder namanya sama dg module_id di nomor 1 pada folder view
+6. copy menu_dashboard.php dan menu.php
+

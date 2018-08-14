@@ -1,0 +1,10 @@
+gudang	tanggal	receive_by	item_no	qty	unit	cost
+Jakarta	11/01/2015	andri	DJISAMSU	1000	pcs	15000
+Jakarta	11/01/2015	andri	KOREK	1000	pcs	1500
+Jakarta	11/01/2015	andri	AQ001	1000	pcs	800
+Cawang	11/01/2015	andri	DJISAMSU	1000	pcs	15000
+Cawang	11/01/2015	andri	KOREK	1000	pcs	1500
+Cawang	11/01/2015	andri	AQ001	1000	pcs	800
+Kerawang	11/01/2015	andri	DJISAMSU	1000	pcs	15000
+Kerawang	11/01/2015	andri	KOREK	1000	pcs	1500
+Kerawang	11/01/2015	andri	AQ001	1000	pcs	800

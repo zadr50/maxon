@@ -1,0 +1,163 @@
+.footer {
+	display:none
+}
+.row-selected {
+	background-color: #d8d8d8;
+	width:100%;
+}
+.line-order-price {
+	--font-size: 9px;
+}
+.line-order{
+	cursor:pointer;
+	font-size: 12px;
+    border-bottom: solid 1px lightgray;		
+}
+.line-order:hover{
+	--border: 1px solid #d7d7d7;
+}
+.cat-cell {
+	position: relative;
+	vertical-align: top;
+	display: inline-block;
+	font-size: 9px;
+	margin: 5px !important;
+	width: 90px;
+	height: 90px;
+	background: #fff;
+	border: 1px solid #d7d7d7;
+	border-radius: 3px;
+	border-bottom-width: 3px;
+	cursor: pointer;
+	padding:5px;
+	horizontal-align:center;
+}
+.cat-cell img {
+	width:45px;
+	height:45px;
+}
+.cat-cell:hover {
+	background: #ffd;	
+}
+.item-cell {
+	position: relative;
+	vertical-align: top;
+	display: inline-block;
+	font-size: 9px;
+	margin: 5px !important;
+	width: 120px;
+	height: 180px;
+	--background: #fff;
+	border: 1px solid #d7d7d7;
+	border-radius: 3px;
+	border-bottom-width: 3px;
+	cursor: pointer;
+	padding:10px;
+	horizontal-align:center;
+}
+.item-cell img {
+	width:90px;
+	height:90px;
+}
+.item-cell:hover {
+	background: #ffd;	
+}
+
+.left-pane {
+	position: absolute;
+	top: 60px;
+	width: 300px;
+	height: 100%;
+	bottom: 0;	
+	box-sizing: border-box;
+	border-right: solid 1px #CECBCB;
+}
+.right-pane {
+	position: absolute;
+	top: 60px;
+	left: 380px;
+	bottom: 0;
+	width: 65%;
+	background-color: #E7E7E7;	
+}
+.pos .nota {
+	border: solid 1px #CECBCB;
+	margin: 5px;
+	padding: 5px;
+	background: rgba(17, 16, 17, 0.06);
+	overflow: hidden;
+	overflow-y: auto;
+	min-height:300px;
+	max-height:420px;
+	
+}
+.pos .nota table{
+	font-size:small;
+}
+.pos .nota table td{
+	padding:10px;
+}
+
+.pos .nota-pay {
+	padding:2px;
+}
+.pos .nota-total {
+	height: 30px;
+	float: right;
+}
+
+.pos .nota-content {
+	background: white;
+	--min-height: 400px;
+	overflow: hidden;
+	overflow-y: auto;
+	font-size: smaller;
+	vertical-align: top;
+}
+
+ 
+.search {
+	height:40px;
+	background: rgb(186, 193, 221);
+}
+.category {
+	--height:200px;
+	background: rgb(229, 229, 229);
+	border-bottom: 1px solid #cecece;
+	padding:1px;
+	overflow-y: auto;
+}
+.product {
+	height:400px;
+	border-bottom: 1px solid #cecece;
+	padding:1px;
+	overflow-y: auto;
+}
+
+.input-button {
+	width:50px;
+}
+.mode-button {
+	width:50px;
+}
+.selected-mode, .pos .popup button:active {
+	border: none;
+	color: white;
+	background: #7f82ac;
+}
+.cat-next {
+	border: 1px solid black;
+	width: 100px;
+	float: right;
+	cursor: pointer;
+	background-color: rgb(141, 160, 235);
+	text-align:center;
+}
+.cat-prev {
+	border: 1px solid black;
+	width: 100px;
+	float: left;
+	cursor: pointer;
+	background-color: rgb(141, 160, 235);
+	text-align:center;
+}

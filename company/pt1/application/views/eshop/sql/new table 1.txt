@@ -1,0 +1,62 @@
+CREATE TABLE `eshop_toko` (
+	`id` INT(10) NOT NULL AUTO_INCREMENT,
+	`nama_toko` VARCHAR(50) NOT NULL,
+	`slogan` VARCHAR(250) NOT NULL,
+	`description` VARCHAR(250) NOT NULL,
+	`status_toko` VARCHAR(50) NOT NULL,
+	`foto_sampul` VARCHAR(150) NOT NULL,
+	`provinsi` VARCHAR(150) NOT NULL,
+	`kabupaten` VARCHAR(150) NOT NULL,
+	`kota` VARCHAR(150) NOT NULL,
+	`kode_pos` VARCHAR(150) NOT NULL,
+	`jasa_kirim` VARCHAR(150) NOT NULL,
+	`jenis_bayar` VARCHAR(150) NOT NULL,
+	PRIMARY KEY (`id`)
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB;
+
+
+CREATE TABLE `eshop_etalase` (
+	`id` INT(10) NOT NULL AUTO_INCREMENT,
+	`id_toko` INT(10) NOT NULL,
+	`nama_etalase` VARCHAR(250) NOT NULL,
+	`keterangan` VARCHAR(250) NOT NULL,
+	`kelompok` VARCHAR(250) NOT NULL,
+	`banner_etalase` VARCHAR(250) NOT NULL,
+	`user_admin` VARCHAR(250) NOT NULL,
+	PRIMARY KEY (`id`)
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB;
+
+CREATE TABLE `eshop_catatan` (
+	`id` INT(10) NOT NULL AUTO_INCREMENT,
+	`id_toko` INT(10) NOT NULL,
+	`kelompok` VARCHAR(50) NOT NULL,
+	`isi_catatan` VARCHAR(500) NOT NULL,
+	`create_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	`create_by` VARCHAR(50) NOT NULL,
+	`update_date` DATETIME NOT NULL,
+	`tampil` TINYINT NOT NULL,
+	PRIMARY KEY (`id`)
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB;
+CREATE TABLE `eshop_lokasi` (
+	`id` INT(10) NOT NULL AUTO_INCREMENT,
+	`nama_lokasi` VARCHAR(50) NOT NULL,
+	`alamat` VARCHAR(250) NOT NULL,
+	`telpon` VARCHAR(50) NOT NULL,
+	`admin` VARCHAR(50) NOT NULL,
+	`provinsi` VARCHAR(150) NOT NULL,
+	`kabupaten` VARCHAR(150) NOT NULL,
+	`kota` VARCHAR(150) NOT NULL,
+	`kode_pos` VARCHAR(50) NOT NULL,
+	PRIMARY KEY (`id`)
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB;
+
+ALTER TABLE `eshop_toko`
+	ADD COLUMN `user_id` VARCHAR(50) NOT NULL AFTER `nama_toko`;

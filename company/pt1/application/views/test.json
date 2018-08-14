@@ -1,0 +1,20 @@
+{"total":28,"rows":[
+{"item_number":"ABC","description":"Kopi Susu Abc","quantity":"1","unit":"PCS","price":"1000","amount":"1000",
+"line_number":"60"},{"item_number":"SAMP","description":"Sampoerna Hijau","quantity":"1",
+"unit":"Bks","price":"8000","amount":"8000","line_number":"61"},{"item_number":"TEHKO","description":"Teh Kotak",
+"quantity":"1","unit":"Pcs","price":"1000","amount":"1000","line_number":"62"},{"item_number":"SAMP",
+"description":"Sampoerna Hijau","quantity":"1","unit":"Bks","price":"8000","amount":"8000","line_number":"63"},
+{"item_number":"ABC","description":"Kopi Susu Abc","quantity":"1","unit":"PCS","price":"1000",
+"amount":"1000","line_number":"64"},{"item_number":"DJISAMSU","description":"Djisamsu Kretek",
+"quantity":"1","unit":"Bks","price":"12000","amount":"12000","line_number":"65"},{"item_number":"KOREK",
+"description":"Korek Gas","quantity":"1","unit":"Pcs","price":"3000","amount":"3000","line_number":"66"},
+{"item_number":"ABC","description":"Kopi Susu Abc","quantity":"1","unit":"PCS","price":"1000","amount":"1000",
+"line_number":"67"},{"item_number":"DJISAMSU","description":"Djisamsu Kretek","quantity":"1","unit":"Bks",
+"price":"12000","amount":"12000","line_number":"68"},{"item_number":"AQ001","description":"Aqua Gelas",
+"quantity":"1","unit":"Pcs","price":"1000","amount":"1000","line_number":"69"},{"item_number":"CD",
+"description":"CD Blank Maxel","quantity":"1","unit":"Pcs","price":"2000","amount":"2000","line_number":"70"},
+{"item_number":"DJISAMSU","description":"Djisamsu Kretek","quantity":"1","unit":"Bks","price":"12000","amount":"12000",
+"line_number":"71"},{"item_number":"CD","description":"CD Blank Maxel","quantity":"1","unit":"Pcs","price":"2000",
+"amount":"2000","line_number":"72"},{"item_number":"DJISAMSU","description":"Djisamsu Kretek","quantity":"1","unit":"Bks",
+"price":"12000","amount":"12000","line_number":"73"}]
+}

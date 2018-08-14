@@ -1,0 +1,54 @@
+.navbar-maxon {
+	background-color:  rgb(224, 223, 223);
+	border:1px solid white;
+	padding:5px;
+	margin-bottom:5px;
+	color:black;
+}
+.logo-maxon {
+	background: url('images/logo_maxon.png') no-repeat;
+}
+
+.box-cat li {
+	height:30px;
+}
+.box_item:hover{
+	background-color:  rgb(224, 223, 223);
+	cursor:pointer;
+}	 
+
+.box_item {
+	margin:10px;
+	padding:10px;
+	horizontal-align:center;
+}
+.box_item .foto {
+	width:100px;
+	height:100px;
+	padding:5px;
+}
+.box_item .content {
+	
+}
+.box_item .item_no {
+	float:left;
+	margin-right:5px;
+}
+.box_item .price {
+	
+}
+.top-nav {
+	top: 0;
+	width: 100%;
+	background-color:  rgb(224, 223, 223);
+	height: 40px;
+}
+.navbar-maxon {
+	background-color:  rgb(224, 223, 223);
+	border:1px solid white;
+	padding:5px;
+	margin-bottom:5px;
+}
+.section-content {
+  margin-top: 20px;
+}

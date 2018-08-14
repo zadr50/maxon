@@ -1,0 +1,53 @@
+<script language='javascript'>
+	var sql="select kode,nama from barang";
+	var url='<?=base_url()?>index.php/barang/pilihan';
+	void lookup(sql,"frmSupplier",url);
+</script>
+
+	var fields=[[
+			{field:'supplier_number',title:'Supplier Number',width:100},
+			{field:'supplier_name',title:'Supplier Name',width:100},
+			{field:'city',title:'City',width:100,align:'right'}
+		]];
+	
+	function lookup(sql,form,xurl){
+		var dlg="dialog_"+form;
+		var table="table_"+form;
+		var fields=ajax_fields(sql);
+		if(! $("#"+dlg).html() ){
+			var tbl="<div id='"+dlg+"'><table id='"+table+"' width='90%'></table></div>" +
+			"<div id='boxTool' class='box-gradient'> " +
+			" Enter Text: <input id='search_"+form+"' style='width:180' " +
+			" name='search_"+form+"'>&nbsp <a href='#' class='btn btn-sm btn-info' " +
+			" iconCls='icon-search' plain='false' " +
+			" onclick='on_search_"+form+"();return false;'>&nbsp Search &nbsp </a> " +
+			" <a href='#' class='btn btn-sm btn-info' iconCls='icon-ok' " +
+			" plain='false' onclick='on_select_"+form+"();return false;'> &nbsp  Select &nbsp </a> </div>" +
+			"  ";
+			$("body").append( $( tbl ) );
+			$('#'+table).datagrid({url:'',singleSelect:true, columns: fields});			
+		}
+		$('#'+table).datagrid({url:xurl});
+		$('#'+table).datagrid('reload');
+
+		$("#"+dlg).dialog({title: 'Pilih baris.', toolbar: '#boxTool',
+			width: 500, height: 400,   closed: false,   cache: false,
+			modal: true});		
+		$("#"+dlg).dialog("open").dialog("setTitle","Pilih baris.");
+	}
+	function ajax_fields(sql){
+		var xurl="http://maxonerp.com/sql";
+		var param={"sql":sql};
+		var fields="";
+		$.ajax({
+				type: "GET",
+				url: xurl,
+				data: param,
+				success: function(field_struct){
+					fields=field_struct;
+				},
+				error: function(msg){alert(msg);return null;}
+		}); 
+		return json_encode(fields);
+	}
+</script>

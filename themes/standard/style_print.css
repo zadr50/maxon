@@ -1,0 +1,66 @@
+body {
+	background-color: #fff;
+	margin: 10px;
+	font-family: courier;
+	font-size: small;
+}
+ 
+a {
+	color: #003399;
+	background-color: transparent;
+	font-weight: normal;
+}
+ 
+.box6{
+    width:600px;
+}
+h1, h2, h3 {
+    font-family: courier;
+    font-weight: 600;
+    font-size: 16;
+    margin-bottom:2;
+    margin-top: 0;    
+}
+thead tr td {
+    font-family: courier;
+    font-weight: 600;
+    font-size: 15;
+}
+th  {
+    font-family: courier;
+    font-weight: 600;
+    font-size: 15;
+}
+
+table {
+	font-family: courier;
+    margin: 2px; 
+    text-align: left;
+    border-collapse: collapse;
+    width:100%;
+}
+ 
+
+
+.titem thead td {
+    --background-color:#999999;  
+    border:#95B8E7 1px solid;
+    font-weight: 900;
+    padding-left:5px;
+    height:28px;
+    
+}
+.titem thead th {
+    background-color: #E0ECFF; 
+    border:#95B8E7 1px solid;
+    --font-weight: 900;
+    height:30px;
+	background: linear-gradient(to bottom,#EFF5FF 0,#E0ECFF 100%);
+    padding-left:5px;
+        
+}
+
+.titem tbody td {
+    border:#989EA7 1px solid;
+	padding:3px;
+}

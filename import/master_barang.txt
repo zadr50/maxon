@@ -1,0 +1,3 @@
+kode	nama barang	harga_jual	harga_beli	satuan	kode_supplier	kategori_1	kategori_2	kategori_3	cost	harga_jual_1	harga_jual_2	harga_jual_3	item_class
+800001	aqua botol	5000	4000	botol	ALFAMART	MINUMAN			4000	4900	4800	4700	Stock Item
+800002	aqua galon	16000	15000	galon	ALFAMART	MINUMAN			14000	15900	15800	15700	Stock Item

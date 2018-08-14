@@ -1,0 +1,114 @@
+article {
+	display: block;
+	width:80%;
+	overflow: auto;	
+}
+.post-title {
+	padding: 0 0 20px;
+	position: relative;
+}
+.post-title h1 {
+	border-bottom: 1px solid #ddd;
+	color: #990000;
+	font-size: 2em;
+	font-style: italic;
+	font-weight: normal;
+	min-height: 1em;
+	padding: 6px 0 16px 24.5%;
+}
+.post-date {
+	font-style: italic;
+	left: 30px;
+	line-height: 1.9em;
+	position: absolute;
+	text-align: center;
+	z-index: 1;
+	width:100px;
+}
+.post-date strong {
+	font-size: 4.9em;
+	font-weight: normal;
+	letter-spacing: -0.1em;
+	position: relative;
+	z-index: 2;
+}
+.post-date em {
+	background: white;
+	font-size: 1.9em;
+	top: 9px;
+}
+.post-date span {
+	color: #555;
+	font-size: 1.1em;
+	font-variant: small-caps;
+	top: 4px;
+}
+.post-info {
+	color: #555;
+	font-variant: small-caps;
+	padding: 10px 2.8% 0 24.5%;
+}
+.post-info p {
+	float: left;
+	width: 75.1%;
+}
+.post-info a {
+	color: #675f34;
+}
+a {
+	text-decoration: none;
+}
+.post-info .post-com-count {
+	float: right;
+	text-align: right;
+	width: 24.5%;
+}
+.post-content {
+	margin: 0 0 30px 0;
+}
+.post-extras {
+	color: #333;
+	--float: left;
+	font-style: italic;
+	line-height: 170%;
+	padding: 61px 0 50px;
+	text-align: right;
+	width: 19.2%;
+}
+.post-extras p, .post-extras li {
+	clear: both;
+	float: right;
+	font-size: 0.9em;
+	padding-bottom: 5px;
+	width: 100%;
+	margin-top: 20px;
+}
+.post-entry {
+	color: #333;
+	float: right;
+	font-size: 13px;
+	padding: 15px 2.8% 0 0;
+	width: 72.8%;
+	margin-top: -100px;
+}
+.post-entry p, .post-entry ul, .post-entry ol, .post-entry dd, .post-entry pre, .post-entry hr {
+	margin-bottom: 23px;
+}
+
+.post-entry p, .post-entry li, .post-entry dt, .post-entry dd, .comment-text p, .comment-text li, .comment-text dt, .comment-text dd {
+	line-height: 180%;
+}
+.box-article .title {
+	font-size: larger;
+	font-weight: 900;
+	background-color: aquamarine;
+	padding-left: 20px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+.box-article {
+	border: 1px solid lightskyblue;
+	margin-bottom: 20px;
+	padding: 10px;
+}
+

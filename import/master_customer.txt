@@ -1,0 +1,3 @@
+kode	nama	alamat1	alamat2	kota	wilayah	provinsi	negara	telfon	fax	handphone	salesman	kelompok	kontak	email
+12292	udin sarudin	jalan raya purwakarta no 3	gedung arca	purwakarta	timur	jawa barat	indonesia	2363222	229222	2434343	udin	grosir	ibu yuni	andri@localhost.com
+39393	julia perez	jalan gondangdia	menteng	jakarta	jakbar	jakarta	indonesia	30303	334343	34343	ucok	retail	ibu sara	udin@localhos.com

@@ -19,6 +19,7 @@ input,select {
 	margin:2px;
     border: solid 1px #E6E6F5;
     border-radius: 3px; 
+        color: black;
 }
 input[type="radio"], input[type="checkbox"] {
     line-height: normal;
@@ -34,7 +35,8 @@ input[type="radio"], input[type="checkbox"] {
 .navbar-maxon {
 	background-color: #D9E5F0;
 	color:#fff;
-	border:1px solid black;
+	border:1px solid transparent;
+    border-bottom: 1px solid #bfcee6;
 }
  
 .clear				{ clear: both; }
@@ -549,12 +551,12 @@ background: url(../../images/welcome_bg.png) no-repeat center top;
 	margin-bottom: auto;
 }
 .footer {
-	background: linear-gradient(to top,#EFF5FF 0,#E0ECFF 100%);
-	padding: 10px;
-	height:150px;
-	margin-top:10px;
-	border-top: rgb(78, 101, 175) 2px solid;	
-	--border-radius: 4px;
+    background: linear-gradient(to top,#454545 0,#666666 100%);
+    padding: 10px;
+    height: 150px;
+    margin-top: 10px;
+    border-top: rgb(62, 62, 62) 2px solid;
+    --border-radius: 4px;
 }
 .btn {
 	padding: 2px 12px;
@@ -660,7 +662,8 @@ padding-left: 5px;
   border-collapse: collapse; 
 }
 .table2 tr:nth-of-type(odd) { 
-  background: #eee; 
+    background: #868686;
+    
 }
 .table2 th { 
 	background: linear-gradient(to bottom,#E0F5FF 0,#E0ECFF 100%);
@@ -697,9 +700,9 @@ padding-left: 5px;
 	font-weight: 1;
 }
 .box-gradient {
-	background: whitesmoke;
-	color: black;
-}	
+    background: #1b1b1b;
+    color: white;
+ }	
 .box-badge{
 	color: red;
 	font-weight:900;
@@ -710,8 +713,8 @@ padding-left: 5px;
 
 .sb_panel {
 	position: fixed;
-	background: linear-gradient(to top,#EFF5FF 0,#E0ECFF 100%);
-	bottom: 0px;
+    background: linear-gradient(to top,#454545 0,#E0ECFF 100%);    
+    bottom: 0px;
 	left: 0px;
 	width: 100%;
 	height: 40px;
@@ -730,3 +733,43 @@ padding-left: 5px;
 .msg-inbox {
 	pointer:cursor;
 }
+
+
+.panel-header, .panel-body {
+    border-color: #D2D2F9;
+}
+.panel-body-min {
+    padding: 2px;
+	--padding-top:10px;
+}
+.thumbnail {
+	margin-bottom:3px;
+} 
+.panel-body {
+    padding: 3px;
+}
+.navbar {
+    margin-bottom: 2px;
+}
+   
+
+.alert-info {
+    color: #ffffff;
+    background-color: #666666;
+    border-color: #bce8f1;
+}
+a {
+    color: #8BC34A;
+    text-decoration: none;
+}
+
+a:focus, a:hover {
+    color: #FFC107;
+    text-decoration: underline;
+}
+td, th {
+    padding: 0;
+    color: #8BC34A;
+}
+
+

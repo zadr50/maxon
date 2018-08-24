@@ -62,7 +62,7 @@
 			?>
 			</td>
             <td>Supplier</td>
-            <td><?php 
+            <td width="150"><?php 
                 echo form_input('supplier_number',$supplier_number,
                 "id=supplier_number class='easyui-validatebox' data-options='required:true,
     			validType:length[3,30]'".$disabled.$disabled_edit." style='width:100px'");
@@ -108,7 +108,7 @@
             <td><?=form_input('due_date',$po_date,'id=due_date  class="easyui-datetimebox" required
 			data-options="formatter:format_date,parser:parse_date"
 			'.$disabled);?></td>
-			<td>Sistim</td><td><?=form_input('type_of_invoice',$type_of_invoice,"id='type_of_invoice' style='width:100px'");?>
+			<td>Sistim</td><td><?=form_input('type_of_invoice',$type_of_invoice,"id='type_of_invoice' style='width:50px'");?>
 				<?=link_button('','dlgtype_of_invoice_show()',"search","false"); ?>		 
 			 </td>			
 			<td>Expire Day/Date</td><td>
@@ -137,7 +137,7 @@
    
    
     <div id='divTotal'> 
-            <table class="table" width="100%">
+            <table class="table2" width="90%">
                 <tr><td colspan=6><strong>Total</strong></td></tr>
                 <tr>
                     <td>Sub Total: </td><td><input id='sub_total' value='<?=number_format($subtotal,2)?>' style='width:100px'></td>             

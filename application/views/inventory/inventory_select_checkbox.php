@@ -20,7 +20,7 @@
 	<a href="#" class="easyui-linkbutton" iconCls="icon-ok"  onclick="selectSearchItemIsc();return false;">Select</a>
 </div>
 
-<div id='dlgSearchItemIsc' class="easyui-dialog" style="width:700px;height:380px;;left:100px;top:20px"
+<div id='dlgSearchItemIsc' class="easyui-dialog" style="width:780px;height:480px;;left:50px;top:20px"
         closed="true" toolbar="#tb_search_isc">
      <form method='post' name='frmLovItemsIsc' id="frmLovItemsIsc">
      <div id='divItemSearchResultIsc'> 
@@ -63,6 +63,7 @@
         if($("#mode").val()=="add"){alert("Simpan dulu nomor ini.");return false;};
         if(gudang==""){alert("Pilih dulu kode gudang !");return false;};
 //          if(has_receive>0){alert("Nomor PO ini sudah ada penerimaan, tidak bisa diubah.");return false;};
+        loading();
         
         $('#frmLovItemsIsc').form('submit',{
             url: url,
@@ -82,12 +83,14 @@
                         msg: 'Success'
                     });
                      $('#dlgSearchItemIsc').dialog('close');
+                     loading_close();
                     
                 } else {
                     $.messager.show({
                         title: 'Error',
                         msg: result.msg
                     });
+                    loading_close();
                 }
             }
         });

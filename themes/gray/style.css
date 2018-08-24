@@ -34,7 +34,8 @@ input[type="radio"], input[type="checkbox"] {
 .navbar-maxon {
 	background-color: #D9E5F0;
 	color:#fff;
-	border:1px solid black;
+	border:1px solid transparent;
+    border-bottom: 1px solid #bfcee6;
 }
  
 .clear				{ clear: both; }
@@ -730,3 +731,58 @@ padding-left: 5px;
 .msg-inbox {
 	pointer:cursor;
 }
+
+
+.panel-header, .panel-body {
+    border-color: #D2D2F9;
+}
+.panel-body-min {
+    padding: 2px;
+	--padding-top:10px;
+}
+.thumbnail {
+	margin-bottom:3px;
+} 
+.panel-body {
+    padding: 3px;
+}
+.navbar {
+    margin-bottom: 2px;
+}
+   
+
+.alert-info {
+    color: #31708f;
+    background-color: #dfecd8;
+    border-color: #bce8f1;
+}
+
+
+
+.panel-header, .panel-body {
+    border-color: #D2D2F9;
+}
+.panel-body-min {
+    padding: 2px;
+	--padding-top:10px;
+}
+.thumbnail {
+	margin-bottom:3px;
+} 
+.panel-body {
+    padding: 3px;
+}
+.navbar {
+    margin-bottom: 2px;
+}
+   
+
+.alert-info {
+    color: #31708f;
+    background-color: #dfecd8;
+    border-color: #bce8f1;
+}
+
+
+
+

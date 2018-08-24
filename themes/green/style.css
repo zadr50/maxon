@@ -11,7 +11,7 @@ body {
     padding:5px;
     margin:0 auto;
 	--width: auto; 
-	background-color: #2F6E2C;
+	background-color: #ffffff;
 }
 input,select {
 	padding:3px;
@@ -33,7 +33,8 @@ input[type="radio"], input[type="checkbox"] {
 .navbar-maxon {
 	background-color: #D9E5F0;
 	color:#fff;
-	border:1px solid black;
+	border:1px solid transparent;
+    border-bottom: 1px solid #bfcee6;
 }
 .clear				{ clear: both; }
 .demo-info{
@@ -606,7 +607,7 @@ padding-left: 5px;
 	font-weight: 900;
 }
 .mxmod {
-	margin: 10px;
+	margin: 1px;
 	--width: 300px;
 	--height: 120px;
 	float: left;
@@ -658,7 +659,9 @@ padding-left: 5px;
     padding-left:5px;
 }
 .table2 td, .table2 th { 
-  padding: 5px; 
+  padding-left: 5px; 
+  padding-right: 5px; 
+  border:1px solid transparent;
   border-bottom: 1px solid #ccc; 
   text-align: left;
 }
@@ -729,3 +732,29 @@ padding-left: 5px;
 .info_link{
 	cursor:pointer;
 }
+
+
+.panel-header, .panel-body {
+    border-color: #D2D2F9;
+}
+.panel-body-min {
+    padding: 2px;
+	--padding-top:10px;
+}
+.thumbnail {
+	margin-bottom:3px;
+} 
+.panel-body {
+    padding: 3px;
+}
+.navbar {
+    margin-bottom: 2px;
+}
+   
+
+.alert-info {
+    color: #31708f;
+    background-color: #dfecd8;
+    border-color: #bce8f1;
+}
+

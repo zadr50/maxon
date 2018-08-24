@@ -11,7 +11,7 @@ if($allow_addnew_item=="")$allow_addnew_item=false;
 if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 
 	<div id='dgItemForm' class="easyui-dialog" 
-	style="width:650px;height:450px;padding:5px 5px;top:10px"
+	style="width:680px;height:500px;padding:5px 5px;top:10px"
     closed="true" buttons="#tbItemForm" >
 	
 	<?php if (!$has_receive) { ?>
@@ -277,6 +277,8 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 	    hitung();
 	}
 	function save_item(){
+		
+		
 		var gudang=$("#warehouse_code").val();
 		var url = '<?=base_url()?>index.php/purchase_order/save_item';
 		var po=$('#purchase_order_number').val();
@@ -286,6 +288,9 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 //			if(has_receive>0){alert("Nomor PO ini sudah ada penerimaan, tidak bisa diubah.");return false;};
 		$('#po_number_item').val(po);
 		$("#gudang_item").val(gudang);			 
+		
+		loading();
+		
 		$('#frmItem').form('submit',{
 			url: url,
 			onSubmit: function(){
@@ -304,6 +309,7 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 						msg: 'Success'
 					});
 					close_item();
+					loading_close();
 					
 				} else {
 					log_err(result.msg);
@@ -311,6 +317,7 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 						title: 'Error',
 						msg: result.msg
 					});
+					loading_close();
 				}
 			}
 		});

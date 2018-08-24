@@ -18,7 +18,7 @@
 	<a href="#" class="easyui-linkbutton" iconCls="icon-ok"  onclick="selectSearchItem();return false;">Select</a>
 </div>
 
-<div id='dlgSearchItem' class="easyui-dialog" style="width:700px;height:380px;;left:100px;top:20px"
+<div id='dlgSearchItem' class="easyui-dialog" style="width:750px;height:480px;;left:50px;top:20px"
         closed="true" toolbar="#tb_search">
      <form method='post' name='frmLovItems' id="frmLovItems">
      <div id='divItemSearchResult'> 

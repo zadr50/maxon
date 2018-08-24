@@ -106,6 +106,9 @@ class Jobs extends CI_Controller {
 		$data['controller']='jobs';
 		$data['fields_caption']=array('User Group','Nama User Group','Keterangan');
 		$data['fields']=array('user_group_id','user_group_name','description');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='user_group_id';
 		$data['caption']='DAFTAR USER JOB';
 		$data['print_visible']=true;

@@ -110,6 +110,9 @@ class Inventory_prices extends CI_Controller {
 		$data['controller']='inventory_prices';		
 		$data['fields_caption']=array('Kode Barang','Satuan','Harga Jual','From Qty','To Qty','From Date','To Date');
 		$data['fields']=array('item_number','customer_pricing_code','retail','quantity_high','quantity_low','date_from','date_to');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='item_number';
 		$this->load->library('search_criteria');
 		

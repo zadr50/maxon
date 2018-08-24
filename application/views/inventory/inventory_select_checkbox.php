@@ -12,9 +12,10 @@
     echo form_dropdown($data,$options,$selected,"id='tb_field_isc'");
     
     ?>
-	Enter Text: <input  id="search_item_isc" style='width:100px' name="search_item_isc">
+	Enter Text: <input  id="search_item_isc" style='width:100px' name="search_item_isc" 
+		onchange='filterItemIsc();return false;'>
 	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" 
-	onclick="filterItemIsc();return false;">Search</a>        
+	onclick="filterItemIsc();return false;"  >Search</a>        
 	</div>
 	<a href="#" class="easyui-linkbutton" iconCls="icon-ok"  onclick="selectSearchItemIsc();return false;">Select</a>
 </div>
@@ -49,8 +50,10 @@
         $('#select_all_isc').change(function() { 
             var checkboxes = $('#divItemSearchResultIsc').find(':checkbox');
             checkboxes.prop('checked', $(this).is(':checked'));
-        }); 
+        });
+         
         filterItemIsc();
+                
     });
 	function selectSearchItemIsc(){
         var gudang=$("#warehouse_code").val();

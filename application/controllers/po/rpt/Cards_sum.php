@@ -17,6 +17,11 @@ class Cards_sum extends CI_Controller {
 		 $data['date_from']=date('Y-m-d 00:00:00');
 		 $data['date_to']=date('Y-m-d 23:59:59');
 		 $data['select_date']=true;
+		 
+		 $data['criteria1']=true;
+		 $data['label1']='Tampil saldo nol? (0=Tidak,1=Ya)';
+		 $data['text1']='0';				 
+		 
 		$data['rpt_controller']=$this->rpt;
 		$this->template->display_form_input('criteria',$data,'');	
 	

@@ -99,6 +99,9 @@ class Sysvar_data extends CI_Controller {
 		$data['controller']=$this->controller;
 		$data['fields_caption']=array('VarName','VarValue','Keterangan','Category','Section','VarType','VarList','ID');
 		$data['fields']=array('varname','varvalue','keterangan','category','section','vartype','varlist','id');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='id';
 		$data['caption']='DAFTAR KODE SYSVAR';
 

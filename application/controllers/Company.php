@@ -782,7 +782,13 @@ class Company extends CI_Controller {
          return false;
        }
     }
-
+	function check_db_structure(){
+		$this->load->library("upgrade");
+		$output=$this->upgrade->process(true);
+		$data['message']=$output;
+		$this->load->view("blank",$data);
+		
+	}
     
     
 }

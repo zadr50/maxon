@@ -50,7 +50,7 @@
 <form id='frmPo' method="post">
     <input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
     <?php echo validation_errors(); ?>
-   <table class='table2' width="90%">
+   <table class='table2' width="100%">
 		<tr>
 			<td>Nomor PO</td>
 			<td><?php
@@ -371,6 +371,13 @@ echo $lookup_terms;
 	    }
 	    add_tab_parent("view_rfq_"+no,CI_ROOT+"purchase_request/view/"+no);
 	}
+		function calc_qty_unit(){
+			if(qty_conv=="")qty_conv=1;
+			if(qty_conv=="0")qty_conv=1;
+			qty=$("#quantity").val();
+			qty=qty*qty_conv;
+			$("#mu_qty").val(qty);
+		}
 	
 
 </script>

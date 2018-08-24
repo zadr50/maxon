@@ -31,7 +31,10 @@ class Purchase_order extends CI_Controller {
 		$this->load->model('type_of_payment_model');
 		$this->load->model('syslog_model');
 		$this->load->model("warehouse_model");
-		$this->load->library("list_of_values");		 
+		$this->load->library("list_of_values");
+        $this->load->model('purchase_order_lineitems_model');
+        $this->load->model('chart_of_accounts_model');
+						 
 	}
 	function set_defaults($record=NULL){
             $data=data_table($this->table_name,$record);
@@ -168,6 +171,9 @@ class Purchase_order extends CI_Controller {
 		if($mode=="add"){
             $data['potype']='O';
 			$ok=$this->purchase_order_model->save($data);
+			if($data['req_no']!=""){
+				$this->purchase_order_model->add_item_with_rfq($data['req_no'],$id);
+			}
             if($ok)$this->nomor_bukti(true);
 			$this->syslog_model->add($id,"purchase_order","add");
 		} else {
@@ -189,7 +195,7 @@ class Purchase_order extends CI_Controller {
 		$sql="select p.item_number,i.description,p.quantity,p.qty_recvd 
 		,p.unit,p.price,p.discount,p.total_price,
 		p.line_number,p.from_line_doc,p.disc_2,p.disc_3,p.retail,p.margin,
-		p.line_type,p.line_status,p.comment
+		p.line_type,p.line_status,p.comment,p.multi_unit,p.mu_qty,p.mu_harga
 		from purchase_order_lineitems p
 		left join inventory i on i.item_number=p.item_number
 		where purchase_order_number='$nomor'";
@@ -268,6 +274,9 @@ class Purchase_order extends CI_Controller {
 		$data['fields']=array('purchase_order_number','po_date', 
                 'supplier_number','supplier_name','received','terms','amount','doc_status','due_date',
                 'bill_to_contact','warehouse_code','type_of_invoice');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['col_width']=array('purchase_order_number'=>50,'po_date'=>50,
 		'supplier_name'=>200,'recv'=>20);
 		$data['field_key']='purchase_order_number';
@@ -449,6 +458,7 @@ class Purchase_order extends CI_Controller {
             if($search=$this->input->get('s')){
                 $sql.=" and (p.purchase_order_number like '%$search%' or p.supplier_number like '%$search%')";
             }
+			$sql.=" limit 30 ";
 			echo datasource($sql);
 		}
         function list_item_receive($nomor){
@@ -574,7 +584,6 @@ class Purchase_order extends CI_Controller {
         return true;
     }   
     function save_item_all(){
-        $this->load->model('purchase_order_lineitems_model');
         $data=$this->input->post();
         $po=$this->input->get("po");
         $gudang=$this->input->get("gdg");
@@ -622,10 +631,26 @@ class Purchase_order extends CI_Controller {
         }
         
     }     
+	function exist_item_no($po_number,$item_no){
+		$sql="select count(1) as znt from purchase_order_lineitems 
+			where purchase_order_number='$po_number' and item_number='$item_no'";
+		$cnt=$this->db->query($sql)->row()->znt;
+		return $cnt>0;
+	}
     function save_item_one(){
-        $this->load->model('purchase_order_lineitems_model');
-        $this->load->model('chart_of_accounts_model');
         $data=$this->input->post();
+		$line_number=$data['line_number'];
+		$item_no=$data['item_number'];
+        $po=$data['po_number_item'];
+        unset($data['po_number_item']);
+		
+		if($line_number==0 || $line_number==""){
+			if($this->exist_item_no($po,$item_no)){
+				echo json_encode(array("success"=>false,"item_exist"=>true,"msg"=>"Item [$item_no] sudah ada !"));
+				return false;
+			}
+		}
+		
         $gdg=null; $qty_alloc=null;
         if(isset($data['gdg'])){
             $gdg=$data['gdg']; unset($data['gdg']);
@@ -639,9 +664,7 @@ class Purchase_order extends CI_Controller {
         
 //      if(isset($data['jual']))unset($data['jual']);
 //      if(isset($data['profit']))unset($data['profit']);
-        $item_no=$this->input->post('item_number');
-        $po=$data['po_number_item'];
-        unset($data['po_number_item']);
+		
         $data['purchase_order_number']=$po;
         $data['warehouse_code']=$data['gudang_item'];
         unset($data['gudang_item']);
@@ -656,7 +679,7 @@ class Purchase_order extends CI_Controller {
             $this->purchase_order_lineitems_model->save_alloc($data_qty);
             echo json_encode(array('success'=>true));
         } else {
-            echo json_encode(array('msg'=>'Some errors occured.'));
+            echo json_encode(array('success'=>false,'msg'=>'Some errors occured.'));
         }
         
     }

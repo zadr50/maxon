@@ -35,9 +35,9 @@ CREATE TABLE IF NOT EXISTS `financial_periods` (
   `id` int(11) NOT NULL auto_increment,
   month_name varchar(50) NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSETl=latin1 AUTO_INCREMENT=24 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 ;
 ";
-if(mysql_query($sql))$msg .="</br>$table..OK";else $msg .="</br>$table..<br>ERROR -" . mysql_error();
+if(mysql_query($sql))$msg .="</br>-$table..OK";else $msg .="</br>-$table..<br>ERROR -" . mysql_error();
 
 	$table="financial_periods";
 

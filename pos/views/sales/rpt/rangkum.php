@@ -63,8 +63,8 @@ if($row=$this->db->query("select count(1) as z_cnt,sum(amount) as z_amt,
         $net_sales=$amt_nota;
 }
 if($row=$this->db->query("select count(1) as z_cnt,sum(amount) as z_amt 
-    from invoice where invoice_type='I' and (paid is null or paid=0)
-    and invoice_date between  '$date1' and '$date2' 
+    from invoice where invoice_type='I' 
+    and invoice_date between  '$date1' and '$date2' and (paid is null or paid=0)
     and warehouse_code='$outlet' ")->row()){
         $unpaid_cnt=$row->z_cnt;
         $unpaid=$row->z_amt;
@@ -77,12 +77,13 @@ if($row=$this->db->query("select count(1) as z_cnt,sum(amount) as z_amt
 }
 
 if($row=$this->db->query("select sum(il.amount) as z_amt, sum(il.discount_amount) as z_disc1, 
-    sum(il.disc_amount_2) as z_disc2,sum(il.disc_amount_3) as z_disc3 
+    sum(il.disc_amount_2) as z_disc2,sum(il.disc_amount_3) as z_disc3,
+    sum(il.disc_amount_ex) as z_disc_rp 
     from invoice_lineitems il 
     left join invoice i on i.invoice_number=il.invoice_number 
     where i.invoice_type='I' and i.invoice_date between '$date1' and '$date2' 
     and i.warehouse_code='$outlet' ")->row()){
-        $disc_item_amt=$row->z_disc1+$row->z_disc2+$row->z_disc3;
+        $disc_item_amt=$row->z_disc1+$row->z_disc2+$row->z_disc3+$row->z_disc_rp;
         $disc_item_amt_aft=$row->z_amt;
         $gross=$disc_item_amt_aft+$disc_item_amt;
     } 

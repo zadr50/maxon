@@ -225,6 +225,9 @@ class Supplier extends CI_Controller {
 		$data['fields']=array('supplier_number','supplier_name','city','phone','fax',
         'email','first_name','street','suite'
         );
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='supplier_number';
 		$data['list_info_visible']=true;
         $data['import_visible']=true;
@@ -388,7 +391,7 @@ class Supplier extends CI_Controller {
 	function kelompok($action="",$key="",$value="")
 	{
 		$this->load->library("crud");
-		$this->crud->set_table("supplier_type");
+		$this->crud->set_table("type_of_vendor");
 		$this->crud->set_controller("supplier/kelompok");
 		$this->crud->set_action($action,$key,$value);
 		if($action=="save" ){

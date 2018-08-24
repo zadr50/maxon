@@ -4068,11 +4068,620 @@ CREATE TABLE IF NOT EXISTS `modules` (
 
 -- Dumping data for table simak.modules: 606 rows
 /*!40000 ALTER TABLE `modules` DISABLE KEYS */;
-REPLACE INTO `modules` (`module_id`, `module_name`, `type`, `form_name`, `description`, `parentid`, `update_status`, `sequence`, `visible`, `controller`) VALUES
-	('frmCustomers.cmdSaveShipTo', 'frmCustomers.cmdSaveShipTo', 'Form', 'frmCustomers.cmdSaveShipTo', 'frmCustomers.cmdSaveShipTo', '_30010', 0, NULL, NULL, NULL),
-	('frmMain.Addnew', 'frmMain.Addnew', 'Form', 'frmMain.Addnew', 'Please entry this', '_00000', 0, NULL, NULL, NULL),
-	('_14001', 'Daftar Aktiva', 'Form', '_14001', 'Daftar Aktiva Tetap', '_14000', 0, 1, b'00000000', ''),
-	('_14000', 'Aktiva Tetap', 'Form', '_14000', 'Aktiva Tetap', '0', 0, 1, b'00000000', '');
+INSERT INTO `modules` VALUES ('frmCustomers.cmdSaveShipTo', 'frmCustomers.cmdSaveShipTo', 'Form', 'frmCustomers.cmdSaveShipTo', 'frmCustomers.cmdSaveShipTo', '_30010', '0', null, null, null);
+INSERT INTO `modules` VALUES ('frmMain.Addnew', 'frmMain.Addnew', 'Form', 'frmMain.Addnew', 'Please entry this', '_00000', '0', null, null, null);
+INSERT INTO `modules` VALUES ('frmRptCriteria', 'frmRptCriteria', 'Form', 'frmRptCriteria', 'Please entry this', '_90000', '0', null, null, null);
+INSERT INTO `modules` VALUES ('ID_ExportImport', 'ID_ExportImport', 'Form', 'ID_ExportImport', 'Please entry this', '_00000', '0', null, null, null);
+INSERT INTO `modules` VALUES ('ID_ItemPrices', 'Item Prices', 'Form', 'ID_ItemPrices', '', 'ID_ItemPrices', '0', '0', '', '');
+INSERT INTO `modules` VALUES ('ID_JasaKiriman', 'ID_JasaKiriman', 'Form', 'ID_JasaKiriman', 'Please entry this', '_00000', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\CEK\\BANKCEK2.RPT', '004. Cek keluar - Status Belum Cair / Gantung', 'Form', '\\CEK\\BANKCEK2.RPT', '004. Cek Keluar - Status Belum Cair', '_90010', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\CEK\\BANKCEKGL.RPT', '011. Laporan Cek Keluar (Dengan Kode Perkiraan)', 'Form', '\\CEK\\BANKCEKGL.RPT', 'Please entry this', '_90010', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\CEK\\BANKCEKM2.RPT', '005. Cek Masuk - Status Belum Cair / Gantung', 'Form', '\\CEK\\BANKCEKM2.RPT', 'A005. Cek Masuk - Status Belum Cair', '_90010', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\cek\\BANKCODE.rpt', '001. Daftar Bank', 'Form', '\\cek\\BANKCODE.rpt', 'A004. Cek Keluar - Status Cair', '_90010', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Cek\\BankMutasiBank.rpt', '012. Laporan Mutasi Transaksi Bank', 'Form', '\\Cek\\BankMutasiBank.rpt', 'Please entry this', '_90010', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\CEK\\ChInSum.Rpt', '006. Daftar Penerimaan Cek/Giro', 'Form', '\\CEK\\ChInSum.Rpt', 'Please entry this', '_90010', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\CEK\\ChOutSum.Rpt', '007. Daftar Pengeluran Cek/Giro', 'Form', '\\CEK\\ChOutSum.Rpt', 'Please entry this', '_90010', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\CEK\\KasInSum.Rpt', '002. Daftar Penerimaan Kas', 'Form', '\\CEK\\KasInSum.Rpt', 'Daftar Penerimaan Kas', '_90010', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\CEK\\KasOutSum.Rpt', '003. Daftar Pengeluran Kas', 'Form', '\\CEK\\KasOutSum.Rpt', 'Daftar Pengeluaran Kas', '_90010', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Cek\\MutasiKas_Saldo.rpt', '008. Laporan Mutasi Kas/Bank', 'Form', '\\Cek\\MutasiKas_Saldo.rpt', 'Please entry this', '_90010', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\CEK\\transfer_in.rpt', '009. Daftar Penerimaan transfer', 'Form', '\\CEK\\transfer_in.rpt', 'Please entry this', '_90010', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\CEK\\transfer_out.rpt', '010. Daftar Pengeluaran transfer', 'Form', '\\CEK\\transfer_out.rpt', 'Please entry this', '_90010', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\gl\\balancesheet2.rpt', '009. Laporan Neraca', 'Form', '\\gl\\balancesheet2.rpt', '009. Laporan Neraca', '_90010', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\gl\\neracaT.rpt', 'Laporan Neraca T-Form', 'Form', '\\gl\\neracaT.rpt', 'Laporan Neraca T-Form', '_90010', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\gl\\RLCompare.rpt', 'Laporan Rugi Laba Comparison', 'Form', '\\gl\\RLCompare.rpt', 'Laporan Rugi Laba Comparison', '_90010', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Inv\\AsmItem.Rpt', 'Laporan Assembly item', 'Form', '\\Inv\\AsmItem.Rpt', 'Please entry this', '_90040', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Inv\\AsmItem17.Rpt', '022. Laporan Assembly item - Summary', 'Form', '\\Inv\\AsmItem17.Rpt', 'Please entry this', '_90040', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Inv\\DaftarBarang.Rpt', 'Laporan Daftar  Barang', 'Form', '\\Inv\\DaftarBarang.Rpt', 'Please entry this', '_90040', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Inv\\FisikInventory.rpt', 'Laporan Fisik Inventory', 'Form', '\\Inv\\FisikInventory.rpt', 'Please entry this', '_90040', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Inv\\HargaBeli.Rpt', 'Laporan Daftar Harga Beli', 'Form', '\\Inv\\HargaBeli.Rpt', 'Please entry this', '_90040', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Inv\\HargaJual.Rpt', 'Laporan Daftar Harga Jual', 'Form', '\\Inv\\HargaJual.Rpt', 'Please entry this', '_90040', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Inv\\InventoryMoving.rpt', 'Laporan Keluar Masuk Barang', 'Form', '\\Inv\\InventoryMoving.rpt', 'Please entry this', '_90040', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Inv\\InvPriceHistory.rpt', 'Laporan History Harga', 'Form', '\\Inv\\InvPriceHistory.rpt', 'Please entry this', '_90040', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Inv\\InvTranCategory.Rpt', '023. Inventory Transaction by Category', 'Form', '\\Inv\\InvTranCategory.Rpt', 'Please entry this', '_90040', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Inv\\InvTranItem.Rpt', '024. Inventory Transaction by Item Number', 'Form', '\\Inv\\InvTranItem.Rpt', 'Please entry this', '_90040', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\inv\\invvalue.rpt', 'Laporan Nilai Persediaan Inventory', 'Form', '\\inv\\invvalue.rpt', 'Please entry this', '_90040', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\inv\\KeluarReturPembelian.rpt', 'Pengeluaran Barang Retur Pembelian', 'Form', '\\inv\\KeluarReturPembelian.rpt', 'Please entry this', '_90040', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Inv\\MutasiGudang.rpt', 'Mutasi Per Barang Per Gudang', 'Form', '\\Inv\\MutasiGudang.rpt', 'Please entry this', '_90040', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Inv\\StokMgmtLow.rpt', 'Stock Mgmt - Inventory Low Stock', 'Form', '\\Inv\\StokMgmtLow.rpt', 'Please entry this', '_90040', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Inv\\StokMgMtOnBOrder.rpt', 'Stock MgMt - Inventory on Back Order', 'Form', '\\Inv\\StokMgMtOnBOrder.rpt', 'Please entry this', '_90040', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Inv\\StokMgMtOut.rpt', 'Stock MgMt - Inventory Out Of Stock', 'Form', '\\Inv\\StokMgMtOut.rpt', 'Please entry this', '_90040', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Inv\\StokMgMtRecon.Rpt', 'Stock MgMt - Inventory Reconsiliation', 'Form', '\\Inv\\StokMgMtRecon.Rpt', 'Please entry this', '_90040', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Po\\DaftarHutang.rpt', 'A0041. Hutang Supplier dan Pembayaran', 'Form', '\\Po\\DaftarHutang.rpt', 'Please entry this', '_90120', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\po\\DaftarSupplier.rpt', 'A002. Daftar Supplier Urut Nama', 'Form', '\\po\\DaftarSupplier.rpt', 'Please entry this', '_90120', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\po\\DaftarSupplierUtama.rpt', 'Daftar Hutang per Supplier', 'Form', '\\po\\DaftarSupplierUtama.rpt', 'Please entry this', '_90120', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Po\\HistoryHargaItemSupplier.rpt', '020. History Harga Item Per Supplier', 'Form', '\\Po\\HistoryHargaItemSupplier.rpt', 'Please entry this', '_90120', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\PO\\Keluar.rpt', 'Laporan Pengeluaran Barang', 'Form', '\\PO\\Keluar.rpt', 'Please entry this', '_90070', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\PO\\KeluarPerPO.rpt', 'Laporan Pengeluaran Barang/Retur - Per PO', 'Form', '\\PO\\KeluarPerPO.rpt', 'Please entry this', '_90070', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\PO\\OpenPO.rpt', 'Open Purchase Order by PO Number', 'Form', '\\PO\\OpenPO.rpt', 'Please entry this', '_90070', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Po\\OrderPembelian.rpt', 'Order Pembelian / PO', 'Form', '\\Po\\OrderPembelian.rpt', 'Please entry this', '_90070', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Po\\OrderPembelianItemSupplierDetail.rpt', 'A008. Pembelian  per Item, Supplier - Detail ', 'Form', '\\Po\\OrderPembelianItemSupplierDetail.rpt', 'Please entry this', '_90070', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\PO\\PayAnaSupplier.Rpt', 'A016. Total Pembayaran per Supplier - Detail', 'Form', '\\PO\\PayAnaSupplier.Rpt', 'Please entry this', '_90120', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\PO\\PayDetailDaily.Rpt', 'A014. Total Pembayaran Harian', 'Form', '\\PO\\PayDetailDaily.Rpt', 'Please entry this', '_90120', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\PO\\PayDetailMonthly.Rpt', 'A015. Total Pembayaran Bulanan', 'Form', '\\PO\\PayDetailMonthly.Rpt', 'Please entry this', '_90120', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\PO\\PODaily.rpt', 'A009. Total Faktur Pembelian dibuat - Harian - Summary', 'Form', '\\PO\\PODaily.rpt', 'Please entry this', '_90070', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\PO\\PODetailDaily.rpt', 'A010. Total Faktur Pembelian dibuat - Harian - Detail', 'Form', '\\PO\\PODetailDaily.rpt', 'Please entry this', '_90070', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\PO\\POItemNoRecvItem.rpt', 'Purchase Order Items Not Received- by Item', 'Form', '\\PO\\POItemNoRecvItem.rpt', 'Please entry this', '_90070', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\PO\\POItemNoRecvSupplier.rpt', 'Purchase Order Items Not Received- by Supplier', 'Form', '\\PO\\POItemNoRecvSupplier.rpt', 'Please entry this', '_90070', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\PO\\POItemOverItem.rpt', 'Purchase Order Items Overdue - by Item', 'Form', '\\PO\\POItemOverItem.rpt', 'Please entry this', '_90070', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\PO\\POItemOverSupplier.rpt', 'Purchase Order Items Overdue - by Supplier', 'Form', '\\PO\\POItemOverSupplier.rpt', 'Please entry this', '_90070', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\PO\\POMonthly.rpt', 'A011. Total Faktur Pembelian dibuat - Bulanan - Summary', 'Form', '\\PO\\POMonthly.rpt', 'Please entry this', '_90070', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Po\\SaldoHutang.rpt', 'A005. Daftar Saldo Hutang Supplier', 'Form', '\\Po\\SaldoHutang.rpt', 'Please entry this', '_90120', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\po\\SelisihKursHutang1.Rpt', '015. Selisih Kurs Pembelian', 'Form', '\\po\\SelisihKursHutang1.Rpt', 'Please entry this', '_90120', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\po\\sisa_hutang.rpt', '011. Daftar Sisa Hutang - Per Invoice', 'Form', '\\po\\sisa_hutang.rpt', 'Please entry this', '_90120', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\po\\sisa_hutang_bulan.rpt', '012. Daftar Sisa Hutang - Per Bulan', 'Form', '\\po\\sisa_hutang_bulan.rpt', 'Please entry this', '_90120', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\po\\supplierEnvelop.rpt', 'Supplier Envelope', 'Form', '\\po\\supplierEnvelop.rpt', 'Please entry this', '_90120', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Po\\SupplierLstFinancial.rpt', 'Supplier Financial Listing', 'Form', '\\Po\\SupplierLstFinancial.rpt', 'Please entry this', '_90120', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Po\\SupplierLstNumber.Rpt', 'Supplier List by Supplier Number', 'Form', '\\Po\\SupplierLstNumber.Rpt', 'Please entry this', '_90120', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\Po\\SupplierPayables.rpt', 'Supplier Total Period Payables', 'Form', '\\Po\\SupplierPayables.rpt', 'Please entry this', '_90120', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\PO\\Terima.Rpt', '021. Penerimaan Barang - Detail', 'Form', '\\PO\\Terima.Rpt', 'Please entry this', '_90040', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\PO\\TotalPayableSupplier.rpt', 'Total Period Payable Paid by Supplier', 'Form', '\\PO\\TotalPayableSupplier.rpt', 'Please entry this', '_90120', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\AnalisaPenjualanPerCustomerPerbulan.rpt', 'A003. Penjualan per Customer - Summary', 'Form', '\\So\\AnalisaPenjualanPerCustomerPerbulan.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\AnalisaPenjualanPerJenisPembayaranDetail.rpt', 'A012. Penjualan per Jenis Pembayaran - Detail', 'Form', '\\So\\AnalisaPenjualanPerJenisPembayaranDetail.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\AnalisaPenjualanPerJenisPembayaranPerbulan.rpt', 'A011. Penjualan per Jenis Pembayaran - Summary', 'Form', '\\So\\AnalisaPenjualanPerJenisPembayaranPerbulan.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\AnalisaPenjualanPerKategoryCustomer.rpt', 'Laporan analisa penjualan per kategory customer', 'Form', '\\So\\AnalisaPenjualanPerKategoryCustomer.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\AnalisaPenjualanPerSalesmanPerbulan.rpt', 'Laporan analisa penjualan per salesman - perbulan', 'Form', '\\So\\AnalisaPenjualanPerSalesmanPerbulan.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\AnalisaPenjualanPerSourcePerbulan.rpt', 'Laporan analisa penjualan per source of order - perbulan', 'Form', '\\So\\AnalisaPenjualanPerSourcePerbulan.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\AnalisaPenjualanPerWilayah.rpt', 'Laporan analisa penjualan per wilayah', 'Form', '\\So\\AnalisaPenjualanPerWilayah.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\so\\CustCredit.rpt', 'Customer on Credit Hold', 'Form', '\\so\\CustCredit.rpt', 'Please entry this', '_90010', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\so\\CustCreditAll.rpt', 'Customer on Credit Hold - Columns Style', 'Form', '\\so\\CustCreditAll.rpt', 'Please entry this', '_90010', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\CustHighest.Rpt', 'Customer Sales by Highest Total', 'Form', '\\So\\CustHighest.Rpt', 'Please entry this', '_90010', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\so\\CustListCompany.rpt', 'Customer Listing by Company', 'Form', '\\so\\CustListCompany.rpt', 'Please entry this', '_90010', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\so\\CustListCustomer.rpt', 'Customer Listing by Customer Number', 'Form', '\\so\\CustListCustomer.rpt', 'Please entry this', '_90010', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\so\\customerEnvelop.rpt', 'Customer Envelope/Label', 'Form', '\\so\\customerEnvelop.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\so\\CustPayHistory2.rpt', 'A0061. Piutang Customer dan Pembayaran', 'Form', '\\so\\CustPayHistory2.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\CustPayHistoryByCust.rpt', 'A003. Daftar pembayaran piutang - group by customer', 'Form', '\\So\\CustPayHistoryByCust.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\CustSalesHistory.rpt', 'Customer Sales History', 'Form', '\\So\\CustSalesHistory.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\CustSalesHistoryLast.rpt', 'Customer Sales History - Last Order', 'Form', '\\So\\CustSalesHistoryLast.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\so\\daftarcustomer.rpt', 'A001. Daftar Customer urut Nama', 'Form', '\\so\\daftarcustomer.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\so\\DaftarPiutang.rpt', 'A006. Piutang Customer dan Pembayaran', 'Form', '\\so\\DaftarPiutang.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\DaftarTagihan.rpt', 'Daftar Tagihan dan Pembayaran', 'Form', '\\So\\DaftarTagihan.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\DODetail100.Rpt', 'Laporan Pengiriman Barang / DO', 'Form', '\\So\\DODetail100.Rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\FakturPelunasanPiutang.Rpt', 'A009. Pelunasan Piutang - per Invoice (All)', 'Form', '\\So\\FakturPelunasanPiutang.Rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\FakturPenjualanDetailTanggal.Rpt', 'A2.Faktur Penjualan - Summary', 'Form', '\\So\\FakturPenjualanDetailTanggal.Rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\FakturPenjualanDetailtem.Rpt', 'A006. Penjualan per Item - Detail', 'Form', '\\So\\FakturPenjualanDetailtem.Rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\FakturPenjualanSummary.Rpt', 'Faktur Penjualan - Summary - Jenis Pembayaran', 'Form', '\\So\\FakturPenjualanSummary.Rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\FakturPenjualanSummaryBayar.Rpt', 'Faktur Penjualan - Summary - Per Status Pembayaran', 'Form', '\\So\\FakturPenjualanSummaryBayar.Rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\FakturPenjualanSummaryItemCust.Rpt', 'A012. Penjualan per Customer per Item - Detail', 'Form', '\\So\\FakturPenjualanSummaryItemCust.Rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\FakturPenjualanSummarySupplier.Rpt', 'Faktur Penjualan - Summary - Per Supplier', 'Form', '\\So\\FakturPenjualanSummarySupplier.Rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\FakturPenjualanSummaryTanggal.Rpt', 'Faktur Penjualan - Summary -  per tanggal', 'Form', '\\So\\FakturPenjualanSummaryTanggal.Rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\FakturPenjualanSummaryWilayah.Rpt', 'Faktur Penjualan - Summary - Per Wilayah', 'Form', '\\So\\FakturPenjualanSummaryWilayah.Rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\FB_RoomResv.rpt', 'F&B Room Reservation - Daily', 'Form', '\\So\\FB_RoomResv.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\FB_RoomResv2.rpt', 'F&B Room Reservation - Daily - By Waiter', 'Form', '\\So\\FB_RoomResv2.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\FB_RoomResv3.rpt', 'F&B Room Reservation - Daily - By Room', 'Form', '\\So\\FB_RoomResv3.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\FB_RoomResvSumDay.rpt', 'F&B Room Reservation Summary - Daily', 'Form', '\\So\\FB_RoomResvSumDay.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\FB_TableResv.rpt', 'F&B Table Reservation - Daily', 'Form', '\\So\\FB_TableResv.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\SO\\HargaHistoryMonthly.rpt', 'Laporan History Harga Monthly', 'Form', '\\SO\\HargaHistoryMonthly.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\HistoryHargaItemCustomer.rpt', '019. History Harga Item Per Customer', 'Form', '\\So\\HistoryHargaItemCustomer.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\InvoiceAllTypePerCustomer.rpt', 'Invoice - All Type - per Customers', 'Form', '\\So\\InvoiceAllTypePerCustomer.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\InvoicePerTypePerCustomer.rpt', 'Invoice - InvoiceType - per Customers', 'Form', '\\So\\InvoicePerTypePerCustomer.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\Jual100.Rpt', 'Laporan Penjualan Detail', 'Form', '\\So\\Jual100.Rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\so\\JualCustSum.Rpt', 'Penjualan per Customer', 'Form', '\\so\\JualCustSum.Rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\SO\\JualKasirDateTime.Rpt', 'Laporan penjualan kasir with Date, Time', 'Form', '\\SO\\JualKasirDateTime.Rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\SO\\JualKonsinyasiTglMonthly.Rpt', 'Laporan Penjualan Konsinyasi Bulanan', 'Form', '\\SO\\JualKonsinyasiTglMonthly.Rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\SO\\JualReturTglMonthly.Rpt', 'Laporan Retur Penjualan Bulanan', 'Form', '\\SO\\JualReturTglMonthly.Rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\SO\\JualTglMonthly.Rpt', 'Laporan Penjualan Bulanan', 'Form', '\\SO\\JualTglMonthly.Rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\SO\\JualTglMonthlyDept.Rpt', 'Laporan Penjualan per Department', 'Form', '\\SO\\JualTglMonthlyDept.Rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\SO\\JualTglMonthlySales.Rpt', 'Laporan Penjualan Bulanan per Salesman', 'Form', '\\SO\\JualTglMonthlySales.Rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\KomisiSalesmanMonthly.rpt', 'Laporan Komisi Salesman - per Bulan', 'Form', '\\So\\KomisiSalesmanMonthly.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\KomisiSalesmanSummary.rpt', 'Laporan Komisi Salesman - Total Periode', 'Form', '\\So\\KomisiSalesmanSummary.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\KreditMemoSummary.rpt', 'Kredit Memo Summary', 'Form', '\\So\\KreditMemoSummary.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\SO\\MutasiStock.Rpt', 'Laporan Mutasi Stock Bulanan', 'Form', '\\SO\\MutasiStock.Rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\SO\\MutasiStockPrice.Rpt', 'Laporan Mutasi Stock, Price Bulanan ', 'Form', '\\SO\\MutasiStockPrice.Rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\PenjualanCustomer.rpt', 'Penjualan per Customer - Detail', 'Form', '\\So\\PenjualanCustomer.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\PenjualanCustomerDetail.rpt', 'A002. Penjualan per Customer - Detail', 'Form', '\\So\\PenjualanCustomerDetail.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\PenjualanPerbulanDetail.rpt', 'A002. Penjualan perbulan - Detail', 'Form', '\\So\\PenjualanPerbulanDetail.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\So\\SaldoPiutang.rpt', 'A007. Daftar Saldo Piutang Customer', 'Form', '\\So\\SaldoPiutang.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\SO\\SalesKomisi.exe', 'Query Komisi Salesman', 'Form', '\\SO\\SalesKomisi.exe', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\SO\\SalesOrder.rpt', 'Sales Order Summary', 'Form', '\\SO\\SalesOrder.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\so\\SalesOrderDetail.rpt', 'Sales Order Detail', 'Form', '\\so\\SalesOrderDetail.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\so\\salesorder_do.rpt', 'Sales Order - Delivery Order - Summary', 'Form', '\\so\\salesorder_do.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\so\\salesorder_do_item.rpt', 'Sales Order - Delivery Order - Item - Detail', 'Form', '\\so\\salesorder_do_item.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\so\\sisa_piutang.rpt', '011. Daftar Sisa Piutang - Per Invoice', 'Form', '\\so\\sisa_piutang.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\so\\sisa_piutang_bulan.rpt', '012. Daftar Sisa Piutang - Per Bulan', 'Form', '\\so\\sisa_piutang_bulan.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\SO\\SOOpenItem.rpt', 'Open Sales Order - by Item', 'Form', '\\SO\\SOOpenItem.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('\\SO\\SOOpenTanggal.rpt', 'Open Sales Order - by Tanggal', 'Form', '\\SO\\SOOpenTanggal.rpt', 'Please entry this', '_90090', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_00000', 'Setting', 'Form', '_00000', 'Setup data perusahaan atau aturan-aturan umum lainnya.', '0', '0', '7', '', '');
+INSERT INTO `modules` VALUES ('_00010', 'Job Responsibility', 'Form', 'jobs', 'Job Responsibility', '_00000', '1', '3', '', null);
+INSERT INTO `modules` VALUES ('_00011', 'Create', 'Form', '_00011', '.', '_00010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_00012', 'Edit', 'Form', '_00012', '.', '_00010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_00013', 'Delete', 'Form', '_00013', '.', '_00010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_00020', 'User Access', 'Form', 'user', 'User Access', '_00000', '1', '2', '', null);
+INSERT INTO `modules` VALUES ('_00021', 'Create', 'Form', '_00021', '.', '_00020', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_00022', 'Edit', 'Form', '_00022', '.', '_00020', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_00023', 'Delete', 'Form', '_00023', '.', '_00020', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_00030', 'Global Setting', 'Form', 'seting', 'Global Setting', '_00000', '1', '1', '', null);
+INSERT INTO `modules` VALUES ('_00031', 'Save', 'Form', '_00031', '.', '_00030', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_00032', 'Remove All Database', 'Form', '_00032', 'Remove All Database', '_00030', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_00040', 'Report List System', 'Form', 'report_list', 'Report List System', '_00000', '1', '4', '', null);
+INSERT INTO `modules` VALUES ('_00041', 'Add', 'Form', 'frmReportList.cmdAdd', '.', '_00040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_00042', 'Edit', 'Form', 'frmReportList.cmdEdit', '.', '_00040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_00043', 'Delete', 'Form', 'frmReportList.cmdDelete', '.', '_00040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_00050', 'List Modules System', 'Form', 'modules', 'List Modules System', '_00000', '1', '5', '', null);
+INSERT INTO `modules` VALUES ('_10000', 'General Ledger', 'Form', '_10000', 'Modul General Ledger atau Akuntansi.', '0', '0', '0', '', '');
+INSERT INTO `modules` VALUES ('_10010', 'Perkiraan (COA)', 'Form', '_10010', '.', '_10000', '1', null, '', null);
+INSERT INTO `modules` VALUES ('_10011', 'Create', 'Form', '_10011', '.', '_10010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_10012', 'Edit', 'Form', '_10012', '.', '_10010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_10013', 'Delete', 'Form', '_10013', '.', '_10010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_10015', 'Create New COA Group', 'Form', '_10015', 'Create New COA Group', '_10010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_10016', 'Remove COA Group', 'Form', '_10016', 'Remove COA Group', '_10010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_10020', 'Budgeting ', 'Form', 'budget', 'Budgeting Cost', '_10000', '1', '5', '', null);
+INSERT INTO `modules` VALUES ('_10021', 'Save', 'Form', '_10021', '.', '_10020', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_10030', 'Periode Akuntansi', 'Form', 'periode', 'Periode Akuntansi', '_10000', '1', '4', '', null);
+INSERT INTO `modules` VALUES ('_10031', 'Save', 'Form', '_10031', '.', '_10030', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_10032', 'Copy To New Periode', 'Form', '_10032', '.', '_10030', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_10035', 'Closing Periode', 'Form', '_10035', '.', '_10030', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_10036', 'Re-Opening Periode', 'Form', '_10036', '.', '_10030', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_10060', 'Jurnal Entry', 'Form', 'jurnal', 'Jurnal Umum', '_10000', '1', '3', '', null);
+INSERT INTO `modules` VALUES ('_10060A', '_10060A', 'Form', '_10060A', 'Please entry this', '_00000', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_10061', 'Create', 'Form', '_10061', '.', '_10060', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_10062', 'Edit', 'Form', '_10062', '.', '_10060', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_10063', 'Delete', 'Form', '_10063', '.', '_10060', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_10064', 'Jenis Perkiraan / COA', 'Form', 'coa', 'Jenis Perkiraan / COA', '_10000', '1', '1', '', null);
+INSERT INTO `modules` VALUES ('_10065', 'Kelompok Perkiraan', 'Form', 'coa_group', 'Kelompok Perkiraan', '_10000', '1', '2', '', null);
+INSERT INTO `modules` VALUES ('_10066', 'View Arsip Saldo Perkiraan', 'Form', 'gl_arsip', 'View Arsip Saldo Perkiraan', '_10000', '1', '6', '', null);
+INSERT INTO `modules` VALUES ('_10067', 'Setting Autonumber Jurnal Entry', 'Form', '_10067', 'Setting Autonumber Jurnal Entry', '_10000', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_10068', 'Setting Hotkey Jurnal Entry', 'Form', '_10068', 'Setting Hotkey Jurnal Entry', '_10000', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_10069', 'Neraca Design Report', 'Form', '_10069', 'Neraca Design Report', '_10000', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_10070', 'Rugi Laba Design Report', 'Form', '_10070', 'Rugi Laba Design Report', '_10000', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_11000', '_11000', 'Form', '_11000', 'Manufacture dan pabrikasi module', '_00000', '0', '0', '', '');
+INSERT INTO `modules` VALUES ('_12000', 'Payroll and HRD', 'Form', '_12000', 'Payroll and Human Resource Development', '0', '0', '0', '', '');
+INSERT INTO `modules` VALUES ('_13000', '_13000', 'Form', '_13000', 'Please entry this', '_00000', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000', 'Penjualan', 'Form', '_30000', 'Modul Penjualan, A/R, Pelanggan dan Pembayaran.', '0', '1', '1', '', null);
+INSERT INTO `modules` VALUES ('_30000.0', 'Point Of Sales - MyPOS', 'Form', '_30000', 'Point Of Sales - MyPOS', '_30000', '0', null, '', null);
+INSERT INTO `modules` VALUES ('_30000.001', 'Buat nota baru', 'Form', '_30000.001', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.002', 'Void atau pembatalan nota', 'Form', '_30000.002', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.003', 'Input discount nota', 'Form', '_30000.003', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.004', 'Input PPN nota', 'Form', '_30000.004', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.005', 'Input service charge', 'Form', '_30000.005', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.006', 'Laporan penjualan harian kasir', 'Form', '_30000.006', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.007', 'Input penerimaan barang ', 'Form', '_30000.007', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.008', 'Lihat daftar penerimaan barang', 'Form', '_30000.008', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.009', 'Input pengeluran barang ', 'Form', '_30000.009', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.010', 'Lihat daftar penerimaan barang', 'Form', '_30000.010', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.011', 'Cetak label / barcode barang  ', 'Form', '_30000.011', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.012', 'Buka cash drawer  ', 'Form', '_30000.012', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.013', 'Input master barang dan kelompok  ', 'Form', '_30000.013', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.014', 'Input master pelanggan', 'Form', '_30000.014', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.015', 'Input master waiter ', 'Form', '_30000.015', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.016', 'Input master table / meja / room  ', 'Form', '_30000.016', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.017', 'Input master salesman ', 'Form', '_30000.017', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.018', 'Input price manager ', 'Form', '_30000.018', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.019', 'Input barang promosi  ', 'Form', '_30000.019', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.020', 'Backup database', 'Form', '_30000.020', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.021', 'Seting nota dan perangkat keras', 'Form', '_30000.021', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.022', 'Seting pemakai dan user level ', 'Form', '_30000.022', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.023', 'Hapus semua data transaksi penjualan  ', 'Form', '_30000.023', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.024', 'Hapus semua data master barang', 'Form', '_30000.024', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.025', 'Export / Import data barang ', 'Form', '_30000.025', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.026', 'Reset nomor nota  ', 'Form', '_30000.026', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.027', 'Seting nomor nota ', 'Form', '_30000.027', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.028', 'Input kas awal, pengambilan kas ', 'Form', '_30000.028', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.029', 'Laporan: penjualan per nota ', 'Form', '_30000.029', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.030', 'Laporan: penjualan per kasir  ', 'Form', '_30000.030', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.031', 'Laporan: penjualan per item ', 'Form', '_30000.031', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.032', 'Laporan: penjualan per kategory ', 'Form', '_30000.032', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.033', 'Laporan: penjualan per waiter ', 'Form', '_30000.033', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.034', 'Laporan: penjualan per customer ', 'Form', '_30000.034', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.035', 'Laporan: Daftar nota  ', 'Form', '_30000.035', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.036', 'Laporan: Daftar pembayaran', 'Form', '_30000.036', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.037', 'Laporan: Kartu stock  ', 'Form', '_30000.037', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.038', 'Laporan: Item Paling laku ', 'Form', '_30000.038', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.039', 'Laporan: Item paling tidak laku ', 'Form', '_30000.039', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.040', 'Laporan: Rugi / laba penjualan', 'Form', '_30000.040', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.041', 'Laporan: Daftar barang', 'Form', '_30000.041', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.050', 'Penyesuaian Stock (Adjustment)', 'Form', '_30000.050', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.051', 'Proses Produksi Jadi (Assembly)', 'Form', '_30000.051', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.052', 'Laporan Proses Produksi Jadi (Assembly)', 'Form', '_30000.052', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.053', 'Laporan Penyesuaian Stock (Adjustment)', 'Form', '_30000.053', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.054', 'Daftar piutang customer', 'Form', '_30000.054', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.055', 'Formulir Stock Opname', 'Form', '_30000.055', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.056', 'Proses retur barang', 'Form', '_30000.056', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.057', 'Proses import master barang file MDB', 'Form', '_30000.057', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.058', 'Laporan penjualan item minus', 'Form', '_30000.058', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.059', 'Laporan kartu stock', 'Form', '_30000.059', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.060', 'Input discount bertingkat', 'Form', '_30000.060', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.061', 'Input ppn percent', 'Form', '_30000.061', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.062', 'Input discount percent nota', 'Form', '_30000.062', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.063', 'Daftar user level/job', 'Form', '_30000.063', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.064', 'Export master barang to excel', 'Form', '_30000.064', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.065', 'Import master barang dari excel', 'Form', '_30000.065', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.066', 'Daftar Kategori Barang', 'Form', '_30000.066', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.067', 'Laporan Penjualan per Customer, Item', 'Form', '_30000.067', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.068', 'Laporan Penjualan per Nota, Pembayaran', 'Form', '_30000.068', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30000.100', 'Proses Pelunasan ONACCOUNT', 'Form', '_30000.100', '.', '_30000.0', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30010', 'Master Data Customer', 'Form', 'customer/browse', '.', '_30000', '1', '1', '', 'customer');
+INSERT INTO `modules` VALUES ('_30011', 'Create', 'Form', '_30011', '.', '_30010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30012', 'Edit', 'Form', '_30012', '.', '_30010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30013', 'Delete', 'Form', '_30013', '.', '_30010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30020', 'Master Salesman', 'Form', 'salesman', '.', '_30000', '1', '2', '', 'salesman');
+INSERT INTO `modules` VALUES ('_30030', 'Setting Saldo Awal Piutang Customer', 'Form', 'customer/saldo_awal', '.', '_30000', '1', '3', '', null);
+INSERT INTO `modules` VALUES ('_30031', 'Proses', 'Form', '_30031', '.', '_30030', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30033', 'Delete', 'Form', '_30033', '.', '_30030', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30040', 'Arsip Bulanan Piutang Customer', 'Form', 'customer/proses_bulanan', '.', '_30000', '1', '4', '', null);
+INSERT INTO `modules` VALUES ('_30041', 'Proses', 'Form', '_30041', '.', '_30040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30042', 'Delete', 'Form', '_30042', '.', '_30040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30050', 'Pembuatan SO', 'Form', 'sales_order', '.', '_30000', '1', '5', '', null);
+INSERT INTO `modules` VALUES ('_30051', 'Create', 'Form', '_30051', '.', '_30050', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30052', 'Edit', 'Form', '_30052', '.', '_30050', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30053', 'Delete', 'Form', '_30053', '.', '_30050', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30054', 'Buat Invoice', 'Form', '_30054', '.', '_30050', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30055', 'Buat Do', 'Form', '_30055', 'Buat Do', '_30000', '1', null, '', null);
+INSERT INTO `modules` VALUES ('_30060', 'Pembuatan DO', 'Form', 'delivery_order', '.', '_30000', '1', '6', '', null);
+INSERT INTO `modules` VALUES ('_30061', 'Create', 'Form', '_30061', '.', '_30060', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30062', 'Edit', 'Form', '_30062', '.', '_30060', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30063', 'Delete', 'Form', '_30063', '.', '_30060', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30064', 'Print', 'Form', '_30064', '.', '_30060', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30070', 'Pembuatan Invoice Kontan', 'Form', 'invoice/kontan', '.', '_30000', '1', '8', '', null);
+INSERT INTO `modules` VALUES ('_30071', 'Create', 'Form', '_30071', '.', '_30070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30072', 'Edit', 'Form', '_30072', '.', '_30070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30073', 'Delete', 'Form', '_30073', '.', '_30070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30074', 'Print', 'Form', '_30074', '.', '_30070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30075', 'Posting', 'Form', '_30075', 'Posting', '_30070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30080', 'Pembuatan Invoice dari DO', 'Form', 'invoice/do', '.', '_30000', '1', '7', '', null);
+INSERT INTO `modules` VALUES ('_30081', 'Save', 'Form', '_30081', '.', '_30080', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30090', 'Pembuatan Retur Penjualan', 'Form', 'invoice/retur', '.', '_30000', '1', '11', '', null);
+INSERT INTO `modules` VALUES ('_300900', '_300900', 'Form', '_300900', 'Please entry this', '_00000', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_300901', '_300901', 'Form', '_300901', 'Please entry this', '_00000', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_30091', 'Create', 'Form', '_30091', '.', '_30090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30092', 'Edit', 'Form', '_30092', '.', '_30090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30093', 'Delete', 'Form', '_30093', '.', '_30090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30094', 'Print', 'Form', '_30094', '.', '_30090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30095', 'Posting', 'Form', '_30095', '.', '_30090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30100', 'Batch Posting', 'Form', 'so_batch_posting', '.', '_30000', '1', '14', '', null);
+INSERT INTO `modules` VALUES ('_30110', 'Pelunasan Piutang', 'Form', 'payments', '.', '_30000', '1', '10', '', null);
+INSERT INTO `modules` VALUES ('_30112', 'Proses', 'Form', '_30112', '.', '_30110', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30120', 'Kredit Nota', 'Form', 'so_credit_memo', '.', '_30000', '1', '12', '', null);
+INSERT INTO `modules` VALUES ('_30121', 'Create', 'Form', '_30121', '.', '_30100', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30122', 'Edit', 'Form', '_30122', '.', '_30120', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30123', 'Delete', 'Form', '_30123', '.', '_30120', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30124', 'Print', 'Form', '_30124', '.', '_30120', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30125', 'Posting', 'Form', '_30125', '.', '_30120', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30130', 'Debit Nota', 'Form', 'so_debit_memo', '.', '_30000', '1', '13', '', null);
+INSERT INTO `modules` VALUES ('_30131', 'Create', 'Form', '_30131', '.', '_30100', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30132', 'Edit', 'Form', '_30132', '.', '_30130', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30133', 'Delete', 'Form', '_30133', '.', '_30130', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30134', 'Print', 'Form', '_30134', '.', '_30130', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30135', 'Posting', 'Form', '_30135', '.', '_30130', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30140', 'Daftar Pelunasan Giro', 'Form', 'payments/giro', '.', '_30000', '1', '15', '', null);
+INSERT INTO `modules` VALUES ('_30141', 'Cairkan', 'Form', '_30141', '.', '_30100', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30142', 'Tolak', 'Form', '_30142', '.', '_30140', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30143', 'Hapus', 'Form', '_30143', '.', '_30140', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30150', 'Daftar Pelunasan Cash', 'Form', 'payments/cash', '.', '_30000', '1', '16', '', null);
+INSERT INTO `modules` VALUES ('_30151', 'Delete', 'Form', '_30151', '.', '_30150', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30160', 'Pembuatan Invoice Kredit', 'Form', 'invoice', '.', '_30000', '1', '8', '', null);
+INSERT INTO `modules` VALUES ('_30161', 'Create', 'Form', '_30161', '.', '_30160', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30162', 'Edit', 'Form', '_30162', '.', '_30160', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30163', 'Delete', 'Form', '_30163', '.', '_30160', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30164', 'Print', 'Form', '_30164', '.', '_30160', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30165', 'Posting', 'Form', '_30165', 'Posting', '_30160', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_30170', '_30170', 'Form', '_30170', 'Please entry this', '_00000', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_40000', 'Pembelian', 'Form', '_40000', 'Modul Hutang, A/P, Hutang, Pembayaran, Supplier dan Pembayaran.', '0', '1', '2', '', null);
+INSERT INTO `modules` VALUES ('_40010', 'Master Data Supplier', 'Form', 'supplier/browse', '.', '_40000', '1', '1', '', null);
+INSERT INTO `modules` VALUES ('_40011', 'Create', 'Form', '_40011', '.', '_40010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40012', 'Edit', 'Form', '_40012', '.', '_40010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40013', 'Delete', 'Form', '_40013', '.', '_40010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40020', 'Setting Saldo Awal Hutang Supplier', 'Form', 'supplier/saldo_awal', '.', '_40000', '1', '2', '', null);
+INSERT INTO `modules` VALUES ('_40021', 'Proses', 'Form', '_40021', '.', '_40020', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40023', 'Delete', 'Form', '_40023', '.', '_40020', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40030', 'Arsip Bulanan Hutang Supplier', 'Form', 'supplier/proses_bulanan', '.', '_40000', '1', '13', '', null);
+INSERT INTO `modules` VALUES ('_40031', 'Proses', 'Form', '_40031', '.', '_40030', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40033', 'Delete', 'Form', '_40033', '.', '_40030', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40040', 'Pembuatan PO', 'Form', 'purchase_order', '.', '_40000', '1', '3', '', null);
+INSERT INTO `modules` VALUES ('_40041', 'Create', 'Form', '_40041', '.', '_40040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40042', 'Edit', 'Form', '_40042', '.', '_40040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40043', 'Delete', 'Form', '_40043', '.', '_40040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40044', 'Print', 'Form', '_40044', '.', '_40040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40045', 'Close PO Manual', 'Form', '_40045', 'Close PO Manual', '_40040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40046', 'Buat Faktur', 'Form', '_40046', 'Buat Faktur', '_40040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40047', 'Create Duplikat PO', 'Form', '_40047', 'Create Duplikat PO', '_40040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40048', 'Daftar Penerimaan PO', 'Form', '_40048', 'Daftar Penerimaan PO', '_40040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40049', 'Buat Faktur dari daftar penerimaan', 'Form', '_40049', 'Buat Faktur Dari daftar penerimaan', '_40040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40050', 'Faktur Pembelian Kontan', 'Form', 'beli/kontan', '.', '_40000', '1', '5', '', null);
+INSERT INTO `modules` VALUES ('_40051', 'Create', 'Form', '_40051', '.', '_40050', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40052', 'Edit', 'Form', '_40052', '.', '_40050', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40053', 'Delete', 'Form', '_40053', '.', '_40050', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40054', 'Print', 'Form', '_40054', '.', '_40050', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40055', 'Posting', 'Form', '_40055', '.', '_40050', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40060', 'Pembuatan Retur Pembelian', 'Form', 'po_retur', '.', '_40000', '1', '7', '', null);
+INSERT INTO `modules` VALUES ('_40061', 'Create', 'Form', '_40061', '.', '_40060', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40062', 'Edit', 'Form', '_40062', '.', '_40060', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40063', 'Delete', 'Form', '_40063', '.', '_40060', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40064', 'Print', 'Form', '_40064', '.', '_40060', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40065', 'Posting', 'Form', '_40065', '.', '_40060', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40070', 'Pembayaran Hutang', 'Form', 'payables_payments', '.', '_40000', '1', '6', '', null);
+INSERT INTO `modules` VALUES ('_40071', 'Proses', 'Form', '_40071', '.', '_40070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40080', 'Hutang Manager', 'Form', 'payables', '.', '_40000', '1', '8', '', null);
+INSERT INTO `modules` VALUES ('_40081', 'Create', 'Form', '_40081', '.', '_40080', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40082', 'Edit', 'Form', '_40082', '.', '_40080', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40083', 'Delete', 'Form', '_40083', '.', '_40080', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40084', 'Bayar Hutang', 'Form', '_40084', '.', '_40080', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40085', 'Posting', 'Form', '_40085', '.', '_40080', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40090', 'Kredit Memo', 'Form', 'po_credit_memo', '.', '_40000', '1', '9', '', null);
+INSERT INTO `modules` VALUES ('_40091', 'Create', 'Form', '_40091', '.', '_40090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40092', 'Edit', 'Form', '_40092', '.', '_40090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40093', 'Delete', 'Form', '_40093', '.', '_40090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40094', 'Print', 'Form', '_40094', '.', '_40090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40095', 'Posting', 'Form', '_40095', 'Posting', '_40090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40100', 'Debit Memo', 'Form', 'po_debit_memo', '.', '_40000', '1', '10', '', null);
+INSERT INTO `modules` VALUES ('_40101', 'Create', 'Form', '_40101', '.', '_40100', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40102', 'Edit', 'Form', '_40102', '.', '_40100', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40103', 'Delete', 'Form', '_40103', '.', '_40100', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40104', 'Print', 'Form', '_40104', '.', '_40100', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40105', 'Posting', 'Form', '_40105', 'Posting', '_40100', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40110', 'Daftar Pembayaran Giro', 'Form', 'payables_payments/giro', '.', '_40000', '1', '11', '', null);
+INSERT INTO `modules` VALUES ('_40113', 'Cair', 'Form', '_40113', '.', '_40110', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40114', 'Tolak', 'Form', '_40114', '.', '_40110', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40115', 'Delete', 'Form', '_40115', '.', '_40110', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40120', 'Daftar Pembayaran Cash', 'Form', 'payables_payments/cash', '.', '_40000', '1', '12', '', null);
+INSERT INTO `modules` VALUES ('_40123', 'Delete', 'Form', '_40123', '.', '_40120', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40130', 'Faktur Pembelian Kredit', 'Form', 'beli', '.', '_40000', '1', '4', '', null);
+INSERT INTO `modules` VALUES ('_40131', 'Create', 'Form', '_40131', '.', '_40050', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40132', 'Edit', 'Form', '_40132', '.', '_40050', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40134', 'Delete', 'Form', '_40134', '.', '_40050', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40135', 'Print', 'Form', '_40135', '.', '_40050', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_40136', 'Posting', 'Form', '_40136', '.', '_40050', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60000', 'Cash & Bank', 'Form', '_60000', 'Modul untuk pencatatan semua aktifitas kas atau bank.', '0', '1', '3', '', null);
+INSERT INTO `modules` VALUES ('_60010', 'Pembuatan Account Bank', 'Form', 'bank', '.', '_60000', '1', '1', '', null);
+INSERT INTO `modules` VALUES ('_60011', 'Create', 'Form', '_60011', '.', '_60010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60012', 'Edit', 'Form', '_60012', '.', '_60010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60013', 'Delete', 'Form', '_60013', '.', '_60010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60020', 'Cash Masuk', 'Form', 'bank_cash/in', '.', '_60000', '1', '2', '', null);
+INSERT INTO `modules` VALUES ('_60021', 'Create', 'Form', '_60021', '.', '_60020', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60022', 'Edit', 'Form', '_60022', '.', '_60020', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60023', 'Delete', 'Form', '_60023', '.', '_60020', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60024', 'Print', 'Form', '_60024', '.', '_60020', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60025', 'Posting', 'Form', '_60025', '.', '_60020', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60030', 'Cash Keluar', 'Form', 'bank_cash/out', '.', '_60000', '1', '3', '', null);
+INSERT INTO `modules` VALUES ('_60031', 'Create', 'Form', '_60031', '.', '_60030', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60032', 'Edit', 'Form', '_60032', '.', '_60030', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60033', 'Delete', 'Form', '_60033', '.', '_60030', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60034', 'Print', 'Form', '_60034', '.', '_60030', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60035', 'Posting', 'Form', '_60035', '.', '_60030', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60040', 'Giro Masuk', 'Form', 'bank_giro/in', '.', '_60000', '1', '4', '', null);
+INSERT INTO `modules` VALUES ('_60041', 'Create', 'Form', '_60041', '.', '_60040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60042', 'Edit', 'Form', '_60042', '.', '_60040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60043', 'Delete', 'Form', '_60043', '.', '_60040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60044', 'Print', 'Form', '_60044', '.', '_60040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60045', 'Posting', 'Form', '_60045', '.', '_60040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60050', 'Giro Keluar', 'Form', 'bank_giro/out', '.', '_60000', '1', '5', '', null);
+INSERT INTO `modules` VALUES ('_60051', 'Create', 'Form', '_60051', '.', '_60050', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60052', 'Edit', 'Form', '_60052', '.', '_60050', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60053', 'Delete', 'Form', '_60053', '.', '_60050', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60054', 'Print', 'Form', '_60054', '.', '_60050', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60055', 'Posting', 'Form', '_60055', '.', '_60050', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60060', 'Transfer Masuk', 'Form', 'bank_transfer/in', '.', '_60000', '1', '6', '', null);
+INSERT INTO `modules` VALUES ('_60061', 'Create', 'Form', '_60061', '.', '_60060', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60062', 'Edit', 'Form', '_60062', '.', '_60060', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60063', 'Delete', 'Form', '_60063', '.', '_60060', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60064', 'Print', 'Form', '_60064', '.', '_60060', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60065', 'Posting', 'Form', '_60065', '.', '_60060', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60070', 'Transfer Keluar', 'Form', 'bank_transfer/out', '.', '_60000', '1', '7', '', null);
+INSERT INTO `modules` VALUES ('_60071', 'Create', 'Form', '_60071', '.', '_60070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60072', 'Edit', 'Form', '_60072', '.', '_60070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60073', 'Delete', 'Form', '_60073', '.', '_60070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60074', 'Print', 'Form', '_60074', '.', '_60070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60075', 'Posting', 'Form', '_60075', '.', '_60070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60080', 'Adjusment', 'Form', 'bank_adjust', '.', '_60000', '1', '8', '', null);
+INSERT INTO `modules` VALUES ('_60081', 'Create', 'Form', '_60081', '.', '_60080', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60082', 'Edit', 'Form', '_60082', '.', '_60080', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60083', 'Delete', 'Form', '_60083', '.', '_60080', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60085', 'Posting', 'Form', '_60085', '.', '_60080', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_80000', 'Inventory', 'Form', '_80000', 'Modul Pengelolaan dan transaksi barang dagangan.', '0', '1', '4', '', null);
+INSERT INTO `modules` VALUES ('_80010', 'Master Data Stock', 'Form', 'inventory', '.', '_80000', '1', '1', '', null);
+INSERT INTO `modules` VALUES ('_80010.01', '_80010.01', 'Form', '_80010.01', 'Please entry this', '_00000', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80010.02', '_80010.02', 'Form', '_80010.02', 'Please entry this', '_00000', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80010.03', '_80010.03', 'Form', '_80010.03', 'Please entry this', '_00000', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80010.04', '_80010.04', 'Form', '_80010.04', 'Please entry this', '_00000', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80010.05', '_80010.05', 'Form', '_80010.05', 'Please entry this', '_00000', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80010.06', '_80010.06', 'Form', '_80010.06', 'Please entry this', '_00000', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80010.07', '_80010.07', 'Form', '_80010.07', 'Please entry this', '_00000', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80011', 'Create', 'Form', '_80011', '.', '_80010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_80012', 'Edit', 'Form', '_80012', '.', '_80010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_80013', 'Delete', 'Form', '_80013', '.', '_80010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_80014', 'Serial Number', 'Form', '_80014', '.', '_80010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_80015', 'Ubah Kode', 'Form', '_80015', 'Ubah kode barang atau jasa', '_80010', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80020', 'Master Kategory', 'Form', 'category', '.', '_80000', '1', '2', '', null);
+INSERT INTO `modules` VALUES ('_80021', 'Create', 'Form', '_80021', '.', '_80020', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80022', 'Edit', 'Form', '_80022', '.', '_80020', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80023', 'Delete', 'Form', '_80023', '.', '_80020', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80024', 'Print', 'Form', '_80024', '.', '_80020', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80030', 'Master Gudang', 'Form', 'gudang', '.', '_80000', '1', '3', '', null);
+INSERT INTO `modules` VALUES ('_80031', 'Create', 'Form', '_80031', '.', '_80030', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80032', 'Edit', 'Form', '_80032', '.', '_80030', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80033', 'Delete', 'Form', '_80033', '.', '_80030', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80034', 'Print', 'Form', '_80034', '.', '_80030', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80040', 'Transfer Stock', 'Form', 'transfer', '.', '_80000', '1', '4', '', null);
+INSERT INTO `modules` VALUES ('_80041', 'Create', 'Form', '_80041', '.', '_80040', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80042', 'Edit', 'Form', '_80042', '.', '_80040', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80043', 'Delete', 'Form', '_80043', '.', '_80040', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80044', 'Print', 'Form', '_80044', '.', '_80040', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80050', 'Penerimaan dari PO', 'Form', 'receive', '.', '_80000', '1', '6', '', null);
+INSERT INTO `modules` VALUES ('_80051', 'Create', null, '_80051', null, '_80050', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80052', 'Edit', null, '_80052', null, '_80050', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80053', 'Delete', null, '_80053', null, '_80050', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80054', 'Print', null, '_80054', null, '_80050', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80060', 'Penerimaan Lain-lain', null, 'stock_recv_etc', null, '_80000', '1', '7', '', null);
+INSERT INTO `modules` VALUES ('_80061', 'Create', null, '_80061', null, '_80060', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80062', 'Edit', null, '_80062', null, '_80060', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80063', 'Delete', null, '_80063', null, '_80060', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80064', 'Print', 'Form', '_80064', '.', '_80060', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_80070', 'Pengeluaran Lain-Lain', null, 'stock_send_etc', null, '_80000', '1', '8', '', null);
+INSERT INTO `modules` VALUES ('_80071', 'Create', null, '_80071', null, '_80070', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80072', 'Edit', null, '_80072', null, '_80070', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80073', 'Delete', null, '_80073', null, '_80070', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80074', 'Print', null, '_80074', null, '_80070', '0', null, null, null);
+INSERT INTO `modules` VALUES ('_80080', 'Pengeluaran ke WIP', null, '_80080', null, '_80000', '1', null, '', null);
+INSERT INTO `modules` VALUES ('_80081', 'Create', null, '_80081', null, '_80080', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_80082', 'Edit', null, '_80082', null, '_80080', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_80083', 'Delete', null, '_80083', null, '_80080', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_80084', 'Print', null, '_80084', null, '_80080', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_80090', 'Penerimaan dari WIP', null, '_80090', null, '_80000', '1', null, '', null);
+INSERT INTO `modules` VALUES ('_80091', 'Create', null, '_80091', null, '_80090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_80092', 'Edit', null, '_80092', null, '_80090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_80093', 'Delete', null, '_80093', null, '_80090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_80094', 'Print', null, '_80094', null, '_80090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_80100', 'Proses Assembly', null, 'assembly', null, '_80000', '1', '9', '', null);
+INSERT INTO `modules` VALUES ('_80101', 'Proses', null, '_80101', null, '_80100', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_80110', 'Proses DisAssembly', null, 'disassembly', null, '_80000', '1', '10', '', null);
+INSERT INTO `modules` VALUES ('_80111', 'Proses', null, '_80111', null, '_80110', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_80120', 'Adjusment Stock', null, 'stock_adjust', null, '_80000', '1', '5', '', null);
+INSERT INTO `modules` VALUES ('_80121', 'Proses', null, '_80121', null, '_80120', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_80130', 'Arsip Bulanan Stock', null, 'stock_proses_bulanan', null, '_80000', '1', '11', '', null);
+INSERT INTO `modules` VALUES ('_80131', 'Proses', null, '_80131', null, '_80130', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_80132', 'Delete', null, '_80132', null, '_80130', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_80140', 'Setting Saldo Awal', null, 'stock_saldo_awal', null, '_80000', '1', '12', '', null);
+INSERT INTO `modules` VALUES ('_80141', 'Proses', null, '_80141', null, '_80140', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_80200', 'Penerimaan barang non PO', null, '_80200', null, '_80000', '1', null, '', null);
+INSERT INTO `modules` VALUES ('_80201', 'Save', null, '_80201', null, '_80200', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_80202', 'Print', null, '_80202', null, '_80200', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90000', 'Laporan', null, '_90000', 'Modul Daftar Laporan', '0', '1', '8', '', null);
+INSERT INTO `modules` VALUES ('_90010', 'General Ledger', 'Group', 'laporan/gl', 'Laporan General Ledger', '_90000', '1', '3', '', null);
+INSERT INTO `modules` VALUES ('_90011', '001. Daftar Perkiraan / Chart Of Accounts', 'Report', '\\Gl\\chartofaccount1.rpt', 'Daftar Perkiraan', '_90010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90012', '002. Jurnal Transaksi - Sort by Kode Jurnal', null, '\\gl\\gltransactions1.rpt', null, '_90010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90013', '003. Jurnal Transaksi - Sort by Tanggal', null, '\\gl\\gltransactions2.rpt', null, '_90010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90014', '004. Kartu General Ledger', null, '\\Gl\\glCards.rpt', null, '_90010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90015', '005. Kartu General Ledger - All Date', null, '\\Gl\\glCards2.rpt', null, '_90010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90016', '006. Kartu General Ledger - All Date, Account', null, '\\Gl\\glCards3.rpt', null, '_90010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90017', '007. Neraca Percobaan', null, '\\gl\\trialbalances.rpt', null, '_90010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90018', '008. Laporan Rugi Laba', null, '\\gl\\incomestatement1.rpt', null, '_90010', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90040', 'Inventory', null, 'laporan/stock', 'Laporan Inventory', '_90000', '1', '4', '', null);
+INSERT INTO `modules` VALUES ('_90041', '001. Daftar Stock Item Number', null, '\\Inv\\InvListing.rpt', null, '_90040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90042', '002. Daftar Stock per Gudang', null, '\\Inv\\PosisiStockGudang.rpt', null, '_90040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90043', '003. Daftar Stock - With Financial', null, '\\Inv\\DaftarBarang12.rpt', null, '_90040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90044', '004. Daftar Stock - With to Order', null, '\\Inv\\DaftarBarang11.rpt', null, '_90040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90045', '005. Formulir Stock Opname', null, '\\Inv\\FStockOpname.rpt', null, '_90040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90046', '006. Price List', null, '\\Inv\\PriceList.rpt', null, '_90040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90047', '007. Kartu Stock', null, '\\Inv\\KartuStock.rpt', null, '_90040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90048', '008. Kartu Stock Summary', null, '\\Inv\\KartuStockSum.rpt', null, '_90040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90049', '009. Penerimaan Barang - Detail by No PO', null, '\\PO\\TerimaByPO.Rpt', null, '_90040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90050', '010. Penerimaan Barang - Detail by No Bukti', null, '\\PO\\TerimaByRecvId.Rpt', null, '_90040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90051', '011. Penerimaan Barang - Detail by Item', null, '\\PO\\TerimaByItem.Rpt', null, '_90040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90052', '012. Penerimaan Barang dari WIP', null, '\\PO\\TerimaFG.Rpt', null, '_90040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90053', '013. Pengeluaran Barang ke WIP', null, '\\Po\\KeluarWO.Rpt', null, '_90040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90054', '014. Retur Barang Penjualan', null, '\\inv\\TerimaReturPenjualan.rpt', null, '_90040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90055', '015. Retur Barang Pembelian ', null, '\\Po\\ReturBarangPembelian.rpt', null, '_90040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90056', '016. Transfer Stok Antar Gudang ', null, '\\inv\\Transfer001.rpt', null, '_90040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90057', '017. Laporan Assembly & Disassembly', null, '\\Inv\\AsmItem18.Rpt', null, '_90040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90058', '018. Daftar Transaksi Stock - per Gudang', null, '\\Inv\\TransaksiInventory.rpt', null, '_90040', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90070', 'Pembelian', null, 'laporan/pembelian', 'Laporan Pembelian', '_90000', '1', '2', '', null);
+INSERT INTO `modules` VALUES ('_90071', '001. Pembelian - Summary', null, '\\Po\\OrderPembelianSummary.rpt', null, '_90070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90072', '002. Pembelian  Per Supplier - Summary ', null, '\\Po\\OrderPembelianDetail.rpt', null, '_90070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90073', '003. Pembelian  Per Supplier  - Detail ', null, '\\Po\\BeliSuppSum.rpt', null, '_90070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90074', '004. Pembelian  Per Item Summary', null, '\\Po\\OrderPembelianSupplierDetail.rpt', null, '_90070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90075', '005. Pembelian  Per Item - Detail ', null, '\\Po\\PembelianItemSummary.rpt', null, '_90070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90076', '006. Pembelian  Per Katagori - Summary', null, '\\Po\\OrderPembelianItemDetail.rpt', null, '_90070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90077', '007. Pembelian  Per Kategori - Detail ', null, '\\Po\\OrderPembelianItemKategoriSum.rpt', null, '_90070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90078', '009. Pembelian per Mata Uang', null, '\\Po\\OrderPembelianItemKategoriDetail.rpt', null, '_90070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90079', '010. Laporan Pajak Masukan', null, '\\po\\BeliCurrency.Rpt', null, '_90070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90080', '011. Daftar PO', null, '\\Po\\PajakMasukan.Rpt', null, '_90070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90081', '012. Daftar PO - Detail', null, '\\PO\\DaftarPO.rpt', null, '_90070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90082', '013. Faktur Pembelian - Detail', null, '\\PO\\PODetailMonthly.rpt', null, '_90070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90083', '014. History Harga Per Supplier', null, '\\po\\PembelianDetail.Rpt', null, '_90070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90084', '015. Selisih Kurs Pembelian', null, '\\Po\\HistoryHargaPerSupplier.rpt', null, '_90070', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90090', 'Penjualan', null, 'laporan/penjualan', 'Laporan Penjualan', '_90000', '1', '1', '', null);
+INSERT INTO `modules` VALUES ('_90091', '001. Penjualan - Summary ', null, '\\So\\AnalisaPenjualanPerJenisFakturPerbulan.rpt', null, '_90090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90092', '002. Penjualan By Customer - Summary ', null, '\\So\\PenjualanCustomerSum.rpt', null, '_90090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90093', '003. Penjualan by Customer - Detail ', null, '\\So\\SumJualByCust.Rpt', null, '_90090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90094', '004. Penjualan per Item - Summary', null, '\\So\\FakturPenjualanSummaryTrading.Rpt', null, '_90090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90095', '005. Penjualan per Item - Detail', null, '\\So\\PenjualanPeritemDetailTrading.rpt', null, '_90090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90096', '006. Penjualan per kategori Item - Summary', null, '\\So\\AnalisaPenjualanPerkategoriSummary.rpt', null, '_90090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90097', '007. Penjualan Per Kategori - Detail', null, '\\So\\AnalisaPenjualanPerkategori.rpt', null, '_90090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90098', '008. Penjualan per Salesman - Summary', null, '\\So\\FakturPenjualanMonthSales.Rpt', null, '_90090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90099', '009. Penjualan per Salesman - Detail', null, '\\So\\FakturPenjualanSummarySales.Rpt', null, '_90090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90100', '010. Penjualan per wilayah - Summary', null, '\\So\\AnalisaPenjualanPerWilayahPerbulan.rpt', null, '_90090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90101', '011. Penjualan per Mata Uang', null, '\\so\\JualCurrency.Rpt', null, '_90090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90102', '012. Faktur Penjualan - Detail', null, '\\So\\FakturPenjualan.Rpt', null, '_90090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90103', '013. Retur Penjualan', null, '\\So\\ReturPenjualan.rpt', null, '_90090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90104', '014. Komisi Salesman', null, '\\So\\KomisiSalesman.rpt', null, '_90090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90105', '015. Laporan Pajak Keluaran', null, '\\So\\PajakKeluaran.Rpt', null, '_90090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90106', '017. Daftar DO Customer', null, '\\SO\\DODetail300.rpt', null, '_90090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90107', '018. Daftar DO - Detail', null, '\\SO\\DODetail200.rpt', null, '_90090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90108', '019. History Harga Per Customer', null, '\\So\\HistoryHargaPerCustomer.rpt', null, '_90090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90109', '020. Selisih Kurs Penjualan', null, '\\so\\SelisihKursPiutang1.Rpt', null, '_90090', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90120', 'Supplier / Hutang', null, 'laporan/supplier', 'Laporan Supplier atau Hutang', '_90000', '1', '5', '', null);
+INSERT INTO `modules` VALUES ('_90121', '001. Daftar Supplier Urut Kode', null, '\\po\\DaftarSupplier2.rpt', null, '_90120', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90122', '002. History Pembayaran Hutang Supplier', null, '\\po\\SuppPayHistory01.rpt', null, '_90120', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90123', '003. Daftar Pembayaran Hutang', null, '\\po\\SuppPayHistory.rpt', null, '_90120', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90124', '004. Kartu Hutang Supplier Summary', null, '\\po\\KartuHutangSum.rpt', null, '_90120', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90125', '005. Kartu Hutang Supplier Detail', null, '\\Po\\KartuHutang.rpt', null, '_90120', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90126', '006. Laporan Umur Hutang - Summary', null, '\\Po\\UmurHutang.Rpt', null, '_90120', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90127', '007. Laporan Umur Hutang Supplier - Summary', null, '\\Po\\UmurHutang_Supplier.Rpt', null, '_90120', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90128', '008. Laporan Umur Hutang Supplier - Detail', null, '\\Po\\UmurHutang_SupplierDetail.Rpt', null, '_90120', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90129', '009. Daftar Pembayaran Hutang - Currency', null, '\\PO\\BayarHutang0011.rpt', null, '_90120', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90130', '010. Daftar Pembayaran Hutang per Supplier - Currency', null, '\\PO\\BayarHutang0012.rpt', null, '_90120', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90131', '011. Daftar Hutang - Currency', null, '\\po\\DaftarHutang009.rpt', null, '_90120', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90132', '012. Daftar Hutang per Supplier - Currency', null, '\\po\\DaftarHutang010.rpt', null, '_90120', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90150', 'Customer / Piutang', null, 'laporan/customer', 'Laporan Customer atau Piutang', '_90000', '1', '6', '', null);
+INSERT INTO `modules` VALUES ('_90151', '001. Daftar Customer urut Kode', null, '\\so\\daftarcustomerkode.rpt', null, '_90150', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90152', '002. History Pembayaran Piutang Customer', null, '\\So\\CustPayHistory01.rpt', null, '_90150', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90153', '003. Daftar Pembayaran Piutang', null, '\\So\\CustPayHistory.rpt', null, '_90150', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90154', '004. Kartu Piutang Customer - Summary', null, '\\so\\KartuPiutangSum.rpt', null, '_90150', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90155', '005. Kartu Piutang Customer - Detail', null, '\\so\\KartuPiutang.rpt', null, '_90150', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90156', '006. Laporan Umur Piutang - Summary', null, '\\So\\UmurPiutang.Rpt', null, '_90150', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90157', '007. Laporan Umur Piutang Pelanggan - Summary', null, '\\So\\UmurPiutang_Customer.Rpt', null, '_90150', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90158', '008. Laporan Umur Piutang Pelanggan - Detail', null, '\\So\\UmurPiutang_CustomerDetail.Rpt', null, '_90150', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90159', '009. Daftar Pembayaran Piutang - Currency', null, '\\SO\\BayarPiutang0010.rpt', null, '_90150', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90160', '010. Daftar Pembayaran Piutang per Customer - Currency', null, '\\SO\\BayarPiutang0011.rpt', null, '_90150', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90161', '011. Daftar Piutang - Currency', null, '\\so\\DaftarPiutang0011.rpt', null, '_90150', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_90162', '012. Daftar Piutang per Customer - Currency', null, '\\so\\DaftarPiutang0012.rpt', null, '_90150', '1', null, null, null);
+INSERT INTO `modules` VALUES ('_60084', 'Mutasi Antar Rekening', 'Form', 'bank_mutasi', null, '_60000', null, '9', '', null);
+INSERT INTO `modules` VALUES ('_18000', 'Leasing', 'Form', '_18000', 'Leasing elektronik, kendaraan atau lainnya', '0', '0', '0', '', '');
+INSERT INTO `modules` VALUES ('_18000.001', 'Data Pelanggan', 'Form', '_18000.001', 'Data Pelanggan', '_18000', '0', '0', '', '');
+INSERT INTO `modules` VALUES ('_18000.002', 'Object Kredit', 'Form', '_18000.002', 'Data Master Object Kredit', '_18000', '0', '2', '', '');
+INSERT INTO `modules` VALUES ('_18000.003', 'Aplikasi Kredit', 'Form', '_18000.003', 'Formulir Aplikasi Kredit', '_18000', '0', '3', '', '');
+INSERT INTO `modules` VALUES ('_18000.004', 'Phone Verification', 'Form', '_18000.004', 'Proses Verifikasi Applikasi Kredit', '_18000', '0', '4', '', '');
+INSERT INTO `modules` VALUES ('_18000.005', 'Scoring', 'Form', '_18000.005', 'Proses Scoring Aplikasi Kredit', '_18000', '0', '6', '', '');
+INSERT INTO `modules` VALUES ('_18000.006', 'Survey', 'Form', '_18000.006', 'Proses Survey Aplikasi Kredit', '_18000', '0', '7', '', '');
+INSERT INTO `modules` VALUES ('_18000.007', 'Proses Risk', 'Form', '_18000.007', 'Proses Risk', '_18000', '0', '8', '', '');
+INSERT INTO `modules` VALUES ('_18000.008', 'Formulir Kredit', 'Form', '_18000.008', 'Formulir Kredit', '_18000', '0', '9', '', '');
+INSERT INTO `modules` VALUES ('_18000.009', 'Billing', 'Form', '_18000.008\\9', 'Billing', '_18000', '0', '9', '', '');
+INSERT INTO `modules` VALUES ('_18000.010', 'Bayar Cicilan', 'Form', '_18000.010', 'Bayar Cicilan', '_18000', '0', '10', '', '');
+INSERT INTO `modules` VALUES ('_18000.011', 'Kolektor', 'Form', '_18000.011', 'Kolektor', '_18000', '0', '11', '', '');
+INSERT INTO `modules` VALUES ('_18000.012', 'Penutupan', 'Form', '_18000.012', 'Penutupan', '_18000', '0', '12', '', '');
+INSERT INTO `modules` VALUES ('_18000.013', 'Counter', 'Form', '_18000.013', 'Data Master Counter dan Cabang', '_18000', '0', '13', '', '');
+INSERT INTO `modules` VALUES ('_18000.100', 'Setting', 'Form', '_18000.100', 'Pengaturan Modul Leasing', '_18000', '0', '100', '', '');
+INSERT INTO `modules` VALUES ('_18000.014', 'Approval', 'Form', '_18000.014', 'Approval Pengajuan Kredit', '_18000', '0', '14', '', '');
+INSERT INTO `modules` VALUES ('_18000.015', 'Recomend To Survey', 'Form', '_18000.015', 'Recomend To Survey', '_18000', '0', '15', '', '');
+INSERT INTO `modules` VALUES ('_18000.020', 'Export Absensi', 'Form', '_18000.020', 'Export Data Absensi', '_18000', '0', '20', '', '');
+INSERT INTO `modules` VALUES ('_20000', 'Website', 'Form', '_20000', 'Website utama untuk perusahaan', '_00000', '0', '21', '', '');
+INSERT INTO `modules` VALUES ('_21000', 'Travel Agent', 'Form', '_21000', 'Modul Travel Agent', '0', '0', '1', '', '');
+INSERT INTO `modules` VALUES ('_21010', 'Maskapai', 'Form', '_21010', 'Data master maskapai penerbangan', '_21000', '0', '1', '', '');
+INSERT INTO `modules` VALUES ('_18000.900', 'Clear Data Transaksi', 'Form', '_18000.900', 'Clear Data Transaksi', '_18000', '0', '12', '', '');
+INSERT INTO `modules` VALUES ('_18000.901', 'Clear Data Master', 'Form', '_18000.901', 'Clear Data Master', '_18000', '0', '12', '', '');
+INSERT INTO `modules` VALUES ('_11001', 'Work Order', 'Form', '_11001', 'Work order', '_11000', '0', '0', '', '');
+INSERT INTO `modules` VALUES ('_12001', 'Employee Master', 'Form', '_12001', 'Employee Master', '_12000', '0', '0', '', '');
+INSERT INTO `modules` VALUES ('_18000.021', 'Jadwal Kontrak Untuk SA', 'Form', '_18000.021', 'Jadwal Kontrak Untuk SA', '_18000', '0', '3', '', '');
+INSERT INTO `modules` VALUES ('_18000.022', 'Jadwal Kontrak Untuk Admin', 'Form', '_18000.022', 'Jadwal Kontrak Untuk Admin', '_18000', '0', '3', '', '');
+INSERT INTO `modules` VALUES ('_14001', 'Daftar Aktiva', 'Form', '_14001', 'Daftar Aktiva Tetap', '_14000', '0', '1', '', '');
+INSERT INTO `modules` VALUES ('_14000', 'Aktiva Tetap', 'Form', '_14000', 'Aktiva Tetap', '0', '0', '1', '', '');
+INSERT INTO `modules` VALUES ('_30057', 'Approval SO', 'Form', '_30057', 'Approval SO', '_30050', '0', '5', '', '');
+INSERT INTO `modules` VALUES ('_30067', 'Approval DO', 'Form', '_30067', 'Approval DO', '_30060', '0', '4', '', '');
+INSERT INTO `modules` VALUES ('_18000.023', 'Tanda Terima Barang', 'Form', '_18000.023', 'Tanda Terima Barang', '_18000', '0', '7', '', '');
+INSERT INTO `modules` VALUES ('retur_toko', 'retur_toko', 'Form', 'retur_toko', 'Retur dari toko (tambah)', '_80000', '0', '0', '', '');
+INSERT INTO `modules` VALUES ('retur_toko_add', 'retur_toko_add', 'Form', 'retur_toko_add', 'Retur dari toko (tambah)', '_80000', '0', '0', '', '');
+INSERT INTO `modules` VALUES ('retur_toko_view', 'retur_toko_view', 'form', 'retur_toko_view', 'retur_toko_view', '_80000', '0', '1', '', '');
+INSERT INTO `modules` VALUES ('retur_toko_print', 'retur_toko_print', '', 'retur_toko_print', 'retur_toko_print', '_80000', '0', '0', '', '');
+
 /*!40000 ALTER TABLE `modules` ENABLE KEYS */;
 
 
@@ -6072,327 +6681,1146 @@ CREATE TABLE IF NOT EXISTS `user_group_modules` (
 
 -- Dumping data for table simak.user_group_modules: 1,015 rows
 /*!40000 ALTER TABLE `user_group_modules` DISABLE KEYS */;
-REPLACE INTO `user_group_modules` (`id`, `group_id`, `module_id`, `permission`, `update_status`, `sourceautonumber`, `sourcefile`) VALUES
-	(97, 'BYR', '_40110', 0, 1, NULL, NULL),
-	(98, 'BYR', '_40120', 0, 1, NULL, NULL),
-	(99, 'BYR', '_80010', 0, 1, NULL, NULL),
-	(100, 'BYR', '_80020', 0, 1, NULL, NULL),
-	(101, 'BYR', '_80030', 0, 1, NULL, NULL),
-	(102, 'BYR', '_90070', 0, 1, NULL, NULL),
-	(103, 'BYR', '_90071', 0, 1, NULL, NULL),
-	(104, 'BYR', '_90072', 0, 1, NULL, NULL),
-	(105, 'BYR', '_90073', 0, 1, NULL, NULL),
-	(106, 'BYR', '_90075', 0, 1, NULL, NULL),
-	(107, 'BYR', '_90076', 0, 1, NULL, NULL),
-	(2228, 'Administrator', '_00011', NULL, NULL, NULL, NULL),
-	(192, 'SYSMENU', '_10000', 0, NULL, NULL, NULL),
-	(193, 'SYSMENU', '_11000', 0, NULL, NULL, NULL),
-	(194, 'SYSMENU', '_10060', 0, NULL, NULL, NULL),
-	(195, 'SYSMENU', '_30010', 0, 1, NULL, NULL),
-	(196, 'SYSMENU', '_30011', 0, 1, NULL, NULL),
-	(197, 'SYSMENU', '_30012', 0, 1, NULL, NULL),
-	(2227, 'Administrator', '_00010', NULL, NULL, NULL, NULL),
-	(307, 'BYR', '_40010', 0, 1, NULL, NULL),
-	(308, 'BYR', '_40040', 0, 1, NULL, NULL),
-	(309, 'BYR', '_40041', 0, 1, NULL, NULL),
-	(310, 'BYR', '_40042', 0, 1, NULL, NULL),
-	(311, 'BYR', '_40043', 0, 1, NULL, NULL),
-	(312, 'BYR', '_40044', 0, 1, NULL, NULL),
-	(313, 'BYR', '_40050', 0, 1, NULL, NULL),
-	(314, 'BYR', '_40051', 0, 1, NULL, NULL),
-	(315, 'BYR', '_40052', 0, 1, NULL, NULL),
-	(316, 'BYR', '_40053', 0, 1, NULL, NULL),
-	(372, 'BYR', '_90074', 0, 1, NULL, NULL),
-	(373, 'BYR', '_90077', 0, 1, NULL, NULL),
-	(374, 'BYR', '_90078', 0, 1, NULL, NULL),
-	(375, 'BYR', '_90079', 0, 1, NULL, NULL),
-	(376, 'BYR', '_90080', 0, 1, NULL, NULL),
-	(377, 'BYR', '_90081', 0, 1, NULL, NULL),
-	(378, 'BYR', '_90082', 0, 1, NULL, NULL),
-	(379, 'BYR', '_90083', 0, 1, NULL, NULL),
-	(380, 'BYR', '_90084', 0, 1, NULL, NULL),
-	(381, 'BYR', '_90120', 0, 1, NULL, NULL),
-	(382, 'BYR', '_90121', 0, 1, NULL, NULL),
-	(383, 'BYR', '_90122', 0, 1, NULL, NULL),
-	(384, 'BYR', '_90123', 0, 1, NULL, NULL),
-	(385, 'BYR', '_90124', 0, 1, NULL, NULL),
-	(386, 'BYR', '_90125', 0, 1, NULL, NULL),
-	(387, 'BYR', '_90126', 0, 1, NULL, NULL),
-	(388, 'BYR', '_90127', 0, 1, NULL, NULL),
-	(389, 'BYR', '_90128', 0, 1, NULL, NULL),
-	(390, 'BYR', '_90129', 0, 1, NULL, NULL),
-	(391, 'BYR', '_90131', 0, 1, NULL, NULL),
-	(392, 'BYR', '_90130', 0, 1, NULL, NULL),
-	(393, 'BYR', '_90132', 0, 1, NULL, NULL),
-	(3179, 'FIN', '_40090', NULL, NULL, NULL, NULL),
-	(3180, 'FIN', '_40091', NULL, NULL, NULL, NULL),
-	(2211, 'SPV', '_30000.066', NULL, NULL, NULL, NULL),
-	(2210, 'SPV', '_30000.063', NULL, NULL, NULL, NULL),
-	(2209, 'SPV', '_30000.059', NULL, NULL, NULL, NULL),
-	(2208, 'SPV', '_30000.057', NULL, NULL, NULL, NULL),
-	(2207, 'SPV', '_30000.056', NULL, NULL, NULL, NULL),
-	(2206, 'SPV', '_30000.054', NULL, NULL, NULL, NULL),
-	(2205, 'SPV', '_30000.041', NULL, NULL, NULL, NULL),
-	(2204, 'SPV', '_30000.040', NULL, NULL, NULL, NULL),
-	(2203, 'SPV', '_30000.039', NULL, NULL, NULL, NULL),
-	(2202, 'SPV', '_30000.038', NULL, NULL, NULL, NULL),
-	(2201, 'SPV', '_30000.037', NULL, NULL, NULL, NULL),
-	(2200, 'SPV', '_30000.036', NULL, NULL, NULL, NULL),
-	(2199, 'SPV', '_30000.035', NULL, NULL, NULL, NULL),
-	(2198, 'SPV', '_30000.034', NULL, NULL, NULL, NULL),
-	(2197, 'SPV', '_30000.032', NULL, NULL, NULL, NULL),
-	(2196, 'SPV', '_30000.031', NULL, NULL, NULL, NULL),
-	(2195, 'SPV', '_30000.030', NULL, NULL, NULL, NULL),
-	(2194, 'SPV', '_30000.029', NULL, NULL, NULL, NULL),
-	(2193, 'SPV', '_30000.028', NULL, NULL, NULL, NULL),
-	(2192, 'SPV', '_30000.027', NULL, NULL, NULL, NULL),
-	(2191, 'SPV', '_30000.026', NULL, NULL, NULL, NULL),
-	(2190, 'SPV', '_30000.025', NULL, NULL, NULL, NULL),
-	(2189, 'SPV', '_30000.024', NULL, NULL, NULL, NULL),
-	(2188, 'SPV', '_30000.023', NULL, NULL, NULL, NULL),
-	(2187, 'SPV', '_30000.022', NULL, NULL, NULL, NULL),
-	(2186, 'SPV', '_30000.021', NULL, NULL, NULL, NULL),
-	(2185, 'SPV', '_30000.020', NULL, NULL, NULL, NULL),
-	(2184, 'SPV', '_30000.019', NULL, NULL, NULL, NULL),
-	(2183, 'SPV', '_30000.018', NULL, NULL, NULL, NULL),
-	(2182, 'SPV', '_30000.014', NULL, NULL, NULL, NULL),
-	(2828, 'ADM', '_00011', NULL, NULL, NULL, NULL),
-	(2829, 'ADM', '_00012', NULL, NULL, NULL, NULL),
-	(2830, 'ADM', '_00013', NULL, NULL, NULL, NULL),
-	(2831, 'ADM', '_00020', NULL, NULL, NULL, NULL),
-	(2832, 'ADM', '_00021', NULL, NULL, NULL, NULL),
-	(2833, 'ADM', '_00022', NULL, NULL, NULL, NULL),
-	(2834, 'ADM', '_00023', NULL, NULL, NULL, NULL),
-	(2835, 'ADM', '_00050', NULL, NULL, NULL, NULL),
-	(2836, 'ADM', '_20000', NULL, NULL, NULL, NULL),
-	(2837, 'ADM', '_18000', NULL, NULL, NULL, NULL),
-	(2838, 'ADM', '_18000.002', NULL, NULL, NULL, NULL),
-	(2839, 'ADM', '_18000.013', NULL, NULL, NULL, NULL),
-	(2840, 'ADM', '_18000.100', NULL, NULL, NULL, NULL),
-	(2841, 'ADM', '_18000.900', NULL, NULL, NULL, NULL),
-	(2842, 'ADM', '_18000.901', NULL, NULL, NULL, NULL),
-	(2843, 'ADM', '_30000.0', NULL, NULL, NULL, NULL),
-	(2844, 'ADM', '_30000.001', NULL, NULL, NULL, NULL),
-	(2845, 'ADM', '_30000.002', NULL, NULL, NULL, NULL),
-	(2846, 'ADM', '_30000.003', NULL, NULL, NULL, NULL),
-	(2847, 'ADM', '_30000.004', NULL, NULL, NULL, NULL),
-	(2848, 'ADM', '_30000.005', NULL, NULL, NULL, NULL),
-	(2849, 'ADM', '_30000.006', NULL, NULL, NULL, NULL),
-	(2850, 'ADM', '_30000.007', NULL, NULL, NULL, NULL),
-	(2851, 'ADM', '_30000.009', NULL, NULL, NULL, NULL),
-	(2852, 'ADM', '_30000.012', NULL, NULL, NULL, NULL),
-	(2853, 'ADM', '_30000.013', NULL, NULL, NULL, NULL),
-	(2854, 'ADM', '_30000.014', NULL, NULL, NULL, NULL),
-	(2855, 'ADM', '_30000.015', NULL, NULL, NULL, NULL),
-	(2856, 'ADM', '_30000.016', NULL, NULL, NULL, NULL),
-	(2857, 'ADM', '_30000.017', NULL, NULL, NULL, NULL),
-	(2858, 'ADM', '_30000.018', NULL, NULL, NULL, NULL),
-	(2859, 'ADM', '_30000.019', NULL, NULL, NULL, NULL),
-	(2860, 'ADM', '_30000.020', NULL, NULL, NULL, NULL),
-	(2861, 'ADM', '_30000.021', NULL, NULL, NULL, NULL),
-	(2862, 'ADM', '_30000.022', NULL, NULL, NULL, NULL),
-	(2863, 'ADM', '_30000.023', NULL, NULL, NULL, NULL),
-	(1982, 'PUR', '_80010', NULL, NULL, NULL, NULL),
-	(1981, 'PUR', '_80000', NULL, NULL, NULL, NULL),
-	(1980, 'PUR', '_40044', NULL, NULL, NULL, NULL),
-	(1979, 'PUR', '_40042', NULL, NULL, NULL, NULL),
-	(1978, 'PUR', '_40041', NULL, NULL, NULL, NULL),
-	(1977, 'PUR', '_40040', NULL, NULL, NULL, NULL),
-	(1976, 'PUR', '_40030', NULL, NULL, NULL, NULL),
-	(1975, 'PUR', '_40020', NULL, NULL, NULL, NULL),
-	(1974, 'PUR', '_40012', NULL, NULL, NULL, NULL),
-	(1973, 'PUR', '_40011', NULL, NULL, NULL, NULL),
-	(1972, 'PUR', '_40010', NULL, NULL, NULL, NULL),
-	(1971, 'PUR', '_40000', NULL, NULL, NULL, NULL),
-	(819, 'BYR', 'socustomerEnvelop.rpt', NULL, NULL, NULL, NULL),
-	(820, 'BYR', '_10010', NULL, NULL, NULL, NULL),
-	(821, 'BYR', '_10020', NULL, NULL, NULL, NULL),
-	(822, 'BYR', '_10030', NULL, NULL, NULL, NULL),
-	(823, 'BYR', '_10060', NULL, NULL, NULL, NULL),
-	(824, 'BYR', '_10064', NULL, NULL, NULL, NULL),
-	(825, 'BYR', '_30000.0', NULL, NULL, NULL, NULL),
-	(826, 'BYR', '_30010', NULL, NULL, NULL, NULL),
-	(827, 'BYR', '_30020', NULL, NULL, NULL, NULL),
-	(828, 'BYR', '_30030', NULL, NULL, NULL, NULL),
-	(2148, 'INV', '_80100', NULL, NULL, NULL, NULL),
-	(2149, 'INV', '_80120', NULL, NULL, NULL, NULL),
-	(3115, 'FIN', '_80010.02', NULL, NULL, NULL, NULL),
-	(3114, 'FIN', '_80010.01', NULL, NULL, NULL, NULL),
-	(3181, 'FIN', '_40092', NULL, NULL, NULL, NULL),
-	(3177, 'FIN', '_40081', NULL, NULL, NULL, NULL),
-	(3178, 'FIN', '_40082', NULL, NULL, NULL, NULL),
-	(1677, 'ANDRI', '_80010.07', NULL, NULL, NULL, NULL),
-	(1676, 'ANDRI', '_80010.06', NULL, NULL, NULL, NULL),
-	(1675, 'ANDRI', '_80010.05', NULL, NULL, NULL, NULL),
-	(1674, 'ANDRI', '_80010.04', NULL, NULL, NULL, NULL),
-	(1673, 'ANDRI', '_80010.03', NULL, NULL, NULL, NULL),
-	(1672, 'ANDRI', '_80010.02', NULL, NULL, NULL, NULL),
-	(1671, 'ANDRI', '_80010.01', NULL, NULL, NULL, NULL),
-	(1670, 'ANDRI', '_30170', NULL, NULL, NULL, NULL),
-	(1669, 'ANDRI', '_300901', NULL, NULL, NULL, NULL),
-	(1668, 'ANDRI', '_300900', NULL, NULL, NULL, NULL),
-	(1667, 'ANDRI', '_13000', NULL, NULL, NULL, NULL),
-	(1666, 'ANDRI', '_11000', NULL, NULL, NULL, NULL),
-	(1665, 'ANDRI', '_10060A', NULL, NULL, NULL, NULL),
-	(1664, 'ANDRI', '_00050', NULL, NULL, NULL, NULL),
-	(1663, 'ANDRI', '_00040', NULL, NULL, NULL, NULL),
-	(1662, 'ANDRI', '_00030', NULL, NULL, NULL, NULL),
-	(1661, 'ANDRI', '_00020', NULL, NULL, NULL, NULL),
-	(1660, 'ANDRI', '_00010', NULL, NULL, NULL, NULL),
-	(1659, 'ANDRI', 'ID_JasaKiriman', NULL, NULL, NULL, NULL),
-	(1658, 'ANDRI', 'ID_ExportImport', NULL, NULL, NULL, NULL),
-	(1657, 'ANDRI', 'frmMain.Addnew', NULL, NULL, NULL, NULL),
-	(1114, 'BYR', '_40000', NULL, NULL, NULL, NULL),
-	(1115, 'BYR', '_80000', NULL, NULL, NULL, NULL),
-	(1116, 'BYR', '_30000', NULL, NULL, NULL, NULL),
-	(1117, 'BYR', '_60000', NULL, NULL, NULL, NULL),
-	(2226, 'Administrator', 'ID_JasaKiriman', NULL, NULL, NULL, NULL),
-	(2225, 'Administrator', 'ID_ExportImport', NULL, NULL, NULL, NULL),
-	(2156, 'SA', '_18000.003', NULL, NULL, NULL, NULL),
-	(1680, 'ANDRI', '_10030', NULL, NULL, NULL, NULL),
-	(1678, 'ANDRI', '_10010', NULL, NULL, NULL, NULL),
-	(1679, 'ANDRI', '_10020', NULL, NULL, NULL, NULL),
-	(1848, 'GM', '_18000.015', NULL, NULL, NULL, NULL),
-	(2155, 'SA', '_18000.001', NULL, NULL, NULL, NULL),
-	(1686, 'VF', '_18000', NULL, NULL, NULL, NULL),
-	(1687, 'VF', '_18000.004', NULL, NULL, NULL, NULL),
-	(1847, 'GM', '_18000.005', NULL, NULL, NULL, NULL),
-	(1846, 'GM', '_18000', NULL, NULL, NULL, NULL),
-	(2870, 'ADM', '_30000.030', NULL, NULL, NULL, NULL),
-	(2871, 'ADM', '_30000.031', NULL, NULL, NULL, NULL),
-	(2864, 'ADM', '_30000.024', NULL, NULL, NULL, NULL),
-	(2865, 'ADM', '_30000.025', NULL, NULL, NULL, NULL),
-	(2866, 'ADM', '_30000.026', NULL, NULL, NULL, NULL),
-	(2867, 'ADM', '_30000.027', NULL, NULL, NULL, NULL),
-	(2868, 'ADM', '_30000.028', NULL, NULL, NULL, NULL),
-	(2869, 'ADM', '_30000.029', NULL, NULL, NULL, NULL),
-	(1822, 'BS', '_18000.005', NULL, NULL, NULL, NULL),
-	(1821, 'BS', '_18000', NULL, NULL, NULL, NULL),
-	(1857, 'SV', '_18000', NULL, NULL, NULL, NULL),
-	(1825, 'MRISK', '_18000', NULL, NULL, NULL, NULL),
-	(1826, 'MRISK', '_18000.007', NULL, NULL, NULL, NULL),
-	(1827, 'GMRISK', '_18000', NULL, NULL, NULL, NULL),
-	(1828, 'GMRISK', '_18000.014', NULL, NULL, NULL, NULL),
-	(2164, 'LSADM', '_18000.020', NULL, NULL, NULL, NULL),
-	(2229, 'Administrator', '_00012', NULL, NULL, NULL, NULL),
-	(2230, 'Administrator', '_00013', NULL, NULL, NULL, NULL),
-	(2163, 'LSADM', '_18000.012', NULL, NULL, NULL, NULL),
-	(2162, 'LSADM', '_18000.011', NULL, NULL, NULL, NULL),
-	(2161, 'LSADM', '_18000.010', NULL, NULL, NULL, NULL),
-	(1849, 'GM', '_30000', NULL, NULL, NULL, NULL),
-	(1850, 'GM', '_40000', NULL, NULL, NULL, NULL),
-	(1851, 'COL', '_18000', NULL, NULL, NULL, NULL),
-	(1852, 'COL', '_18000.011', NULL, NULL, NULL, NULL),
-	(1853, 'GMBS', '_18000', NULL, NULL, NULL, NULL),
-	(1854, 'GMBS', '_18000.015', NULL, NULL, NULL, NULL),
-	(1855, 'RS', '_18000', NULL, NULL, NULL, NULL),
-	(1856, 'RS', '_18000.006', NULL, NULL, NULL, NULL),
-	(2160, 'LSADM', '_18000.008', NULL, NULL, NULL, NULL),
-	(2159, 'LSADM', '_18000', NULL, NULL, NULL, NULL),
-	(2154, 'SA', '_18000', NULL, NULL, NULL, NULL),
-	(2872, 'ADM', '_30000.032', NULL, NULL, NULL, NULL),
-	(1957, 'GL', '_10070', NULL, NULL, NULL, NULL),
-	(1956, 'GL', '_10069', NULL, NULL, NULL, NULL),
-	(1955, 'GL', '_10066', NULL, NULL, NULL, NULL),
-	(1954, 'GL', '_10065', NULL, NULL, NULL, NULL),
-	(1953, 'GL', '_10064', NULL, NULL, NULL, NULL),
-	(1952, 'GL', '_10060', NULL, NULL, NULL, NULL),
-	(1951, 'GL', '_10030', NULL, NULL, NULL, NULL),
-	(1950, 'GL', '_10020', NULL, NULL, NULL, NULL),
-	(1949, 'GL', '_10010', NULL, NULL, NULL, NULL),
-	(1948, 'GL', '_10000', NULL, NULL, NULL, NULL),
-	(1958, 'GL', '_12000', NULL, NULL, NULL, NULL),
-	(2147, 'INV', '_80090', NULL, NULL, NULL, NULL),
-	(2146, 'INV', '_80070', NULL, NULL, NULL, NULL),
-	(2145, 'INV', '_80060', NULL, NULL, NULL, NULL),
-	(2144, 'INV', '_80050', NULL, NULL, NULL, NULL),
-	(2143, 'INV', '_80040', NULL, NULL, NULL, NULL),
-	(2142, 'INV', '_80030', NULL, NULL, NULL, NULL),
-	(2141, 'INV', '_80020', NULL, NULL, NULL, NULL),
-	(2140, 'INV', '_80010', NULL, NULL, NULL, NULL),
-	(2139, 'INV', '_11000', NULL, NULL, NULL, NULL),
-	(1983, 'PUR', '_80011', NULL, NULL, NULL, NULL),
-	(1984, 'PUR', '_80012', NULL, NULL, NULL, NULL),
-	(3116, 'FIN', '_80010.03', NULL, NULL, NULL, NULL),
-	(3117, 'FIN', '_80010.04', NULL, NULL, NULL, NULL),
-	(3118, 'FIN', '_80010.05', NULL, NULL, NULL, NULL),
-	(3119, 'FIN', '_80010.06', NULL, NULL, NULL, NULL),
-	(3120, 'FIN', '_80010.07', NULL, NULL, NULL, NULL),
-	(3121, 'FIN', '_14000', NULL, NULL, NULL, NULL),
-	(2070, 'TRV', '_21000', NULL, NULL, NULL, NULL),
-	(2071, 'TRV', '_21010', NULL, NULL, NULL, NULL),
-	(2827, 'ADM', '_00010', NULL, NULL, NULL, NULL),
-	(2826, 'ADM', '_00000', NULL, NULL, NULL, NULL),
-	(2150, 'INV', '_80130', NULL, NULL, NULL, NULL),
-	(2151, 'INV', '_80200', NULL, NULL, NULL, NULL),
-	(2152, 'PYR', '_12000', NULL, NULL, NULL, NULL),
-	(2153, 'PYR', '_12001', NULL, NULL, NULL, NULL),
-	(2157, 'SA', '_18000.011', NULL, NULL, NULL, NULL),
-	(2158, 'SA', '_18000.021', NULL, NULL, NULL, NULL),
-	(2165, 'LSADM', '_18000.022', NULL, NULL, NULL, NULL),
-	(2166, 'admin', '_00010', NULL, NULL, NULL, NULL),
-	(2167, 'admin', '_00011', NULL, NULL, NULL, NULL),
-	(2168, 'admin', '_00012', NULL, NULL, NULL, NULL),
-	(2169, 'admin', '_00013', NULL, NULL, NULL, NULL),
-	(2170, 'admin', '_00020', NULL, NULL, NULL, NULL),
-	(2171, 'admin', '_00021', NULL, NULL, NULL, NULL),
-	(2172, 'admin', '_00022', NULL, NULL, NULL, NULL),
-	(2173, 'admin', '_00023', NULL, NULL, NULL, NULL),
-	(2174, 'SLS', '_30000', NULL, NULL, NULL, NULL),
-	(2175, 'SLS', '_30000.029', NULL, NULL, NULL, NULL),
-	(2176, 'SLS', '_30000.030', NULL, NULL, NULL, NULL),
-	(2177, 'SLS', '_30000.031', NULL, NULL, NULL, NULL),
-	(2178, 'SLS', '_30000.032', NULL, NULL, NULL, NULL),
-	(2179, 'SLS', '_30000.033', NULL, NULL, NULL, NULL),
-	(2180, 'SLS', '_30000.034', NULL, NULL, NULL, NULL),
-	(2181, 'SLS', '_30000.035', NULL, NULL, NULL, NULL),
-	(2212, 'SPV', '_30000.100', NULL, NULL, NULL, NULL),
-	(2873, 'ADM', '_30000.034', NULL, NULL, NULL, NULL),
-	(2874, 'ADM', '_30000.035', NULL, NULL, NULL, NULL),
-	(2875, 'ADM', '_30000.036', NULL, NULL, NULL, NULL),
-	(2876, 'ADM', '_30000.037', NULL, NULL, NULL, NULL),
-	(2877, 'ADM', '_30000.038', NULL, NULL, NULL, NULL),
-	(2878, 'ADM', '_30000.039', NULL, NULL, NULL, NULL),
-	(2879, 'ADM', '_30000.040', NULL, NULL, NULL, NULL),
-	(2880, 'ADM', '_30000.041', NULL, NULL, NULL, NULL),
-	(2881, 'ADM', '_30000.054', NULL, NULL, NULL, NULL),
-	(2882, 'ADM', '_30000.056', NULL, NULL, NULL, NULL),
-	(2883, 'ADM', '_30000.057', NULL, NULL, NULL, NULL),
-	(2884, 'ADM', '_30000.059', NULL, NULL, NULL, NULL),
-	(2885, 'ADM', '_30000.060', NULL, NULL, NULL, NULL),
-	(2886, 'ADM', '_30000.061', NULL, NULL, NULL, NULL),
-	(2887, 'ADM', '_30000.062', NULL, NULL, NULL, NULL),
-	(2888, 'ADM', '_30000.063', NULL, NULL, NULL, NULL),
-	(2889, 'ADM', '_30000.064', NULL, NULL, NULL, NULL),
-	(2890, 'ADM', '_30000.065', NULL, NULL, NULL, NULL),
-	(2891, 'ADM', '_30000.066', NULL, NULL, NULL, NULL),
-	(2892, 'ADM', '_30000.100', NULL, NULL, NULL, NULL),
-	(2893, 'aaa', 'frmMain.Addnew', NULL, NULL, NULL, NULL),
-	(2894, 'aaa', 'ID_ExportImport', NULL, NULL, NULL, NULL),
-	(2895, 'aaa', 'ID_JasaKiriman', NULL, NULL, NULL, NULL),
-	(2896, 'aaa', '_00010', NULL, NULL, NULL, NULL),
-	(2897, 'SLSADM', '_30000', NULL, NULL, NULL, NULL),
-	(2898, 'SLSADM', '_30010', NULL, NULL, NULL, NULL),
-	(2899, 'SLSADM', 'frmCustomers.cmdSaveShipTo', NULL, NULL, NULL, NULL),
-	(2900, 'SLSADM', '_30011', NULL, NULL, NULL, NULL),
-	(2901, 'SLSADM', '_30012', NULL, NULL, NULL, NULL),
-	(2902, 'SLSADM', '_30020', NULL, NULL, NULL, NULL),
-	(2903, 'SLSADM', '_30050', NULL, NULL, NULL, NULL),
-	(2904, 'SLSADM', '_30051', NULL, NULL, NULL, NULL),
-	(2905, 'SLSADM', '_30052', NULL, NULL, NULL, NULL),
-	(2992, 'Gudang', '_30000', NULL, NULL, NULL, NULL),
-	(2993, 'Gudang', '_30060', NULL, NULL, NULL, NULL),
-	(2994, 'Gudang', '_30061', NULL, NULL, NULL, NULL),
-	(2995, 'Gudang', '_30062', NULL, NULL, NULL, NULL),
-	(2996, 'Gudang', '_30064', NULL, NULL, NULL, NULL),
-	(2997, 'Gudang', '_80000', NULL, NULL, NULL, NULL),
-	(2998, 'Gudang', '_80010', NULL, NULL, NULL, NULL),
-	(2999, 'Gudang', '_80011', NULL, NULL, NULL, NULL),
-	(3000, 'Gudang', '_80012', NULL, NULL, NULL, NULL),
-	(3001, 'Gudang', '_80020', NULL, NULL, NULL, NULL),
-	(3002, 'Gudang', '_80021', NULL, NULL, NULL, NULL),
-	(3192, 'FIN', '_40123', NULL, NULL, NULL, NULL),
-	(3193, 'FIN', '_40130', NULL, NULL, NULL, NULL);
+INSERT INTO `user_group_modules` VALUES ('97', 'BYR', '_40110', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('98', 'BYR', '_40120', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('99', 'BYR', '_80010', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('100', 'BYR', '_80020', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('101', 'BYR', '_80030', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('102', 'BYR', '_90070', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('103', 'BYR', '_90071', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('104', 'BYR', '_90072', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('105', 'BYR', '_90073', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('106', 'BYR', '_90075', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('107', 'BYR', '_90076', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('2228', 'Administrator', '_00011', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('192', 'SYSMENU', '_10000', '0', null, null, null);
+INSERT INTO `user_group_modules` VALUES ('193', 'SYSMENU', '_11000', '0', null, null, null);
+INSERT INTO `user_group_modules` VALUES ('194', 'SYSMENU', '_10060', '0', null, null, null);
+INSERT INTO `user_group_modules` VALUES ('195', 'SYSMENU', '_30010', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('196', 'SYSMENU', '_30011', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('197', 'SYSMENU', '_30012', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('2227', 'Administrator', '_00010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('307', 'BYR', '_40010', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('308', 'BYR', '_40040', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('309', 'BYR', '_40041', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('310', 'BYR', '_40042', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('311', 'BYR', '_40043', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('312', 'BYR', '_40044', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('313', 'BYR', '_40050', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('314', 'BYR', '_40051', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('315', 'BYR', '_40052', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('316', 'BYR', '_40053', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('372', 'BYR', '_90074', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('373', 'BYR', '_90077', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('374', 'BYR', '_90078', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('375', 'BYR', '_90079', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('376', 'BYR', '_90080', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('377', 'BYR', '_90081', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('378', 'BYR', '_90082', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('379', 'BYR', '_90083', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('380', 'BYR', '_90084', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('381', 'BYR', '_90120', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('382', 'BYR', '_90121', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('383', 'BYR', '_90122', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('384', 'BYR', '_90123', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('385', 'BYR', '_90124', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('386', 'BYR', '_90125', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('387', 'BYR', '_90126', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('388', 'BYR', '_90127', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('389', 'BYR', '_90128', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('390', 'BYR', '_90129', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('391', 'BYR', '_90131', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('392', 'BYR', '_90130', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('393', 'BYR', '_90132', '0', '1', null, null);
+INSERT INTO `user_group_modules` VALUES ('8495', 'Gudang', '_40065', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5398', 'ADM', '_30000.064', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5399', 'ADM', '_30000.065', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5400', 'ADM', '_30000.066', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5401', 'ADM', '_30000.100', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5402', 'ADM', '_30057', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8116', 'SPV', '_80042', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8117', 'SPV', '_80044', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8118', 'SPV', '_80060', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8119', 'SPV', '_80061', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8120', 'SPV', '_80064', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8121', 'SPV', '_80080', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8122', 'SPV', '_80081', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8123', 'SPV', '_80082', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8124', 'SPV', '_80084', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8125', 'SPV', '_80090', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8126', 'SPV', '_80091', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8127', 'SPV', '_80092', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8128', 'SPV', '_80094', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8129', 'SPV', '_90096', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8130', 'SPV', '_90097', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5359', 'ADM', '_30000.007', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5358', 'ADM', '_30000.006', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5357', 'ADM', '_30000.005', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5356', 'ADM', '_30000.004', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5355', 'ADM', '_30000.003', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5354', 'ADM', '_30000.002', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5353', 'ADM', '_30000.001', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5352', 'ADM', '_80010.07', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5351', 'ADM', '_80010.06', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5350', 'ADM', '_80010.05', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5349', 'ADM', '_80010.04', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5348', 'ADM', '_80010.03', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5347', 'ADM', '_80010.02', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5346', 'ADM', '_80010.01', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5345', 'ADM', '_30170', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5344', 'ADM', '_300901', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5343', 'ADM', '_300900', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5342', 'ADM', '_20000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5341', 'ADM', '_13000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5340', 'ADM', '_11001', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5339', 'ADM', '_11000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1982', 'PUR', '_80010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1981', 'PUR', '_80000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1980', 'PUR', '_40044', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1979', 'PUR', '_40042', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1978', 'PUR', '_40041', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1977', 'PUR', '_40040', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1976', 'PUR', '_40030', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1975', 'PUR', '_40020', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1974', 'PUR', '_40012', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1973', 'PUR', '_40011', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1972', 'PUR', '_40010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1971', 'PUR', '_40000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('819', 'BYR', 'socustomerEnvelop.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('820', 'BYR', '_10010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('821', 'BYR', '_10020', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('822', 'BYR', '_10030', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('823', 'BYR', '_10060', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('824', 'BYR', '_10064', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('825', 'BYR', '_30000.0', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('826', 'BYR', '_30010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('827', 'BYR', '_30020', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('828', 'BYR', '_30030', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2148', 'INV', '_80100', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2149', 'INV', '_80120', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1677', 'ANDRI', '_80010.07', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1676', 'ANDRI', '_80010.06', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1675', 'ANDRI', '_80010.05', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1674', 'ANDRI', '_80010.04', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1673', 'ANDRI', '_80010.03', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1672', 'ANDRI', '_80010.02', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1671', 'ANDRI', '_80010.01', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1670', 'ANDRI', '_30170', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1669', 'ANDRI', '_300901', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1668', 'ANDRI', '_300900', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1667', 'ANDRI', '_13000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1666', 'ANDRI', '_11000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1665', 'ANDRI', '_10060A', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1664', 'ANDRI', '_00050', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1663', 'ANDRI', '_00040', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1662', 'ANDRI', '_00030', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1661', 'ANDRI', '_00020', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1660', 'ANDRI', '_00010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1659', 'ANDRI', 'ID_JasaKiriman', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1658', 'ANDRI', 'ID_ExportImport', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1657', 'ANDRI', 'frmMain.Addnew', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1114', 'BYR', '_40000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1115', 'BYR', '_80000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1116', 'BYR', '_30000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1117', 'BYR', '_60000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2226', 'Administrator', 'ID_JasaKiriman', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2225', 'Administrator', 'ID_ExportImport', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2156', 'SA', '_18000.003', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1680', 'ANDRI', '_10030', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1678', 'ANDRI', '_10010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1679', 'ANDRI', '_10020', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1848', 'GM', '_18000.015', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2155', 'SA', '_18000.001', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1686', 'VF', '_18000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1687', 'VF', '_18000.004', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1847', 'GM', '_18000.005', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1846', 'GM', '_18000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5334', 'ADM', '_00041', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5335', 'ADM', '_00042', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5336', 'ADM', '_00043', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5337', 'ADM', '_00050', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5338', 'ADM', '_10060A', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1822', 'BS', '_18000.005', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1821', 'BS', '_18000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1857', 'SV', '_18000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1825', 'MRISK', '_18000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1826', 'MRISK', '_18000.007', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1827', 'GMRISK', '_18000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1828', 'GMRISK', '_18000.014', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2164', 'LSADM', '_18000.020', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2229', 'Administrator', '_00012', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2230', 'Administrator', '_00013', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2163', 'LSADM', '_18000.012', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2162', 'LSADM', '_18000.011', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2161', 'LSADM', '_18000.010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1849', 'GM', '_30000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1850', 'GM', '_40000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1851', 'COL', '_18000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1852', 'COL', '_18000.011', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1853', 'GMBS', '_18000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1854', 'GMBS', '_18000.015', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1855', 'RS', '_18000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1856', 'RS', '_18000.006', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2160', 'LSADM', '_18000.008', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2159', 'LSADM', '_18000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2154', 'SA', '_18000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5333', 'ADM', '_00040', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2147', 'INV', '_80090', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2146', 'INV', '_80070', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2145', 'INV', '_80060', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2144', 'INV', '_80050', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2143', 'INV', '_80040', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2142', 'INV', '_80030', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2141', 'INV', '_80020', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2140', 'INV', '_80010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2139', 'INV', '_11000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1983', 'PUR', '_80011', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('1984', 'PUR', '_80012', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8498', 'Gudang', '_80000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8499', 'Gudang', 'retur_toko', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8500', 'Gudang', 'retur_toko_add', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8501', 'Gudang', 'retur_toko_print', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2070', 'TRV', '_21000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2071', 'TRV', '_21010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5360', 'ADM', '_30000.009', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2150', 'INV', '_80130', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2151', 'INV', '_80200', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2152', 'PYR', '_12000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2153', 'PYR', '_12001', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2157', 'SA', '_18000.011', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2158', 'SA', '_18000.021', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2165', 'LSADM', '_18000.022', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3201', 'admin', '_00023', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3200', 'admin', '_00022', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3199', 'admin', '_00021', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3198', 'admin', '_00020', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3197', 'admin', '_00013', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3196', 'admin', '_00012', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3195', 'admin', '_00011', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3194', 'admin', '_00010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3282', 'SLS', '_30000.035', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3281', 'SLS', '_30000.034', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3280', 'SLS', '_30000.033', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3279', 'SLS', '_30000.032', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3278', 'SLS', '_30000.031', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3277', 'SLS', '_30000.030', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3276', 'SLS', '_30000.029', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3275', 'SLS', '_30000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5397', 'ADM', '_30000.063', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2224', 'Administrator', 'frmMain.Addnew', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2223', 'Administrator', '_00000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2231', 'Administrator', '_00020', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2232', 'Administrator', '_00021', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2233', 'Administrator', '_00022', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2234', 'Administrator', '_00023', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2235', 'Administrator', '_00030', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2236', 'Administrator', '_00031', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2237', 'Administrator', '_00032', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2238', 'Administrator', '_00040', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2239', 'Administrator', '_00041', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2240', 'Administrator', '_00042', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2241', 'Administrator', '_00043', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2242', 'Administrator', '_00050', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2243', 'Administrator', '_10060A', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2244', 'Administrator', '_11000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2245', 'Administrator', '_11001', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2246', 'Administrator', '_13000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2247', 'Administrator', '_20000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2248', 'Administrator', '_300900', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2249', 'Administrator', '_300901', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2250', 'Administrator', '_30170', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2251', 'Administrator', '_80010.01', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2252', 'Administrator', '_80010.02', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2253', 'Administrator', '_80010.03', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2254', 'Administrator', '_80010.04', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2255', 'Administrator', '_80010.05', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2256', 'Administrator', '_80010.06', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2257', 'Administrator', '_80010.07', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2258', 'Administrator', '_10000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2259', 'Administrator', '_10010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2260', 'Administrator', '_10011', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2261', 'Administrator', '_10012', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2262', 'Administrator', '_10013', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2263', 'Administrator', '_10015', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2264', 'Administrator', '_10016', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2265', 'Administrator', '_10020', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2266', 'Administrator', '_10021', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2267', 'Administrator', '_10030', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2268', 'Administrator', '_10031', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2269', 'Administrator', '_10032', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2270', 'Administrator', '_10035', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2271', 'Administrator', '_10036', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2272', 'Administrator', '_10060', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2273', 'Administrator', '_10061', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2274', 'Administrator', '_10062', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2275', 'Administrator', '_10063', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2276', 'Administrator', '_10064', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2277', 'Administrator', '_10065', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2278', 'Administrator', '_10066', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2279', 'Administrator', '_10067', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2280', 'Administrator', '_10068', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2281', 'Administrator', '_10069', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2282', 'Administrator', '_10070', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2283', 'Administrator', '_12000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2284', 'Administrator', '_12001', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2285', 'Administrator', '_18000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2286', 'Administrator', '_18000.001', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2287', 'Administrator', '_18000.002', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2288', 'Administrator', '_18000.003', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2289', 'Administrator', '_18000.004', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2290', 'Administrator', '_18000.005', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2291', 'Administrator', '_18000.006', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2292', 'Administrator', '_18000.007', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2293', 'Administrator', '_18000.008', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2294', 'Administrator', '_18000.009', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2295', 'Administrator', '_18000.010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2296', 'Administrator', '_18000.011', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2297', 'Administrator', '_18000.012', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2298', 'Administrator', '_18000.013', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2299', 'Administrator', '_18000.014', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2300', 'Administrator', '_18000.015', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2301', 'Administrator', '_18000.020', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2302', 'Administrator', '_18000.021', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2303', 'Administrator', '_18000.022', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2304', 'Administrator', '_18000.100', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2305', 'Administrator', '_18000.900', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2306', 'Administrator', '_18000.901', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2307', 'Administrator', '_21000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2308', 'Administrator', '_21010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2309', 'Administrator', '_30000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2310', 'Administrator', '_30000.0', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2311', 'Administrator', '_30000.001', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2312', 'Administrator', '_30000.002', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2313', 'Administrator', '_30000.003', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2314', 'Administrator', '_30000.004', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2315', 'Administrator', '_30000.005', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2316', 'Administrator', '_30000.006', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2317', 'Administrator', '_30000.007', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2318', 'Administrator', '_30000.008', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2319', 'Administrator', '_30000.009', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2320', 'Administrator', '_30000.010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2321', 'Administrator', '_30000.011', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2322', 'Administrator', '_30000.012', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2323', 'Administrator', '_30000.013', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2324', 'Administrator', '_30000.014', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2325', 'Administrator', '_30000.015', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2326', 'Administrator', '_30000.016', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2327', 'Administrator', '_30000.017', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2328', 'Administrator', '_30000.018', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2329', 'Administrator', '_30000.019', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2330', 'Administrator', '_30000.020', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2331', 'Administrator', '_30000.021', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2332', 'Administrator', '_30000.022', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2333', 'Administrator', '_30000.023', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2334', 'Administrator', '_30000.024', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2335', 'Administrator', '_30000.025', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2336', 'Administrator', '_30000.026', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2337', 'Administrator', '_30000.027', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2338', 'Administrator', '_30000.028', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2339', 'Administrator', '_30000.029', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2340', 'Administrator', '_30000.030', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2341', 'Administrator', '_30000.031', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2342', 'Administrator', '_30000.032', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2343', 'Administrator', '_30000.033', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2344', 'Administrator', '_30000.034', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2345', 'Administrator', '_30000.035', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2346', 'Administrator', '_30000.036', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2347', 'Administrator', '_30000.037', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2348', 'Administrator', '_30000.038', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2349', 'Administrator', '_30000.039', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2350', 'Administrator', '_30000.040', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2351', 'Administrator', '_30000.041', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2352', 'Administrator', '_30000.050', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2353', 'Administrator', '_30000.051', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2354', 'Administrator', '_30000.052', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2355', 'Administrator', '_30000.053', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2356', 'Administrator', '_30000.054', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2357', 'Administrator', '_30000.055', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2358', 'Administrator', '_30000.056', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2359', 'Administrator', '_30000.057', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2360', 'Administrator', '_30000.058', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2361', 'Administrator', '_30000.059', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2362', 'Administrator', '_30000.060', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2363', 'Administrator', '_30000.061', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2364', 'Administrator', '_30000.062', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2365', 'Administrator', '_30000.063', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2366', 'Administrator', '_30000.064', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2367', 'Administrator', '_30000.065', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2368', 'Administrator', '_30000.066', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2369', 'Administrator', '_30000.067', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2370', 'Administrator', '_30000.068', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2371', 'Administrator', '_30000.100', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2372', 'Administrator', '_30010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2373', 'Administrator', 'frmCustomers.cmdSaveShipTo', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2374', 'Administrator', '_30011', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2375', 'Administrator', '_30012', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2376', 'Administrator', '_30013', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2377', 'Administrator', '_30020', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2378', 'Administrator', '_30030', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2379', 'Administrator', '_30031', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2380', 'Administrator', '_30033', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2381', 'Administrator', '_30040', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2382', 'Administrator', '_30041', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2383', 'Administrator', '_30042', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2384', 'Administrator', '_30050', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2385', 'Administrator', '_30051', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2386', 'Administrator', '_30052', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2387', 'Administrator', '_30053', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2388', 'Administrator', '_30054', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2389', 'Administrator', '_30055', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2390', 'Administrator', '_30060', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2391', 'Administrator', '_30061', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2392', 'Administrator', '_30062', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2393', 'Administrator', '_30063', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2394', 'Administrator', '_30064', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2395', 'Administrator', '_30070', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2396', 'Administrator', '_30071', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2397', 'Administrator', '_30072', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2398', 'Administrator', '_30073', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2399', 'Administrator', '_30074', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2400', 'Administrator', '_30075', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2401', 'Administrator', '_30080', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2402', 'Administrator', '_30081', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2403', 'Administrator', '_30090', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2404', 'Administrator', '_30091', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2405', 'Administrator', '_30092', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2406', 'Administrator', '_30093', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2407', 'Administrator', '_30094', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2408', 'Administrator', '_30095', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2409', 'Administrator', '_30100', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2410', 'Administrator', '_30121', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2411', 'Administrator', '_30131', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2412', 'Administrator', '_30141', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2413', 'Administrator', '_30110', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2414', 'Administrator', '_30112', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2415', 'Administrator', '_30120', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2416', 'Administrator', '_30122', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2417', 'Administrator', '_30123', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2418', 'Administrator', '_30124', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2419', 'Administrator', '_30125', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2420', 'Administrator', '_30130', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2421', 'Administrator', '_30132', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2422', 'Administrator', '_30133', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2423', 'Administrator', '_30134', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2424', 'Administrator', '_30135', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2425', 'Administrator', '_30140', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2426', 'Administrator', '_30142', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2427', 'Administrator', '_30143', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2428', 'Administrator', '_30150', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2429', 'Administrator', '_30151', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2430', 'Administrator', '_30160', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2431', 'Administrator', '_30161', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2432', 'Administrator', '_30162', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2433', 'Administrator', '_30163', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2434', 'Administrator', '_30164', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2435', 'Administrator', '_30165', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2436', 'Administrator', '_40000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2437', 'Administrator', '_40010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2438', 'Administrator', '_40011', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2439', 'Administrator', '_40012', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2440', 'Administrator', '_40013', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2441', 'Administrator', '_40020', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2442', 'Administrator', '_40021', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2443', 'Administrator', '_40023', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2444', 'Administrator', '_40030', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2445', 'Administrator', '_40031', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2446', 'Administrator', '_40033', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2447', 'Administrator', '_40040', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2448', 'Administrator', '_40041', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2449', 'Administrator', '_40042', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2450', 'Administrator', '_40043', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2451', 'Administrator', '_40044', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2452', 'Administrator', '_40045', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2453', 'Administrator', '_40046', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2454', 'Administrator', '_40047', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2455', 'Administrator', '_40048', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2456', 'Administrator', '_40049', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2457', 'Administrator', '_40050', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2458', 'Administrator', '_40051', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2459', 'Administrator', '_40052', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2460', 'Administrator', '_40053', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2461', 'Administrator', '_40054', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2462', 'Administrator', '_40055', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2463', 'Administrator', '_40131', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2464', 'Administrator', '_40132', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2465', 'Administrator', '_40134', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2466', 'Administrator', '_40135', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2467', 'Administrator', '_40136', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2468', 'Administrator', '_40060', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2469', 'Administrator', '_40061', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2470', 'Administrator', '_40062', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2471', 'Administrator', '_40063', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2472', 'Administrator', '_40064', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2473', 'Administrator', '_40065', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2474', 'Administrator', '_40070', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2475', 'Administrator', '_40071', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2476', 'Administrator', '_40080', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2477', 'Administrator', '_40081', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2478', 'Administrator', '_40082', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2479', 'Administrator', '_40083', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2480', 'Administrator', '_40084', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2481', 'Administrator', '_40085', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2482', 'Administrator', '_40090', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2483', 'Administrator', '_40091', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2484', 'Administrator', '_40092', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2485', 'Administrator', '_40093', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2486', 'Administrator', '_40094', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2487', 'Administrator', '_40095', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2488', 'Administrator', '_40100', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2489', 'Administrator', '_40101', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2490', 'Administrator', '_40102', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2491', 'Administrator', '_40103', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2492', 'Administrator', '_40104', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2493', 'Administrator', '_40105', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2494', 'Administrator', '_40110', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2495', 'Administrator', '_40113', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2496', 'Administrator', '_40114', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2497', 'Administrator', '_40115', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2498', 'Administrator', '_40120', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2499', 'Administrator', '_40123', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2500', 'Administrator', '_40130', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2501', 'Administrator', '_60000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2502', 'Administrator', '_60010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2503', 'Administrator', '_60011', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2504', 'Administrator', '_60012', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2505', 'Administrator', '_60013', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2506', 'Administrator', '_60020', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2507', 'Administrator', '_60021', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2508', 'Administrator', '_60022', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2509', 'Administrator', '_60023', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2510', 'Administrator', '_60024', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2511', 'Administrator', '_60025', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2512', 'Administrator', '_60030', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2513', 'Administrator', '_60031', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2514', 'Administrator', '_60032', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2515', 'Administrator', '_60033', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2516', 'Administrator', '_60034', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2517', 'Administrator', '_60035', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2518', 'Administrator', '_60040', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2519', 'Administrator', '_60041', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2520', 'Administrator', '_60042', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2521', 'Administrator', '_60043', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2522', 'Administrator', '_60044', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2523', 'Administrator', '_60045', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2524', 'Administrator', '_60050', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2525', 'Administrator', '_60051', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2526', 'Administrator', '_60052', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2527', 'Administrator', '_60053', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2528', 'Administrator', '_60054', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2529', 'Administrator', '_60055', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2530', 'Administrator', '_60060', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2531', 'Administrator', '_60061', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2532', 'Administrator', '_60062', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2533', 'Administrator', '_60063', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2534', 'Administrator', '_60064', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2535', 'Administrator', '_60065', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2536', 'Administrator', '_60070', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2537', 'Administrator', '_60071', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2538', 'Administrator', '_60072', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2539', 'Administrator', '_60073', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2540', 'Administrator', '_60074', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2541', 'Administrator', '_60075', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2542', 'Administrator', '_60080', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2543', 'Administrator', '_60081', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2544', 'Administrator', '_60082', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2545', 'Administrator', '_60083', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2546', 'Administrator', '_60085', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2547', 'Administrator', '_60084', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2548', 'Administrator', '_80000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2549', 'Administrator', '_80010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2550', 'Administrator', '_80011', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2551', 'Administrator', '_80012', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2552', 'Administrator', '_80013', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2553', 'Administrator', '_80014', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2554', 'Administrator', '_80015', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2555', 'Administrator', '_80020', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2556', 'Administrator', '_80021', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2557', 'Administrator', '_80022', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2558', 'Administrator', '_80023', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2559', 'Administrator', '_80024', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2560', 'Administrator', '_80030', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2561', 'Administrator', '_80031', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2562', 'Administrator', '_80032', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2563', 'Administrator', '_80033', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2564', 'Administrator', '_80034', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2565', 'Administrator', '_80040', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2566', 'Administrator', '_80041', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2567', 'Administrator', '_80042', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2568', 'Administrator', '_80043', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2569', 'Administrator', '_80044', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2570', 'Administrator', '_80050', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2571', 'Administrator', '_80051', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2572', 'Administrator', '_80052', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2573', 'Administrator', '_80053', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2574', 'Administrator', '_80054', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2575', 'Administrator', '_80060', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2576', 'Administrator', '_80061', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2577', 'Administrator', '_80062', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2578', 'Administrator', '_80063', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2579', 'Administrator', '_80064', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2580', 'Administrator', '_80070', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2581', 'Administrator', '_80071', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2582', 'Administrator', '_80072', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2583', 'Administrator', '_80073', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2584', 'Administrator', '_80074', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2585', 'Administrator', '_80080', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2586', 'Administrator', '_80081', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2587', 'Administrator', '_80082', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2588', 'Administrator', '_80083', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2589', 'Administrator', '_80084', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2590', 'Administrator', '_80090', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2591', 'Administrator', '_80091', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2592', 'Administrator', '_80092', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2593', 'Administrator', '_80093', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2594', 'Administrator', '_80094', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2595', 'Administrator', '_80100', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2596', 'Administrator', '_80101', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2597', 'Administrator', '_80110', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2598', 'Administrator', '_80111', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2599', 'Administrator', '_80120', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2600', 'Administrator', '_80121', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2601', 'Administrator', '_80130', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2602', 'Administrator', '_80131', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2603', 'Administrator', '_80132', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2604', 'Administrator', '_80140', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2605', 'Administrator', '_80141', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2606', 'Administrator', '_80200', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2607', 'Administrator', '_80201', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2608', 'Administrator', '_80202', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2609', 'Administrator', '_90000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2610', 'Administrator', 'frmRptCriteria', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2611', 'Administrator', '_90010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2612', 'Administrator', '\\CEK\\BANKCEK2.RPT', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2613', 'Administrator', '\\CEK\\BANKCEKGL.RPT', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2614', 'Administrator', '\\CEK\\BANKCEKM2.RPT', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2615', 'Administrator', '\\cek\\BANKCODE.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2616', 'Administrator', '\\Cek\\BankMutasiBank.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2617', 'Administrator', '\\CEK\\ChInSum.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2618', 'Administrator', '\\CEK\\ChOutSum.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2619', 'Administrator', '\\CEK\\KasInSum.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2620', 'Administrator', '\\CEK\\KasOutSum.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2621', 'Administrator', '\\Cek\\MutasiKas_Saldo.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2622', 'Administrator', '\\CEK\\transfer_in.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2623', 'Administrator', '\\CEK\\transfer_out.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2624', 'Administrator', '\\gl\\balancesheet2.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2625', 'Administrator', '\\gl\\neracaT.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2626', 'Administrator', '\\gl\\RLCompare.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2627', 'Administrator', '\\so\\CustCredit.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2628', 'Administrator', '\\so\\CustCreditAll.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2629', 'Administrator', '\\So\\CustHighest.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2630', 'Administrator', '\\so\\CustListCompany.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2631', 'Administrator', '\\so\\CustListCustomer.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2632', 'Administrator', '_90011', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2633', 'Administrator', '_90012', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2634', 'Administrator', '_90013', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2635', 'Administrator', '_90014', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2636', 'Administrator', '_90015', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2637', 'Administrator', '_90016', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2638', 'Administrator', '_90017', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2639', 'Administrator', '_90018', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2640', 'Administrator', '_90040', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2641', 'Administrator', '\\Inv\\AsmItem.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2642', 'Administrator', '\\Inv\\AsmItem17.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2643', 'Administrator', '\\Inv\\DaftarBarang.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2644', 'Administrator', '\\Inv\\FisikInventory.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2645', 'Administrator', '\\Inv\\HargaBeli.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2646', 'Administrator', '\\Inv\\HargaJual.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2647', 'Administrator', '\\Inv\\InventoryMoving.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2648', 'Administrator', '\\Inv\\InvPriceHistory.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2649', 'Administrator', '\\Inv\\InvTranCategory.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2650', 'Administrator', '\\Inv\\InvTranItem.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2651', 'Administrator', '\\inv\\invvalue.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2652', 'Administrator', '\\inv\\KeluarReturPembelian.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2653', 'Administrator', '\\Inv\\MutasiGudang.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2654', 'Administrator', '\\Inv\\StokMgmtLow.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2655', 'Administrator', '\\Inv\\StokMgMtOnBOrder.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2656', 'Administrator', '\\Inv\\StokMgMtOut.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2657', 'Administrator', '\\Inv\\StokMgMtRecon.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2658', 'Administrator', '\\PO\\Terima.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2659', 'Administrator', '_90041', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2660', 'Administrator', '_90042', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2661', 'Administrator', '_90043', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2662', 'Administrator', '_90044', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2663', 'Administrator', '_90045', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2664', 'Administrator', '_90046', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2665', 'Administrator', '_90047', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2666', 'Administrator', '_90048', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2667', 'Administrator', '_90049', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2668', 'Administrator', '_90050', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2669', 'Administrator', '_90051', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2670', 'Administrator', '_90052', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2671', 'Administrator', '_90053', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2672', 'Administrator', '_90054', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2673', 'Administrator', '_90055', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2674', 'Administrator', '_90056', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2675', 'Administrator', '_90057', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2676', 'Administrator', '_90058', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2677', 'Administrator', '_90070', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2678', 'Administrator', '\\PO\\Keluar.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2679', 'Administrator', '\\PO\\KeluarPerPO.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2680', 'Administrator', '\\PO\\OpenPO.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2681', 'Administrator', '\\Po\\OrderPembelian.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2682', 'Administrator', '\\Po\\OrderPembelianItemSupplierDetail.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2683', 'Administrator', '\\PO\\PODaily.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2684', 'Administrator', '\\PO\\PODetailDaily.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2685', 'Administrator', '\\PO\\POItemNoRecvItem.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2686', 'Administrator', '\\PO\\POItemNoRecvSupplier.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2687', 'Administrator', '\\PO\\POItemOverItem.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2688', 'Administrator', '\\PO\\POItemOverSupplier.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2689', 'Administrator', '\\PO\\POMonthly.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2690', 'Administrator', '_90071', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2691', 'Administrator', '_90072', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2692', 'Administrator', '_90073', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2693', 'Administrator', '_90074', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2694', 'Administrator', '_90075', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2695', 'Administrator', '_90076', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2696', 'Administrator', '_90077', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2697', 'Administrator', '_90078', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2698', 'Administrator', '_90079', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2699', 'Administrator', '_90080', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2700', 'Administrator', '_90081', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2701', 'Administrator', '_90082', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2702', 'Administrator', '_90083', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2703', 'Administrator', '_90084', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2704', 'Administrator', '_90090', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2705', 'Administrator', '\\So\\AnalisaPenjualanPerCustomerPerbulan.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2706', 'Administrator', '\\So\\AnalisaPenjualanPerJenisPembayaranDetail.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2707', 'Administrator', '\\So\\AnalisaPenjualanPerJenisPembayaranPerbulan.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2708', 'Administrator', '\\So\\AnalisaPenjualanPerKategoryCustomer.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2709', 'Administrator', '\\So\\AnalisaPenjualanPerSalesmanPerbulan.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2710', 'Administrator', '\\So\\AnalisaPenjualanPerSourcePerbulan.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2711', 'Administrator', '\\So\\AnalisaPenjualanPerWilayah.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2712', 'Administrator', '\\so\\customerEnvelop.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2713', 'Administrator', '\\so\\CustPayHistory2.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2714', 'Administrator', '\\So\\CustPayHistoryByCust.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2715', 'Administrator', '\\So\\CustSalesHistory.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2716', 'Administrator', '\\So\\CustSalesHistoryLast.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2717', 'Administrator', '\\so\\daftarcustomer.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2718', 'Administrator', '\\so\\DaftarPiutang.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2719', 'Administrator', '\\So\\DaftarTagihan.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2720', 'Administrator', '\\So\\DODetail100.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2721', 'Administrator', '\\So\\FakturPelunasanPiutang.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2722', 'Administrator', '\\So\\FakturPenjualanDetailTanggal.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2723', 'Administrator', '\\So\\FakturPenjualanDetailtem.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2724', 'Administrator', '\\So\\FakturPenjualanSummary.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2725', 'Administrator', '\\So\\FakturPenjualanSummaryBayar.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2726', 'Administrator', '\\So\\FakturPenjualanSummaryItemCust.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2727', 'Administrator', '\\So\\FakturPenjualanSummarySupplier.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2728', 'Administrator', '\\So\\FakturPenjualanSummaryTanggal.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2729', 'Administrator', '\\So\\FakturPenjualanSummaryWilayah.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2730', 'Administrator', '\\So\\FB_RoomResv.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2731', 'Administrator', '\\So\\FB_RoomResv2.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2732', 'Administrator', '\\So\\FB_RoomResv3.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2733', 'Administrator', '\\So\\FB_RoomResvSumDay.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2734', 'Administrator', '\\So\\FB_TableResv.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2735', 'Administrator', '\\SO\\HargaHistoryMonthly.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2736', 'Administrator', '\\So\\HistoryHargaItemCustomer.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2737', 'Administrator', '\\So\\InvoiceAllTypePerCustomer.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2738', 'Administrator', '\\So\\InvoicePerTypePerCustomer.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2739', 'Administrator', '\\So\\Jual100.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2740', 'Administrator', '\\so\\JualCustSum.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2741', 'Administrator', '\\SO\\JualKasirDateTime.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2742', 'Administrator', '\\SO\\JualKonsinyasiTglMonthly.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2743', 'Administrator', '\\SO\\JualReturTglMonthly.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2744', 'Administrator', '\\SO\\JualTglMonthly.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2745', 'Administrator', '\\SO\\JualTglMonthlyDept.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2746', 'Administrator', '\\SO\\JualTglMonthlySales.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2747', 'Administrator', '\\So\\KomisiSalesmanMonthly.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2748', 'Administrator', '\\So\\KomisiSalesmanSummary.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2749', 'Administrator', '\\So\\KreditMemoSummary.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2750', 'Administrator', '\\SO\\MutasiStock.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2751', 'Administrator', '\\SO\\MutasiStockPrice.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2752', 'Administrator', '\\So\\PenjualanCustomer.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2753', 'Administrator', '\\So\\PenjualanCustomerDetail.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2754', 'Administrator', '\\So\\PenjualanPerbulanDetail.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2755', 'Administrator', '\\So\\SaldoPiutang.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2756', 'Administrator', '\\SO\\SalesKomisi.exe', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2757', 'Administrator', '\\SO\\SalesOrder.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2758', 'Administrator', '\\so\\SalesOrderDetail.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2759', 'Administrator', '\\so\\salesorder_do.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2760', 'Administrator', '\\so\\salesorder_do_item.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2761', 'Administrator', '\\so\\sisa_piutang.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2762', 'Administrator', '\\so\\sisa_piutang_bulan.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2763', 'Administrator', '\\SO\\SOOpenItem.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2764', 'Administrator', '\\SO\\SOOpenTanggal.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2765', 'Administrator', '_90091', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2766', 'Administrator', '_90092', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2767', 'Administrator', '_90093', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2768', 'Administrator', '_90094', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2769', 'Administrator', '_90095', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2770', 'Administrator', '_90096', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2771', 'Administrator', '_90097', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2772', 'Administrator', '_90098', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2773', 'Administrator', '_90099', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2774', 'Administrator', '_90100', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2775', 'Administrator', '_90101', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2776', 'Administrator', '_90102', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2777', 'Administrator', '_90103', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2778', 'Administrator', '_90104', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2779', 'Administrator', '_90105', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2780', 'Administrator', '_90106', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2781', 'Administrator', '_90107', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2782', 'Administrator', '_90108', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2783', 'Administrator', '_90109', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2784', 'Administrator', '_90120', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2785', 'Administrator', '\\Po\\DaftarHutang.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2786', 'Administrator', '\\po\\DaftarSupplier.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2787', 'Administrator', '\\po\\DaftarSupplierUtama.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2788', 'Administrator', '\\Po\\HistoryHargaItemSupplier.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2789', 'Administrator', '\\PO\\PayAnaSupplier.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2790', 'Administrator', '\\PO\\PayDetailDaily.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2791', 'Administrator', '\\PO\\PayDetailMonthly.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2792', 'Administrator', '\\Po\\SaldoHutang.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2793', 'Administrator', '\\po\\SelisihKursHutang1.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2794', 'Administrator', '\\po\\sisa_hutang.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2795', 'Administrator', '\\po\\sisa_hutang_bulan.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2796', 'Administrator', '\\po\\supplierEnvelop.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2797', 'Administrator', '\\Po\\SupplierLstFinancial.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2798', 'Administrator', '\\Po\\SupplierLstNumber.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2799', 'Administrator', '\\Po\\SupplierPayables.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2800', 'Administrator', '\\PO\\TotalPayableSupplier.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2801', 'Administrator', '_90121', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2802', 'Administrator', '_90122', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2803', 'Administrator', '_90123', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2804', 'Administrator', '_90124', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2805', 'Administrator', '_90125', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2806', 'Administrator', '_90126', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2807', 'Administrator', '_90127', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2808', 'Administrator', '_90128', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2809', 'Administrator', '_90129', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2810', 'Administrator', '_90130', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2811', 'Administrator', '_90131', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2812', 'Administrator', '_90132', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2813', 'Administrator', '_90150', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2814', 'Administrator', '_90151', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2815', 'Administrator', '_90152', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2816', 'Administrator', '_90153', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2817', 'Administrator', '_90154', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2818', 'Administrator', '_90155', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2819', 'Administrator', '_90156', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2820', 'Administrator', '_90157', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2821', 'Administrator', '_90158', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2822', 'Administrator', '_90159', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2823', 'Administrator', '_90160', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2824', 'Administrator', '_90161', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2825', 'Administrator', '_90162', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5332', 'ADM', '_00032', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5331', 'ADM', '_00031', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5330', 'ADM', '_00030', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5329', 'ADM', '_00023', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5328', 'ADM', '_00022', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5327', 'ADM', '_00021', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5326', 'ADM', '_00020', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5325', 'ADM', '_00013', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5324', 'ADM', '_00012', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5323', 'ADM', '_00011', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5322', 'ADM', '_00010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5321', 'ADM', 'ID_JasaKiriman', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2893', 'aaa', 'frmMain.Addnew', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2894', 'aaa', 'ID_ExportImport', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2895', 'aaa', 'ID_JasaKiriman', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('2896', 'aaa', '_00010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3289', 'SLSADM', '_30012', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3288', 'SLSADM', '_30011', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3287', 'SLSADM', 'frmCustomers.cmdSaveShipTo', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3286', 'SLSADM', '_30010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3285', 'SLSADM', '_30000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3284', 'SLSADM', '_18000.023', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8502', 'Gudang', 'retur_toko_view', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8503', 'Gudang', '_80010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8504', 'Gudang', '_80011', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8505', 'Gudang', '_80012', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8506', 'Gudang', '_80013', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8507', 'Gudang', '_80020', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8508', 'Gudang', '_80021', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8509', 'Gudang', '_80022', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8510', 'Gudang', '_80024', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8511', 'Gudang', '_80030', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8512', 'Gudang', '_80031', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8513', 'Gudang', '_80032', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8514', 'Gudang', '_80034', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8515', 'Gudang', '_80040', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8516', 'Gudang', '_80041', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8517', 'Gudang', '_80042', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8518', 'Gudang', '_80044', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8519', 'Gudang', '_80050', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8520', 'Gudang', '_80051', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8521', 'Gudang', '_80052', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8522', 'Gudang', '_80054', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8523', 'Gudang', '_80060', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8114', 'SPV', '_80040', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8115', 'SPV', '_80041', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5367', 'ADM', '_30000.018', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5368', 'ADM', '_30000.019', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5369', 'ADM', '_30000.020', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5370', 'ADM', '_30000.021', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5371', 'ADM', '_30000.022', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7072', 'KSR', '\\SO\\JualTglMonthlyDept.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7071', 'KSR', '\\SO\\JualTglMonthly.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7070', 'KSR', '\\So\\Jual100.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7069', 'KSR', '\\So\\DODetail100.Rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7068', 'KSR', '\\So\\AnalisaPenjualanPerSourcePerbulan.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7067', 'KSR', '\\So\\AnalisaPenjualanPerSalesmanPerbulan.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7066', 'KSR', '\\So\\AnalisaPenjualanPerKategoryCustomer.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7065', 'KSR', '\\So\\AnalisaPenjualanPerJenisPembayaranPerbulan.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7064', 'KSR', '\\So\\AnalisaPenjualanPerJenisPembayaranDetail.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7063', 'KSR', '\\So\\AnalisaPenjualanPerCustomerPerbulan.rpt', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7062', 'KSR', '_80074', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7061', 'KSR', '_80071', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7060', 'KSR', '_80070', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7059', 'KSR', '_80063', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7058', 'KSR', '_80061', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7028', 'KSR', '_30000.0', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7029', 'KSR', '_30000.001', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7030', 'KSR', '_30000.003', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7031', 'KSR', '_30000.004', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7032', 'KSR', '_30000.006', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7033', 'KSR', '_30000.007', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7034', 'KSR', '_30000.008', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7035', 'KSR', '_30000.009', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7036', 'KSR', '_30000.010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7037', 'KSR', '_30000.029', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7038', 'KSR', '_30000.030', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7039', 'KSR', '_30000.031', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8497', 'Gudang', '_40071', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8496', 'Gudang', '_40070', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7055', 'KSR', '_80043', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7056', 'KSR', '_80044', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7057', 'KSR', '_80060', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3202', 'admin', '_30057', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5361', 'ADM', '_30000.012', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5362', 'ADM', '_30000.013', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5363', 'ADM', '_30000.014', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5364', 'ADM', '_30000.015', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5365', 'ADM', '_30000.016', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5366', 'ADM', '_30000.017', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3272', 'SLSINV', '_30000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3273', 'SLSINV', '_80000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3274', 'SLSINV', '_80010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3283', 'SLS', '_30067', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3290', 'SLSADM', '_30020', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3291', 'SLSADM', '_30050', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3292', 'SLSADM', '_30051', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('3293', 'SLSADM', '_30052', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7043', 'KSR', '_30000.036', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7044', 'KSR', '_30000.056', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7045', 'KSR', '_30000.067', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7046', 'KSR', '_30000.068', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7047', 'KSR', 'retur_toko', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7048', 'KSR', 'retur_toko_add', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7049', 'KSR', '_80011', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7050', 'KSR', '_80012', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7051', 'KSR', '_80013', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7052', 'KSR', '_80040', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7053', 'KSR', '_80041', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8113', 'SPV', 'retur_toko_view', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8112', 'SPV', 'retur_toko_print', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8111', 'SPV', 'retur_toko_add', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8110', 'SPV', 'retur_toko', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8103', 'SPV', '_30000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8104', 'SPV', '_40060', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8105', 'SPV', '_40061', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8106', 'SPV', '_40062', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8107', 'SPV', '_40064', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8108', 'SPV', '_40065', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8109', 'SPV', '_80000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7042', 'KSR', '_30000.035', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7041', 'KSR', '_30000.033', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7040', 'KSR', '_30000.032', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5396', 'ADM', '_30000.062', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5395', 'ADM', '_30000.061', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5394', 'ADM', '_30000.060', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5393', 'ADM', '_30000.059', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5392', 'ADM', '_30000.057', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5391', 'ADM', '_30000.056', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5390', 'ADM', '_30000.054', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5389', 'ADM', '_30000.041', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5388', 'ADM', '_30000.040', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5387', 'ADM', '_30000.039', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5386', 'ADM', '_30000.038', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5385', 'ADM', '_30000.037', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5384', 'ADM', '_30000.036', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5383', 'ADM', '_30000.035', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5382', 'ADM', '_30000.034', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5381', 'ADM', '_30000.032', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5380', 'ADM', '_30000.031', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5379', 'ADM', '_30000.030', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5378', 'ADM', '_30000.029', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5377', 'ADM', '_30000.028', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5376', 'ADM', '_30000.027', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5375', 'ADM', '_30000.026', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5374', 'ADM', '_30000.025', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5373', 'ADM', '_30000.024', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5372', 'ADM', '_30000.023', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('7054', 'KSR', '_80042', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8524', 'Gudang', '_80061', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8525', 'Gudang', '_80062', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8526', 'Gudang', '_80064', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8527', 'Gudang', '_80070', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8528', 'Gudang', '_80071', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8529', 'Gudang', '_80072', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8530', 'Gudang', '_80074', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8531', 'Gudang', '_80080', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8532', 'Gudang', '_80081', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8533', 'Gudang', '_80082', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8534', 'Gudang', '_80084', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8535', 'Gudang', '_80090', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8536', 'Gudang', '_80091', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8537', 'Gudang', '_80092', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8538', 'Gudang', '_80094', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8539', 'Gudang', '_80100', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8540', 'Gudang', '_80101', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8541', 'Gudang', '_80120', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8542', 'Gudang', '_80121', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8543', 'Gudang', '_80200', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8544', 'Gudang', '_80201', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8545', 'Gudang', '_80202', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8546', 'Gudang', '_90000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8547', 'Gudang', '_90041', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8548', 'Gudang', '_90042', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8549', 'Gudang', '_90047', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8550', 'Gudang', '_90048', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8551', 'Gudang', '_90049', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8552', 'Gudang', '_90050', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8553', 'Gudang', '_90051', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8554', 'Gudang', '_90052', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8555', 'Gudang', '_90053', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8556', 'Gudang', '_90054', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8557', 'Gudang', '_90055', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8558', 'Gudang', '_90056', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8559', 'Gudang', '_90058', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8560', 'HRGA', '_12000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8561', 'HRGA', '_12001', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5320', 'ADM', 'ID_ExportImport', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5319', 'ADM', 'frmMain.Addnew', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('5318', 'ADM', '_00000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8378', 'FIN', '_10000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8379', 'FIN', '_30160', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8380', 'FIN', '_40000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8381', 'FIN', '_40010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8382', 'FIN', '_40011', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8383', 'FIN', '_40012', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8384', 'FIN', '_40013', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8385', 'FIN', '_40020', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8386', 'FIN', '_40021', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8387', 'FIN', '_40023', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8388', 'FIN', '_40049', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8389', 'FIN', '_40050', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8390', 'FIN', '_40051', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8391', 'FIN', '_40052', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8392', 'FIN', '_40053', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8393', 'FIN', '_40054', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8394', 'FIN', '_40055', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8395', 'FIN', '_40131', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8396', 'FIN', '_40132', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8397', 'FIN', '_40134', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8398', 'FIN', '_40135', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8399', 'FIN', '_40136', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8400', 'FIN', '_40060', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8401', 'FIN', '_40061', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8402', 'FIN', '_40062', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8403', 'FIN', '_40063', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8404', 'FIN', '_40064', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8405', 'FIN', '_40065', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8406', 'FIN', '_40070', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8407', 'FIN', '_40071', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8408', 'FIN', '_40090', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8409', 'FIN', '_40091', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8410', 'FIN', '_40092', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8411', 'FIN', '_40093', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8412', 'FIN', '_40094', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8413', 'FIN', '_40095', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8414', 'FIN', '_40100', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8415', 'FIN', '_40101', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8416', 'FIN', '_40102', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8417', 'FIN', '_40103', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8418', 'FIN', '_40104', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8419', 'FIN', '_40105', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8420', 'FIN', '_40110', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8421', 'FIN', '_40113', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8422', 'FIN', '_40114', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8423', 'FIN', '_40115', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8424', 'FIN', '_40120', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8425', 'FIN', '_40123', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8426', 'FIN', '_40130', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8427', 'FIN', '_60000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8428', 'FIN', '_60020', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8429', 'FIN', '_60021', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8430', 'FIN', '_60022', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8431', 'FIN', '_60023', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8432', 'FIN', '_60024', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8433', 'FIN', '_60025', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8434', 'FIN', '_60030', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8435', 'FIN', '_60031', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8436', 'FIN', '_60032', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8437', 'FIN', '_60033', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8438', 'FIN', '_60034', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8439', 'FIN', '_60035', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8440', 'FIN', '_60040', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8441', 'FIN', '_60041', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8442', 'FIN', '_60042', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8443', 'FIN', '_60043', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8444', 'FIN', '_60044', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8445', 'FIN', '_60045', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8446', 'FIN', '_60050', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8447', 'FIN', '_60051', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8448', 'FIN', '_60052', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8449', 'FIN', '_60053', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8450', 'FIN', '_60054', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8451', 'FIN', '_60055', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8452', 'FIN', '_60060', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8453', 'FIN', '_60061', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8454', 'FIN', '_60062', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8455', 'FIN', '_60063', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8456', 'FIN', '_60064', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8457', 'FIN', '_60065', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8458', 'FIN', '_60070', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8131', 'GL', '_10000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8132', 'GL', '_12000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8133', 'GL', '_14000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8134', 'GL', '_30000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8135', 'GL', '_30160', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8136', 'GL', '_40000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8137', 'GL', '_60000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8138', 'GL', '_80000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8139', 'GL', '_90000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8469', 'FIN', '_80010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8470', 'FIN', '_80011', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8471', 'FIN', '_80012', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8472', 'FIN', '_80013', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8473', 'FIN', '_80030', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8474', 'FIN', '_80031', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8475', 'FIN', '_80032', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8476', 'FIN', '_80033', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8477', 'FIN', '_80034', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8478', 'FIN', '_80050', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8479', 'FIN', '_80051', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8480', 'FIN', '_80052', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8481', 'FIN', '_80053', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8482', 'FIN', '_80054', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8483', 'FIN', '_90000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8459', 'FIN', '_60071', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8460', 'FIN', '_60072', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8461', 'FIN', '_60073', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8462', 'FIN', '_60074', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8463', 'FIN', '_60075', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8464', 'FIN', '_80000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8465', 'FIN', 'retur_toko', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8466', 'FIN', 'retur_toko_add', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8467', 'FIN', 'retur_toko_print', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8468', 'FIN', 'retur_toko_view', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8494', 'Gudang', '_40064', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8493', 'Gudang', '_40063', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8492', 'Gudang', '_40062', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8484', 'Gudang', '_30067', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8485', 'Gudang', '_40000', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8486', 'Gudang', '_40010', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8487', 'Gudang', '_40011', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8488', 'Gudang', '_40012', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8489', 'Gudang', '_40021', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8490', 'Gudang', '_40060', null, null, null, null);
+INSERT INTO `user_group_modules` VALUES ('8491', 'Gudang', '_40061', null, null, null, null);
+
 /*!40000 ALTER TABLE `user_group_modules` ENABLE KEYS */;
 
 
@@ -6936,7 +8364,16 @@ CREATE TABLE `qry_kartustock_union` (
 -- Dumping structure for view simak.qry_coa
 -- Removing temporary table and create final VIEW structure
 DROP TABLE IF EXISTS `qry_coa`;
-CREATE VIEW `qry_coa` AS select `coa`.`account` AS `account`,`coa`.`account_description` AS `account_description`,_utf8'D' AS `jenis`,`coa`.`db_or_cr` AS `db_or_cr`,`coa`.`beginning_balance` AS `saldo_awal`,`coa`.`group_type` AS `parent` from `chart_of_accounts` `coa` union all select `grg`.`group_type` AS `group_type`,`grg`.`group_name` AS `group_name`,_utf8'H' AS `jenis`,_utf8'' AS `Unknown`,NULL AS `0`,`grg`.`parent_group_type` AS `parent_group_type` from `gl_report_groups` `grg` ;
+CREATE VIEW `qry_coa` AS select `coa`.`account` AS `account`,
+`coa`.`account_description` AS `account_description`,
+_utf8'D' AS `jenis`,`coa`.`db_or_cr` AS `db_or_cr`,
+`coa`.`beginning_balance` AS `saldo_awal`,`coa`.`group_type` AS `parent` 
+from `chart_of_accounts` `coa` 
+union all
+select `grg`.`group_type` AS `group_type`,`grg`.`group_name` AS `group_name`,
+_utf8'H' AS `jenis`,
+_utf8'' AS `Unknown`,NULL AS `0`,`grg`.`parent_group_type` AS `parent_group_type` 
+from `gl_report_groups` `grg` ;
 
 
 -- Dumping structure for view simak.qry_invoice

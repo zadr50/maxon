@@ -33,6 +33,7 @@ class Sales extends CI_Controller {
              case 'pay_type':
              case 'faktur_slsman':
              case 'pay_list':
+			 case 'retur_item':
              case 'faktur_sum':
                  $data['criteria1']=true;
                  $data['label1']='Kode Salesman';

@@ -10,7 +10,8 @@
     echo form_dropdown($data,$options,$selected,"id='tb_field'");
     
     ?>
-	Enter Text: <input  id="search_item" style='width:100px' name="search_item">
+	Enter Text: <input  id="search_item" style='width:100px' name="search_item" 
+		onchange='filterItem();return false;' >
 	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" 
 	onclick="filterItem();return false;">Search</a>        
 	</div>
@@ -49,7 +50,20 @@ $().ready(function (){
         var checkboxes = $('#divItemSearchResult').find(':checkbox');
         checkboxes.prop('checked', $(this).is(':checked'));
     }); 
+    
+    $('#dgItemSearch').datagrid({
+        onDblClickRow:function(){
+            var row = $('#dgItemSearch').datagrid('getSelected');
+            if (row){
+            	selectSearchItem();
+            }       
+        }
+    });        
+    
     filterItem();
+    
+    
+    
 });
 		function find(){
 			var cust_type=$('#cust_type').val();

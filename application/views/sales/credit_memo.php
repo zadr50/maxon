@@ -53,7 +53,7 @@
        <tr>
             <td>Pelanggan</td>
             <td><?=form_input('customer_number',$customer_number,'id="customer_number"');?>
-            	<?=link_button("",'select_customer()','search','true')?>
+            	<?=link_button("",'select_customer()','search','false')?>
             </td>
 			<td rowspan="3">
 				<div id='faktur_info' name='faktur_info' class='thumbnail' style='height:50px;width:300px'>
@@ -65,7 +65,7 @@
        <tr>
             <td>Faktur</td>
             <td><?=form_input('docnumber',$docnumber,'id="docnumber"');?>
-            	<?=link_button("",'select_faktur()','search','true')?>
+            	<?=link_button("",'select_faktur()','search','false')?>
             </td>
        </tr>
        <tr>

@@ -103,5 +103,14 @@
         var param=$('#frmItem').serialize();
         return post_this(url,param,'message');
       }
+      
+		function calc_qty_unit(){
+			if(qty_conv=="")qty_conv=1;
+			if(qty_conv=="0")qty_conv=1;
+			qty=$("#quantity").val();
+			qty=qty*qty_conv;
+			$("#mu_qty").val(qty);
+		}
+      
 </script>
     

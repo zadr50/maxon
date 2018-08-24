@@ -11,7 +11,7 @@ if($allow_addnew_item=="")$allow_addnew_item=false;
 if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 
 	<div id='dgItemForm' class="easyui-dialog" 
-	style="width:750px;height:450px;padding:5px 5px;top:10px"
+	style="width:650px;height:450px;padding:5px 5px;top:10px"
     closed="true" buttons="#tbItemForm" >
 	
 	<?php if (!$has_receive) { ?>
@@ -34,20 +34,35 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 				 
 				 </tr>
 				 <tr><td>Nama Barang</td><td colspan='3'><input id="description" name="description" style='width:300px'></td></tr>
-				 <tr><td>Quantity</td><td><input id="quantity"  style='width:60px'  name="quantity" onblur="hitung()">
+				 <tr><td>Quantity</td><td><input id="quantity"  style='width:60px'  
+				 		name="quantity" onblur="hitung()">
 				 Unit <input id="unit" name="unit"  style='width:60px' >
-				<a href="#" class="easyui-linkbutton" iconCls="icon-search" data-options="plain:false" 
+					<a href="#" class="easyui-linkbutton" iconCls="icon-search" data-options="plain:false" 
 					onclick="searchUnit();return false;" 
 					style='display:none' id='cmdLovUnit'></a> 
-					
-					Harga Beli <input id="price" name="price"  style='width:80px'>
-				 </td></tr>
-				 <tr><td>*</td><td colspan=2>
-				     <div  class='thumbnailx'>
+				</tr>
+				<tr>
+					<td colspan=3>
+					<span id='divMultiUnit' style='display:none'>
+						M_Qty <?=form_input("mu_qty","","id='mu_qty' style='width:60px'")?>
+						M_Unit <?=form_input("multi_unit","","id='multi_unit' style='width:60px' ")?>
+						M_Price <?=form_input("mu_harga","","id='mu_harga'")?>
+					</span>
+					</td>
+				</tr>
+				</td>
+				<tr>
+				 <td>	
+					Harga Beli <input id="price" name="price">
+				 </td>
+				 </tr>
+				 <tr><td colspan=3>
+				     <div  class='thumbnail'>
                      <p>
                          Hr Jual <input id="retail" name="retail" style='width:80px'>
                          Margin% <input id="margin" name="margin" style='width:40px'>
-                     Hr Jual Real <input id="retail_real" name="retail_real" style='width:80px'> 
+                      
+	                     Hr Jual Real <input id="retail_real" name="retail_real" style='width:80px'> 
                          Margin Real <input id="margin_real" name="margin_real" style='width:40px'>
                      </p>
                      <p> <?=link_button("Hitung HJ", "calc_price(1);return false;","sum")?>
@@ -139,13 +154,14 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 
 	var gdg_count=<?=$gdg_count?>;
 	var allow_addnew_item='<?=$allow_addnew_item?>';
-	
+	var qty_conv=0;
 	function addItem(){
 		var mode=$('#mode').val();
 		if(mode=="add"){
 			alert("Simpan dulu sebelum tambah item barang !");
 			return false;
 		}
+		qty_conv=0;
 		//$('#dgItemForm').window({left:10,top:window.event.clientY-350});
 		$("#dgItemForm").dialog("open").dialog('setTitle','Input barang');
 	}
@@ -188,8 +204,10 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
                         
 						if(obj.multiple_pricing){
 							$("#cmdLovUnit").show();
+							$("#divMultiUnit").show();
 						} else {
 							$("#cmdLovUnit").hide();
+							$("#divMultiUnit").hide();
 						}
 						hitung();
 						
@@ -208,23 +226,11 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 		gross=gross-(gross*disc_3);
 		$('#amount').val(gross);			
 
+		calc_qty_unit();
 		hitung_jumlah();			
 	}
 	
 
-    
-function roundNumber(num, scale) {
-  if(!("" + num).includes("e")) {
-    return +(Math.round(num + "e+" + scale)  + "e-" + scale);
-  } else {
-    var arr = ("" + num).split("e");
-    var sig = ""
-    if(+arr[1] + scale > 0) {
-      sig = "+";
-    }
-    return +(Math.round(+arr[0] + "e" + sig + (+arr[1] + scale)) + "e-" + scale);
-  }
-}	
 	function calc_price(method){
         var beli=0,jual=0,margin=0,jual_real2=0,jual_real=0;
  
@@ -300,6 +306,7 @@ function roundNumber(num, scale) {
 					close_item();
 					
 				} else {
+					log_err(result.msg);
 					$.messager.show({
 						title: 'Error',
 						msg: result.msg
@@ -325,7 +332,10 @@ function roundNumber(num, scale) {
         $('#retail_real').val('0');                  
         $('#margin_real').val('0'); 
         $("#inventory_account").val("");
-        $("#coa_inventory").val("");                 
+        $("#coa_inventory").val("");    
+        $("#mu_qty").val("");
+        $("#multi_unit").val("");
+        $("#mu_harga").val("");             
         clear_input_alloc();        	
 	}
 	function reloadItem(){
@@ -369,6 +379,14 @@ function roundNumber(num, scale) {
 			$('#disc_3').val(row.disc_3);
 			$('#amount').val(row.total_price);
 			$('#line_number').val(row.line_number);
+			$('#multi_unit').val(row.multi_unit);
+			$('#mu_qty').val(row.mu_qty);
+			$('#mu_harga').val(row.mu_harga);
+			if($("#multi_unit").val()!=$("#unit").val()){
+				$("#divMultiUnit").show();
+			} else {
+				$("#divMultiUnit").hide();
+			}
 			load_line_number();
 		}
 		//$('#dgItemForm').window({left:100,top:window.event.clientY-350});

@@ -16,8 +16,8 @@ class List_of_values
 		$sysvar_lookup="";
 		if(!isset($setting['dlgTitle'])) $setting['dlgTitle']="Daftar Pilihan [$bind_id]";
 		if(!isset($setting['dlgId'])) $setting['dlgId']=$bind_id;
-		if(!isset($setting['dlgWidth'])) $setting['dlgWidth']="750px";
-		if(!isset($setting['dlgHeight'])) $setting['dlgHeight']="450px";
+		if(!isset($setting['dlgWidth'])) $setting['dlgWidth']="750";
+		if(!isset($setting['dlgHeight'])) $setting['dlgHeight']="450";
 		if(!isset($setting['dlgTool'])) $setting['dlgTool']="tb".$bind_id;
         $other_filter="";if(isset($setting['filter']))$other_filter=$filter;		
 		$dlgId=$setting['dlgId'];
@@ -229,7 +229,7 @@ class List_of_values
                 $sql.=" order by kode";
                 break;      
             case("suppliers"):
-                $sql="select supplier_number,supplier_name from suppliers";
+                $sql="select supplier_number,supplier_name,first_name from suppliers";
                 if($search!="")$sql.=" where (supplier_name like '%$search%' or supplier_number like '%$search%')";
                 $sql.=" order by supplier_name";
                 break;      

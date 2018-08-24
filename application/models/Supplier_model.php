@@ -38,7 +38,8 @@ private $table_name='suppliers';
     function lookup($param=null){        
             $setsupp['dlgBindId']="suppliers";
             $setsupp['dlgRetFunc']="$('#supplier_number').val(row.supplier_number);
-            $('#supplier_name').html(row.supplier_name);
+            	$('#supplier_name').html(row.supplier_name);
+            	$('#contact_person').val(row.first_name);
             ";
             if($param){
                 if(isset($param['dlgRetFunc'])){
@@ -92,7 +93,18 @@ private $table_name='suppliers';
 	    if(isset($data['acc_biaya'])){
             if($data['acc_biaya']=='')$data['acc_biaya']=0;
 	    }
-		
+		if(isset($data['margin_prc_min'])){
+			if($data['margin_prc_min']=="")$data['margin_prc_min']=0;
+		}
+		if(isset($data['margin_prc_max'])){
+			if($data['margin_prc_max']=="")$data['margin_prc_max']=0;
+		}
+		if(isset($data['termin_day'])){
+			if($data['termin_day']=="")$data['termin_day']=0;
+		}
+		if(isset($data['biaya_admin'])){
+			if($data['biaya_admin']=="")$data['biaya_admin']=0;
+		}
         if(!isset($data['create_date']))$data['create_date']=date('Y-m-d H:i:s');
         if(isset($data['create_date']))$data['create_date']= date('Y-m-d H:i:s', strtotime($data['create_date']));
         if(!isset($data['update_date']))$data['update_date']=date('Y-m-d H:i:s');
@@ -111,7 +123,18 @@ private $table_name='suppliers';
             $data['create_date']=$data['update_date'];
         }
 //        $data['update_date']= date('Y-m-d H:i:s', strtotime($data['update_date']));
-        
+		if(isset($data['margin_prc_min'])){
+			if($data['margin_prc_min']=="")$data['margin_prc_min']=0;
+		}
+		if(isset($data['margin_prc_max'])){
+			if($data['margin_prc_max']=="")$data['margin_prc_max']=0;
+		}
+		if(isset($data['termin_day'])){
+			if($data['termin_day']=="")$data['termin_day']=0;
+		}
+		if(isset($data['biaya_admin'])){
+			if($data['biaya_admin']=="")$data['biaya_admin']=0;
+		}        
 		return $this->db->update($this->table_name,$data);
 	}
 	function delete($id){

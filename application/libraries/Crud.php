@@ -17,12 +17,21 @@ class Crud
        
 	   $this->CI->load->helper('mylib');	 
 	}
+	function set_mode($value){
+		$this->mode=$value;
+	}
+	function set_table($value){
+		$this->table=$value;
+	}
+	function set_controller($value){
+		$this->controller=$value;
+	}
 	function set_value($key,$value){
 		$this->key=$key;
 		$this->value=$value;
 	}
 	function set_action($action="",$key="",$value=""){
-		$CI->action=$action;
+		$this->CI->action=$action;
 		$this->key=$key;
 		$this->value=$value;
 	}
@@ -71,5 +80,6 @@ class Crud
         $this->CI->session->set_userdata($hwnd,$setting);
 		return load_view('crud_browse',$setting);
 	}
+
 }
 ?>

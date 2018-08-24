@@ -35,11 +35,12 @@
      	<td colspan="8">
 	     		<table class='titem'>
 	     		<thead>
-	     			<tr><td>Tanggal</td><td>Nomor Faktur</td><td>Kode Pelanggan</td><td>Nama Pelanggan</td>
+	     			<tr><td>Nama Pelanggan</td>
+	     				<td>Tanggal</td><td>Nomor Faktur</td><td>Kode Pelanggan</td>	     				
 	     				 <td>Termin</td><td>Jatuh Tempo</td><td>Hari JTP</td>
 						<td>Salesman</td><td>Jumlah</td><td>Saldo</td>
-						<td> < 1 Hari<td>1-7Hari</td><td>7-14Hari</td>
-						<td>14-30Hari</td><td>30-60Hari</td><td> >60 Hari</td>
+						<td>1-7Hari<td>7Hari</td><td>30Hari</td>
+						<td>60Hari</td><td>90Hari</td><td>Over</td>
 						
 	     			</tr>
 	     		</thead>
@@ -52,52 +53,66 @@
 				$z_amount=0;		$z_payment=0;
 				$z_retur=0;			$z_cr_amount=0;
 				$z_db_amount=0;		$z_saldo=0;
-				$a0_tot=0;
-				$a7_tot=0;
-				$a14_tot=0;
-				$a30_tot=0;
-				$a60_tot=0;
-				$aover_tot=0;
+				$a0_tot=0;			$a0=0;
+				$a7_tot=0;			$a7=0;
+				$a14_tot=0;			$a14=0;
+				$a30_tot=0;			$a30=0;
+				$a60_tot=0;			$a60=0;
+				$a90_tot=0;			$a90=0;
+				$aover_tot=0;		$aover=0;
 
 				foreach($rst_so->result() as $row){
-                    $tbl.="<tr>";
-                    $tbl.="<td>".$row->invoice_date."</td>";
-                    $tbl.="<td>".$row->invoice_number."</td>";
-                    $tbl.="<td>".($row->sold_to_customer)."</td>";
-                    $tbl.="<td>".$row->company."</td>";
-                     
-                    $tbl.="<td>".$row->payment_terms."</td>";
-                    $tbl.="<td>".$row->due_date."</td>";
-					$hari=round((strtotime($row->due_date)-strtotime(date('Y-m-d')))/3600/24);
-                    $tbl.="<td>".$hari."</td>";
-
-                    $tbl.="<td>".$row->salesman."</td>";
-                    $tbl.="<td align='right'>".number_format($row->amount)."</td>";
-					$saldo=$row->amount-$row->payment-$row->cr_amount+$row->db_amount-$row->retur_amount;
-                    $tbl.="<td align='right'>".number_format($saldo)."</td>";
 					
-					$a0=0;$a7=0;$a14=0;$a30=0;$a60=0;$aover=0;
-					if($hari>60){
-						$aover=$saldo;
-					} else if ($hari>30) {
-						$a60=$saldo;
-					} else if ($hari>14) {
-						$a30=$saldo;
-					} else if ($hari>7) {
-						$a14=$saldo;
-					} else if ($hari>1) {
-						$a7=$saldo;
-					} else {
-						$a0=$saldo;
-					}
-                    $tbl.="<td align='right'>".number_format($a0)."</td>";
-                    $tbl.="<td align='right'>".number_format($a7)."</td>";
-                    $tbl.="<td align='right'>".number_format($a14)."</td>";
-                    $tbl.="<td align='right'>".number_format($a30)."</td>";
-                    $tbl.="<td align='right'>".number_format($a60)."</td>";
-                    $tbl.="<td align='right'>".number_format($aover)."</td>";
+					$saldo=$row->amount-$row->payment-$row->cr_amount+$row->db_amount-$row->retur;
+					$hari=round((strtotime($row->due_date)-strtotime(date('Y-m-d')))/3600/24);
+
+					if ($saldo!=0) {
+
+					
+	                    $tbl.="<tr>";
+	                    $tbl.="<td>".$row->company."</td>";
+	                    $tbl.="<td>".$row->invoice_date."</td>";
+	                    $tbl.="<td>".$row->invoice_number."</td>";
+	                    $tbl.="<td>".($row->sold_to_customer)."</td>";
+	                     
+	                    $tbl.="<td>".$row->payment_terms."</td>";
+	                    $tbl.="<td>".$row->due_date."</td>";
+	                    $tbl.="<td>".$hari."</td>";
+	
+	                    $tbl.="<td>".$row->salesman."</td>";
+	                    $tbl.="<td align='right'>".number_format($row->amount)."</td>";
+						
+	                    $tbl.="<td align='right'>".number_format($saldo)."</td>";
+	
+						$a0=0;		$a7=0;		$a14=0;
+						$a30=0;		$a60=0;		$a90=0;		$aover=0;
+					
+						if($hari>90){
+							$aover=$saldo;
+						} else if ($hari>60) {
+							$a60=$saldo;
+						} else if ($hari>30) {
+							$a30=$saldo;
+						} else if ($hari>14) {
+							$a14=$saldo;
+						} else if ($hari>1) {
+							$a7=$saldo;
+						} else {
+							$a0=$saldo;
+						}
+	                    $tbl.="<td align='right'>".number_format($a0)."</td>";
+	                    $tbl.="<td align='right'>".number_format($a7)."</td>";
+	                    $tbl.="<td align='right'>".number_format($a14)."</td>";
+	                    $tbl.="<td align='right'>".number_format($a30)."</td>";
+	                    $tbl.="<td align='right'>".number_format($a60)."</td>";
+	                    $tbl.="<td align='right'>".number_format($aover)."</td>";
+						
 					
                     $tbl.="</tr>";
+					
+					}
+					
+					
 					$z_amount=$z_amount+$row->amount;
 					$z_payment=$z_payment+$row->payment;
 					$z_retur=$z_retur+$row->retur;

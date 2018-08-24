@@ -160,6 +160,9 @@ class Retur_toko extends CI_Controller {
 		'Gudang','Tujuan','Doc Type','Status');
 		$data['fields']=array('shipment_id','date_received','warehouse_code',
         'supplier_number','doc_type','doc_status');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='shipment_id';
 		$this->load->library('search_criteria');
 		

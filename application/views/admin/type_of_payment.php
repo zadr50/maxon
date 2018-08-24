@@ -1,12 +1,12 @@
-<div><h1>TERMIN PEMBAYARAN<div class="thumbnail">
+<div class="thumbnail  box-gradient">
 	<?
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','true',base_url().'index.php/type_of_payment/add');		
-	echo link_button('Search','','search','true',base_url().'index.php/type_of_payment');		
+	echo link_button('Add','','add','false',base_url().'index.php/type_of_payment/add');		
+	echo link_button('Search','','search','false',base_url().'index.php/type_of_payment');		
 	
 	?>
-</div></H1>
+</div>
 <div class="thumbnail">	
 <form id="myform"  method="post" action="<?=base_url()?>index.php/type_of_payment/save">
 <input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
@@ -45,9 +45,23 @@
 </div>   
 <script type="text/javascript">
     function save_this(){
-        if($('#bank_account_number').val()===''){alert('Isi dulu kode bank !');return false;};
-        if($('#bank_name').val()===''){alert('Isi dulu nama bank !');return false;};
-        $('#myform').submit();
+        if($('#type_of_payment').val()===''){alert('Isi dulu kode termin !');return false;};
+			$('#myform').form('submit',{
+				onSubmit: function(){
+					return $(this).form('validate');
+				},
+				success: function(result){
+					var result = eval('('+result+')');
+					if (result.success){
+						log_msg('Data sudah tersimpan. ');
+						remove_tab_parent();
+					} else {
+						log_err(result.msg);
+					}
+				}
+			});
+        
+        
     }
 </script>  
 

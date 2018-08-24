@@ -7,14 +7,25 @@
 	$data['criteria1']=true;
 	$data['label1']='Kelompok Barang';
 	$data['text1']='';
+         $data['key1']="kode";
+         $data['fields1'][]=array("kode","80","Kode");
+         $data['fields1'][]=array("category","180","Kelompok");
+         $data['ctr1']='category/select';
 	
 	$data['criteria2']=true;
 	$data['label2']='Gudang';
 	$data['text2']='';
+         $data['key2']="location_number";
+         $data['fields2'][]=array("location_number","80","Gudang");
+         $data['ctr2']='gudang/select';
 
 	$data['criteria3']=true;
 	$data['label3']='Kode Barang';
 	$data['text3']='';
+         $data['key3']="item_number";
+         $data['fields3'][]=array("item_number","80","Kode");
+         $data['fields3'][]=array("description","180","Nama Barang");
+         $data['ctr1']='inventory/select';
 	
 	$data['caption']='KARTU STOCK DETAIL';
 	$data['rpt_controller']="inventory/rpt/$id";

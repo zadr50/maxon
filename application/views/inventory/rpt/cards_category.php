@@ -5,6 +5,11 @@
 		$data['criteria1']=true;
 		$data['label1']='Kelompok Barang';
 		$data['text1']='';
+         $data['key1']="kode";
+         $data['fields1'][]=array("kode","80","Kode");
+         $data['fields1'][]=array("category","180","Kelompok");
+         $data['ctr1']='category/select';
+		
 		$data['rpt_controller']="inventory/rpt/$id";
 		$CI->template->display_form_input('criteria',$data,'');
 	} else {

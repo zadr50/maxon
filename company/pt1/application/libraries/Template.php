@@ -8,9 +8,11 @@ class Template {
  private $bootstrap='';
  private $flexslider='';
  private $fld='';
+ private $script_head_login="";
+ 
  
  function _cjs($s,$l=true){
-	 return $this->_ci->jquery->script($this->fld.$s,$l);
+	 return "<script type='text/javascript' charset='utf-8' src='".$this->fld.$s."'></script>";
  }
  
  function __construct()
@@ -35,31 +37,40 @@ class Template {
 	if($themes==""){
 		$themes="standard";
 	}
-	$base=base_url();
-    $this->fld=base_url().$this->_ci->config->item("parent_folder");     
+    $this->fld=$this->_ci->config->item("parent_folder");     
     
-    var_dump($this->fld);
+	$this->script_head_login=" 
+<script type='text/javascript' charset='utf-8' src='$this->fld/assets/jquery/jquery-1.11.3.min.js'></script>
+<script type='text/javascript' charset='utf-8' src='$this->fld/assets/bootstrap-3.3.5/js/bootstrap.min.js'></script>
+<link rel='stylesheet' type='text/css' href='$this->fld/assets/bootstrap-3.3.5/css/bootstrap.min.css'>		
+	";
     
 	$this->bootstrap='
 	<link rel="stylesheet" type="text/css" href="'.$this->fld.'assets/bootstrap-3.3.5/css/bootstrap.css">
 	<link rel="stylesheet" type="text/css" href="'.$this->fld.'themes/'.$themes.'/style.css">
 	';
-	$this->bootstrap_only ="<link rel='stylesheet' type='text/css' href='".$this->fld."assets/bootstrap-3.3.5/css/bootstrap.css'>";
-	$this->bootstrap_only.=$this->_cjs('assets/jquery/jquery-1.11.3.min.js',true);
-    $this->bootstrap_only.=$this->_cjs('assets/bootstrap-3.3.5/js/bootstrap.min.js',true);
-    $this->bootstrap_only.=$this->_cjs('js/lib.js',true);
+	$this->bootstrap_only ="
+	<link rel='stylesheet' type='text/css' href='$this->fld /assets/bootstrap-3.3.5/css/bootstrap.css'>
+	<script type='text/javascript' charset='utf-8' src='$this->fld /asset/jquery/jquery-1.11.3.min.js'></script>
+	<script type='text/javascript' charset='utf-8' src='$this->fld /asset/bootstrap-3.3.5/js/bootstrap.min.js'></script>
+	<script type='text/javascript' charset='utf-8' src='$this->fld /js/lib.js'></script>";
 	
-	$this->library_src =$this->_cjs('assets/jquery/jquery-1.11.3.min.js',true);
-    $this->library_src.=$this->_cjs('assets/bootstrap-3.3.5/js/bootstrap.min.js',true);
-    $this->library_src.=$this->_cjs('assets/datepicker/bootstrap-datepicker.js',true);
-    $this->library_src.=$this->_cjs('assets/jquery-easyui-1.4.3/jquery.easyui.min.js',true);
-    $this->library_src.=$this->_cjs('assets/jquery-easyui-1.4.3/plugins/jquery.edatagrid.js',true);
+	$this->library_src = "
+	<script type='text/javascript' charset='utf-8' src='$this->fld /asset/jquery/jquery-1.11.3.min.js'></script>
+    <script type='text/javascript' charset='utf-8' src='$this->fld /assets/bootstrap-3.3.5/js/bootstrap.min.js'></script>
+    <script type='text/javascript' charset='utf-8' src='$this->fld /assets/datepicker/bootstrap-datepicker.js'></script>
+    <script type='text/javascript' charset='utf-8' src='$this->fld /assets/jquery-easyui-1.4.3/jquery.easyui.min.js'></script>
+    <script type='text/javascript' charset='utf-8' src='$this->fld /assets/jquery-easyui-1.4.3/plugins/jquery.edatagrid.js'></script>
+    <script type='text/javascript' charset='utf-8' src='$this->fld /js/autocomplete/jquery.autocomplete.min.js'></script>
+    <script type='text/javascript' charset='utf-8' src='$this->fld /js/lib.js'></script>
+    <script type='text/javascript' charset='utf-8' src='$this->fld /js/jquery.formatNumber.js'></script>
+    <script type='text/javascript' charset='utf-8' src='$this->fld /assets/flexslider/jquery.flexslider.js'></script>
+    <script type='text/javascript' charset='utf-8' src='$this->fld /js/lib_error.js'></script>
+	
+	
+	";
     //$this->library_src.=$this->_cjs('assets/jquery-easyui-1.4.3/jquery.easyui.mobile.js',true);
-    $this->library_src.=$this->_cjs('js/autocomplete/jquery.autocomplete.min.js',true);
-    $this->library_src.=$this->_cjs('js/lib.js',true);
-    $this->library_src.=$this->_cjs('js/jquery.formatNumber.js',true);
-    $this->library_src.=$this->_cjs('assets/flexslider/jquery.flexslider.js',true);
-    $this->library_src.=$this->_cjs('js/lib_error.js',true);
+		
 	
     $this->flexslider=$this->_cjs('assets/flexslider/jquery.flexslider.js',true);
 	
@@ -259,23 +270,7 @@ function display_main($template="",$data=null){
 	$this->_ci->load->view("template/standard/template_articles",$data);	
  }
   function display_login($template,$data=null) {
-	$library_src='
-		<script type="text/javascript" charset="utf-8" 
-		src="'.base_url().'assets/jquery/jquery-1.11.3.min.js"></script>
-		<script type="text/javascript" charset="utf-8" 
-		src="'.base_url().'assets/jquery-easyui-1.4.3/jquery.easyui.min.js"></script>
-	';
-	
-	$script_head='
-	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/bootstrap-3.3.5/css/bootstrap.css">
-	<link rel="stylesheet" type="text/css" href="'.base_url().'themes/standard/style.css">
-	';
-//  $data['library_src']=$library_src;
-// 	$data['script_head']=$script_head;
-
-  	$data['library_src']=$this->library_src;
-  	$data['script_head']=$this->script_head;
-		
+  	$data['script_head_login']=$this->script_head_login;		
 	$this->_ci->load->view($template,$data);
  }
 

@@ -119,9 +119,10 @@ function save($data){
     if($data['warehouse_code']=="")$data['warehouse_code']="Gudang";
 	
     $item_no=$data['item_number']; item_need_update($item_no);
+
+	if(isset($data['line_number']))	unset($data['line_number']);
 		
 	if($id!=""){
-		unset($data['line_number']);
 		$this->db->where($this->primary_key,$id);
 		return $this->db->update($this->table_name,$data);
 	} else {

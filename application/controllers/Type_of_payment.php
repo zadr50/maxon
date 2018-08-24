@@ -43,8 +43,7 @@ class Type_of_payment extends CI_Controller {
             $message='update success';
             $data['mode']='view';
 			$this->syslog_model->add($id,"type_of_payment","add");
-
-            $this->browse();
+			echo json_encode(array("success"=>true,"msg"=>$message));
 		} else {
 			$data['mode']='add';
             $this->template->display_form_input($this->file_view,$data,'');
@@ -63,8 +62,7 @@ class Type_of_payment extends CI_Controller {
 			$this->type_of_payment_model->update($id,$data);
             $message='Update Success';
 			$this->syslog_model->add($id,"type_of_payment","edit");
-
-            $this->browse();
+			echo json_encode(array("success"=>true,"msg"=>$message));
 		} else {
 			$message='Error Update';
          	$this->view($id,$message);		
@@ -73,9 +71,7 @@ class Type_of_payment extends CI_Controller {
 	function save(){
 		$mode=$this->input->post('mode');
 		if($mode=="add"){
-
-			$this->add();
-			
+			$this->add();			
 		} else {
 			$this->update();
 		}
@@ -112,6 +108,9 @@ class Type_of_payment extends CI_Controller {
 		$data['controller']='type_of_payment';
 		$data['fields_caption']=array('Termin Pembayaran','Discount%','Discount Day','Days');
 		$data['fields']=array('type_of_payment','discount_percent','discount_days','days');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='type_of_payment';
 		
 		$this->load->library('search_criteria');

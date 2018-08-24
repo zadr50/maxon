@@ -29,6 +29,7 @@ class Purchase extends CI_Controller {
 		 $data['select_date']=true;		 
 		$id=urldecode($id);
     	 switch ($id) {
+		 	 case "cards_detail":
              case "aging_detail":
                  $data['criteria1']=true;
                  $data['label1']='Supplier';
@@ -42,6 +43,13 @@ class Purchase extends CI_Controller {
                  break;
 			 case 'po_list':
 			 case "faktur_items":
+				 break;
+			 case "cards_sum":
+				 $data['criteria1']=true;
+				 $data['label1']='Tampil saldo nol? (0=Tidak,1=Ya)';
+				 $data['text1']='0';				 
+				 
+				 
 			 default:
 				 
 				 break;

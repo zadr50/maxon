@@ -307,6 +307,9 @@ class Kontra_bon extends CI_Controller {
 			$data['content']=load_view('purchase/print_kontra_bon',$data);
 			$this->load->view('pdf_print',$data);
         }
+		function print_po_kontra_bon($nomor){
+			$this->print_faktur($nomor);
+		}
         function summary_info($nomor){
 			$nomor=urldecode($nomor);
             return "";            

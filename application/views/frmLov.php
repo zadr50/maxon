@@ -10,7 +10,7 @@
     $before_lookup="";if(isset($dlgBeforeLookup))$before_lookup=$dlgBeforeLookup;
 ?>
 <div id='dlg<?=$dlgId?>' class="easyui-dialog"  background='black'
-    style="width:<?=$dlgWidth?>;height:<?=$dlgHeight?>;padding:5px 5px;"
+    style="width:<?=$dlgWidth?>px;height:<?=$dlgHeight?>px;padding:5px 5px;"
     closed="true"  toolbar="#<?=$dlgTool?>"
 >
 <?php 
@@ -102,13 +102,14 @@
 	    //Firefox tidak punya window.event jadi di offkan dulu
 	    //fnc_after_select=subEvent;
         //var mainEvent = subEvent ? subEvent : window.event;
-        //var x=mainEvent.screenX;
-        //var y=mainEvent.screenY;    
+        //var w=<?=$dlgWidth?>;
+        //var x=screen.width*0.5-w*0.5;
+        //var y=mainEvent.screenY/2;    
         
 		idd_<?=$dlgId?>="<?=$dlgBindId?>";
-        $("dlg<?=$dlgId?>_search_id").focus();
+        $("#dlg<?=$dlgId?>_search_id").focus();
 		
-        ///$('#dlg<?=$dlgId?>').window({left:10,top:window.event.clientY});  
+        $('#dlg<?=$dlgId?>').window({left:100,top:50});  
 		$('#dlg<?=$dlgId?>').dialog('open').dialog('setTitle','<?=$dlgTitle?>');
 		search_id=$('#dlg<?=$dlgId?>_search_id').val();
 

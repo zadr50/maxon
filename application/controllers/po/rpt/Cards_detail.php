@@ -20,6 +20,13 @@ class Cards_detail extends CI_Controller {
 		 $data['criteria1']=true;
 		 $data['label1']='Supplier';
 		 $data['text1']='';				 
+         $data['output1']="text1";
+         $data['key1']="supplier_number";
+         $data['fields1'][]=array("supplier_number","100","Kode");
+         $data['fields1'][]=array("supplier_name","180","Nama");
+         $data['ctr1']='supplier/select';
+	 
+		 
 		$data['rpt_controller']=$this->rpt;
 		$this->template->display_form_input('criteria',$data,'');	
 	

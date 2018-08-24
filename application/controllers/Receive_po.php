@@ -207,6 +207,9 @@ class Receive_po extends CI_Controller {
 		$data['fields_caption']=array('Nomor Bukti','Tanggal','Nomor PO','Kode Supplier','Nama Supplier','Keterangan','Status','');
 		$data['fields']=array('shipment_id', 'date_received', 'purchase_order_number', 
         	'supplier_number','supplier_name','comments','doc_status');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='shipment_id';
 		$this->load->library('search_criteria');
 		

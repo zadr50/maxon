@@ -341,9 +341,9 @@
 					
 				</div>
 				<div title='Satuan'>
-					<div class='thumbnail box-gradient'>
-						<p>Item Multi Unit &nbsp &nbsp<?=form_radio('multiple_pricing',1,$multiple_pricing=='1'?TRUE:FALSE);?>
-							 Yes <?php echo form_radio('multiple_pricing',0,$multiple_pricing=='0'?TRUE:FALSE);?>No 
+					<div class='thumbnail'>
+						<p>Item Multi Unit &nbsp &nbsp<?=form_radio('multiple_pricing',1,$multiple_pricing=='1'?TRUE:FALSE,"style='width:30px'");?>
+							 Yes <?php echo form_radio('multiple_pricing',0,$multiple_pricing=='0'?TRUE:FALSE,"style='width:30px'");?>No 
 						</p>
 					</div>
 					<table id='dgUnitPrice' name='dgUnitPrice' class="easyui-datagrid"  

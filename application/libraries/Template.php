@@ -45,12 +45,12 @@ class Template {
   /// $this->script_head=$this->_ci->jquery->_compile();
 	$this->script_head='
 	
+	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/bootstrap-3.3.5/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'js/autocomplete/jquery.autocomplete.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/jquery-easyui-1.4.3/themes/'.$themes.'/easyui.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/jquery-easyui-1.4.3/themes/icon.css">
-	<link rel="stylesheet" type="text/css" href="'.base_url().'themes/'.$themes.'/style.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/datepicker/datepicker.css">
-	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/bootstrap-3.3.5/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="'.base_url().'themes/'.$themes.'/style.css">
 	
 	';
 //	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/jquery-easyui-1.4.3/themes/mobile.css">

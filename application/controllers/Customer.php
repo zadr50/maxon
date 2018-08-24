@@ -170,6 +170,9 @@ class Customer extends CI_Controller {
 		$data['controller']='customer';		
 		$data['fields_caption']=array('Kode','Nama Pelanggan','Kota','Telp','Fax','Salesman','Kelompok');
 		$data['fields']=array('customer_number','company','city','phone','fax','salesman','customer_record_type');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='customer_number';
 		
 		$this->load->library('search_criteria');

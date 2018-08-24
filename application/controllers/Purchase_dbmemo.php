@@ -51,6 +51,9 @@ class Purchase_DbMemo extends CI_Controller {
 		$data['controller']=$this->controller;
 		$data['fields_caption']=array('Nomor Bukti','Tanggal','Faktur','Jumlah','Posted','Keterangan','Kode Akun','Perkiraan');
 		$data['fields']=array('kodecrdb','tanggal','docnumber','amount','posted','keterangan','account','account_description');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='kodecrdb';
 		$data['caption']='DAFTAR DEBIT MEMO';
 		$data['posting_visible']=true;

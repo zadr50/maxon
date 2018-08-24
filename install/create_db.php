@@ -1,5 +1,7 @@
 <?
 //start creating tables
+error_reporting(E_ALL);
+
 include "koneksi.php";
 
 $nomor=$_GET['nomor'];

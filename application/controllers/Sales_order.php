@@ -261,6 +261,9 @@ class Sales_order extends CI_Controller {
 			,'Terkirim','Status');
 		$data['fields']=array('sales_order_number','sales_date','due_date','amount'
 			,'company','salesman','delivered','status');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='sales_order_number';
 		$data['caption']='DAFTAR SALES ORDER';
         $data['fields_format_numeric']=array("amount");

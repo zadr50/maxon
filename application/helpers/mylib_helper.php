@@ -2,6 +2,52 @@
 
 date_default_timezone_set("Asia/Jakarta");
 
+
+	if ( ! function_exists('set_show_columns')) {
+    function set_show_columns($key,$data){
+	        $CI =& get_instance();
+			$show_cols=$CI->session->userdata("cols_".$key,null);
+			
+			if($ck_reset=$CI->input->get("ck_reset")){
+				$CI->session->unset_userdata("cols_".$key);
+				$show_cols=null;
+				echo json_encode(array("success"=>true,"msg"=>"Success"));
+				return false;
+				
+			} else{			
+				if($ck_cols=$CI->input->get("ck_cols")){
+					$show_cols=$ck_cols;
+					$CI->session->set_userdata("cols_".$key,$ck_cols);
+					echo json_encode(array("success"=>true,"msg"=>"Success"));
+					return false;
+				}
+				
+			}
+						
+			if($show_cols){
+				$data_tmp=null;
+				$data_tmp_caption=null;
+				$flds=$data['fields'];
+				$fldscap=$data['fields_caption'];
+				for($icols=0;$icols<count($show_cols);$icols++){
+					$fld=$show_cols[$icols];
+					for($iflds=0;$iflds<count($flds);$iflds++){
+						if($fld==$flds[$iflds]){
+							$data_tmp[$icols]=$fld;
+							$data_tmp_caption[$icols]=$fldscap[$iflds];
+							break;
+						}
+					}
+				}
+				if($data_tmp){
+					$data['fields']=$data_tmp;
+					$data['fields_caption']=$data_tmp_caption;
+				}
+			}
+			return $data;		
+		}
+	}
+
 if ( ! function_exists('app_active')) {
     function app_active($Vsu4bmcg5nqv){
         $Vnpr0xe0jkmu =& get_instance();

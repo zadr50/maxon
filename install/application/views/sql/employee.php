@@ -264,4 +264,24 @@ CREATE TABLE IF NOT EXISTS `exchange_rate` (
 	if(mysql_query($sql))$msg .="</br>$table..OK";else $msg .="</br>$table..<br>ERROR -" . mysql_error();
 	
 
+	$table="hr_leaves";
+
+$sql="
+CREATE TABLE IF NOT EXISTS `hr_leaves` (
+  `nip` varchar(50) DEFAULT NULL,
+  `from_date` date DEFAULT NULL,
+  `to_date` date DEFAULT NULL,
+  `leave_type` varchar(50) DEFAULT NULL,
+  `leave_day` varchar(50) DEFAULT NULL,
+  `reason` varchar(250) DEFAULT NULL,
+  `id` int(9) NOT NULL AUTO_INCREMENT,
+  `doc_status` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+";
+
+	if(mysql_query($sql))$msg .="</br>$table..OK";else $msg .="</br>$table..<br>ERROR -" . mysql_error();
+	
+	
+	
 ?>

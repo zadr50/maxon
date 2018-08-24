@@ -774,6 +774,13 @@ class Invoice extends CI_Controller {
         if($set_tanggal=$this->session->userdata("set_tanggal")){
             $tanggal=$set_tanggal;
         }
+        //var_dump($tanggal);
+        //var_dump(strtotime(date('Y',$tanggal)));
+        
+        if(date('Y',strtotime($tanggal))=="1970"){	///????
+        	$tanggal=date("Y-m-d H:i:s");        	
+        	$this->session->set_userdata("set_tanggal",$tanggal);
+        }
         if($header["invoice_number"]=="AUTO"){
             $id=$this->nomor_bukti();
             $new=true;
@@ -865,53 +872,14 @@ class Invoice extends CI_Controller {
 			//	->update("invoice",array("paid"=>1,"amount"=>$total));
 			
 			if(isset($data['payment'])){
-                $payment=$data['payment'];
-                
-                $cash=c_($payment['cash']);
-                $card=c_($payment['card']);
-                $debit=c_($payment['debit']);
-                $voucher=c_($payment['voucher']);
-                
-                $kembali=c_($payment['kembali']);
-                if($kembali>0){   
-                  $cash=$cash-$kembali;
-                }
-                $rec_pay["invoice_number"]=$id;
-                $rec_pay["date_paid"]=date("Y-m-d H:i:s");
-                $rec_pay["amount_alloc"]=$kembali;
-    
-                $rec_pay["how_paid"]="CASH";
-                $rec_pay["amount_paid"]=$cash;
-                if($cash<>0) $this->payment_model->save_pos($rec_pay,false);
-
-                $rec_pay["how_paid"]="VOUCHER";
-                $rec_pay["amount_paid"]=$voucher;
-                $rec_pay["credit_card_number"]=$payment["voucher_no"];
-                
-                if($voucher<>0) $this->payment_model->save_pos($rec_pay,false);
-                
-            $rec_pay["how_paid"]="CARD";
-            $rec_pay["amount_paid"]=$card;
-            $rec_pay["credit_card_type"]=$payment["credit_card_type"];
-            $rec_pay["credit_card_number"]=$payment["credit_card_number"];
-            $rec_pay["authorization"]=$payment["authorization"];
-            $rec_pay["expiration_date"]=$payment["expiration_date"];
-            $rec_pay["from_bank"]=$payment["from_bank"];
-            if($card<>0) $this->payment_model->save_pos($rec_pay);
-            
-            $db_pay["amount_paid"]=$debit;
-            $db_pay["invoice_number"]=$id;
-            $db_pay["date_paid"]=date("Y-m-d H:i:s");
-            $db_pay["how_paid"]="DEBIT";
-            $db_pay["amount_paid"]=$debit;
-            $db_pay["credit_card_type"]=$payment["credit_card_type"];
-            $db_pay["credit_card_number"]=$payment["credit_card_number"];
-            $db_pay["authorization"]=$payment["authorization"];
-            $db_pay["expiration_date"]=$payment["expiration_date"];
-            $db_pay["from_bank"]=$payment["from_bank"];
-            if($debit<>0) $this->payment_model->save_pos($db_pay);
-
-			    
+					
+		        $payment=$data['payment'];
+				$this->save_pos_payment($payment,$id,$tanggal);
+					    
+			}
+			if(isset($data['payment_split'])){
+				$payment_split=$data['payment_split'];
+				$this->save_pos_payment_split($payment_split,$id,$tanggal);
 			}
             $this->invoice_model->recalc($id);
             //echo "<br>saldo: ".$this->invoice_model->saldo;
@@ -934,6 +902,89 @@ class Invoice extends CI_Controller {
 			echo json_encode(array('msg'=>'Some errors occured.'));
 		}
 	}	
+	function save_pos_payment_split($payment_split,$invoice_number,$tanggal){
+		for($i=0;$i<count($payment_split);$i++){
+			$row=$payment_split[$i];
+			$how_paid=$row[0];
+			$amount_paid=c_($row[1]);
+			$rekening=$row[2];
+			$card_voucher_no=$row[3];
+			$card_author=$row[4];
+			$card_expire=$row[5];
+			
+			$rec_pay=null;
+			
+		    $rec_pay["invoice_number"]=$invoice_number;
+		    $rec_pay["date_paid"]=$tanggal;						
+			$rec_pay["how_paid"]=$how_paid;
+			$rec_pay["amount_paid"]=$amount_paid;
+			$rec_pay["amount_alloc"]=$amount_paid;
+			
+	    	if($how_paid=="CARD"){
+			    $rec_pay["credit_card_type"]=$rekening;
+			    $rec_pay["credit_card_number"]=$card_voucher_no;
+			    $rec_pay["authorization"]=$card_author;
+			    $rec_pay["expiration_date"]=$card_expire;	    		
+	    	} else if($how_paid=="VOUCHER"){
+			    $rec_pay["credit_card_number"]=$card_voucher_no;
+			} else {
+	    		unset($rec_pay["credit_card_type"]);
+	    		unset($rec_pay["credit_card_number"]);
+	    		unset($rec_pay["authorization"]);
+	    		unset($rec_pay["expiration_date"]);
+	    	}
+	    							
+			if($amount_paid!=0){
+				$this->payment_model->save_pos($rec_pay,false);
+			}
+		}
+	}
+	function save_pos_payment($payment,$invoice_number,$tanggal){
+        
+	    $cash=c_($payment['cash']);
+	    $card=c_($payment['card']);
+	    $debit=c_($payment['debit']);
+	    $voucher=c_($payment['voucher']);
+	    
+	    $kembali=c_($payment['kembali']);
+	    if($kembali>0){   
+	      $cash=$cash-$kembali;
+	    }
+	    $rec_pay["invoice_number"]=$invoice_number;
+	    $rec_pay["date_paid"]=$tanggal;
+	    $rec_pay["amount_alloc"]=$kembali;
+	
+	    $rec_pay["how_paid"]="CASH";
+	    $rec_pay["amount_paid"]=$cash;
+	    if($cash<>0) $this->payment_model->save_pos($rec_pay,false);
+	
+	    $rec_pay["how_paid"]="VOUCHER";
+	    $rec_pay["amount_paid"]=$voucher;
+	    $rec_pay["credit_card_number"]=$payment["voucher_no"];
+	    
+	    if($voucher<>0) $this->payment_model->save_pos($rec_pay,false);
+        
+	    $rec_pay["how_paid"]="CARD";
+	    $rec_pay["amount_paid"]=$card;
+	    $rec_pay["credit_card_type"]=$payment["credit_card_type"];
+	    $rec_pay["credit_card_number"]=$payment["credit_card_number"];
+	    $rec_pay["authorization"]=$payment["authorization"];
+	    $rec_pay["expiration_date"]=$payment["expiration_date"];
+	    $rec_pay["from_bank"]=$payment["from_bank"];
+	    if($card<>0) $this->payment_model->save_pos($rec_pay);
+	    
+	    $db_pay["amount_paid"]=$debit;
+	    $db_pay["invoice_number"]=$invoice_number;
+	    $db_pay["date_paid"]=$tanggal;
+	    $db_pay["how_paid"]="DEBIT";
+	    $db_pay["amount_paid"]=$debit;
+	    $db_pay["credit_card_type"]=$payment["credit_card_type"];
+	    $db_pay["credit_card_number"]=$payment["credit_card_number"];
+	    $db_pay["authorization"]=$payment["authorization"];
+	    $db_pay["expiration_date"]=$payment["expiration_date"];
+	    $db_pay["from_bank"]=$payment["from_bank"];
+	    if($debit<>0) $this->payment_model->save_pos($db_pay);		
+	}
 	function edit_nota($invoice_number){
 		$data['success']=false;
 		$data['msg']="Invoice not found !";
@@ -1080,9 +1131,11 @@ echo "<tr><td colspan='5'>$garis</td></tr>
 <tr><td>Sub Total Rp. </td><td align='right' colspan='4'>".number_format($total)."</td></tr>";
 echo "<tr><td>Pembulatan Rp. </td><td align='right' colspan='4'>".number_format($pembulatan)."</td></tr>";
 echo "<tr><td>TOTAL Rp. </td><td align='right' colspan='4'>".number_format($total+$pembulatan)."</td></tr>";
+echo "<tr><td colspan=4>---Payment Info---</td></tr>";
 $kembali=0;
 $bayar_cash=0;
 $bank_name="";
+$split=false;
                 if($q=$this->db->where("invoice_number",$invoice_number)
                     ->get("payments")){
                         $cash=0;    $card=0;    $voucher=0;    $rekening="";
@@ -1100,6 +1153,7 @@ $bank_name="";
                                 }
                             }
                             if($r->how_paid=="CARD"){
+                            	$split=true;
                                 $card+=$r->amount_paid;
                                 if($rekening==""){
                                     $rekening=$r->credit_card_type;   
@@ -1112,6 +1166,7 @@ $bank_name="";
                                 }
                             }
                             if($r->how_paid=="VOUCHER"){
+                            	$split=true;
                                 $voucher+=$r->amount_paid;
                                 $voucher_no=$r->credit_card_number;
                             }
@@ -1136,7 +1191,7 @@ if($voucher>0){
                                                 
                 }
                 
-if($cash>0){
+if($cash>0 && !$split){
     
     echo "
     <tr><td colspan='5'>$garis</td></tr>
@@ -1147,6 +1202,7 @@ if($cash>0){
     }
 
 }
+echo "<tr><td>Total Pay Rp. </td><td align='right' colspan='4'>".number_format($total_paid)."</td></tr>";
 
 echo "
 <tr><td colspan='5'>$garis</td></tr>

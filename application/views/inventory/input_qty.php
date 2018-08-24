@@ -1,8 +1,8 @@
 <div id='dgItemForm' class="easyui-dialog" 
-    style="width:500px;height:400px;padding:5px 5px"
+    style="width:500px;height:400px;padding:5px 5px;top:100px;"
     closed="true" buttons="#tbItemForm" >
     <form id="frmItem" method='post' >
-            <table class='table' style='width:250px;float:left'>
+            <table class='table' style='width:100%'>
              <tr><td >Kode Barang</td><td colspan='3'><input onblur='find()' id="item_number" style='width:180px' 
                 name="item_number"   class="easyui-validatebox" required="true">
                 <a href="#" class="easyui-linkbutton" iconCls="icon-search" data-options="plain:false" 

@@ -35,11 +35,15 @@ class List_of_values
 						array("fieldname"=>"keterangan","caption"=>"Keterangan","width"=>"200px")
 					);			
 			$key=$setting['sysvar_lookup'];
-			if(!isset($setting['dlgUrlQuery']))$setting['dlgUrlQuery']=base_url()."index.php/lookup/query_sysvar_lookup/$key/";
-			
+			if(!isset($setting['dlgUrlQuery'])){
+				$setting['dlgUrlQuery']=base_url()."index.php/lookup/query_sysvar_lookup/$key/";
+			}
 		} else {
 			//$setting['dlgCols']
-			if(!isset($setting['dlgUrlQuery']))$setting['dlgUrlQuery']=base_url("index.php/lookup/query/$dlgId/");
+			if(!isset($setting['dlgUrlQuery']))
+			{
+				$setting['dlgUrlQuery']=base_url("index.php/lookup/query/$dlgId/");
+			}
 		}
 		return load_view('frmLov',$setting);
 	}

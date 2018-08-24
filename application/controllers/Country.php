@@ -97,6 +97,9 @@ class Country extends CI_Controller {
 		if($order_column=="")$order_column=$this->primary_key;
 		$data['controller']=$this->controller;
 		$data['fields']=$this->country_model->fields;
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']=$this->primary_key;
 		$data['caption']='DAFTAR NEGARA';
 

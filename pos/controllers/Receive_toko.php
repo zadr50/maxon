@@ -79,6 +79,7 @@ class Receive_toko extends CI_Controller {
             );
             $setting['show_date_range']=true;
             $setting['dlgRetFunc']="add_sj_item(row.shipment_id);";
+			
             $data['lookup_do_gudang']=$this->list_of_values->render($setting);
             
             return $data;

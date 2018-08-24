@@ -300,6 +300,9 @@ class Invoice extends CI_Controller {
 			'Salesman','Gudang');
 		$data['fields']=array('invoice_number','invoice_date','amount', 
             'company','salesman','warehouse_code');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='invoice_number';
 		$data['caption']='DAFTAR FAKTUR PENJUALAN';
 		$data['posting_visible']=true;
@@ -514,7 +517,8 @@ class Invoice extends CI_Controller {
 					$row['amount']=number_format($row['amount']);
 					$row['saldo']=number_format($saldo);
 					$row['bayar']=form_input("bayar[]","","id='fkt$i' style='width:100px;color:black;text-align:right'");
-                    $row['ck']=form_checkbox("ck[]",$nomor,'',"onclick='cek_this($i,$saldo);return false;' style='width:30px;color:black;'");
+                    $row['ck']=form_checkbox("ck[]",$nomor,'',"onclick='cek_this($i,$saldo);return false;' 
+                    	style='width:50px;height:30px;color:black;'");					
 					$row['invoice_number']=$nomor.form_hidden("faktur[]",$nomor);
 					$rows[$i++]=$row;
 				}

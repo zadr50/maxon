@@ -45,7 +45,7 @@
 <div class="thumbnail">	
 
 <form id="myform" method="POST" action="<?=base_url()?>index.php/payment/save">
-	<table class='table' width='100%'>
+	<table class='table2' width='100%'>
 		<tr>
 			<td>Nomor Bukti: </td><td><h4><?=$voucher?></h4></td>
 			<td>Tanggal Bayar: </td><td><?=$date_paid?></td>

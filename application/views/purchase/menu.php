@@ -16,11 +16,11 @@
                 <li><?=anchor('po/konsinyasi/create','Create Invoice Konsinyasi','class="info_link"');?></li>
             </ul></li>
             <li><span><strong>Report & Query</strong></span><ul>
-                <li><?=anchor('purchase/rpt/po_list','Purchase Order Summary','class="info_link"')?></li>
-                <li><?=anchor('purchase/rpt/cards_sum','Kartu Hutang Summary','class="info_link"')?></li>
-                <li><?=anchor('purchase/rpt/cards_detail','Kartu Hutang Detail','class="info_link"')?></li>
-                <li><?=anchor('purchase/rpt/aging_sum','Umur Hutang Summary','class="info_link"')?></li>
-                <li><?=anchor('purchase/rpt/aging_detail','Umur Hutang Detail','class="info_link"')?></li>
+                <li><?=anchor('po/rpt/po_list','Purchase Order Summary','class="info_link"')?></li>
+                <li><?=anchor('po/rpt/cards_sum','Kartu Hutang Summary','class="info_link"')?></li>
+                <li><?=anchor('po/rpt/cards_detail','Kartu Hutang Detail','class="info_link"')?></li>
+                <li><?=anchor('po/rpt/aging_sum','Umur Hutang Summary','class="info_link"')?></li>
+                <li><?=anchor('po/rpt/aging_detail','Umur Hutang Detail','class="info_link"')?></li>
                 <li><?=anchor('po/tracking_harga','Tracking Harga Beli','class="info_link"');?></li>
                 <li><?=anchor('po/umur_barang','Umur Barang','class="info_link"');?></li>
                 <li><?=anchor('po/item_jual','Data Penjualan per Barang','class="info_link"');?></li>

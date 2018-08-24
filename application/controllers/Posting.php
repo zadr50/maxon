@@ -305,6 +305,9 @@ class Posting extends CI_Controller {
         
         $data['fields_caption']=array('Nomor Bukti','Tanggal','Jenis','Posted','Amount','Comments');
         $data['fields']=array('nomor_bukti', 'tanggal','jenis','posted','amount','comments');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
         
         $data['field_key']='nomor_bukti';
         $this->load->library('search_criteria');

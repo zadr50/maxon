@@ -1,5 +1,4 @@
-<div id='dgItemInv' class="easyui-dialog" style="width:600px;height:400px;
-	padding:5px 5px"
+<div id='dgItemInv' class="easyui-dialog" style="width:600px;height:400px;padding:5px 5px;left:100px;top:100px"
     closed="true" buttons="#btnItem" >
 
     <form id="frmItemInv" method='post' >
@@ -57,9 +56,9 @@ if(!isset($show_tool))$show_tool=true;
 if($show_tool){
 ?>
 	<div id="tb" class='box-gradient'>
-		<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addItem();return false;">Add</a>
-		<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem();return false;">Edit</a>
-		<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem(); return false;">Delete</a>	
+		<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="false" onclick="addItem();return false;">Add</a>
+		<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="false" onclick="editItem();return false;">Edit</a>
+		<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="false" onclick="deleteItem(); return false;">Delete</a>	
 	</div>
 <?php } ?>
 <?=load_view("inventory/select_unit_jual")?>

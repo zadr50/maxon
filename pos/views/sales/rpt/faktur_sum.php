@@ -64,7 +64,7 @@
 	     		<table class='titem'>
 	     		<thead>
 	     			<tr><td>Nomor Faktur</td><td>Tanggal</td><td>Jumlah</td>
-	     			    	     			</tr>
+	     			<td>Paid</td>    	     			</tr>
 	     		</thead>
 	     		<tbody>
      			<?
@@ -90,7 +90,7 @@
                         $tbl.="<td>".$row->invoice_number."</td>";
                         $tbl.="<td>".$row->invoice_date."</td>";
                         $tbl.="<td align='right'>".number_format($row->amount)."</td>";
-//                        $tbl.="<td>".$warehouse_code."</td>";
+                        $tbl.="<td>".$row->paid."</td>";
                         $tbl.="</tr>";
     					$z_amount=$z_amount+$row->amount;
 					}

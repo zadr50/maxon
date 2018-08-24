@@ -108,6 +108,9 @@ class Periode extends CI_Controller {
 		$data['controller']='periode';
 		$data['fields_caption']=array('Tahun','Urut','Periode','Month','Start','End','Closed');
 		$data['fields']=array('year_id','sequence','period','month_name','startdate','enddate','closed');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='period';
 		$data['caption']='DAFTAR PERIODE AKUNTANSI';
         

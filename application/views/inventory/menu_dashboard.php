@@ -26,7 +26,6 @@
 				<area shape="circle" alt="Stock Adjustment" coords="265,250,30" href="<?=base_url()?>index.php/stock_adjust" class="info_link"  title="Stock Adjustment" />
 				<area shape="circle" alt="Stock Card" coords="401,247,29" href="<?=base_url()?>index.php/inventory/rpt/cards_summary" class="info_link"  title="Stock Card" />
 				<area shape="circle" alt="Manage Warehouse" coords="117,362,29" href="<?=base_url()?>index.php/shipping_locations"  class="info_link" title="Manage Warehouse" />
-				<area shape="circle" alt="Jurnal Umum" coords="263,357,31" href="<?=base_url()?>index.php/jurnal" class="info_link"  title="Jurnal Umum" />
 				<area shape="default" nohref="nohref" alt="" />
 				</map>
 			</div>

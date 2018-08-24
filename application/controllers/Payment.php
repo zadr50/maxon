@@ -18,7 +18,13 @@ class Payment extends CI_Controller {
 		$this->load->library(array('form_validation','sysvar','template'));
 		$this->load->model('payment_model');
 		$this->load->model('syslog_model');
-                
+   		$this->load->model('bank_accounts_model');
+		$this->load->model('customer_model');
+		$this->load->model('invoice_model');
+		$this->load->model('check_writer_items_model');
+		$this->load->model('company_model');
+		$this->load->model('chart_of_accounts_model');
+		$this->load->model('check_writer_model');
 	}
    function index(){
 		if (!allow_mod2('_30110'))  exit;
@@ -121,6 +127,16 @@ class Payment extends CI_Controller {
             "dlgCols"=>array(array("fieldname"=>"bank_account_number","caption"=>"Rekening","width"=>"100px"),
             array("fieldname"=>"bank_name","caption"=>"Nama Bank","width"=>"250px"),
             array("fieldname"=>"org_id","caption"=>"Company","width"=>"80px"))));
+
+        $data['lookup_customer']=$this->list_of_values->render(
+            array("dlgBindId"=>"customers",
+            "dlgRetFunc"=>"
+            	$('#customer_number').val(row.customer_number);
+               	$('#company').val(row.company);
+         	   	select_invoice();",
+            "dlgCols"=>array(array("fieldname"=>"customer_number","caption"=>"Kode","width"=>"100px"),
+            array("fieldname"=>"company","caption"=>"Nama Pelanggan","width"=>"250px"),
+            array("fieldname"=>"city","caption"=>"Kota","width"=>"80px"))));
         
 		$this->template->display_form_input('sales/payment_multi',$data,'');			
 		
@@ -156,18 +172,13 @@ class Payment extends CI_Controller {
 		}
    }
    function add_payment(){
-		$this->load->model('payment_model');		
-   		$this->load->model('bank_accounts_model');
-		$this->load->model('customer_model');
-		$this->load->model('invoice_model');
-		$this->load->model('check_writer_items_model');
-		$this->load->model('company_model');
-		$this->load->model('chart_of_accounts_model');
-		$this->load->model('check_writer_model');
 
 		$total_paid=$this->input->post('amount_paid');
-   		$no_bukti=$this->nomor_bukti();
-		$how_paid=strtolower($this->input->post('how_paid'));
+		$no_bukti=$this->input->post("no_bukti");
+		if($no_bukti=="" || $no_bukti=="AUTO"){
+	   		$no_bukti=$this->nomor_bukti();			
+		}
+		$how_paid=strtoupper($this->input->post('how_paid'));
 		$invoice_no=$this->input->post("invoice_number");
 		$date_paid=$this->input->post('date_paid');	
 		$invoice=$this->db->select("sold_to_customer,account_id")->where("invoice_number",$invoice_no)
@@ -183,6 +194,7 @@ class Payment extends CI_Controller {
 		$account=getvar('default_cash_payment_account');
 		
 		switch ($how_paid) {
+			case '3':
 			case '2':
 				$trtype='trans in';
 				$account=getvar('default_bank_account_number');
@@ -234,7 +246,7 @@ class Payment extends CI_Controller {
 		
         $data['no_bukti']=$no_bukti;
         $data['date_paid']=$date_paid;
-        $data['how_paid']=$trtype;
+        $data['how_paid']=$how_paid;
         $data['amount_paid']=$total_paid;
         $data['invoice_number']=$invoice_no;
 
@@ -256,15 +268,6 @@ class Payment extends CI_Controller {
 		}
    }
    function save(){
-   		 
-   		$this->load->model('bank_accounts_model');
-		$this->load->model('customer_model');
-		$this->load->model('invoice_model');
-		$this->load->model('check_writer_items_model');
-		$this->load->model('company_model');
-		$this->load->model('chart_of_accounts_model');
-		$this->load->model('check_writer_model');
-		 
 		$faktur=$this->input->post("faktur");
    		$no_bukti=$this->nomor_bukti();
    		$bayar=$this->input->post("bayar");
@@ -361,8 +364,11 @@ class Payment extends CI_Controller {
     function browse($offset=0,$limit=50,$order_column='no_bukti',$order_type='asc'){
         $data['caption']='DAFTAR PEMBAYARAN';
 		$data['controller']=$this->controller;		
-		$data['fields_caption']=array('Tgl Bayar','Faktur','Voucher','Jumlah','Cara Bayar','Nama Customer');
-		$data['fields']=array('date_paid','invoice_number','no_bukti','amount_paid','how_paid','company');
+		$data['fields_caption']=array('Nama Customer','Tgl Bayar','Faktur','Voucher','Jumlah','Cara Bayar');
+		$data['fields']=array('company','date_paid','invoice_number','no_bukti','amount_paid','how_paid');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='no_bukti';
         $data['fields_format_numeric']=array("amount_paid");
         
@@ -402,7 +408,7 @@ class Payment extends CI_Controller {
     			if($no_faktur!='')$sql.=" and invoice_number='$no_faktur'";	
      	 	}
      	} else {
-            $sql.="  and p.no_bukti='$search'";
+            $sql.="  and (p.no_bukti='$search' or c.company like '$search%') ";
      	    
      	    
      	}

@@ -184,6 +184,9 @@ class Delivery_gudang extends CI_Controller {
 		$data['fields']=array('shipment_id',
         'date_received','warehouse_code',
         'supplier_number','doc_type');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='shipment_id';
 		$this->load->library('search_criteria');
 		

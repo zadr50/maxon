@@ -47,10 +47,10 @@
 
        <input type='hidden' id='posted' name='posted' value='<?=$posted?>'>    
        <table class='table2' width='100%'>
-    		<tr><td>Jenis Transaksi </td><td>
-    			<?php echo form_radio('trans_type','cash out',$trans_type=='cash out'," checked ");?> Cash
-    			<br><?php echo form_radio('trans_type','cheque out',$trans_type=='cheque out');?> Giro atau Cek
-                <br><?php echo form_radio('trans_type','trans out',$trans_type=='trans out');?> Transfer
+    		<tr><td colspan=2>Jenis
+    			<?php echo form_radio('trans_type','cash out',$trans_type=='cash out'," checked style='width:30px' ");?> Cash
+    			<?php echo form_radio('trans_type','cheque out',$trans_type=='cheque out',"style='width:30px' ");?> Giro
+                <?php echo form_radio('trans_type','trans out',$trans_type=='trans out',"style='width:30px' ");?> Transfer
                 
     		</td>
     		<td>Voucher </td><td>
@@ -64,12 +64,6 @@
     			}		
     			?>
     		</td>
-    		</tr>
-    		<tr>
-    		    <td></td><td></td>
-                <td>Doc Status</td><td><?=form_input('doc_status',$doc_status,"id='doc_status'")?>
-                <?=link_button('','dlgdoc_status_show();return false;','search','false');?>      
-    		    </td> 
     		</tr>
            <tr>
                 <td>Rekening Dikeluarkan </td><td><?php echo form_input('account_number',$account_number,"id='account_number'");?>
@@ -110,14 +104,17 @@
                  data-options="formatter:format_date,parser:parse_date"');?></td>
            </tr>
            <tr>
-                <td>Dikeluarkan Untuk </td><td><?php echo form_input('payee',$payee,"id='supplier_name'");?></td>
+                <td>Dikeluarkan Untuk </td><td><?php echo form_input('payee',$payee,"id='payee'");?></td>
                 <td>Nomor Transfer </td><td><?php echo form_input('bank_tran_id',$bank_tran_id);?></td>
                
            </tr>
            
            <tr>
                 <td>Company Code</td><td><?php echo form_input('org_id',$org_id,"id='org_id'");?></td>
-                <td></td><td></td>
+                <td>Doc Status</td><td><?=form_input('doc_status',$doc_status,"id='doc_status'")?>
+                <?=link_button('','dlgdoc_status_show();return false;','search','false');?>      
+    		    </td> 
+    		</tr>
            </tr>
            
            <tr>
@@ -150,6 +147,13 @@
 <?=$lookup_department?>
 
 <script type="text/javascript">
+$(function() {
+ 	
+    $("#account_number").autocomplete("<?=base_url('banks/banks/select2')?>");
+    $("#doc_status").autocomplete("<?=base_url('lookup/query_sysvar_lookup_ac/doc_status')?>");
+         
+});
+
     function save_this(){
         var valid_date=true;
         var min_date='<?=$min_date?>';

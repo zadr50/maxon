@@ -145,6 +145,9 @@ class Stock_opname extends CI_Controller {
 		$data['controller']=$this->controller;		
 		$data['fields_caption']=array('Nomor Bukti','Tanggal','Gudang','Status','By','Comments');
 		$data['fields']=array('transfer_id', 'date_trans','from_location','status','trans_by','comments');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='transfer_id';
 		$this->load->library('search_criteria');
 		

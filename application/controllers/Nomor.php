@@ -23,6 +23,9 @@ class Nomor extends CI_Controller {
 		$data['controller']=$this->controller;
 		$data['fields_caption']=array('Kode','Var Value','keterangan');
 		$data['fields']=array('varname','varvalue','keterangan');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='varname';
 		$data['caption']='DAFTAR KODE PENOMORAN TRANSAKSI';
 

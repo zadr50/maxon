@@ -27,7 +27,10 @@ class Coa_group extends CI_Controller {
 		$data['controller']='coa_group';
 		$data['fields_caption']=array('Kode','Nama Kelompok Akun Perkiraan','Parent','Type');
 		$data['fields']=array('group_type','group_name','parent_group_type','account_type');
-		$data['field_key']='group_type';
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
+				$data['field_key']='group_type';
 		$data['caption']='DAFTAR KELOMPOK PERKIRAAN';
 
 		$this->load->library('search_criteria');

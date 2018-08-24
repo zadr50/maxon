@@ -24,11 +24,22 @@ padding:10px 20px;left:100px;top:20px"
     </div>   
 </div>
 <div id="button-select-faktur" style="height:auto">
-	Enter Text: <input  id="search_supp" style='width:180' name="search_supp">
+	Enter Text: <input  id="search_supp" style='width:180' name="search_supp" onblur="filter_po();return false;">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="filter_po();return false;"></a>        
 	<a href="#" class="easyui-linkbutton" iconCls="icon-ok"  onclick="selected_po();return false;">Select</a>
 </div>
 <SCRIPT language="javascript">
+    $().ready(function (){
+        $('#dgSelectFaktur').datagrid({
+            onDblClickRow:function(){
+                var row = $('#dgSelectFaktur').datagrid('getSelected');
+                if (row){
+                	selected_po();
+                }       
+            }
+        });        
+    });
+
 	function select_po(){
         //$('#dlgSelectFaktur').window({left:100,top:window.event.clientY-50});
 		$('#dlgSelectFaktur').dialog('open').dialog('setTitle','Cari nomor PO');

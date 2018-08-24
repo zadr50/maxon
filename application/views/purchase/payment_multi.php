@@ -23,22 +23,18 @@
 	<table width="100%" class="table">	
 		<tr>
 			<td>Supplier: </td><td colspan=4><?=form_input('supplier_number',$supplier_number,"id=supplier_number");?>
-				<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
+				<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" 
 				onclick="dlgsuppliers_show();return false;"></a>	
 				<span id="supplier_name" >Supplier Information</div>
 			</td>
 		</tr>
 		<tr>
-			<td>Rekening: </td><td><?=form_input('how_paid_account_id',$how_paid_account_id,"id='how_paid_account_id'");
+			<td>Rekening: </td><td width=200><?=form_input('how_paid_account_id',$how_paid_account_id,"id='how_paid_account_id'");
                 echo link_button("","dlgbank_accounts_show();return false","search");
 			    
 			    ?>
-			    
-			    
-			    
 			</td>
-			 
-			<td>Jenis Bayar: <?=form_dropdown('how_paid',array('Cash','Giro','Transfer'),$how_paid,"id='how_paid'  style='width:200px'");?></td>
+			
 			
             <td>Nomor Bukti</td><td><?=form_input("no_bukti",$no_bukti,"id='no_bukti'")?></td> 
 			
@@ -50,30 +46,38 @@
 			id="date_paid"
 			
 			');?></td>
+			 
+			<td>Jenis Bayar: </td><td><?=form_dropdown('how_paid',array('Cash','Giro',
+				'Transfer',
+				"title='Apabila dilakukan pembayaran dengan giro 
+				silahkan isi informasi giro dan tanggal jatuh tempo giro.' "),
+				$how_paid,"id='how_paid'  style='width:200px'");?></td>
+				
+				
+		</tr>
+		<tr>
+			<td>Kontra Bon#</td><td><?php echo form_input("ref1",$ref1,"id='ref1'");
+                echo link_button('','dlgpayables_bill_header_show()','search');      
+			    ?>			    
+			</td>
 			<td colspan=3>
+				<span class='thumbnail'>
 				<p><?=form_input('credit_card_number',$credit_card_number)?>&nbsp Giro Nomor </p>
 				<p><?=form_input('expiration_date',$expiration_date,'class="easyui-datetimebox"
 					data-options="formatter:format_date,parser:parse_date"
 					')?>&nbsp Tanggal Cair Giro					</p>
-				<p><?=form_input('from_bank',$from_bank)?>&nbsp Nama Bank Penerbit							</p>
-				<p><i>	*apabila dilakukan pembayaran dengan giro silahkan isi informasi giro dan tanggal 
-				jatuh tempo giro.</i></p>			
+				<p><?=form_input('from_bank',$from_bank)?>&nbsp Nama Bank Penerbit							
+					</p>
+				</span>
 			</td>
+			
 		</tr>
 		<tr>
 			<td>Jumlah Bayar: </td><td><?=form_input('amount_paid',$amount_paid,"id='amount_paid'");?></td>
-			<td>Nomor Kontra Bon</td><td colspan=2><?php echo form_input("ref1",$ref1,"id='ref1'");
-                echo link_button('Pilih','dlgpayables_bill_header_show()','search');      
-			    ?>
-			    
-			</td>
 		</tr>	
 	</table>
 
 	<div id="divItem" >
-		<p><i>*Dibawah ini adalah nomor-nomor faktur hutang supplier yang bersangkutan 
-			yang masih memiliki saldo atau belum lunas, silahkan isi jumlah 
-			pembayaran dikolom bayar dibaris faktur.</i></p>
 		<table id="dgInvoice" class="easyui-datagrid"  width="100%"
 			data-options="
 				toolbar: '', fitColumns: true,
@@ -89,9 +93,13 @@
 					<th data-options="field:'amount',width:80,align:'right'">Jumlah</th>
 					<th data-options="field:'saldo',width:80,align:'right'">Saldo</th>
 					<th data-options="field:'bayar',width:'100'">Bayar</th>
+					<th data-options="field:'ck',width:'50'">Cmd</th>
 				</tr>
 			</thead>
 		</table>
+		<p><i>*Diatas ini adalah nomor-nomor faktur hutang supplier yang bersangkutan 
+			yang masih memiliki saldo atau belum lunas, silahkan isi jumlah 
+			pembayaran dikolom bayar dibaris faktur.</i></p>
 	</div>
 
 	
@@ -104,6 +112,31 @@ echo $lookup_kontra_bon;
 ?>
 
 <script language='javascript'>
+
+    function cek_this(i,saldo){
+        if($("#fkt"+i).val()==""){
+            $("#fkt"+i).val(saldo);            
+        } else {
+            $("#fkt"+i).val("");        
+        }
+        
+        calc_bayar();
+    }
+
+    function calc_bayar(){
+        total=0;
+        for(i=0;i<100;i++){
+            n=$("#fkt"+i).val();
+            if(n=="")n=0;
+            if(n==undefined)n=0;
+            
+            total=total+parseFloat(n);
+        }
+        $("#amount_paid").val(total);
+        
+    }
+
+
 	function selected_supplier(){
 		var row = $('#dgSelectSupp').datagrid('getSelected');
 		if (row){

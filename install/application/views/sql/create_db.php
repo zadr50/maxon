@@ -1,9 +1,11 @@
-<?
+<?php
 //start creating tables
 for($nomor=1;$nomor<44;$nomor++){
-	ob_start();
+//	ob_start();
 	switch($nomor){
-	case 1: include "maxon_apps.php";break;
+	case 1: 
+		include "maxon_apps.php";
+		break;
 	case 2: include 'articles.php'; break;
 	case 3: include "modules.php"; break; 
 	case 4: include "sysvar.php"; break;
@@ -24,7 +26,8 @@ for($nomor=1;$nomor<44;$nomor++){
 	case 19: include "customer.php"; break;
 	case 20: include "department.php"; break;
 	case 21: include "fixed_asset.php"; break;
-	case 22: include "financial.php"; break;
+	case 22: 
+		include "financial.php"; break;
 	case 23: include "gl_project.php"; break;
 	case 24: include "accounting.php"; break;
 	case 25: include "inventory.php"; break;
@@ -32,7 +35,9 @@ for($nomor=1;$nomor<44;$nomor++){
 	case 27: include "invoice.php"; break;
 	case 28: include "payables.php"; break;
 	case 29: include "payments.php";	break;
-	case 30: include "preferences.php"; break;
+	case 30: 
+		include "preferences.php"; 
+		break;
 	case 31: include "promosi.php"; break;
 	case 32: include "purchase_order.php"; break;
 	case 33: include "report_list.php"; break;
@@ -47,7 +52,7 @@ for($nomor=1;$nomor<44;$nomor++){
 	case 42: include "timecard.php"; break;
 	case 43: include "employee.php"; break;
 	}
-	ob_flush();
+	//ob_flush();
 }
-ob_end_flush(); 
+//ob_end_flush(); 
 ?>

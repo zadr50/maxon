@@ -7,6 +7,8 @@ private $table_name='purchase_order_lineitems';
 function __construct(){
 	parent::__construct();        
       
+	$this->load->model('inventory_model');
+	$this->load->model('inventory_prices_model');
     
 }
   
@@ -43,8 +45,6 @@ function default_values($data){
 	return $data;
 }
 function save($data){
-	$this->load->model('inventory_model');
-	$this->load->model('inventory_prices_model');
     
     if($data['quantity']=='')$data['quantity']=1;
     if($data['quantity']=='0')$data['quantity']=1;
@@ -61,7 +61,9 @@ function save($data){
 	$data=$this->default_values($data);
 	$id=0;
 	if(isset($data['line_number']))$id=$data['line_number'];
+	
 	$item=$this->inventory_model->get_by_id($data['item_number'])->row();
+	
 	if(isset($data['line_number']))$id=$data['line_number'];
 
 	if(!isset($data['discount']))$data['discount']=0;	
@@ -76,47 +78,67 @@ function save($data){
     
 	// apabila default satuan tidak sama dg inputan 
 	$lFoundOnPrice=false;
+	$mu_qty=0;
+	$multi_unit="";
+	$mu_harga=0;
+	
 	if($item) {
+		
 	    if($item->unit_of_measure!=$data['unit']){
     		if($unit_price=$this->inventory_prices_model->get_by_id($data['item_number'],
     			$data['unit'])->row())
     		{
     			 
     			$lFoundOnPrice=true;
-    			if($unit_price->quantity_high>0) $data['mu_qty']=$data['quantity']*$unit_price->quantity_high;
-    			$data['mu_harga']=$item->cost_from_mfg;
-    			if($data['mu_harga']==0)$data['mu_harga']=$item->cost;			
-    			$data['multi_unit']=$item->unit_of_measure;			
+    			if($unit_price->quantity_high>0) {
+    				
+    				$mu_qty=$data['quantity']*$unit_price->quantity_high;
+					
+				}
+    			$mu_harga=$item->cost_from_mfg;
+    			if($mu_harga==0)$mu_harga=$item->cost;			
+    			$multi_unit=$item->unit_of_measure;			
     		}
         }
 	}
     $unit=exist_unit($data['unit']);
     
 	if( $unit && !$lFoundOnPrice ){
-	    
-    
 		$lFoundOnPrice=true;
-		$data['mu_qty']=$data['quantity']*$unit['unit_value'];
-		$data['mu_harga']=item_purchase_price($data['item_number']);
-		$data['multi_unit']=$unit['from_unit'];		
+		$mu_qty=$data['quantity']*$unit['unit_value'];
+		$mu_harga=item_purchase_price($data['item_number']);
+		$multi_unit=$unit['from_unit'];		
         
         
 	} 
 	if(!$lFoundOnPrice){
-		$data['mu_qty']=$data['quantity'];
-		$data['mu_harga']=$data['price'];
-		$data['multi_unit']=$data['unit'];
+		$mu_qty=$data['quantity'];
+		$mu_harga=$data['price'];
+		$multi_unit=$data['unit'];
 	}	
 	if($item){
 		if($data['description']=="") $data['description']=$item->description;
 		if($data['unit']=="") $data['unit']=$item->unit_of_measure;
         if($data['price']==0) $data['price']=$item->cost_from_mfg;
 	}
-    if($data['multi_unit']=='' && $data['unit']!=''){
+    if($multi_unit=='' && $data['unit']!=''){
         
     }
-    if($data["mu_harga"]==0)$data["mu_harga"]=$data["price"];
+    if($mu_harga==0)$mu_harga=$data["price"];
     
+	if(isset($data['mu_qty'])){
+		if($data['mu_qty']!="")$mu_qty=$data['mu_qty'];
+	}
+	if(isset($data['mu_harga'])){
+		if($data['mu_harga']!="")$mu_harga=$data['mu_harga'];
+	}
+	if(isset($data['multi_unit'])){
+		if($data['multi_unit']!="")$multi_unit=$data['multi_unit'];
+	}
+	$data["multi_unit"]=$multi_unit;
+	$data["mu_qty"]=$mu_qty;
+	$data["mu_harga"]=$mu_harga;
+	
 	$gross=floatval($data['quantity'])*floatval($data['price']);
 	$disc_amount=floatval($data['discount'])*$gross;
 	$gross=$gross-$disc_amount;

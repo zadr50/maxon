@@ -32,10 +32,10 @@
 
 <div id="tb_search" style="height:auto">
 	Enter Text: <input  id="search_item" style='width:180' 
- 	name="search_item">
+ 	name="search_item" onblur="searchItem();return false;">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-	onclick="searchItem()"></a>        
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selectSearchItem()">Select</a>
+	onclick="searchItem();return false"></a>        
+	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="selectSearchItem();return false">Select</a>
 </div>
 
 <div id='dlgSearchItem'class="easyui-dialog" style="width:500px;height:380px;padding:10px 20px;left:100px;top:20px"
@@ -58,6 +58,18 @@
 </div>	   
 
 <script language="JavaScript"> 
+
+    $().ready(function (){
+        $('#dgItemSearch').datagrid({
+            onDblClickRow:function(){
+                var row = $('#dgItemSearch').datagrid('getSelected');
+                if (row){
+                   selectSearchItem();
+                }       
+            }
+        });        
+    });
+
 	function deleteItem(){
 		var row = $('#'+grid_output).datagrid('getSelected');
 		if (row){

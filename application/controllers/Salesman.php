@@ -146,6 +146,9 @@ class Salesman extends CI_Controller {
 		$data['controller']='salesman';
 		$data['fields_caption']=array('Salesman','Kelompok','Komisi','User Id','lock_report');
 		$data['fields']=array('salesman','salestype','commission_rate_1','user_id','lock_report');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='salesman';
 		
 		$this->load->library('search_criteria');

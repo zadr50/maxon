@@ -136,6 +136,10 @@ class Cash_adjust extends CI_Controller {
 		,'Jenis Transaksi','Nomor Giro','Keterangan','Trans Id');
 		$data['fields']=array('voucher','check_date','payment_amount'
             ,'account_number','payee','trans_type','check_number','memo','trans_id');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
+						
 		$data['field_key']='voucher';
 		$data['caption']='DAFTAR TRANSAKSI KAS/BANK KELUAR';
 		$data['posting_visible']=true;

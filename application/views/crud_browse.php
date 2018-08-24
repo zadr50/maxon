@@ -89,7 +89,7 @@ function new_<?=$hwnd?>(){
 	for($i=0;$i<count($fields);$i++) { 
 		$field=$fields[$i];
 		if(is_object($field)){
-			$fieldname=$field->Name;
+			$fieldname=$field->Field;
 		} else {
 			$fieldname=$field;
 		}
@@ -316,8 +316,8 @@ function save_<?=$hwnd?>(){
     <?php        echo form_close(); ?>
 </div>
 <div id="tbDlg<?=$hwnd?>">
-    <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="save_<?=$hwnd?>()">Save</a>
     <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg<?=$hwnd?>').dialog('close')">Cancel</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-save" onclick="save_<?=$hwnd?>();return false">Save</a>
 </div>
 <!-- END DIALOG -->
 

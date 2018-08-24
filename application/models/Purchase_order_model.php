@@ -264,7 +264,25 @@ public $sub_total=0;
 		}
 		return $no;
 	}
-	
+	function add_item_with_rfq($req_no,$po_no){
+		$supplier_number="";
+		if($q=$this->db->query("select supplier_number from purchase_order 
+			where purchase_order_number='$po_no'"))
+		{
+			if($r=$q->row()){
+				$supplier_number=$r->supplier_number;
+			}
+		}
+		$this->db->where("purchase_order_number",$req_no);
+		if($q=$this->db->get("purchase_order_lineitems")){
+			foreach($q->result_array() as $r){
+				$data=$r;
+				$data['purchase_order_number']=$po_no;
+				unset($data['line_number']);
+				$this->db->insert("purchase_order_lineitems",$data);
+			}
+		}
+	}
 	function create_po_by_request($row_id) {
 		$in_row_id='';for($i=0;$i<count($row_id);$i++){
 			if($row_id[$i]=='') $in_row_id .= $row_id[$i].',';	

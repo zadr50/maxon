@@ -44,6 +44,9 @@ class Sales_retur extends CI_Controller {
 			'Salesman','Kota','Gudang');
 		$data['fields']=array('invoice_number','invoice_date','amount', 'posted','your_order__',
             'sold_to_customer','company','salesman','city','warehouse_code');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='invoice_number';
 		$data['caption']='DAFTAR RETUR PENJUALAN';
 		$data['posting_visible']=true;
@@ -174,7 +177,40 @@ class Sales_retur extends CI_Controller {
                     array("fieldname"=>"type_of_payment","caption"=>"Termin","width"=>"180px")
                 );          
         $data['lookup_payment_terms']=$this->list_of_values->render($setwh);
-        
+
+        $setwh['dlgBindId']="salesman";
+        $setwh['dlgRetFunc']="$('#salesman').val(row.salesman);";
+        $setwh['dlgCols']=array( 
+                    array("fieldname"=>"salesman","caption"=>"Salesman","width"=>"180px")
+                );          
+        $data['lookup_customer']=$this->list_of_values->render(
+			array(
+				"dlgBindId"=>"customers",
+				"dlgRetFunc"=>"$('#sold_to_customer').val(row.customer_number);
+					$('#customer_info').html(row.company+'<br>'+row.street+'<br>'+row.city);
+					",
+				"dlgCols"=>array(
+                    array("fieldname"=>"company","caption"=>"Pelanggan","width"=>"180px"),
+                    array("fieldname"=>"customer_number","caption"=>"Kode","width"=>"80px"),
+                    array("fieldname"=>"street","caption"=>"Alamat","width"=>"180px"),
+                    array("fieldname"=>"city","caption"=>"Kota","width"=>"80px")
+                    					
+				)
+			)
+		);
+        $data['lookup_invoice']=$this->list_of_values->render(
+			array(
+				"dlgBindId"=>"invoice",
+				"dlgRetFunc"=>"$('#your_order__').val(row.invoice_number);",
+				"dlgCols"=>array(
+                    array("fieldname"=>"invoice_number","caption"=>"Faktur","width"=>"80px"),
+                    array("fieldname"=>"invoice_date","caption"=>"Tanggal","width"=>"80px"),
+                    array("fieldname"=>"sold_to_customer","caption"=>"Customer","width"=>"80px"),
+                    array("fieldname"=>"amount","caption"=>"Jumlah","width"=>"80px"),
+                    array("fieldname"=>"payment_terms","caption"=>"Termin","width"=>"80px")
+				)
+			)
+		);
                 
 		return $data;
 	}

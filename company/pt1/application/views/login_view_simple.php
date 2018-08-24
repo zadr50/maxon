@@ -9,7 +9,7 @@
 </script>
 <?php 
 
-$fld=base_url().$this->config->item("parent_folder"); 
+$fld=$this->config->item("parent_folder"); 
 
 if(!isset($multi_company))$multi_company=false;
 ?>
@@ -91,13 +91,10 @@ if(!isset($multi_company))$multi_company=false;
 	margin: auto auto;
 }
 </style> 
-<?
-//echo $library_src;
-//echo $script_head;
+
+<?php
+echo $script_head_login;
 ?>
-<script type="text/javascript" charset="utf-8" src="<?=base_url()?>../../assets/jquery/jquery-1.11.3.min.js"></script>
-<script type="text/javascript" charset="utf-8" src="<?=base_url()?>../../assets/bootstrap-3.3.5/js/bootstrap.min.js"></script>
-<link rel="stylesheet" type="text/css" href="<?=base_url()?>../../assets/bootstrap-3.3.5/css/bootstrap.min.css">
 
 <script languange="javascript">
 

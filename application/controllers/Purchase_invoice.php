@@ -243,6 +243,9 @@ class Purchase_invoice extends CI_Controller {
 		  'Nama Supplier','Kota','Gudang','Recv No');
 		$data['fields']=array('purchase_order_number','po_date','amount','posted', 
                 'supplier_number','supplier_name','city','warehouse_code','po_ref');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='purchase_order_number';
 		$data['caption']='DAFTAR FAKTUR PEMBELIAN';
         $data['fields_format_numeric']=array("amount");
@@ -604,8 +607,10 @@ class Purchase_invoice extends CI_Controller {
 				if($saldo!=0){
 					$row['amount']=number_format($row['amount']);
 					$row['saldo']=number_format($saldo);
-					$row['bayar']=form_input("bayar[]","","style='width:100px;color:black;text-align:right'");
+					$row['bayar']=form_input("bayar[]","","id='fkt$i' style='width:100px;color:black;text-align:right'");
 					$row['purchase_order_number']=$nomor.form_hidden("faktur[]",$nomor);
+                    $row['ck']=form_checkbox("ck[]",$nomor,'',"onclick='cek_this($i,$saldo);return false;' 
+                    	style='width:50px;height:30px;color:black;'");
 					$rows[$i++]=$row;
 				}
 			};
@@ -618,13 +623,19 @@ class Purchase_invoice extends CI_Controller {
 	
 	function select($supplier=''){
 		$supplier=urldecode($supplier);
-		$s="select p.purchase_order_number,p.po_date, p.terms,p.supplier_number,
-		s.supplier_name from purchase_order p
+		$s="select distinct p.purchase_order_number,p.po_date, p.terms,p.supplier_number,
+		s.supplier_name,p.po_ref nomor_recv,ip.purchase_order_number as nomor_po 
+		from purchase_order p
 		left join suppliers s on s.supplier_number=p.supplier_number 
-		where potype='I'";
-		if($supplier!="")$s.=" and (p.supplier_number like '%$supplier%'  
-		  or s.supplier_name like '%$supplier%' or p.purchase_order_number like '%$supplier%'
+		left join inventory_products ip on ip.shipment_id=p.po_ref
+		where p.potype='I'";
+		if($supplier!=""){
+			$s.=" and (p.supplier_number like '%$supplier%'  
+		 		 or s.supplier_name like '%$supplier%' or p.purchase_order_number like '%$supplier%'
+		 		 or p.po_ref like '%$supplier%' or ip.purchase_order_number like '%$supplier%'
 		  )";
+		  
+		}
 	 
 		echo datasource($s);
 	}

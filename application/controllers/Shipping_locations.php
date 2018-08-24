@@ -154,6 +154,9 @@ class Shipping_locations extends CI_Controller {
 		$data['controller']='shipping_locations';		
 		$data['fields_caption']=array('Kode Gudang','Jenis Gudang','Alamat','Kota','Kontak Person','Company','Parent','No Urut');
 		$data['fields']=array('location_number','address_type','street','city','attention_name','company_name','parent_loc','no_urut');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='location_number';
 		$this->load->library('search_criteria');
 		

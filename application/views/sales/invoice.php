@@ -1,4 +1,3 @@
- 
 <div class="thumbnail box-gradient">
 	<?php
 	   $min_date=$this->session->userdata("min_date","");
@@ -16,11 +15,9 @@
 	} else {
 		echo link_button('Posting','','ok','false',base_url().'index.php/invoice/posting/'.$invoice_number);		
 	}
-	
-	echo "<div style='float:right'>";
-	echo link_button('Help', 'load_help(\'invoice\')','help');		
-	
 	?>
+	<div style='float:right'>	    
+	<?php echo link_button('Help', 'load_help(\'invoice\')','help'); ?>
 	<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
 		<div onclick="load_help('invoice')">Help</div>
@@ -50,11 +47,13 @@ echo $lookup_payment_terms;
  <?php if($message!="") { ?>
 <div class="alert alert-success"><? echo $message;?></div>
 <? } ?>
+<div class="easyui-tabs" >
+    <div id='divGeneral' title='General'>
 
-<form id="frmInvoice"  method="post">
-<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
-<input type='hidden' id='cust_type' value='<?=$cust_type?>'>
-<table class='table' width='100%'>
+    <form id="frmInvoice"  method="post">
+    <input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
+    <input type='hidden' id='cust_type' value='<?=$cust_type?>'>
+    <table class='table2' width='90%'>
     <tr>
      	<td>Pelanggan</td><td><?
         echo form_input('sold_to_customer',$sold_to_customer,'id=sold_to_customer'); 
@@ -124,6 +123,10 @@ echo $lookup_payment_terms;
         ?>
          
          </td>      
+         <td>Paid</td>
+         <td>
+         	<?=form_input("paid",$paid,"id='paid' style='width:10xp' title='0-UnPaid, 1-Paid'")?>
+         </td>
 	    
 	</tr>
      <tr>
@@ -174,8 +177,9 @@ echo $lookup_payment_terms;
 				
 </form>
     
-<div class="easyui-tabs" >
-	<div id='divItem' title='Items'>
+    </div>
+    
+    <div id='divItem' title='Items'>
 		<div id='dgItem'>
 			<? include_once "invoice_add_item_simple.php"; ?>
 		</div>

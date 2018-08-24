@@ -41,6 +41,9 @@ class Payables_payments extends CI_Controller {
 			'Jumlah Bayar','Kode Supplier','Nama Supplier','Kota','Line');
 		$data['fields']=array('no_bukti','date_paid','purchase_order_number','po_date','how_paid','amount',
 				'amount_paid', 'supplier_number','supplier_name','city','line_number');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='no_bukti';
 		$data['caption']='DAFTAR PEMBAYARAN FAKTUR PEMBELIAN';
 

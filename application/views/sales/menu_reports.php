@@ -25,9 +25,9 @@
 <li><?=anchor('sales/rpt/sls_top_amount','Top Ten Sales by Amount',"class='info_link'")?></li>
 </div>
 <div class='col-md-4'>
-<li><?=anchor('sales/rpt/retur_list','Daftar Retur Penjualan',"class='info_link'")?></li>
 <li><?=anchor('sales/rpt/memo_list','Daftar Kredit/Debit Memo',"class='info_link'")?></li>
 <li><?=anchor('sales/rpt/pay_list','Daftar Pembayaran',"class='info_link'")?></li>
+<li><?=anchor('banks/rpt/load/tran_giro','Daftar Pembayaran Giro',"class='info_link'")?></li>
 <li><?=anchor('sales/rpt/pay_type','Pembayaran Per Jenis Bayar',"class='info_link'")?></li>
 <li><?=anchor('sales/rpt/cust_list','Daftar Pelanggan',"class='info_link'")?></li>
 <li><?=anchor('sales/rpt/slsman_list','Daftar Salesman',"class='info_link'")?></li>
@@ -35,4 +35,8 @@
 <li><?=anchor('sales/rpt/ar_dtl','Kartu Piutang Detail',"class='info_link'")?></li>
 <li><?=anchor('sales/rpt/age_sum','Umur Piutang Summary',"class='info_link'")?></li>
 <li><?=anchor('sales/rpt/age_dtl','Umur Piutang Detail',"class='info_link'")?></li>
+<li><?=anchor('sales/rpt/retur_list','Daftar Retur Penjualan',"class='info_link'")?></li>
+<li><?=anchor('sales/rpt/retur_item','Retur Per Item',"class='info_link'")?></li>
+
+
 </div>

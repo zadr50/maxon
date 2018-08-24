@@ -2,7 +2,6 @@
 ::moz-selection{ background-color: #E13300; color: white; }
 ::webkit-selection{ background-color: #E13300; color: white; }
 
- 
 a.l-btn span.l-btn-left {
   height: 24px;
 }
@@ -43,7 +42,7 @@ input[type="radio"], input[type="checkbox"] {
 	padding-right:20px;
 	background-color:  #e0ecff;
 	border:1px solid transparent;
-    border-bottom: 1px solid #777;
+    border-bottom: 1px solid #bfcee6;
 }
 .sidebar {
 	background: #e0ecff;
@@ -59,19 +58,19 @@ input[type="radio"], input[type="checkbox"] {
 .legend-top {
     background: #95b8e7;
     border-bottom: 1px solid #e5e5e5;
-    margin-left: -24px;
-    margin-right: -24px;
+    --margin-left: -24px;
+    margin-right: 4px;
     padding-top: 10px;
 	padding-bottom:5px;
 	padding-left:30px;
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
-    margin-top: -20px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    --margin-top: -20px;
     font-family: fantasy;
     font-size: larger;
 	color:white;
 	margin-bottom:5px;
-    width: 106%;
+    width: 100%;
 }	
 .clear				{ clear: both; }
 .container-min {
@@ -813,5 +812,9 @@ padding-left: 5px;
 	margin-bottom:3px;
 } 
 .panel-body {
-    padding: 1px;
+    padding: 3px;
 }
+.navbar {
+    margin-bottom: 2px;
+}
+   

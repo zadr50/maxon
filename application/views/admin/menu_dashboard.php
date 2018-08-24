@@ -41,7 +41,9 @@
 			"Setting kode wilayah pemasaran untuk salesman");		
 			add_button_menu("Hapus Database","clear_db","flame.png",
 			"Hapus semua database.");		
-					
+			add_button_menu("Cek DB Struktur","company/check_db_structure","flame.png",
+			"Hapus semua database.");		
+								
 		?>
 		</div>
 

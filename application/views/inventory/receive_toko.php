@@ -8,7 +8,7 @@
     
 	echo link_button('Search','','search','false',base_url().'index.php/receive_toko');		
 	echo link_button('Refresh','load_items();return false','reload','false');		
-    echo link_button('Posting','','save','false',base_url().'index.php/receive_toko/posting');     
+//    echo link_button('Posting','','save','false',base_url().'index.php/receive_toko/posting');     
     
     
 	echo "<div style='float:right'>";

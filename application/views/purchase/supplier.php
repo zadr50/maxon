@@ -97,16 +97,16 @@
   
             <tr>
               <td>Kelompok Supplier </td>
-             <td><?php echo form_input('type_of_vendor',$type_of_vendor,"id=type_of_vendor");
+             <td><?php echo form_input('type_of_vendor',$type_of_vendor,"id='type_of_vendor' style='width:90px' ");
                 echo link_button('',"dlgtype_of_vendor_show();return false","search","false");
-                echo link_button('','',"add","false",base_url('index.php/supplier/kelompok/add'));
+                echo link_button('','supplier_type();return false;',"add");
                  ?>
              </td>
               <td>Termin</td>
               <td>
-                <?=form_input('payment_terms',$payment_terms,"id='payment_terms'");
+                <?=form_input('payment_terms',$payment_terms,"id='payment_terms' style='width:90px' ");
                 echo link_button('',"dlgpayment_terms_show();return false","search","false");
-                echo link_button('','',"add","false",base_url('index.php/type_of_payment/add'));
+                echo link_button('','add_termin();return false;',"add");
                 ?>
               </td>
               <td></td>
@@ -114,9 +114,8 @@
             <tr>
               <td>Saldo Hutang</td>
               <td><strong>Rp. <?=number_format($saldo);?></strong></td>
-              <td>Aktif</td>
-              <td><?=form_radio('active',1,$active=='1'?TRUE:FALSE);?>
-                Yes <?php echo form_radio('active',0,$active=='0'?TRUE:FALSE);?> No </td>
+              <td colspan=2>Aktif<?=form_radio('active',1,$active=='1'?TRUE:FALSE," style='width:30px' ");?>
+                Yes <?php echo form_radio('active',0,$active=='0'?TRUE:FALSE," style='width:30px' ");?> No </td>
                 <td></td>
           </tr>  
 			
@@ -139,7 +138,7 @@
             <tr><td colspan=6><h3>Jenis Kerjasama</h3></td></tr>
             <tr>
               <td>Sistim</td><td>
-                <?php echo form_input('sistim_bayar',$sistim_bayar,"id='sistim_bayar'");
+                <?php echo form_input('sistim_bayar',$sistim_bayar,"id='sistim_bayar' style='width:90px' ");
                 echo link_button('','dlgtype_of_invoice_show(event)',"search","false");
                 ?>                  
               </td>
@@ -417,6 +416,12 @@
 			var url="<?=base_url()?>index.php/purchase_invoice/view/"+purchase_order_number;
 			add_tab_parent("view_invoice_"+purchase_order_number,url);
 		}
+	}
+	function supplier_type(){
+		add_tab_parent("Supplier Type","<?=base_url('supplier/kelompok/add')?>");		
+	}
+	function add_termin(){
+		add_tab_parent("Termin","<?=base_url('index.php/type_of_payment/add')?>");
 	}
 		
 </script>	

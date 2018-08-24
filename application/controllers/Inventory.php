@@ -4,6 +4,7 @@ Class Inventory extends CI_Controller {
 
     private $limit=10,$table_name="";
     private $file_view='inventory/inventory';
+	private $show_cols=null;
  	function __construct()
 	{
 		parent::__construct();
@@ -50,8 +51,9 @@ Class Inventory extends CI_Controller {
 		$data['class_list']=$this->inventory_model->class_list();
 		$data['sub_category_list']=$this->inventory_model->category_list();               
 		$data['supplier_name']='';
-        $data['active']='1';
-		
+        if($data['active']=="") $data['active']='1';
+		if($data['unit_of_measure']=="")$data['unit_of_measure']='PCS';
+        		
 		$setting['dlgBindId']="divisions";
 		$setting['dlgCols']=array( 
 			array("fieldname"=>"div_code","caption"=>"Kode","width"=>"80px"),
@@ -301,18 +303,29 @@ Class Inventory extends CI_Controller {
 		   return true;
 	   }
 	}
+	function save_setting_column($ck_cols){
+	}
 	function browse($offset=0,$limit=10,$order_column='company',$order_type='asc')
 	{
+		$this->show_cols=$this->session->userdata("cols_inventory",null);
+
 		$query_proc=false;
 		if($this->input->get('query_proc'))$query_proc=true;
+		
 		if(!$query_proc || $this->input->get('query_proc')=='0'){
 			$data['caption']='DAFTAR BARANG DAN JASA';
 			$data['controller']='inventory';		
+			
 			$data['fields_caption']=array('Kode','Nama Barang','Unit','Harga Jual','Harga Beli',
 				'Kode Supplier','Nama Supplier','Kelas','Category','Cat Name','Sub','Sistim');
+				
 			$data['fields']=array('item_number','description','unit_of_measure',
 					'retail','cost_from_mfg','supplier_number','supplier_name','class',
 					'category','cat_name','sub_category','type_of_invoice');
+			
+					
+			if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 			$data['field_key']='item_number';
 			$this->load->library('search_criteria');
 			
@@ -340,6 +353,7 @@ Class Inventory extends CI_Controller {
 		}
     }
     function browse_data($offset=0,$limit=10,$nama='',$row_count=0){
+    	
 		$sql=$this->sql." where 1=1";
 		$div_list=$this->session->userdata('default_division_list');
 		if ( $div_list ) 
@@ -1383,6 +1397,7 @@ Class Inventory extends CI_Controller {
 	}
 	function recalc($item_number="",$tahun="",$bulan=""){
 	    $msg=$this->inventory_model->recalc($item_number,$tahun,$bulan);
+		$msg.="<br>".$this->inventory_model->trx_data_sj("T00");
         echo json_encode(array("success"=>true,"msg"=>$msg));
 	}
 
@@ -1392,10 +1407,10 @@ Class Inventory extends CI_Controller {
         $sql=$this->sql;
 
         if($search!=""){
-            $sql.=" where (item_number like '$search%' 
-                or description like '$search%')";
+            $sql.=" where (i.item_number like '$search%' 
+                or i.description like '$search%')";
         }
-        $sql.=" order by item_number";
+        $sql.=" order by i.item_number";
 
         $offset=0; $limit=10;
         if($this->input->post("page"))$offset=$this->input->post("page");

@@ -172,7 +172,10 @@ class Stock_mutasi extends CI_Controller {
 		  'Gudang Tujuan','Keterangan','Status');
 		$data['fields']=array('transfer_id', 'date_trans',
 		  'from_location','to_location','comments','status');
-		$data['field_key']='transfer_id';
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
+		  		$data['field_key']='transfer_id';
 		$this->load->library('search_criteria');
 		
 		$faa[]=criteria("Dari","sid_date_from","easyui-datetimebox");

@@ -196,6 +196,11 @@ class Cash_in extends CI_Controller {
 		$data['fields']=array('voucher','check_date','deposit_amount','posted'
             ,'account_number','payee','trans_type','check_number','memo',
             'org_id','trans_id');
+			
+
+
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+ 			
 		$data['field_key']='voucher';
 		$data['caption']='DAFTAR TRANSAKSI KAS/BANK MASUK';
 		$data['posting_visible']=true;

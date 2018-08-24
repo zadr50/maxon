@@ -1197,5 +1197,53 @@ class Inventory_model extends CI_Model {
                
            return $retval;
     }
+	function trx_data_sj($from_gudang){
 
+		$msg="";
+		$db="kagum_";
+		$db_sumber="";
+		$db_target="";
+		if($q=$this->db->select("company_name")->where("location_number",$from_gudang)->get("shipping_locations"))
+		{
+			if($r=$q->row())
+			{
+				$db.=$r->company_name;
+				$db_sumber=$r->company_name;
+			}	
+		}
+		if($q=$this->db->select("company_name")->where("location_number",$from_gudang)->get("shipping_locations"))
+		{
+			if($r=$q->row())
+			{
+				$db_target=$r->company_name;
+			}	
+		}
+		if($from_gudang==current_gudang()){
+			return false;
+		}
+		if($db_sumber==$db_target){
+			return false;
+		}
+		$dsn = 'mysqli://root:atl24nta@localhost/'.$db;				
+		$otherdb = $this->load->database($dsn, TRUE); // the TRUE paramater tells CI that you'd like to return the database object.
+		$otherdb->where("supplier_number",current_gudang());
+		$otherdb->where("warehouse_code",$from_gudang);
+		$otherdb->where("receipt_type","ETC_OUT");
+		$otherdb->where("selected",null);
+		$otherdb->limit(10);
+		$query = $otherdb->get('inventory_products');
+		if($query){
+			foreach($query->result_array() as $row)
+			{
+				$id=$row['id'];
+				$sql="update inventory_products set selected=1 where id='$id'";
+				$otherdb->query($sql);
+				unset($row['id']);
+				$this->db->insert("inventory_products",$row);
+				
+			}
+			$msg="trx_data_sj...";
+		}
+		return $msg;
+	}
 }

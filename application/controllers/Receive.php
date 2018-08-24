@@ -176,6 +176,9 @@ class Receive extends CI_Controller {
 		'Gudang','Sumber');
 		$data['fields']=array('shipment_id','date_received',
 		'warehouse_code','supplier_number');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='shipment_id';
 		$data['import_visible']=true;
 		$this->load->library('search_criteria');

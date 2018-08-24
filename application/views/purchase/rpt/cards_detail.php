@@ -13,18 +13,7 @@
 <link href="<?php echo base_url();?>/themes/standard/style_print.css" rel="stylesheet">
 <table cellspacing="0" cellpadding="1" border="0" width='800px'> 
      <tr>
-     	<td colspan='2'><h2><?=$model->company_name?></h2></td><td colspan='2'><h2>KARTU HUTANG SUMMARY</h2></td>     	
-     </tr>
-     <tr>
-     	<td colspan='2'><?=$model->street?></td><td></td>     	
-     </tr>
-     <tr>
-     	<td colspan='2'><?=$model->suite?></td>     	
-     </tr>
-     <tr>
-     	<td>
-     		<?=$model->city_state_zip_code?> - Phone: <?=$model->phone_number?>
-     	</td>
+     	<td colspan='2'><h2><?=$model->company_name?></h2></td><td colspan='2'><h2>KARTU HUTANG DETAIL</h2></td>     	
      </tr>
      <tr>
      	<td>
@@ -37,67 +26,29 @@
  		<table class='titem'>
  		<thead>
  			<tr>
- 				<td>Kode Supplier</td><td>Nama Supplier</td><td>Kota</td>
- 				<td>Telp</td><td>Saldo Awal</td><td>Tambah</td><td>Kurang</td><td>Saldo Akhir</td>
+ 				<td>Tanggal</td><td>Nomor Bukti</td><td>Jenis</td>
+ 				<td>Jumlah</td><td>Saldo</td><td>Ref1</td>
  			</tr>
  		</thead>
  		<tbody>
      	<?
-     	$sql="select supplier_number,supplier_name,city,phone from suppliers order by supplier_name";
-        $q_supp=$CI->db->query($sql);
+     	$sql="select * from qry_kartu_hutang where 1=1";
+		if($supplier!=""){
+			$sql.=" and supplier_number='$supplier'";
+		}
+		$sql.=" order by tanggal";
+        $qcard=$CI->db->query($sql);
 		$tbl="";
-		foreach($q_supp->result() as $r_supp){
-
-			$sql="select sum(p.amount) as sum_amount  from purchase_order p
-			where potype='I' and p.supplier_number='".$r_supp->supplier_number."' 
-			and po_date<'$date1'";
-	        $q=$CI->db->query($sql)->row();
-			if($q){
-				$sld_awal=$q->sum_amount;
-			} else {
-				$sld_awal=0;
-			}
-
-			$sql="select sum(p.amount_paid) as sum_amount  from payables_payments p
-			left join payables py on py.bill_id=p.bill_id
-			where py.supplier_number='".$r_supp->supplier_number."' 
-			and date_paid<'$date1'";
-	        $q=$CI->db->query($sql)->row();
-			if($q){
-				$sld_awal=$sld_awal-$q->sum_amount;
-			}
-
-			$sql="select sum(p.amount) as sum_amount  from purchase_order p
-			where potype='I' and p.supplier_number='".$r_supp->supplier_number."' 
-			and po_date between '$date1' and '$date2'";
-	        $q=$CI->db->query($sql)->row();
-			if($q){
-				$mut_tambah=$q->sum_amount;
-			} else {
-				$mut_tambah=0;
-			}
-			
-			$sql="select sum(p.amount_paid) as sum_amount  from payables_payments p
-			left join payables py on py.bill_id=p.bill_id
-			where py.supplier_number='".$r_supp->supplier_number."' 
-			and date_paid between '$date1' and '$date2'";
-			 
-	        $q=$CI->db->query($sql)->row();
-			if($q){
-				$mut_kurang=$q->sum_amount;
-			} else {
-				$mut_kurang=0;
-			}
-			
+		$saldo=0;
+		foreach($qcard->result() as $rcard){
+			$saldo+=$rcard->amount;
             $tbl.="<tr>";
-            $tbl.="<td>".$r_supp->supplier_number."</td>";
-            $tbl.="<td>".$r_supp->supplier_name."</td>";
-            $tbl.="<td>".$r_supp->city."</td>";
-            $tbl.="<td>".$r_supp->phone."</td>";
-            $tbl.="<td align='right'>".number_format($sld_awal)."</td>";
-            $tbl.="<td align='right'>".number_format($mut_tambah)."</td>";
-            $tbl.="<td align='right'>".number_format($mut_kurang)."</td>";
-            $tbl.="<td align='right'>".number_format($sld_awal+$mut_tambah-$mut_kurang)."</td>";
+            $tbl.="<td>".$rcard->Tanggal."</td>";
+            $tbl.="<td>".$rcard->NoBukti."</td>";
+            $tbl.="<td>".$rcard->Jenis."</td>";
+            $tbl.="<td align='right'>".number_format($rcard->amount)."</td>";
+            $tbl.="<td align='right'>".number_format($saldo)."</td>";
+            $tbl.="<td>".$rcard->Supplier_Number."</td>";
             $tbl.="</tr>";
 		}
   	    

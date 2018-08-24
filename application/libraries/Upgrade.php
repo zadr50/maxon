@@ -2,12 +2,18 @@
 
 class Upgrade
  {
+ 	private $display_output=false;
+	private $message="";
+	
  function __construct()
  {
 	$this->CI =& get_instance();	 
      
  }
- function process(){
+ function process($display_output_var=false){
+ 		
+ 	$this->display_output=$display_output_var;
+	
 	$key="Flag sysvar varsize";
  //   echo $key." - ".$this->CI->sysvar->getvar($key);
     
@@ -235,9 +241,22 @@ class Upgrade
     $this->add_field("inventory_products","cost_account","double");
     
     $this->add_field("user","session_id");
-    $this->add_field("user","logged_in","int");                    
+    $this->add_field("user","logged_in","int");         
+    
+    $this->create_type_of_vendor();
+	
+    if($this->display_output){
+    	$this->message.="<br>FINISH";
+    	return $this->message;
+    }           
     
  }
+ 	function create_type_of_vendor(){
+        $e[]="type_id varchar(50)";
+        $e[]="type_name varchar(200)";
+        $this->create_table("type_of_vendor",$e);            
+ 		
+ 	}
     function create_stock_proses_arsip(){
         $e[]="item_no varchar(50)";
         $e[]="year_arc int";
@@ -431,6 +450,9 @@ function create_inventory_categories_sub(){
  function add_field($table,$field,$type="varchar(50)")
  {
 	$key="Flag [$table] add field [$field]";
+	if($this->display_output){
+		$this->message.="<br>$key";
+	}
 	if(""==$this->CI->sysvar->getvar($key) ){		
 		$this->CI->sysvar->insert($key,"1","auto");
 		$fields=$this->CI->db->query("DESCRIBE ".$table)->result();

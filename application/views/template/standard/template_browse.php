@@ -103,7 +103,7 @@ if(isset($sub_controller)){
 	if(isset($export_visible)){
 		echo link_button('Export','export_'.$controller_name."();return false;",'xls');
 	}	
-	echo link_button('Filter','dlgFilter_Show();return false;','filter');
+	echo link_button('Filter','dlgFilter_'.$controller_name.'_Show();return false;','filter');
 	if(isset($print_visible)){
 		if($print_visible){
 			echo link_button('Print','print_'.$controller_name."();return false;",'print');
@@ -187,27 +187,31 @@ if(isset($sub_controller)){
 
 </div>
 <div id="dlgSet" name='dlgSet' class="easyui-dialog" data-options="title:'Setting'" 
-	toolbar='#button_setting' closed="true"  style="top:10px;width:400px;height:450px;padding:10px 10px">
+	buttons='#button_setting' closed="true"  style="top:10px;width:400px;height:450px;padding:10px 10px">
 	<form id='frmSet_<?=$controller_name?>' class='form'>
 		<?php
-		echo "Pilihlah kolom yang ingin ditampikan, kolom nomor bukti atau primary key jangan dicontreng untuk hidden.";
+		echo "Silahkan di contreng berikut ini apabila ingin mereset kolom yang tampil kesemula.
+		</br><input type='checkbox' name='ck_reset'  style='width:30px'>Reset pengaturan kolom";
+				
+		echo "</br></br>Pilihlah kolom yang ingin ditampikan, kolom nomor bukti atau primary key jangan dicontreng untuk hidden.";
 		if(isset($fields)){
 			for($i=0;$i<count($fields);$i++){
-				echo "</br><input type='checkbox' name='ck_cols[]' checked 
+				echo "</br><input type='checkbox' name='ck_cols[]' checked style='width:30px'
 				value='$fields[$i]'> $fields_caption[$i]";
 			}
 		}		
+		
 		?>
 	</form>
 </div>
 <div id='button_setting' class='thumbnail box-gradient'>
-	<div class='align-right'>
-	<?=link_button('Submit','set_change_'.$controller_name."();return false;",
-	'search');?>			
+	<div class='align-right' >
+	<?=link_button('Cancel','set_cancel_'.$controller_name."();return false;",'cancel');?>			
+	<?=link_button('Submit','set_change_'.$controller_name."();return false;",'save');?>			
 	</div>
 </div>
 
-<div id="dlgFilter"  class="easyui-dialog" data-options="title:'Filter Criteria'" 
+<div id="dlgFilter_<?=$controller_name?>"  class="easyui-dialog" data-options="title:'Filter Criteria'" 
 	closed="true" toolbar="#button_filter" style="top:10px;width:300px;height:480px;padding:10px 10px">
 	<div id="lb_<?=$controller_name?>" style="padding:5px;min-height:80%;" 
 		class='thumbnail box-gradient'>
@@ -266,7 +270,19 @@ if(isset($sub_controller)){
     var xurl='<?=$url?>';
 		(function($){
 			
+			
+	        $('#dg_<?=$controller_name?>').datagrid({
+	            onDblClickRow:function(){
+	                var row = $('#dg_<?=$controller_name?>').datagrid('getSelected');
+	                if (row){
+	                    edit_<?=$controller_name?>();
+	                }       
+	            }
+	        });        
+			
 			cari_<?=$controller_name?>();
+			
+			
 			
 			function pagerFilter(data){
 				if ($.isArray(data)){	// is array
@@ -330,7 +346,7 @@ if(isset($sub_controller)){
 		})(jQuery); 	 
 		
 	$(function(){
-		$('#xdg_<?=$controller_name?>').datagrid('clientPaging');
+		$('#dg_<?=$controller_name?>').datagrid('clientPaging');
 	});
     function addnew_<?=$controller_name?>(){
         xurl_add=CI_ROOT+CI_CONTROL+'<?=$sub_slash?>/add';
@@ -391,7 +407,7 @@ if(isset($sub_controller)){
 	    xurl2=xurl+'?'+xsearch;
 	    
         $('#dg_<?=$controller_name?>').datagrid({url:xurl2});		
-		$('#dlgFilter').dialog('close');		
+		$('#dlgFilter_<?=$controller_name?>').dialog('close');		
     }
     function posting_<?=$controller_name?>(){
     	xsearch=$('#frmSearch_<?=$controller_name?>').serialize();
@@ -414,11 +430,24 @@ if(isset($sub_controller)){
 		$('#dlgSet').dialog('open').dialog('setTitle','Setting');
     }
     function set_change_<?=$controller_name?>(){
-    	xsearch=$('#frmSet_<?=$controller_name?>').serialize();
-	    xurl_set=CI_ROOT+CI_CONTROL+'/browse_data<?=$sub_strip?>?'+xsearch+'&ck_cols_proc=<?=$controller_name?>';	    
-        $('#dg_<?=$controller_name?>').datagrid({url:xurl_set});		
+	    xurl_set=CI_ROOT+CI_CONTROL+'/browse<?=$sub_strip?>';
+		$('#frmSet_<?=$controller_name?>').form('submit',{
+			url: xurl_set,
+			onSubmit: function(){
+				return $(this).form('validate');
+			},
+			success: function(result){
+				var result = eval('('+result+')');
+				if (result.success){
+					refresh_tab_parent();
+				} else {
+					log_err(result.msg);
+				}
+			}
+		});
+    }
+    function set_cancel_<?=$controller_name?>(){
         $('#dlgSet').dialog('close');
-        refresh_tab_parent();
     }
     
     function help_<?=$controller_name?>(){
@@ -441,9 +470,9 @@ if(isset($sub_controller)){
 			window.open(xurl_print,"_blank");		
 		}
 	}
-	function dlgFilter_Show(){
+	function dlgFilter_<?=$controller_name?>_Show(){
 		//$('#dlgFilter').window({left:100,top:window.event.clientY+20});
-		$('#dlgFilter').dialog('open').dialog('setTitle','Enter Filter Criteria');
+		$('#dlgFilter_<?=$controller_name?>').dialog('open').dialog('setTitle','Enter Filter Criteria');
 	}
 	
 </script>

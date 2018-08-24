@@ -49,15 +49,17 @@
                </tr>	 
                <tr>
                 	<td>Tanggal Permintaan</td><td><?php echo form_input('po_date',$po_date,'id=po_date  
-                	class="easyui-datetimebox" required:true '.$disabled);?></td>
+                	class="easyui-datetimebox" data-options="formatter:format_date,parser:parse_date"
+                	required:true '.$disabled);?></td>
                     <td>Department</td><td><?php echo form_dropdown('dept_code',$dept_list,$dept_code,
         			"id=dept_code ".$disabled);?></td>
                </tr>	 
                <tr>
-                    <td>Nama Pegawai yang mengajukan</td><td><?php echo form_dropdown('ordered_by',$employee_list,$ordered_by,"id=ordered_by 
-        			class='easyui-validatebox' data-options='required:true,
-        			validType:length[3,30]'            
-                    ".$disabled);?></td>
+                    <td>Nama Pegawai yang mengajukan</td>
+                    <td><?php echo form_input('ordered_by',$ordered_by,"id='ordered_by'           
+                    ".$disabled);?>
+                    <?=link_button('','dlgemployee_show()',"search","false"); ?>  
+                    </td>
         			
         			<td rowspan='2' colspan='5' >
         				<span id='info' name='info' class='thumbnail' style='height:100px;width:300px'><?=$info?></span>
@@ -75,10 +77,9 @@
                     <td>Status pengajuan</td><td><?php echo form_dropdown('doc_status',$status_po_request_list,$doc_status,
         			"id=doc_status ".$disabled);?></td>
                     <td>Untuk dipakai di Proyek</td><td><?php 
-                    echo form_input('project_code',$project_code,
-                    "id=project_code ".$disabled);
+                    echo form_input('project_code',$project_code,"id=project_code ".$disabled);
         			//if($mode=="add") 
-        				echo link_button('','select_project()',"search","true"); 
+        				echo link_button('','dlggl_projects_show();return false;',"search","false"); 
                     ?>
         			</td>
         
@@ -179,7 +180,12 @@
 </div>
 
  
-<? echo load_view('project/project_select') ?>
+<?php
+ //echo load_view('project/project_select');
+ echo $lookup_employee;
+ echo $lookup_project;
+ 
+  ?>
 
 
 <script type="text/javascript">
@@ -270,14 +276,15 @@
 <div id='dgItem'>
 	<?php if(($mode=="add" or $mode=="edit" or $mode=="view")) {  ?>
 	<div id='dgItemForm' class="easyui-dialog" 
-	style="width:500px;height:400px;left:100px;top:10px;padding:5px 5px"
+	style="width:600px;height:350px;left:100px;top:100px;padding:5px 5px"
     closed="true" buttons="#tbItemForm" >
 	    <form id="frmItem" method='post' >
 	        <input type='hidden' id='po_number_item' name='po_number_item'>
 	        <input type='hidden' id='line_number' name='line_number'>
 	        <input type='hidden' id='gudang_item' name='gudang_item'>
-				<table class='table' style='width:250px;float:left'>
-				 <tr><td >Kode Barang</td><td colspan='3'><input onblur='find()' id="item_number" style='width:180px' 
+				<table class='table2' style='float:left;' width='100%'>
+				 <tr><td >Kode Barang</td><td colspan='3'>
+				 	<input onblur='find()' id="item_number" style='width:180px' 
 					name="item_number"   class="easyui-validatebox" required="true">
 					<a href="#" class="easyui-linkbutton" iconCls="icon-search" data-options="plain:false" 
 					onclick="searchItem();return false;"></a>
@@ -286,7 +293,7 @@
 				 </tr>
 				 <tr><td>Nama Barang</td><td colspan='3'><input id="description" name="description" style='width:300px'></td></tr>
 				 <tr><td>Qty</td><td><input id="quantity"  style='width:60px'  name="quantity" onblur="hitung()">
-				 Unit <input id="unit" name="unit"  style='width:60px' >
+				 Unit <input id="unit" name="unit"  style='width:60px' readonly>
 				<a href="#" class="easyui-linkbutton" iconCls="icon-search" data-options="plain:false" 
 					onclick="searchUnit();return false;" 
 					style='display:none' id='cmdLovUnit'></a> 

@@ -18,7 +18,8 @@ closed="true"  toolbar="#tbCoa"
 		</table>
 </div>
 <div id="tbCoa" class='box-gradient'>
-	Enter Text: <input  id="search_coa" style='width:180' name="search_coa">
+	Enter Text: <input  id="search_coa" style='width:180' name="search_coa"    
+		onchange='lookup_coa();return false;'>
 	<a href="#" class="easyui-linkbutton" iconCls="icon-search"  
 	onclick="search_coa();return false;">Filter</a>        
 	<a href="#" class="easyui-linkbutton" iconCls="icon-ok"   onclick="select_coa();return false;">Select</a>
@@ -48,3 +49,17 @@ closed="true"  toolbar="#tbCoa"
 	}
 </script>
 <!-- END DIALOG KODE PERKIRAAN -->
+<script language="JavaScript">
+    $().ready(function (){
+
+        $('#dgCoa').datagrid({
+            onDblClickRow:function(){
+                var row = $('#dgCoa').datagrid('getSelected');
+                if (row){
+                    select_coa();
+                }       
+            }
+        });        
+	
+	});
+</script>

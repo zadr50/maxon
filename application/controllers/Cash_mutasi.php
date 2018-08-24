@@ -173,6 +173,9 @@ class Cash_mutasi extends CI_Controller {
 		$data['fields']=array('voucher','check_date','payment_amount','posted'
             ,'account_number','payee','supplier_number'
             ,'trans_type','check_number','memo','org_id','trans_id');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='voucher';
 		$data['caption']='DAFTAR TRANSAKSI MUTASI ANTAR REKENING';
 		$data['posting_visible']=true;

@@ -1,5 +1,5 @@
 		 
-	<table id="dgPay" class="easyui-datagrid"    width='100%'
+	<table id="dgPay" class="easyui-datagrid"    width='90%'
 		data-options="
 			iconCls: 'icon-edit', fitColumns: true,
 			singleSelect: true,
@@ -24,9 +24,9 @@
     closed="true" buttons="#dlg-buttons-pay">
 	
 	<?
-	$no_bukti='';
-	$date_paid=date("Y-m-d");
-	$how_paid='Cash';
+	$no_bukti='AUTO';
+	$date_paid=date("Y-m-d H:i:s");
+	$how_paid='CASH';
 	$amount_paid=$amount;
 	include_once "payment.php"; 
 	
@@ -34,13 +34,13 @@
 
 </div>
 <div id="dlg-buttons-pay">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-save" onclick="save_pay()">Save</a>
 	<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="close_pay()">Close</a>	
+	<a href="#" class="easyui-linkbutton" iconCls="icon-save" onclick="save_pay()">Save</a>
 </div>
 <div id="tbPay" style="height:auto">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="add_pay()">Add</a>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="edit_pay()">Edit</a>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="del_pay()">Delete</a>	
+	<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="false" onclick="add_pay()">Add</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="false" onclick="edit_pay()">Edit</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="false" onclick="del_pay()">Delete</a>	
 </div>
 
 <script languange="javascript">
@@ -58,15 +58,23 @@
 		function add_pay()
 		{
 			$("#amount_paid").val($("#saldo").val());
+			$('#mode_pay').val("");
+			$('#no_bukti').val('<?=$no_bukti?>');
+			$('#date_paid').val('<?=$date_paid?>');
+			$('#how_paid').val('<?=$how_paid?>');
+			$('#amount_paid').val('<?=$amount_paid?>');
+			$('#line_number_pay').val('');
+			
 			$('#dlgPayment').dialog('open').dialog('setTitle','Tambah data pembayaran');
 		}
 		
 		function save_pay(){
 			url='<?=base_url()?>index.php/payment/add_payment';
+			var param={invoice_number:$("#invoice_number").val()};
 			$('#frmAddPay').form('submit',{
 				url: url,
 				contentType: 'application/json; charset=utf-8',
-                data:{invoice_number:$("#invoice_number").val()},
+                data: param,
 				onSubmit: function(){
 					return $(this).form('validate');
 				},
@@ -74,11 +82,6 @@
 					var result = eval('('+result+')');
 					if (result.success){
 						$('#dgPay').datagrid('reload');
-						$('#no_bukti').val('');
-						$('#date_paid').val('');
-						$('#how_paid').val('Pcs');
-						$('#amount_paid').val('');
-						$('#line_number').val('');
 						$.messager.show({
 							title: 'Success',
 							msg: 'Success'
@@ -99,10 +102,12 @@
 		function edit_pay(){
 			var row = $('#dgPay').datagrid('getSelected');
 			if (row){
-				console.log(row);
 				$('#frmAddPay').form('load',row);
 				$('#mode_pay').val('edit');
 				$('#line_number_pay').val(row.line_number);
+				$("#no_bukti").val(row.no_bukti);
+				$("#date_paid").val(row.date_paid);
+				$("#how_paid").val(row.how_paid);
 				$('#dlgPayment').dialog('open').dialog('setTitle','Edit data pembayaran');
 			}
 		}

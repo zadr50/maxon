@@ -36,15 +36,41 @@ class Purchase_request extends CI_Controller {
 			}
 			$data['has_receive']=false;
 			$data['info']='';
-			$this->load->model('payroll/employee_model');
-			$data['employee_list']=$this->employee_model->lookup();
+			
+			//$this->load->model('payroll/employee_model');
+			///$data['employee_list']=$this->employee_model->lookup();
+			
+			
 			$data['status_po_request_list']=$this->sysvar->lookup('status_po_request');
 			$data['term_list']=$this->type_of_payment_model->select_list();
+			
+			
 			$this->load->model('branch_model');
 			$data['branch_list']=$this->branch_model->lookup();
+			
+			
 			$this->load->model('department_model');
+			
 			$data['dept_list']=$this->department_model->lookup();
 			$data['doc_status']='OPEN';
+			
+            $data['lookup_employee']=$this->list_of_values->render(
+                array("dlgBindId"=>"employee",
+                "dlgRetFunc"=>"$('#ordered_by').val(row.nip); ",
+                'dlgCols'=>array(
+                    array("fieldname"=>"nama","caption"=>"Nama Pegawai","width"=>"180px"),
+                    array("fieldname"=>"nip","caption"=>"Nomor Induk","width"=>"80px")                    
+                ))
+            );
+            $data['lookup_project']=$this->list_of_values->render(
+                array("dlgBindId"=>"gl_projects",
+                "dlgRetFunc"=>"$('#project_code').val(row.kode); ",
+                'dlgCols'=>array(
+                    array("fieldname"=>"keterangan","caption"=>"Nama Proyek","width"=>"180px"),
+                    array("fieldname"=>"kode","caption"=>"Kode","width"=>"80px")                    
+                ))
+            );
+
             return $data;
 	}
 	function index()
@@ -196,6 +222,9 @@ class Purchase_request extends CI_Controller {
 		$data['fields_caption']=array('Nomor PRQ','Tanggal','Proyek','Cabang','Department','Pegawai','Status');
 		$data['fields']=array('purchase_order_number','po_date','project_code', 
                 'branch_code','dept_code','ordered_by','doc_status');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='purchase_order_number';
 		$data['caption']='DAFTAR PURCHASE REQUEST';
 		if($ck_cols_proc=$this->session->userdata('ck_cols_purchase_request')){

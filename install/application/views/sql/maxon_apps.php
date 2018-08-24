@@ -38,7 +38,7 @@ REPLACE INTO `maxon_apps` (`app_name`, `app_desc`, `app_type`, `app_ico`, `app_p
 	('Leasing', 'Modul untuk usaha leasing dan kredit kendaraan beserta angsurannya', 'Modul', 'gnome-fs-network.png', '', 1, 1, 'andri', '', 15, '_18000', 'leasing'),
 	('Sekolah', 'Modul untuk sekolah dan dunia pendidikan.', 'Modul', 'gnome-db.png', '', 1, 1, 'andri', '', 16, '_19000', 'sekolah'),
 	('Setting', 'Seting user login, kelompok user atau job dan modul yang boleh di akses.', 'Modul', 'ico_setting.png', '', 1, 1, 'andri', '', 17, '_00000', 'admin'),
-	('Website', 'Halaman utama untuk website perusahaan', 'Modul', 'office.png', '', 0, 1, 'andri', '', 18, '_20000', 'website');
+	('Website', 'Halaman utama untuk website perusahaan', 'Modul', 'office.png', '', 0, 0, 'andri', '', 18, '_20000', 'website');
 ";
 if(mysql_query($sql))$msg .="</br>- maxon_apps..OK";else $msg .="</br>- maxon_apps..<br>ERROR -" . mysql_error();
 $sql="
@@ -89,5 +89,22 @@ CREATE TABLE IF NOT EXISTS `syslog` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
 if(mysql_query($sql))$msg .= "</br> - syslog..OK";else $msg .= "</br> - syslog..<br>ERROR -" . mysql_error();
+
+
+$sql="
+CREATE TABLE IF NOT EXISTS `user_roles` (
+  `user_id` varchar(50) DEFAULT NULL,
+  `roles_type` varchar(50) DEFAULT NULL,
+  `roles_item` varchar(50) DEFAULT NULL,
+  `roles_value1` double DEFAULT NULL,
+  `roles_value2` double DEFAULT NULL,
+  `description` varchar(250) DEFAULT NULL,
+  `id` int(9) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+";
+if(mysql_query($sql))$msg .= "</br> - user_roles..OK";else $msg .= "</br> - user_roles..<br>ERROR -" . mysql_error();
+
+
 
 ?>

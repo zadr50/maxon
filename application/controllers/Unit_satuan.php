@@ -110,6 +110,9 @@ class Unit_satuan extends CI_Controller {
 		$data['controller']='unit_satuan';
 		$data['fields_caption']=array('From Unit','To Unit','Unit Value');
 		$data['fields']=array('from_unit','to_unit','unit_value');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='id';
 		
 		$this->load->library('search_criteria');

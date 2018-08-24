@@ -47,6 +47,7 @@ Class Inventory extends CI_Controller {
 		$data['class_list']=$this->inventory_model->class_list();
 		$data['sub_category_list']=$this->inventory_model->category_list();               
 		$data['supplier_name']='';
+		$data['unit_of_measure']='PCS';
 		
 		$setting['dlgBindId']="divisions";
 		$setting['dlgCols']=array( 

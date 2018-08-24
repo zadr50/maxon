@@ -320,6 +320,9 @@ class Delivery_order extends CI_Controller {
 		$data['fields_caption']=array('Nomor DO','Tanggal','Nomor SO','Kode Cust','Nama Customer','Kota','Gudang');
 		$data['fields']=array('invoice_number','invoice_date','sales_order_number','sold_to_customer'
 			,'company','city','warehouse_code');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='invoice_number';
 		
 		$this->load->library('search_criteria');

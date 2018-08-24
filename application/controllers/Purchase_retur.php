@@ -78,6 +78,16 @@ class Purchase_retur extends CI_Controller {
                 "));
             $data['lookup_warehouse']=$this->shipping_locations_model->lookup();
             
+            $data['lookup_coa_inventory']=$this->list_of_values->render(
+                array("dlgBindId"=>"inventory_account",
+                "dlgRetFunc"=>"$('#inventory_account').val(row.account); 
+                $('#coa_inventory').val(row.account_description);",
+                'dlgCols'=>array(
+                    array("fieldname"=>"account","caption"=>"Account","width"=>"80px"),
+                    array("fieldname"=>"account_description","caption"=>"Account Description","width"=>"300px")                    
+                ))
+            );
+                        
 			return $data;
 	}
 	function nomor_bukti($add=false)
@@ -255,6 +265,9 @@ class Purchase_retur extends CI_Controller {
 		'Nama Supplier','Kota','Gudang');
 		$data['fields']=array('purchase_order_number','po_date','amount','posted','po_ref', 
                 'supplier_number','supplier_name','city','warehouse_code');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='purchase_order_number';
 		$data['caption']='DAFTAR PURCHASE RETUR';
 		$data['posting_visible']=true;

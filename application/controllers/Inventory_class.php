@@ -110,6 +110,9 @@ class Inventory_class extends CI_Controller {
 		$data['controller']='inventory_class';		
 		$data['fields_caption']=array('Kode','Nama Kelas Barang/Jasa');
 		$data['fields']=array('kode','class');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='kode';
 		$data['_form']=$this->file_view;
 		$this->load->library('search_criteria');

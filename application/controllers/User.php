@@ -182,6 +182,9 @@ class User extends CI_Controller {
         $data['controller']='user';
         $data['fields_caption']=array('User ID','Nama User','Kelompok','Cabang','Supervisor','NIP');
         $data['fields']=array('user_id','username','cid','branch_code','supervisor','nip');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
         $data['field_key']='user_id';
         $data['print_visible']=true;
         $data['caption']='DAFTAR USER LOGIN';

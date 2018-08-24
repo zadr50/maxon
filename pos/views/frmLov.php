@@ -6,6 +6,7 @@
     if(!isset($url_submit))$url_submit="";
     if(!isset($extra_fields))$extra_fields="";
     if(!isset($before_submit))$before_submit="function before_submit(){return false;}";
+	
 ?>
 <div id='dlg<?=$dlgId?>' class="easyui-dialog"  background='black'
 style="width:<?=$dlgWidth?>;height:<?=$dlgHeight?>;padding:5px 5px;
@@ -69,15 +70,17 @@ echo $extra_fields;
 	var show_date_range="<?=$show_date_range?>";
 	
 	function dlg<?=$dlgId?>_show(subEvent) {
-         var mainEvent = subEvent ? subEvent : window.event;
-        var x=mainEvent.screenX;
-        var y=mainEvent.screenY;    
+        // var mainEvent = subEvent ? subEvent : window.event;
+        //var x=mainEvent.screenX;
+        //var y=mainEvent.screenY;    
 		idd="<?=$dlgBindId?>";
-        $('#dlg<?=$dlgId?>').window({left:10,top:window.event.clientY});  
+        $('#dlg<?=$dlgId?>').window({left:10,top:10});  
 		$('#dlg<?=$dlgId?>').dialog('open').dialog('setTitle','<?=$dlgTitle?>');
 		//dialog('option', 'position', [x,y]);
 		search_id=$('#dlg<?=$dlgId?>_search_id').val();
-		$('#dg<?=$dlgId?>').datagrid({url:'<?=$dlgUrlQuery?>'+search_id});
+		var xurl="<?=$dlgUrlQuery?>";
+		
+		$('#dg<?=$dlgId?>').datagrid({url:xurl+search_id});
 		//$('#dg<?=$dlgId?>').datagrid('reload');
 		
 		$('#dg<?=$dlgId?>').datagrid({

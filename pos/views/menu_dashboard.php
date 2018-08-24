@@ -1,4 +1,5 @@
-<?
+<?php
+
 date_default_timezone_set("Asia/Jakarta");
 //echo gmdate("Y-m-d H:i:s", time()+60*60*7);
 date_default_timezone_set('Asia/Jakarta');
@@ -112,7 +113,7 @@ if($pembulatan=="")$pembulatan=0;
                     </tr>
                 </table>
             </div>
-            <div class='row thumbnail' style="background: #e0d3f6;">
+            <div class='row thumbnail' style="background: #e0d3f6; display:none">
                 <p><strong>Data Pembayaran</strong></p>
                 <table width='100%'>
                     <tr><th>Cash</th><th>Kartu Kredit/Debit</th><th>Voucher</th><th>Jumlah</th><th>Kembalian</th></tr>
@@ -151,9 +152,14 @@ if($pembulatan=="")$pembulatan=0;
                <?=link_button('Save','save_nota()','save','false')?>
                <?=link_button('Reports','reports()','print','false')?>
                <?=link_button('Reprint','reprint_nota()','print','false')?>
+               <?=link_button('Cash','pay_cash_nota()','sum','false')?>
+               <?=link_button('Card','pay_card_nota()','sum','false')?>
+               <?=link_button('Split','pay_split_nota()','sum','false')?>
+               
                <?=link_button('Proses','dlgMenuProcess_Show()','search')?>
                <?=link_button('Setting','dlgSetting_Show()','lock')?>
                <?=link_button('Logout','','man','false',base_url('pos.php/login/logout'))?>
+              
             </div>
             <div class='thumbnail'>
                 <p><strong>Daftar Nota Open</strong></p>
@@ -176,14 +182,17 @@ if($pembulatan=="")$pembulatan=0;
 </div>
 
 <?php 
+echo $lov_customers;
+echo $lov_inventory;
+
 include_once("payment.php"); 
 include_once("setting.php");
 include_once("menu_process.php"); 
 include_once("card_payment.php");
 include_once("voucher_payment.php");
+include_once("cash_payment.php");
+include_once("split_payment.php");
 
-echo $lov_customers;
-echo $lov_inventory;
 ?>
 
 <div id="dlgMain"  name='dlgMain' class="easyui-dialog" style="width:1200px;height:650px" 
@@ -238,6 +247,7 @@ echo $lov_inventory;
         run_timer();
         
     });
+    
     function run_timer() {
         $('#msg-box-wrap').html("Loading...");     
         trun=setTimeout(function(){run_timer()},68000);
@@ -247,21 +257,6 @@ echo $lov_inventory;
                 contentType: 'application/json; charset=utf-8',
                 success: function(msg){
                     console.log(msg);
-                }
-        });
-    }
-    function submit_session(){
-        _url=CI_BASE+'pos.php/user/session';        
-        _data={shipping_location:$("#shipping_location").val()};
-        
-        console.log(_data);
-        
-        $.ajax({
-                type: "POST",
-                url: _url,data: _data,
-                success: function(msg){
-                    console.log(msg);
-                    window.open(CI_BASE+"pos.php","_self");
                 }
         });
     }

@@ -42,7 +42,7 @@ if(!isset($target_window)){
 			}
 			if($criteria1){
 				echo "<strong>".$label1."</strong>";
-				echo "<p>".form_input('text1',$text1,"id='text1'");
+				echo "<p>".form_input('text1',$text1,"id='text1' ");
 				if(isset($ctr1))echo link_button("","lov1()","search"); 
 				echo "</p>";
 			}
@@ -50,9 +50,9 @@ if(!isset($target_window)){
 				if(isset($ctr2)){
 					echo "<strong>".$label2."</strong>";
 					if(is_array($ctr2)){
-						echo "<p>".form_dropdown('text2',$ctr2,$text2,"id='text2'");
+						echo "<p>".form_dropdown('text2',$ctr2,$text2,"id='text2' ");
 					} else {
-						echo "<p>".form_input('text2',$text2,"id='text2'");
+						echo "<p>".form_input('text2',$text2,"id='text2'   ");
 						echo link_button("","lov2()","search"); 
 					}
 				} else {
@@ -146,6 +146,16 @@ if(!isset($target_window)){
 	<?=link_button("Pilih","lov1_ok()","ok")?>
 </div>
 <SCRIPT language="javascript">
+    $('#dg1').datagrid({
+        onDblClickRow:function(){
+            var row = $('#dg1').datagrid('getSelected');
+            if (row){
+            	lov1_ok();
+            }       
+        }
+    });        
+
+
 	function lov1(){
 	    $('#dlg1').dialog('open').dialog('setTitle','Pilihan');
 	    lov_search();
@@ -195,6 +205,16 @@ if(!isset($target_window)){
 	<?=link_button("Pilih","lov2_ok()","ok")?>
 </div>
 <SCRIPT language="javascript">
+
+    $('#dg2').datagrid({
+        onDblClickRow:function(){
+            var row = $('#dg2').datagrid('getSelected');
+            if (row){
+            	lov2_ok();
+            }       
+        }
+    });        
+
 	function lov2(){
 		search=$('#search2').val(); $('#dlg2').dialog('open').dialog('setTitle','Pilihan');
 		$('#dg2').datagrid({url:'<?=base_url()?>index.php/<?=$ctr2?>/'+search});
@@ -207,7 +227,7 @@ if(!isset($target_window)){
 		} else { alert("Pilih salah satu !"); }
 	}	
     function lov2_search(){
-        var search=$('#search1').val(); 
+        var search=$('#search2').val(); 
         $('#dg2').datagrid({url:'<?=base_url()?>index.php/<?=$ctr2?>/'+search});
         $('#dg2').datagrid('reload');       
         
@@ -231,11 +251,20 @@ if(!isset($target_window)){
 		</table>
 </div>
 <div id="btn3" name="btn3" style="height:auto">
-	<input  id="search3" style='width:100' name="search3" placeholder='Search'>
+	<input  id="search3" style='width:100' name="search3" placeholder='Search'   onchange='lov3_search();return false;'>
 	<?=link_button("Cari","lov3()","search")?>
 	<?=link_button("Pilih","lov3_ok()","ok")?>
 </div>
 <SCRIPT language="javascript">
+    $('#dg3').datagrid({
+        onDblClickRow:function(){
+            var row = $('#dg3').datagrid('getSelected');
+            if (row){
+            	lov3_ok();
+            }       
+        }
+    });        
+
 	function lov3(){
 		search=$('#search3').val(); $('#dlg3').dialog('open').dialog('setTitle','Pilihan');
 		$('#dg3').datagrid({url:'<?=base_url()?>index.php/<?=$ctr3?>/'+search});
@@ -246,7 +275,7 @@ if(!isset($target_window)){
 			$('#<?=$output3?>').val(row.<?=$key3?>); $('#dlg3').dialog('close');
 		} else { alert("Pilih salah satu !"); }
 	}	
-   function lov_search(){
+   function lov3_search(){
         var search=$('#search3').val(); 
         $('#dg3').datagrid({url:'<?=base_url()?>index.php/<?=$ctr3?>/'+search});
         $('#dg3').datagrid('reload');       
@@ -272,11 +301,20 @@ if(!isset($target_window)){
 		</table>
 </div>
 <div id="btn4" name="btn4" style="height:auto">
-	<input  id="search4" style='width:100' name="search4" placeholder='Search'>
+	<input  id="search4" style='width:100' name="search4"   onchange='lov4_search();return false;' placeholder='Search'>
 	<?=link_button("Cari","lov4()","search")?>
 	<?=link_button("Pilih","lov4_ok()","ok")?>
 </div>
 <SCRIPT language="javascript">
+    $('#dg4').datagrid({
+        onDblClickRow:function(){
+            var row = $('#dg4').datagrid('getSelected');
+            if (row){
+            	lov4_ok();
+            }       
+        }
+    });        
+
 	function lov4(){
 		search=$('#search4').val(); $('#dlg4').dialog('open').dialog('setTitle','Pilihan');
 		$('#dg4').datagrid({url:'<?=base_url()?>index.php/<?=$ctr4?>/'+search});
@@ -288,6 +326,14 @@ if(!isset($target_window)){
 			$('#<?=$output4?>').val(row.<?=$key4?>); $('#dlg4').dialog('close');
 		} else { alert("Pilih salah satu !"); }
 	}	
+	
+   function lov4_search(){
+        var search=$('#search4').val(); 
+        $('#dg4').datagrid({url:'<?=base_url()?>index.php/<?=$ctr4?>/'+search});
+        $('#dg4').datagrid('reload');       
+        
+    }
+	
 </SCRIPT>
 
 <? } ?>
@@ -306,11 +352,20 @@ if(!isset($target_window)){
 		</table>
 </div>
 <div id="btn5" name="btn5" style="height:auto">
-	<input  id="search5" style='width:100' name="search3" placeholder='Search'>
+	<input  id="search5" style='width:100' name="search5"   onchange='lov5_search();return false;' placeholder='Search'>
 	<?=link_button("Cari","lov5()","search")?>
 	<?=link_button("Pilih","lov5_ok()","ok")?>
 </div>
 <SCRIPT language="javascript">
+    $('#dg5').datagrid({
+        onDblClickRow:function(){
+            var row = $('#dg5').datagrid('getSelected');
+            if (row){
+            	lov5_ok();
+            }       
+        }
+    });        
+
 	function lov5(){
 		search=$('#search5').val(); $('#dlg5').dialog('open').dialog('setTitle','Pilihan');
 		$('#dg5').datagrid({url:'<?=base_url()?>index.php/<?=$ctr5?>/'+search});
@@ -322,6 +377,13 @@ if(!isset($target_window)){
 			$('#<?=$output5?>').val(row.<?=$key5?>); $('#dlg5').dialog('close');
 		} else { alert("Pilih salah satu !"); }
 	}	
+   function lov5_search(){
+        var search=$('#search5').val(); 
+        $('#dg5').datagrid({url:'<?=base_url()?>index.php/<?=$ctr5?>/'+search});
+        $('#dg5').datagrid('reload');       
+        
+    }
+	
 </SCRIPT>
 
 <? } ?>

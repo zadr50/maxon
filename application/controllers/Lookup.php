@@ -24,6 +24,9 @@ class Lookup extends CI_Controller {
 		$data['controller']=$this->controller;
 		$data['fields_caption']=array('Kode','Var Value','keterangan','id');
 		$data['fields']=array('varname','varvalue','keterangan',"id");
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']=$this->primary_key;
 		$data['caption']='DAFTAR LOOKUP PILIHAN';
 
@@ -116,12 +119,25 @@ class Lookup extends CI_Controller {
         $this->template->display_form_input("blank",$data);
         
     }	
-	function query_sysvar_lookup($key,$search=""){
+	function query_sysvar_lookup_ac($key){
+		$sql="select varvalue,keterangan from system_variables where varname='lookup.$key'";
+		if($search=$this->input->get("q"))$sql.=" and varvalue like '$search%'";
+		$sql.=" order by varvalue";
+		$output="";
+		if($qry=$this->db->query($sql)){
+			foreach($qry->result() as $row){
+				$output.=$row->varvalue." - ".$row->keterangan."\n";
+			}
+		}
+		echo $output;
+		
+	}
+	function query_sysvar_lookup($key,$search="",$with_autocomplete=false){
 		$sql="select varvalue,keterangan from system_variables where varname='lookup.$key'";
 		if($search!="")$sql.=" where varvalue like '%$search%'";
 		echo datasource($sql);
 	}
-	function query($what,$search=''){
+	function query($what,$search='',$with_autocomplete=false){
         $sql=$this->list_of_values->get_by_name($what,$search);
            
         

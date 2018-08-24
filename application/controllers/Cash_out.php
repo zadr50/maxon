@@ -83,7 +83,8 @@ class Cash_out extends CI_Controller {
                 array("fieldname"=>"org_id","caption"=>"Company","width"=>"80px"))));
             
             $setsupp['dlgBindId']="suppliers";
-            $setsupp['dlgRetFunc']="$('#payee').val(row.supplier_number);
+            $setsupp['dlgRetFunc']="$('#supplier_number').val(row.supplier_number);
+			$('#payee').val(row.supplier_name);
             ";
             $setsupp['dlgCols']=array( 
                         array("fieldname"=>"supplier_name","caption"=>"Nama Supplier","width"=>"180px"),
@@ -194,6 +195,9 @@ class Cash_out extends CI_Controller {
 		,'Jenis Transaksi','Nomor Giro','Keterangan','Company','Trans Id');
 		$data['fields']=array('voucher','check_date','payment_amount','posted'
             ,'account_number','payee','trans_type','check_number','memo','org_id','trans_id');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='voucher';
 		$data['caption']='DAFTAR TRANSAKSI KAS/BANK KELUAR';
 		$data['posting_visible']=true;

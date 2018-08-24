@@ -521,4 +521,4 @@ $config['show_footer']=true;
 $config["show_header"]=true;
 $config["show_sidebar"]=true;
 //$config['chatbox_visible']=true;
-$config['parent_folder']='../../';
+$config['parent_folder']='http://localhost/talagasoft/simak/v7.maxon/';

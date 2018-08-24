@@ -209,6 +209,9 @@ class Jurnal extends CI_Controller {
 		,'Kredit','Source','Jenis');
 		$data['fields']=array('gl_id','date','account','account_description'
         ,'debit','credit','source','operation');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='gl_id';
 		$data['caption']='DAFTAR TRANSAKSI JURNAL';
 		$data['export_visible']=true;

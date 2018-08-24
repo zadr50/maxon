@@ -4,6 +4,7 @@ echo $lookup_type_of_invoice;
 include_once 'faktur_select.php'; 
 echo $lookup_retur_toko;
 echo $lookup_warehouse;
+
 ?>
 
 <div class="max-tool"> 
@@ -55,7 +56,7 @@ echo $lookup_warehouse;
 	
 <form id='frmRetur' method="post">
 <input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
-<table class="table" width="100%">
+<table class="table3" width="100%">
 	<tr>
 		<td>Nomor Retur</td><td class='field'>
 			<?="<input type='text' id='purchase_order_number' name='purchase_order_number' value='$purchase_order_number'>"?>

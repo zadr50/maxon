@@ -152,6 +152,9 @@ class Category extends CI_Controller {
 		$data['controller']='category';		
 		$data['fields_caption']=array('Kode','Nama Kelompok Barang/Jasa');
 		$data['fields']=array('kode','category');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='kode';
 		$this->load->library('search_criteria');
 		

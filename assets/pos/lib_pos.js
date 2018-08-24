@@ -64,6 +64,8 @@ $(document).ready(function(){
 		$("#voucher_no").val("");
 		next_nota();
 		list_nota_open();
+		
+		$("#msg-box-wrap").html("Ready.");
 	}
 	function next_nota(){
 		loading();
@@ -500,6 +502,8 @@ $(document).ready(function(){
 		}); 		
 	}
     function card_info(){
+    	
+    	
         $("#dlgCard").dialog("open").dialog('setTitle','Info Kartu');
     }
     function debit_info(){
@@ -520,23 +524,33 @@ $(document).ready(function(){
     	}
     	//$("#pay_card").val(rek);
         $("#dlgCard").dialog("close");        
+        
+        var flag=$("#dlgCard_flag1").val();
+        if(flag=="1"){
+        	$("#dlgCard_flag1").val("");
+	        pay_nota_bawah();        
+        }
+        if(flag=="9"){
+        	dlgPaySplit_Card_Submit();
+        }
+        
     }
 	
-	function submit_payment() {
+	function submit_payment_ex() {
 		//console.log(arItem);//lihat controller/invoice/save_pos
 		void total_nota();
 		
 		
 		var total=$("#ttl_nota").html();
 		var sisa=$("#ttl_sisa").html();
-		var cash=$("#cash").val();
-		var card=$("#creditcard").val();
+		var cash=$("#pay_cash").val();
+		var card=$("#pay_card").val();
 		var debit=0;		///$("#debitcard").val();
-		var kembali=$("#kembali").val();
+		var kembali=cval("#kembali");
 		var voucher=cval("#pay_voucher");	
 		rek=$("#credit_card_type").val();
 	
-		if(cval(kembali)<0){
+		if(kembali<0){
 			log_err("Masih kurang bayar !");
 			return false;
 		}
@@ -748,7 +762,7 @@ function clear_input(){
 	$("#item_disc_prc_3").val("0");			$("#barcode_top").val("");
 	$("#item_disc_amt_3").val("0");			$("#total_nota").val(0);
 	$("#item_total").val("0");				$("#disc_amount_ex").val(0);
-	$("#credit_card_type").val("");
+	$("#credit_card_type").val("");			$("#dlgCard_flag1").val("");
 }
 function add_row_sales(){
     next_row=next_row+1;
@@ -1037,16 +1051,23 @@ function calc_input(){
 				if(result.success){
 					arNota=result.list_nota;	
 					s="<table width='100%'>";
-					for(i=0;i<arNota.length;i++){
-						nota=arNota[i];
-						amt=nota.amount;
-						if(amt==null)amt=0;
-						amt=Math.round(amt,2);
-						s=s+"<tr><td><a href='#' onclick=\"edit_nota('"+nota.invoice_number+"');return false\">"+nota.invoice_number+"</a></td>"+
-						"<td align=right>"+formatNumber(amt)+"</td></tr>";
-					}	
+					if(arNota){
+					
+						for(i=0;i<arNota.length;i++){
+							nota=arNota[i];
+							amt=nota.amount;
+							if(amt==null)amt=0;
+							amt=Math.round(amt,2);
+							s=s+"<tr><td><a href='#' onclick=\"edit_nota('"+nota.invoice_number+"');return false\">"+nota.invoice_number+"</a></td>"+
+							"<td align=right>"+formatNumber(amt)+"</td></tr>";
+						}	
+					
+					}
+					
 					s=s+"</table>";
 					$("#divNotaOpen").html(s);
+					$("#msg-box-wrap").html("Ready.");
+
 				}
 				
 			},
@@ -1116,6 +1137,7 @@ function calc_input(){
 	function pay_nota_bawah(){
 
 		void total_nota();
+		
 		total=cval("#total_nota");
 		var sisa=$("#ttl_sisa").html();
 		cash=cval("#pay_cash");
@@ -1141,6 +1163,7 @@ function calc_input(){
 			log_err("Rekening / EDC berlum dipilih !");
 			return false;
 		}
+		
 		var header=get_header_nota();
 		
 
@@ -1173,3 +1196,83 @@ function calc_input(){
 function reports(){
 	window.open(base_url+'pos.php/reports','_blank');
 }
+    
+    function submit_session(){
+        _url=CI_BASE+'pos.php/user/session';        
+        _data={shipping_location:$("#shipping_location").val()};
+        
+        console.log(_data);
+        
+        $.ajax({
+                type: "POST",
+                url: _url,data: _data,
+                success: function(msg){
+                    console.log(msg);
+                    window.open(CI_BASE+"pos.php","_self");
+                }
+        });
+    }
+    function pay_cash_nota(){
+        total_nota();
+        var ttl_nota=cval("#total_nota");
+        if(ttl_nota==0){
+            log_err("Jumlah nota 0 mungkin tidak ada itemnya. !");
+            return false;
+        }
+        $("#dlgPayCash_Tagih").val(formatNumber(ttl_nota));
+        $("#dlgPayCash_Kembali").val(0);
+        $("#dlgPayCash_Bayar").val(0);
+        $("#dlgPayCash_Bayar").focus();
+        $("#dlgPayCash_Flag").val("");
+        
+        $("#dlgPayCash").dialog("open").dialog('setTitle','Dialog');         
+        
+        
+    }
+    function pay_card_nota(){
+        total_nota();
+        var ttl_nota=cval("#total_nota");
+        if(ttl_nota==0){
+            log_err("Jumlah nota 0 mungkin tidak ada itemnya. !");
+            return false;
+        }
+        $("#pay_card").val(formatNumber(ttl_nota));
+        $("#card_amount").val(formatNumber(ttl_nota));
+        $("#dlgCard_flag1").val("1");
+        $("#dlgCard").dialog("open").dialog('setTitle','Info Kartu');
+        
+    }
+    function dlgPayCash_Cancel(){
+        $("#dlgPayCash").dialog("close");
+    }
+    
+    function dlgPayCash_Submit(){
+        $("#dlgPayCash").dialog("close");
+        var flag=$("#dlgPayCash_Flag").val();
+        if(flag=="9"){
+        	dlgPaySplit_Cash_Submit();
+        } else {
+	        pay_nota_bawah();        
+        }
+    }
+    function dlgPayCash_Calc(){
+        var ttl_nota=cval("#total_nota");
+        var cash=cval("#dlgPayCash_Bayar");
+        $("#pay_cash").val(formatNumber(cash));
+        var sisa=cash-ttl_nota;
+        $("#dlgPayCash_Kembali").val(formatNumber(sisa));
+        total_nota();
+        
+    }
+    function pay_split_nota(){
+        total_nota();
+        var ttl_nota=cval("#total_nota");
+        if(ttl_nota==0){
+            log_err("Jumlah nota 0 mungkin tidak ada itemnya. !");
+            return false;
+        }
+    	
+        var ttl_nota=cval("#total_nota");
+        $("#dlgPaySplit_Tagih").val(formatNumber(ttl_nota));
+        $("#dlgPaySplit").dialog("open").dialog('setTitle','Split Payment');
+    }

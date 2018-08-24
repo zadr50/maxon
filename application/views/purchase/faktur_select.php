@@ -22,12 +22,24 @@ padding:10px 20px;left:100px;top:20px"
     </div>   
 </div>
 <div id="toolbar-search-faktur" style="height:auto" class='box-gradient'>
-	Enter Text: <input  id="search_supp" style='width:180' name="search_supp">
+	Enter Text: <input  id="search_supp" style='width:180' name="search_supp" onchange="filter_faktur();return false;">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-search"   onclick="filter_faktur();return false;">Filter</a>        
 	<a href="#" class="easyui-linkbutton" iconCls="icon-ok"   onclick="selected_faktur();return false;">Select</a>
 	<a href="#" class="easyui-linkbutton" iconCls="icon-cancel"   onclick="dlgSelectFaktur_Close();return false;">Close</a>
 </div>
 <SCRIPT language="javascript">
+
+    $().ready(function (){
+        $('#dgSelectFaktur').datagrid({
+            onDblClickRow:function(){
+                var row = $('#dgSelectFaktur').datagrid('getSelected');
+                if (row){
+                   selected_faktur();
+                }       
+            }
+        });        
+    });
+
 	function select_faktur(){
 	    filter_faktur();
 		$('#dlgSelectFaktur').dialog('open').dialog('setTitle','Cari nomor faktur');

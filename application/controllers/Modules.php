@@ -122,6 +122,9 @@ class Modules extends CI_Controller {
 		$data['controller']='modules';
 		$data['fields_caption']=array('Kode','Nama Modul','Keterangan','Parent','Form Name','Type','No Urut');
 		$data['fields']=array('module_id','module_name','description','parentid','form_name','type','sequence');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='module_id';
 		$data['caption']='DAFTAR MODUL';
 

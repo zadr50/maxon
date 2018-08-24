@@ -20,6 +20,9 @@
                     <th data-options="field:'qty_recvd',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty Recvd</th>
                     <th data-options="<?=col_number('retail',2)?>">Jual</th>
                     <th data-options="field:'margin',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Margin</th>
+                    <th data-options="<?=col_number('mu_qty',2)?>">M_Qty</th>
+                    <th data-options="field:'multi_unit',width:50,align:'left',editor:'text'">M_Unit</th>
+                    <th data-options="<?=col_number('mu_harga',2)?>">M_Price</th>
                     <th data-options="field:'line_number',width:30,align:'right'">Line</th>
                 </tr>
             </thead>

@@ -127,23 +127,35 @@ function count_all(){
 function get_by_id($id){
 	 
 	$this->db->where($this->primary_key,$id);
-	if($row=$this->db->get($this->table_name)->row()){
-		$r_item=$this->db->query("select warehouse_code from invoice_lineitems 
-			where invoice_number='$id' limit 1")->row();
-		if($r_item)	$this->warehouse_code=$r_item->warehouse_code;
-		$terms=$row->payment_terms;
-		$due_date=$row->due_date;
-		if($t=$this->db->query("select days from type_of_payment where type_of_payment='$terms'")){
-			if($t=$t->row())$due_date=add_date($row->invoice_date,$t->days);
-		}
-		$data['warehouse_code']=$this->warehouse_code;
-		$data['due_date']=$due_date;
-		$this->update($id,$data);
-	}
-	$this->db->where($this->primary_key,$id);
 	return $this->db->get($this->table_name);
 }
 function save($data){
+	
+	$id=$data['invoice_number'];
+	if(isset($data['warehouse_code'])){
+		$gudang=$data['warehouse_code'];	
+		$this->db->query("update invoice_lineitems set warehouse_code='$gudang' 
+			where invoice_number='$id'");			
+			//unset($data['warehouse_code']);
+	} else {
+		$r_item=$this->db->query("select warehouse_code from invoice_lineitems 
+			where invoice_number='$id' limit 1")->row();
+		if($r_item)	{
+			$data['warehouse_code']=$r_item->warehouse_code;
+		}
+	}
+	if(!isset($data['due_date'])){
+		$terms=$data['payment_terms'];
+		if($terms=="")$terms="CASH";
+		if($t=$this->db->query("select days from type_of_payment 
+			where type_of_payment='$terms'")){
+			if($t=$t->row()){
+				$due_date=add_date($row->invoice_date,$t->days);
+				$data['due_date']=$due_date;
+			}
+		}
+	}
+	
 	$data['invoice_date']= date('Y-m-d H:i:s', strtotime($data['invoice_date']));
 	$data['due_date']= date('Y-m-d H:i:s', strtotime($data['due_date']));
     if(!isset($data['inv_amount']))$data["inv_amount"]=0;
@@ -157,9 +169,27 @@ function update($id,$data){
 	if(isset($data['warehouse_code'])){
 		$gudang=$data['warehouse_code'];	
 		$this->db->query("update invoice_lineitems set warehouse_code='$gudang' 
-		where invoice_number='$id'");			
-		//unset($data['warehouse_code']);
+			where invoice_number='$id'");			
+			//unset($data['warehouse_code']);
+	} else {
+		$r_item=$this->db->query("select warehouse_code from invoice_lineitems 
+			where invoice_number='$id' limit 1")->row();
+		if($r_item)	{
+			$data['warehouse_code']=$r_item->warehouse_code;
+		}
 	}
+	if(!isset($data['due_date'])){
+		$terms=$data['payment_terms'];
+		if($terms=="")$terms="CASH";
+		if($t=$this->db->query("select days from type_of_payment 
+			where type_of_payment='$terms'")){
+			if($t=$t->row()){
+				$due_date=add_date($row->invoice_date,$t->days);
+				$data['due_date']=$due_date;
+			}
+		}
+	}
+
 	if(isset($data['invoice_date']))$data['invoice_date']= date('Y-m-d H:i:s', strtotime($data['invoice_date']));
 	if(isset($data['due_date']))$data['due_date']= date( 'Y-m-d H:i:s', strtotime($data['due_date']));
     

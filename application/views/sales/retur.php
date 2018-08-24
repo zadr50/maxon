@@ -46,7 +46,7 @@
 <form id="myform"  method="post">
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 
-<table class='table' width='100%'>
+<table class='table2' width='100%'>
     <tr>
 		<td>Nomor</td>
         <td>  			
@@ -66,8 +66,8 @@
         echo form_input('sold_to_customer',$sold_to_customer,'id=sold_to_customer'); 
         ?>
         	<? if($mode=='add') { ?>
-			<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-			onclick="select_customer()"></a>
+			<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" 
+			onclick="dlgcustomers_show();return false;"></a>
 			<? } ?>     
 		</td>
 	
@@ -83,7 +83,7 @@
 		<td>Nomor Faktur</td>
 		<td><?         
 			echo form_input('your_order__',$your_order__,'id=your_order__');                 
-			echo link_button('', 'pilih_faktur()','search');
+			echo link_button('', 'dlginvoice_show();return false;','search');
          ?></td>		
 	</tr>
 	
@@ -186,12 +186,14 @@
 
 </div>
 <?php
-    include_once 'customer_select.php'; 
-    echo include_once 'invoice_select.php'; 
+//    include_once 'customer_select.php'; 
+///    echo include_once 'invoice_select.php'; 
     echo load_view('inventory/inventory_select');
     echo $lookup_gudang;
     echo $lookup_payment_terms;
     echo $lookup_salesman;
+    echo $lookup_customer;
+    echo $lookup_invoice;
     
 ?>
 

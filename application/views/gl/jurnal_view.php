@@ -1,7 +1,7 @@
 <!-- JURNAL -->
-	<DIV title="Jurnal" style="padding:10px">
+	<DIV title="Jurnal" style="padding:10px" >
 		<div id='divJurnal' class='thumbnail'>
-		<table id="dgCrdb" class="easyui-datagrid"  width='100%'
+		<table id="dgCrdb" class="easyui-datagrid"  width='750'
 			data-options="
 				iconCls: 'icon-edit', fitColumns: true, 
 				singleSelect: true,toolbar:'#tbCrdb',

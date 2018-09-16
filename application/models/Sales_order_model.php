@@ -162,7 +162,13 @@ class Sales_order_model extends CI_Model
 			$ship_date=$q->invoice_date;
 		}
 		$delivered=0;
-		$status=$this->db->select("status")->where("sales_order_number",$nomor_so)->get("sales_order")->row()->status;
+		$rstatus=$this->db->select("status")->where("sales_order_number",$nomor_so)
+			->get("sales_order")->row();
+		if($rstatus){
+			$status=$rstatus->status;
+		} else {
+			$status="0";
+		}
 		if ($q=$this->db->select("sum(quantity) as z_qty,
 		sum(ship_qty) as z_ship_qty")->where("sales_order_number",$nomor_so)
 		->get("sales_order_lineitems")) {

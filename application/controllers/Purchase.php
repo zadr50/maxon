@@ -24,6 +24,7 @@ class Purchase extends CI_Controller {
     function index(){	
 	}
     function rpt($id){
+    	$has_criteria=false;	//apabila criteria dalam file view
 		 $data['date_from']=date('Y-m-d 00:00:00');
 		 $data['date_to']=date('Y-m-d 23:59:59');
 		 $data['select_date']=true;		 
@@ -39,7 +40,8 @@ class Purchase extends CI_Controller {
                  $data['fields1'][]=array("supplier_number","100","Kode");
                  $data['fields1'][]=array("supplier_name","180","Nama");
                  $data['ctr1']='supplier/select';
-                 
+                 $has_criteria=true;
+				 
                  break;
 			 case 'po_list':
 			 case "faktur_items":
@@ -48,19 +50,20 @@ class Purchase extends CI_Controller {
 				 $data['criteria1']=true;
 				 $data['label1']='Tampil saldo nol? (0=Tidak,1=Ya)';
 				 $data['text1']='0';				 
+                 $has_criteria=true;
 				 
 				 
 			 default:
 				 
 				 break;
 		 }
-		 $rpt='purchase/rpt/'.$id;
-		 $data['rpt_controller']=$rpt;
+		 $rpt_view='purchase/rpt/'.$id;
+		 $data['rpt_controller']=$rpt_view;
 		 
-		if(!$this->input->post('cmdPrint')){
+		if(!$this->input->post('cmdPrint') && $has_criteria){
 			$this->template->display_form_input('criteria',$data,'');
 		} else {
-			$this->load->view($rpt);
+			$this->load->view($rpt_view,array("id"=>$id));
 		}
    }
 	function reports(){

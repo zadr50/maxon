@@ -33,6 +33,7 @@ class Nomor extends CI_Controller {
 		
 		$faa[]=criteria("Search: ","sid_nama");
 		$data['criteria']=$faa;
+        $data['col_width']=array("var_name"=>300);
         $this->template->display_browse2($data);            
 	}
     function browse_data($nama=''){

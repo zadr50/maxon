@@ -1,6 +1,3 @@
-<?php
-
-?>
 <div class="col-md-12 thumbnail">
 	<table class='table'>			 
 		<tr><td>Periode</td><td colspan='5'><?php 
@@ -12,8 +9,8 @@
 		$disabled="";
         if($flag1==1)$disabled="disabled";
 		echo form_input('nip',$nip,"id='nip' $disabled");
-        if($flag1!=1)echo link_button('','lookup_employee()','search');
-		echo "Nama ".form_input('nama',$nama,'id=nama disabled');
+        if($flag1!=1)echo link_button('','dlgemployee_show();return false;','search');
+		echo "Nama ".form_input('nama',$nama,'id=nama locked');
 		echo link_button('Filter','load_absen()',"reload");
 		
 		?>		
@@ -30,8 +27,8 @@
 			<p><i>Type: 0 - Hadir, 1 - Tidak, 2 - Sakit, 3 - Ijin, 9 - Off</i></p>
 		</div>
         <?php if($flag1<>1) { ?>
-		<div class='thumbnail'>
-		<table class='table'><thead>
+		<div class='col-md-12 thumbnail'>
+		<table class='table2 box-gradient' width="100%"><thead>
 			<th>Type</th><th>Tanggal</th><th>Time In</th><th>Time Out</th>
 			<th>OT In</th><th>OT Out</th><th>Id</th></thead>
 			<tbody><tr><td><?=form_input('absen_type',"","id=absen_type style='width:40px'")?></td>
@@ -58,7 +55,7 @@
 					iconCls: 'icon-edit',
 					singleSelect: true,
 					toolbar: '#tb', fitColumns: true,
-					url: '<?=base_url()?>index.php/payroll/absensi/data_nip/<?=$periode?>/<?=$nip?>'
+					url: ''
 				">
 				<thead>
 					<tr>
@@ -76,7 +73,7 @@
 					</tr>
 				</thead>
 		</table>
-	</div>
+</div>
 
 <div id="tb">
     <?php if($flag1<>1) { ?>
@@ -90,7 +87,9 @@
 	</div>
 	<?php }  ?>
 </div>
-<?=load_view('payroll/employee_lookup')?>
+<?php
+    echo $lookup_employee;
+?>
 <script language="JavaScript">
 	function add_item(){
  	}
@@ -111,21 +110,15 @@
 				try {
 						var result = eval('('+result+')');
 						if(result.success){
-							$.messager.show({
-								title:'Success',msg:result.msg
-							});
-							$('#'+grid_id).datagrid('reload');	 
+						   load_absen(); 
 						} else {
-							$.messager.show({
-								title:'Error',msg:result.msg
-							});
-							log_err(result.msg);
+						    log_err(result.msg);
 						};
 					} catch (exception) {		
-						$('#'+grid_id).datagrid('reload');	 
+                            log_err(result.msg);
 					}
 				},
-				error: function(msg){$.messager.alert('Info',"Tidak bisa dihapus baris ini !");}
+				error: function(msg){log_err("Tidak bisa dihapus baris ini !");}
 			});         
 		});
 	}
@@ -145,7 +138,6 @@
  		var nip=$("#nip").val();
  		var periode=$("#periode").val();
 		$('#dg').datagrid({url:'<?=base_url()?>index.php/payroll/absensi/data_nip/'+periode+'/'+nip});
-		$('#dg').datagrid('reload');
  	}
 	function submit_absen(){
 		var xurl="<?=base_url()?>index.php/payroll/absensi/save";

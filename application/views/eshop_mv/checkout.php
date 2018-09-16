@@ -1,7 +1,7 @@
  
-		<? if($so_number == "") { ?>
+		<?php if($so_number == "") { ?>
 			<div class="alert alert-warning" role="alert">Belum ada item yang dibeli.</div>
-		<? } else { ?>
+		<?php } else { ?>
 			<h1>CHECKOUT PROSES</h1>
 			<p>Terimakasih anda sudah melakukan transaksi pembelian atas barang-barang 
 			dibawah ini.</p>
@@ -10,7 +10,7 @@
 			sistim akan menghapus data belanja anda.</p>
 			<p>Nomor tagihan yang baru dibuat adalah <h1><?=$so_number?></h1>
 			Silahkan input nomor ini pada saat melakukan pembayaran di ATM/Bank</p>
-			<? 	
+			<?php 	
 				$so=$this->session->userdata("so");
 				$so_detail=$this->session->userdata("so_detail");
 				$cust_name=$this->session->userdata("cust_name");
@@ -29,7 +29,7 @@
 			<head><th>Kode</th><th>Nama Barang</th><th>Qty</th>
 			<th>Harga</th><th>Jumlah</th></thead>
 			<tbody>
-		<?
+		<?php
 			$total=0;
 			for($i=0;$i<count($so_detail);$i++){
 				$qty=$so_detail[$i]['quantity'];
@@ -51,7 +51,7 @@
 			</table>
 			<h4>Total Tagihan Rp. <?=number_format($total)?></h4>
 			<h5>Mohon ditransfer ke salah satu Rekening berikut </h5>
-			<?
+			<?php
 			  $q=$this->db->get('bank_accounts');
 			  echo "<table class='table'><thead><th>Nomor Rekening</th><th>Nama Bank</th>
 			  <th>Cabang</th><th>Atas Nama</th></thead>
@@ -71,7 +71,7 @@
 			<i>Barang akan kami kirim dalam waktu kurang dari dua hari, 
 			setelah pembayaran anda masuk ke rekening kami.</i>
 			</p>
-		<? } ?>
+		<?php } ?>
  
  
 <script language='javascript'>

@@ -1,5 +1,5 @@
 	<div class='col-md-12'>
-		<? 
+		<?php 
 		$rst=$this->db->where("section_name","section-content")->get("articles");
 		foreach($rst->result() as $article)
 		{
@@ -10,10 +10,10 @@
 		?>
 	</div>	
 	<div class='col-md-12'>
-		<? $this->load->view("slider"); ?>
+		<?php $this->load->view("slider"); ?>
 	</div>
 	<div class='col-md-12'>
-	<?
+	<?php
 		if($q=$this->db->select("item_number,description,category,
 			item_picture,retail")->limit(12)->order_by("sales_count desc")
 			->get("inventory")){
@@ -29,7 +29,7 @@
 					<div class='item_no'><?=$item->item_number?></div>
 					<div class='price'>Rp. <?=number_format($item->retail)?></div>
 				</div>
-	<?
+	<?php
 				echo "</div>";
 			}
 		}

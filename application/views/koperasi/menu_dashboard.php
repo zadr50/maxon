@@ -1,10 +1,10 @@
 <script type="text/javascript" src="<?=base_url()?>assets/maphilight-master/jquery.maphilight.min.js"></script>
 
- <?
+ <?php
   $CI =& get_instance();
  ?>
 <div class="easyui-tabs" id="tt">	 
-	<div title="HOME"><? include_once __DIR__."/../home.php";?></div>
+	<div title="HOME"><?php include_once __DIR__."/../home.php";?></div>
 	<script>$().ready(function(){$("#tt").tabs("select","DASHBOARD");});</script>
 
 	<div title="DASHBOARD" style="padding:10px">
@@ -14,7 +14,7 @@
 <div style="margin:10px 0;"></div>
 	<div title="Koperasi Dashboard" style="padding:10px">
 		<div class="thumbnail">
-			<? include "menu.php" ?>
+			<?php include "menu.php" ?>
 		</div>
 		<div class="row">
 			<div class="thumbnail col-md-6 " >

@@ -7,7 +7,7 @@
 </script>
 <head><title>MaxOn ERP Online Demo</title></head>
 <body>
-	<?
+	<?php
 	date_default_timezone_set("Asia/Jakarta");
 	echo $library_src;
 	echo $script_head;
@@ -15,8 +15,8 @@
 	<div class="container-fluid bg-all">
 		<div class='row  bg-head bg-banner' >
 		<div id='section-header'>
-			<? include_once "header.php" ?>
-			<? include_once 'box_crumb.php' ?>
+			<?php include_once "header.php" ?>
+			<?php include_once 'box_crumb.php' ?>
 		</div>
 		</div>
 		<div class='row' >
@@ -63,7 +63,7 @@
 				  
 			</div>
 			<div class='col-md-6 col-lg-6 col-sm-6' style='margin-left:20px;margin-right:20px'>
-				<?	$this->load->view($file_content);?>
+				<?php	$this->load->view($file_content);?>
 			</div>
 			
 			<div class='col-md-2 col-lg-2 col-sm-2' >
@@ -105,7 +105,7 @@
 		</div>
 		<div class='row bg-head-foot' style="margin-top:-1px">
 		<div id='section-footer' >
-			<? include_once "footer.php" ?>
+			<?php include_once "footer.php" ?>
 		</div>
 		</div>
 	 

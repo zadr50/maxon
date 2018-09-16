@@ -18,26 +18,26 @@
 				<select class='form-control' name="sc" id="cat-select" 
 				class="cat-select absolute">
 				<option value="0">Semua Kategori</option>
-				<? foreach($categories->result() as $cat) { ?>
+				<?php foreach($categories->result() as $cat) { ?>
 				<option class="ml-10" value="<?=$cat->kode?>"><?=$cat->category?></option>
-				<? } ?>
+				<?php } ?>
 				</select>
 			</div>
 			<button type="submit" class="btn btn-default glyphicon glyphicon-search"> Cari</button>
 		  </form>
 		</ul>
-		<? } ?>
+		<?php } ?>
 		  <div class="nav navbar-nav navbar-right">	
-			<?
+			<?php
 			$is_login=$this->session->userdata('cust_login');
 			if($is_login){
 			?>
 				<a href="<?=base_url()?>index.php/eshop/login/logout" 
 					class="btn btn-warning glyphicon glyphicon-off"> Logout</a>
-			<? } else { ?>
+			<?php } else { ?>
 				<a href="<?=base_url()?>index.php/eshop/login" 
 					class="btn btn-default glyphicon glyphicon-off"> Login</a>
-			<? } ?>
+			<?php } ?>
 			<a href="<?=base_url()?>index.php/eshop/help" 
 				class="btn btn-default glyphicon glyphicon-search"> Bantuan</a>
 			
@@ -46,7 +46,7 @@
  
 </nav>
 
-<?
+<?php
 	function menu($title,$url,$func=false){
 		if(!$func){
 			echo "<div><a href='".base_url()."index.php/".$url."' class='easyui-linkbutton' data-options='plain:true'>".$title."</a></div>";	

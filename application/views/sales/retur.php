@@ -1,5 +1,5 @@
 <div class="thumbnail box-gradient">
-	<?
+	<?php
    $min_date=$this->session->userdata("min_date","");
 	
 	
@@ -27,10 +27,9 @@
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
+		<?=link_button('Close', 'remove_tab_parent()','cancel');?>		
 	</div>
 </div>
-<div class="thumbnail">	
-
 <?php if (validation_errors()) { ?>
 	<div class="alert alert-error">
 	<button type="button" class="close" data-dismiss="alert">x</button>
@@ -42,93 +41,126 @@
 <div class="alert alert-success"><? echo $message;?></div>
 <? } ?>
 
-
-<form id="myform"  method="post">
-	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
-
-<table class='table2' width='100%'>
-    <tr>
-		<td>Nomor</td>
-        <td>  			
-            <? 
-            	echo form_input('invoice_number',$invoice_number,'id=invoice_number');
-            ?>
-        </td>
-		<td rowspan='4'>
-			<div id="customer_info" name="customer_info" class='thumbnail' style='width:300px;height:100px'>
-				<?=$customer_info?>
-			</div>
-		</td>
-		        
-    </tr>
-	<tr>
-     	<td>Pelanggan</td><td><?
-        echo form_input('sold_to_customer',$sold_to_customer,'id=sold_to_customer'); 
-        ?>
-        	<? if($mode=='add') { ?>
-			<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" 
-			onclick="dlgcustomers_show();return false;"></a>
-			<? } ?>     
-		</td>
-	
-	</tr>
-     <tr><td>Tanggal</td><td><?         
-			  echo form_input('invoice_date',$invoice_date,'id=invoice_date
-             class="easyui-datetimebox" required style="width:150px"
-			data-options="formatter:format_date,parser:parse_date"
-			');                 
-         ?></td>
-	</tr>
-	<tr>
-		<td>Nomor Faktur</td>
-		<td><?         
-			echo form_input('your_order__',$your_order__,'id=your_order__');                 
-			echo link_button('', 'dlginvoice_show();return false;','search');
-         ?></td>		
-	</tr>
-	
-     <tr>       
-        <td>Gudang/Toko</td>
-        <td><?         
-            echo form_input('warehouse_code',$warehouse_code,"id='warehouse_code'");                 
-            echo link_button("","dlgwarehouse_show()","search");
-        ?>
-         
-         </td>      
-        
-        </tr>
-	
-     <tr>
-    <tr>
-         <td>Salesman</td><td><?php
-            echo form_input('salesman',$salesman,"id='salesman'");                 
-            echo link_button("","dlgsalesman_show()","search");
-                 
-        ?></td> 
-        <td>Termin <?php
-            echo form_input('payment_terms',$payment_terms,"id='payment_terms'");                 
-            echo link_button("","dlgtype_of_payment_show()","search");
-        ?></td>     
-    </tr>
-    
-             
-		<td>Keterangan</td><td colspan="6">
-			<?
-         echo form_input('comments',$comments,'id=comments style="width:90%"');
-		 	?>
-		</td>
-    </tr>
-	</table>	
-
-
-
-   </form>
-    </div>
 <div class="easyui-tabs"  >
+	<div id='divGeneral' title='General'>
+	<form id="myform"  method="post">
+		<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
+		<table class='table2' width='100%'>
+	    <tr>
+			<td>Nomor</td>
+	        <td>  			
+	            <?php 
+	            	echo form_input('invoice_number',$invoice_number,'id=invoice_number');
+	            ?>
+	        </td>
+			<td rowspan='4'>
+				<div id="customer_info" name="customer_info" class='thumbnail' style='width:300px;height:100px'>
+					<?=$customer_info?>
+				</div>
+			</td>
+			        
+	    </tr>
+		<tr>
+	     	<td>Pelanggan</td><td><?
+	        echo form_input('sold_to_customer',$sold_to_customer,'id=sold_to_customer'); 
+	        ?>
+	        	<? if($mode=='add') { ?>
+				<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" 
+				onclick="dlgcustomers_show();return false;"></a>
+				<? } ?>     
+			</td>
+		
+		</tr>
+	     <tr><td>Tanggal</td><td><?         
+				  echo form_input('invoice_date',$invoice_date,'id=invoice_date
+	             class="easyui-datetimebox" required style="width:150px"
+				data-options="formatter:format_date,parser:parse_date"
+				');                 
+	         ?></td>
+		</tr>
+		<tr>
+			<td>Nomor Faktur</td>
+			<td><?         
+				echo form_input('your_order__',$your_order__,'id=your_order__');                 
+				echo link_button('', 'dlginvoice_show();return false;','search');
+	         ?></td>		
+		</tr>
+		
+	     <tr>       
+	        <td>Gudang/Toko</td>
+	        <td><?         
+	            echo form_input('warehouse_code',$warehouse_code,"id='warehouse_code'");                 
+	            echo link_button("","dlgwarehouse_show()","search");
+	        ?>
+	         
+	         </td>      
+	        
+	        </tr>
+		
+	     <tr>
+	    <tr>
+	         <td>Salesman</td><td><?php
+	            echo form_input('salesman',$salesman,"id='salesman'");                 
+	            echo link_button("","dlgsalesman_show()","search");
+	                 
+	        ?></td> 
+	        <td>Termin <?php
+	            echo form_input('payment_terms',$payment_terms,"id='payment_terms'");                 
+	            echo link_button("","dlgtype_of_payment_show()","search");
+	        ?></td>     
+	    </tr>
+	    
+	             
+			<td>Keterangan</td><td colspan="6">
+				<?
+	         echo form_input('comments',$comments,'id=comments style="width:90%"');
+			 	?>
+			</td>
+	    </tr>
+		</table>
+	<div id='divTotal' class='thumbnail'> 
+		<table class='table2' width='100%'>
+			<tr>
+				<td>Sub Total: </td><td><input id='sub_total' value='<?=number_format($subtotal)?>' style='width:100px'></td>				
+				<td>Discount %: </td><td><input id='disc_total_percent' name='discount' 
+					value='<?=$discount?>' style='width:50px'>
+				</td>
+				<td>Disc Amount:</td>
+				<td>
+					<input id='disc_amount_1' name='disc_amount_1'
+					value='<?=number_format($disc_amount_1)?>' style='width:100px'>
+				</td>
+			</tr>
+			<tr>
+				<td>Ongkos Angkut: </td><td><input id='freight' name='freight' value='<?=$freight?>' style='width:80px'></td>
+				<td>Pajak PPN %: </td><td><input id='sales_tax_percent' name='sales_tax_percent'
+					value='<?=$sales_tax_percent?>' style='width:50px'>
+				</td>
+				<td>Tax Amount:</td>
+				<td>
+					<input id='tax' name='tax'
+					value='<?=number_format($tax)?>' style='width:100px'>
+				</td>
+
+			</tr>
+			<tr>
+				<td>Biaya Lain: </td><td><input id='other' name='other' value='<?=number_format($other)?>' style='width:80px'></td>
+				<td>&nbsp</td><td>&nbsp</td>
+				<td>JUMLAH: </td><td><input id='total' name='amount' value='<?=number_format($amount)?>' style='width:100px;'>
+					 <a id='divHitung' href="#" class="easyui-linkbutton" data-options="iconCls:'icon-sum'"  
+					   plain='true' title='Hitung ulang' onclick='hitung_jumlah();return false'></a>
+					
+				</td>
+			</tr>
+		</table>		
+	</div>
+			
+	</form>
+	</div>
 	<div id='divItem' title='Items'>
 		<div id='dgItem'><? include_once "invoice_add_item_simple.php"; ?></div>
 		
-		<table id="dg" class="easyui-datagrid"  width='100%'
+		<table id="dg" class="easyui-datagrid"  width='1200'
 			data-options="
 				iconCls: 'icon-edit', fitColumns: true, 
 				singleSelect: true,
@@ -143,18 +175,26 @@
 					<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
 						<th data-options="field:'price',width:60,align:'right',editor:'numberbox',
 							formatter: function(value,row,index){
-								return number_format(value,2,'.',',');}">Jumlah</th>
+								return number_format(value,2,'.',',');}">Price</th>
 					<th data-options="field:'discount',width:50,editor:'numberbox'">Disc%</th>
 						<th data-options="field:'amount',width:60,align:'right',editor:'numberbox',
 							formatter: function(value,row,index){
 								return number_format(value,2,'.',',');}">Jumlah</th>
+					<th data-options="field:'account',align:'left'">Account</th>
+					<th data-options="field:'account_description',align:'left'">Account Description</th>
+					<th data-options="field:'cost',width:60,align:'right',editor:'numberbox',
+						formatter: function(value,row,index){
+							return number_format(value,2,'.',',');}">Cost</th>
+					<th data-options="field:'mu_qty',align:'right',editor:{type:'numberbox',options:{precision:2}}">M Qty</th>
+					<th data-options="field:'multi_unit',align:'left',editor:'text'">M Unit</th>
+								
 					<th data-options="field:'line_number',width:30,align:'right'">Line</th>
 				</tr>
 			</thead>
 		</table>
 	</div>
 <!-- JURNAL -->
-	<DIV title="Jurnal" style="padding:10px">
+	<div title="Jurnal">
 		<div id='divJurnal' class='thumbnail'>
 		<table id="dgCrdb" class="easyui-datagrid"  width='100%'
 			data-options="
@@ -177,28 +217,23 @@
 		</table>
 		</div>
 			
-	</DIV>	
-	
+	</div>	
 </div>
 
 	
 	
-
-</div>
 <?php
-//    include_once 'customer_select.php'; 
-///    echo include_once 'invoice_select.php'; 
     echo load_view('inventory/inventory_select');
     echo $lookup_gudang;
     echo $lookup_payment_terms;
     echo $lookup_salesman;
     echo $lookup_customer;
     echo $lookup_invoice;
-    
 ?>
 
  <script language='javascript'>
 	var url;	
+
     $(document).ready(function(){
     });
  
@@ -502,7 +537,37 @@
 		
 		}
 
-      
+		function hitung_jumlah(){
+		    url=CI_ROOT+'invoice/recalc/'+$('#invoice_number').val();
+		    if($('#disc_total_percent').val()=='')$('#disc_total_percent').val(0);
+		    if($('#sales_tax_percent').val()=='')$('#sales_tax_percent').val(0);
+		    if($('#freight').val()=='')$('#freight').val(0);
+		    if($('#others').val()=='')$('#others').val(0);
+		    loading();
+		    $.ajax({
+                type: "GET",
+                url: url,
+				contentType: 'application/json; charset=utf-8',
+                data:{discount:$("#disc_total_percent").val(),tax:$("#sales_tax_percent").val(),
+                others:$("#others").val(),freight:$("#freight").val()}, 
+                success: function(msg){
+                	loading_close();
+                    var obj=jQuery.parseJSON(msg);
+                    $('#sub_total').val(obj.sub_total);
+                    $('#total').val(obj.amount);
+                    $('#total_retur').val(obj.retur);
+                    $('#total_crdb').val(obj.crdb);
+                    $('#total_payment').val(obj.payment);
+                    $('#saldo').val(obj.saldo);
+                    $('#disc_amount_1').val(obj.disc_amount_1);
+                    $('#tax').val(obj.tax);
+					
+                },
+                error: function(msg){loading_close();log_err(msg);}
+		    });
+			
+		}
+              
       
         
  </script>

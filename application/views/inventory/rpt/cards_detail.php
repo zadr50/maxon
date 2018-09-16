@@ -25,7 +25,7 @@
          $data['key3']="item_number";
          $data['fields3'][]=array("item_number","80","Kode");
          $data['fields3'][]=array("description","180","Nama Barang");
-         $data['ctr1']='inventory/select';
+         $data['ctr3']='inventory/select';
 	
 	$data['caption']='KARTU STOCK DETAIL';
 	$data['rpt_controller']="inventory/rpt/$id";
@@ -46,19 +46,9 @@
      	<td colspan='2'><h2><?=$model->company_name?></h2></td><td colspan='2'><h2>LAPORAN KARTU STOCK DETAIL</h2></td>     	
      </tr>
      <tr>
-     	<td colspan='2'><?=$model->street?></td><td></td>     	
-     </tr>
-     <tr>
-     	<td colspan='2'><?=$model->suite?></td>     	
-     </tr>
-     <tr>
-     	<td>
-     		<?=$model->city_state_zip_code?> - Phone: <?=$model->phone_number?>
-     	</td>
-     </tr>
-     <tr>
      	<td>
      		Criteria: Dari Tanggal: <?=$date1?> s/d : <?=$date2?> Kelompok <?=$kelompok?>
+     		Gudang: <?=$gudang?>, Kode Barang: <?=$kode_barang?>
      	</td>
      </tr>
      <tr><td colspan=4 style='border-bottom: black solid 1px'></td></tr>

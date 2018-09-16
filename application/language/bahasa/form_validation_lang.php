@@ -1,4 +1,4 @@
-<?
+<?php
 $lang['save']='Simpan';
 $lang['add']='Tambah';
 $lang['print']='Cetak';

@@ -57,43 +57,48 @@
 	if(!isset($tiki_show))$tiki_show=false;
 	if(!isset($body_class))$body_class="";
 	
-	echo "<div class='container-min '>";
+	echo "<div class='container-fluid '>";
 	 
 	
 	if(!$ajaxed) {
 		if($header_show) echo $_header;
-		echo "<div class='row'>";
+		echo "<div class='row-fluid'>";
 			if($sidebar_pos=="left"){
 				if($sidebar_show) { 
-				    echo "<div class='col-md-3  sidebar'  style='min-height:1000px;'>";
+				    echo "<div class='col-xs-12 col-sm-3  sidebar'  style='min-height:500px;'>";
 					include_once "sidebar.php";
 					if($tiki_show) {
 						include_once __DIR__."/../../tiki.php";
 					}
 					echo "</div>";
-					echo "<div class='col-md-9'>  $_content ";
+					echo "<div class='col-xs-12 col-sm-9'>  $_content ";
 					echo "</div>";
 				} else { 
-					echo "<div class='col-md-12'> $_content </div>";			
+					echo "<div class='col-xs-12'> $_content </div>";			
 				}
 			} else {	//sidebar=right
 				
 				if($sidebar_show) { 
-					echo "<div class='col-md-9 panel-body-min'> $_content </div>";
-				    echo "<div class='col-md-3 sidebar' style='min-height:1000px;'>";
+					echo "<div class='col-xs-12 col-sm-9 '> $_content </div>";
+				    echo "<div class='col-xs-12 col-sm-3 sidebar' style='min-height:300px;'>";
 						include_once "sidebar.php";
 					echo "</div>";
 				} else { 
-					echo "<div class='col-md-12 '> $_content </div>";			
+					echo "<div class='col-xs-12 '> $_content </div>";			
 				}
 			}
 			
 		echo "</div>";
-		if($footer_show){
-			echo "<div class='row-fluid footer'>$_footer</div>";
+		if($footer_show){			
+			echo "
+			<div>
+				<div class='row'>
+					<div class='row-fluid'>$_footer</div>
+				</div>	
+			</div>";
 		}
 	} else { 		 
-		echo "<div class='col-md-12 '> $_content </div>";			
+		echo "<div class='col-xs-12 '> $_content </div>";			
 		//if($this->config->item('google_ads_visible')) $this->load->view('google_ads');					
 	}
 	
@@ -105,51 +110,40 @@
 <div id='dlgSysLog'class="easyui-dialog" closed="true" style="width:600px;height:380px;left:100px;top:20px;padding:10px 20px">
 	<div id='divSysLog'></div>
 </div>
-</BODY>
+<div id='dialog_print'class="easyui-dialog" closed="true"  toolbar="#dialog_print_toolbar" 
+    data-options="iconCls:'icon-print' " modal="true"
+    style="width:800px;height:500px;padding:10px 20px">
+    <div id='dialog_print_content'>
+         <p>Please wait...</p>
+    </div>
+</div>
+<div id='dialog_print_toolbar'>
+    <?=link_button("Print", "cmdOK_Click();return false","print")?>
+</div>
+<script language="JavaScript">
+    var _detik=0;
+    var chatbox_visible='<?=$this->session->userdata('chatbox_visible')?>';
+    $('.datepicker').datepicker();
 
-<script type="text/javascript">
-$(document).ready(function(){
-	var chatbox_visible='<?=$this->session->userdata('chatbox_visible')?>';
-	$('.datepicker').datepicker();
-	
-	$(".info_link").click(function(event){
-		event.preventDefault(); 
-		var url = $(this).attr('href');
-		console.log(url);
-		var n = url.lastIndexOf("/");
-		var j=url.lastIndexOf("#");
-		if(j>0){
-			var title=url.substr(j+1);
-		} else {
-			var title=url.substr(n+1);
-		}
-		if(title=='reports'){
-			title=url.substr(n-10);
-			title=title.substr(title.indexOf("/"));
-		}
-		if(url.indexOf("/menu")>5){
-			window.open(url,"_self");
-		} else {
-			add_tab(title,url);
-		}
-	});
-	
-	timer1();
-	var _detik=0;
-	function timer1(){
-	    _detik++;
-		var currentdate = new Date();
-		var tgl=currentdate.getDay() + "/"+currentdate.getMonth() 
-		+ "/" + currentdate.getFullYear();
-		tgl='<?=date('Y-m-d')?>';
-		$("#panel3").html("<?=user_id()?>");
-		$("#panel4").html(tgl);
-		$("#panel5").html(currentdate.getHours() + ":" 
-		+ currentdate.getMinutes());
-		if ( chatbox_visible !="" ) check_inbox();
-		_timer1=setTimeout(function(){timer1()}, 60000);	//1menit
-	}
-});
+    $(document).ready(function(){
+        timer1();
+    
+        $('.map').maphilight({fade: false});
+        
+    })    
+    function timer1(){
+        _detik++;
+        var currentdate = new Date();
+        var tgl=currentdate.getDay() + "/"+currentdate.getMonth() 
+        + "/" + currentdate.getFullYear();
+        tgl='<?=date('Y-m-d')?>';
+        $("#panel3").html("<?=user_id()?>");
+        $("#panel4").html(tgl);
+        $("#panel5").html(currentdate.getHours() + ":" 
+        + currentdate.getMinutes());
+        if ( chatbox_visible !="" ) check_inbox();
+        _timer1=setTimeout(function(){timer1()}, 60000);    //1menit
+    }
     function check_inbox(){
         $.ajax({
             type: "GET",url: "<?=base_url()?>index.php/maxon_inbox/notify",
@@ -158,7 +152,7 @@ $(document).ready(function(){
             ,error: function(msg){}
         });         
     }
-	function check_alert(){
+    function check_alert(){
         $.ajax({
             type: "GET",url: "<?=base_url()?>index.php/maxon_inbox/alert_count",
             success: function(msg){
@@ -170,18 +164,19 @@ $(document).ready(function(){
            }
             ,error: function(msg){}
         });         
-	    
-	}
-	 function load_menu(path){
-	     xurl='<?=base_url()?>index.php/menu/load/'+path;
-	     if(path=="courierex"){
-	       add_tab_ajax(path,xurl);        
-	     } else {
+        
+    }
+     function load_menu(path){
+         xurl='<?=base_url()?>index.php/menu/load/'+path;
+         if(path=="courierex"){
+           add_tab_ajax(path,xurl);        
+         } else {
              window.open(xurl,'_self');
-	         
-	     }
-	     return false;
-	 }	
- 
+             
+         }
+         return false;
+     }  
 </script>
 
+
+</BODY>

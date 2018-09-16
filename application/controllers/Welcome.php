@@ -30,7 +30,7 @@ function __construct()
 	function index()
 	{
 		$this->session->set_userdata('use_iframe',true);
-		$this->template->display('welcome_messagex');
+		$this->template->display('welcome_message');
 		$this->session->unset_userdata('use_iframe');
 	}
 	function add_my_company() {

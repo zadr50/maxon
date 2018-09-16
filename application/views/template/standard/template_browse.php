@@ -17,31 +17,41 @@ $offset=0;
 $limit=100;
 $def_col_width=80; 
 if(!isset($msg_left))$msg_left="<i>***Data yang ditampilkan hanya <b>100 baris.</b></i></br>
-<i>***Apabila data tidak tampil, persempit pencarian (isi kriteria/kode) dan tekan tombol search.</i>";
-if(!isset($msg_content))$msg_content="<p><i>Silahkan pilih satu baris ditabel ini kemudian klik toolbar edit diatas</i></p>";
+<i>***Apabila data tidak tampil, persempit pencarian tekan tombol [<strong>Filter</strong>].</i>";
+if(!isset($msg_content))$msg_content="<p>***Silahkan pilih satu baris ditabel ini 
+	kemudian klik toolbar edit diatas.</p><p>***Apabila masih tidak tampil juga tekan [<strong>CTRL+R</strong>]</p>";
 
 ?>
 <div id='__section_left_content'   style='padding:0px;margin-left:0px;margin-right:0px'>
-<?
+<?php
 $table_head="<thead><tr>";
 if(isset($show_checkbox)){
     if($show_checkbox)    $table_head.="<th data-options=\"field:'ck',width:40\">Cek</th>";
 }
+$_fields=null;
+$has_field_caption=false;
+if(isset($fields_caption))$has_field_caption=true;
+
 for($i=0;$i<count($fields);$i++){
     $aFld=$fields[$i];
+	
     if(is_string($aFld)){
         $fld_name=$fields[$i];
+		if(!$has_field_caption)$fields_caption[]=ucfirst($fld_name);
         $fld_caption=$fields_caption[$i];
     } else {
         $fld_name=$fields[$i]['name'];
         $fld_caption=$fields[$i]['caption'];
+		if(!$has_field_caption)$fields_caption[]=ucfirst($fld_caption);
     }
+	$_fields[]=$fld_name;
     $table_head.="<th data-options=\"field:'$fld_name' ";
     if(isset($col_width[$fld_name])){
         $width=$col_width[$fld_name];
     } else {
         $width=$def_col_width;
     }
+	if($i==0)$width="130";
     $table_head.=", width:$width ";
     
     if(isset($fields_format_numeric)){
@@ -61,7 +71,7 @@ for($i=0;$i<count($fields);$i++){
     $table_head.=">".$fld_caption."</th>";
 }
 $table_head.="</tr></thead>";
-
+if($_fields)$fields=$_fields;
 
 if(isset($_form)){
 	echo load_view($_form,array('mode'=>'add'));
@@ -86,31 +96,20 @@ if(isset($sub_controller)){
     CI_HEIGHT='<?=$height?>';	
 </script>
 <div class='box-gradient' id='tb_<?=$controller_name?>' >
-	<div class='legend-top'><?=$caption?></div>
 	<?=link_button("Add", "addnew_$controller_name();return false;","add","false");?>
 	<?=link_button("Edit", "edit_$controller_name();return false;","edit","false");?>
 	<?=link_button("Del", "del_row_$controller_name();return false;","remove","false");?>
-	<?
+	<?php
 	if(isset($posting_visible)){
 		echo link_button('Posting','posting_'.$controller_name."();return false;",'save');
 	};
-	if(isset($list_info_visible)){
-		echo link_button('Info','cari_info_'.$controller_name."();return false;",'search');
-	};
-	if(isset($import_visible)){
-		echo link_button('Import','import_'.$controller_name."();return false;",'more');			
-	}
-	if(isset($export_visible)){
-		echo link_button('Export','export_'.$controller_name."();return false;",'xls');
-	}	
 	echo link_button('Filter','dlgFilter_'.$controller_name.'_Show();return false;','filter');
 	if(isset($print_visible)){
 		if($print_visible){
-			echo link_button('Print','print_'.$controller_name."();return false;",'print');
+			echo link_button('','print_'.$controller_name."();return false;",'print');
 		}
 	}	
-	echo link_button('Refesh','cari_'.$controller_name."();return false;",'reload');
-	echo link_button('Frame','refresh_tab_parent()','reload');
+	echo link_button('Refresh','cari_'.$controller_name."();return false;",'reload');
 		
 	if(isset($other_button)){
 		if(is_array($other_button)){
@@ -126,18 +125,31 @@ if(isset($sub_controller)){
 			}
 		}
 	}
+    
+	echo link_button("Set", "set_".$controller_name."();return false;",'lock');
+	
+	echo link_button('Frame','refresh_tab_parent()','reload');
+	if(isset($list_info_visible)){
+		echo link_button('Info','cari_info_'.$controller_name."();return false;",'search');
+	};
+	if(isset($import_visible)){
+		echo link_button('Import','import_'.$controller_name."();return false;",'more');			
+	}
+	if(isset($export_visible)){
+		echo link_button('Export','export_'.$controller_name."();return false;",'xls');
+	}	
 	echo " Find: <input type='text' id='tb_search' onchange='find_$controller_name();return false;'>";
 	echo link_button('','find_'.$controller_name."();return false;",'search');
-    
-	echo link_button("Seting", "set_".$controller_name."();return false;",'lock');
-	echo link_button("Help", "help_".$controller_name."();return false;",'help');
+		
+	echo link_button("", "help_".$controller_name."();return false;",'help');
     echo link_button('Close','remove_tab_parent()','cancel');      
 	
 	if(isset($query_list)){
 	 
 	?>
 		<div style='float:right;'><select id='query_list' style='height:25px'>
-		<? for($i=0;$i<count($query_list);$i++) {
+		<?php
+		for($i=0;$i<count($query_list);$i++) {
 			$q=$query_list[$i];
 			echo "<option value='".$q['value']."'>".$q['caption']."</option>";
 		}
@@ -149,13 +161,12 @@ if(isset($sub_controller)){
 		</a>	
 		</div>
 	
-	<? } ?>
+	<?php } ?>
 </div> 
 
 <div id="_section_table">
 	
 	<?php 
-	//,pageSize:10,pagination:true
 	$url=base_url()."index.php/$controller/browse_data".$sub_strip;
     $offset1=10;
     $limit1=10;
@@ -164,9 +175,14 @@ if(isset($sub_controller)){
     if(isset($row_count)){
         $url.="/$row_count";
     }
+    $fit="true";
+    if (count($fields)>5){
+        $fit="false";
+    } 
 	?>
-	<table  id="dg_<?=$controller_name?>" class="easyui-datagrid", style='height:500px'
-      data-options="rownumbers:true,fitColumns:true,pagination:true,
+	<table  id="dg_<?=$controller_name?>" class="easyui-datagrid", 
+	    style='min-height:460px;min-width:800px'  
+        data-options="rownumbers:true,pagination:true,fitColumns:<?=$fit?>,
       singleSelect:true,collapsible:false,method:'get',
       url:'',
       toolbar:'#tb_<?=$controller_name?>' ">
@@ -175,10 +191,10 @@ if(isset($sub_controller)){
       
 	</table>
 
-	<?=$msg_content?>
+	<?=$msg_content.$msg_left?>
 
        
-	<?
+	<?php
 		if(isset($other_menu)){
 			$this->load->view($other_menu);
 		}
@@ -187,7 +203,7 @@ if(isset($sub_controller)){
 
 </div>
 <div id="dlgSet" name='dlgSet' class="easyui-dialog" data-options="title:'Setting'" 
-	buttons='#button_setting' closed="true"  style="top:10px;width:400px;height:450px;padding:10px 10px">
+	buttons='#button_setting' closed="true"  style="top:10px;width:400px;height:450px;padding:2px">
 	<form id='frmSet_<?=$controller_name?>' class='form'>
 		<?php
 		echo "Silahkan di contreng berikut ini apabila ingin mereset kolom yang tampil kesemula.
@@ -212,14 +228,18 @@ if(isset($sub_controller)){
 </div>
 
 <div id="dlgFilter_<?=$controller_name?>"  class="easyui-dialog" data-options="title:'Filter Criteria'" 
-	closed="true" toolbar="#button_filter" style="top:10px;width:300px;height:480px;padding:10px 10px">
+	closed="true" buttons="#button_filter" style="top:10px;width:600px;height:400px;padding:5px 5px">
 	<div id="lb_<?=$controller_name?>" style="padding:5px;min-height:80%;" 
-		class='thumbnail box-gradient'>
+		class=''>
 		<form id='frmSearch_<?=$controller_name?>' class='form'>
-			<?
+			<?php
 			$i=0;
-			$s="";
+			$s="<div class='col-xs-5'>";
 			foreach($criteria as $fa){
+				$i++;
+				if($i==4){
+					$s.="</div><div class='col-xs-5'>";
+				}
 				$type="text";
 				$val="";
 				if($fa->field_class=="easyui-datetimebox"){
@@ -233,8 +253,13 @@ if(isset($sub_controller)){
 					$s.="<input type='$type' value='$val' id='$fa->field_id'  
 					name='$fa->field_id' 
 					class='$fa->field_class form-control' style='width:100%' 
-					data-options='formatter:format_date,parser:parse_date'
-					>";
+					data-options='formatter:format_date,parser: ";
+					
+					if($fa->field_id=="sid_date_from"){
+						$s.="parse_date_no_time'>";					
+					} else {
+						$s.="parse_date'>";						
+					}
 					$s.= "</div>";
 				} else if($fa->field_class=="checkbox"){
 					$s.="<div class='form-group'>";
@@ -254,100 +279,35 @@ if(isset($sub_controller)){
 					$s.= "</div>";
 				}
 			}
+			$s."</div>";
 			echo $s;
-			echo $msg_left;
 			?>
 		</form>
 	</div>
 </div> 
-<div id='button_filter' class='thumbnail box-gradient'>
-	<span>Isi kriteria dibawah dan klik Filter: 
-	<?=link_button('Filter','cari_'.$controller_name."();return false;",'search');?>			
-	</span>  
+<div id='button_filter' class='box-gradient'>
+	<div>Silahkan isi kriteria pencarian dibawah ini:
+	<?=link_button('Filter','dlgFilter_close_'.$controller_name."();return false;",'search');?>			
+	<?=link_button('Close','dlgFilter_cancel_'.$controller_name."();return false;",'cancel');?>			
+	</div>  
 </div>
 	
 <script type="text/javascript">
+    
     var xurl='<?=$url?>';
-		(function($){
-			
-			
-	        $('#dg_<?=$controller_name?>').datagrid({
-	            onDblClickRow:function(){
-	                var row = $('#dg_<?=$controller_name?>').datagrid('getSelected');
-	                if (row){
-	                    edit_<?=$controller_name?>();
-	                }       
-	            }
-	        });        
-			
-			cari_<?=$controller_name?>();
-			
-			
-			
-			function pagerFilter(data){
-				if ($.isArray(data)){	// is array
-					data = {
-						total: data.length,
-						rows: data
-					}
-				}
-				var dg = $(this);
-				var state = dg.data('datagrid');
-				var opts = dg.datagrid('options');
-				if (!state.allRows){
-					state.allRows = (data.rows);
-				}
-				var start = (opts.pageNumber-1)*parseInt(opts.pageSize);
-				var end = start + parseInt(opts.pageSize);
-				data.rows = $.extend(true,[],state.allRows.slice(start, end));
-				return data;
-			}
 
-			var loadDataMethod = $.fn.datagrid.methods.loadData;
-			$.extend($.fn.datagrid.methods, {
-				clientPaging: function(jq){
-					return jq.each(function(){
-						var dg = $(this);
-                        var state = dg.data('datagrid');
-                        var opts = state.options;
-                        opts.loadFilter = pagerFilter;
-                        var onBeforeLoad = opts.onBeforeLoad;
-                        opts.onBeforeLoad = function(param){
-                            state.allRows = null;
-                            return onBeforeLoad.call(this, param);
-                        }
-						dg.datagrid('getPager').pagination({
-							onSelectPage:function(pageNum, pageSize){
-								opts.pageNumber = pageNum;
-								opts.pageSize = pageSize;
-								$(this).pagination('refresh',{
-									pageNumber:pageNum,
-									pageSize:pageSize
-								});
-								dg.datagrid('loadData',state.allRows);
-							}
-						});
-                        $(this).datagrid('loadData', state.data);
-                        if (opts.url){
-                        	$(this).datagrid('reload');
-                        }
-					});
-				},
-                loadData: function(jq, data){
-                    jq.each(function(){
-                        $(this).data('datagrid').allRows = null;
-                    });
-                    return loadDataMethod.call($.fn.datagrid.methods, jq, data);
-                },
-                getAllRows: function(jq){
-                	return jq.data('datagrid').allRows;
-                }
-			})
-		})(jQuery); 	 
-		
-	$(function(){
-		$('#dg_<?=$controller_name?>').datagrid('clientPaging');
-	});
+	(function($){
+        $('#dg_<?=$controller_name?>').datagrid({
+            onClickRow:function(){
+                var row = $('#dg_<?=$controller_name?>').datagrid('getSelected');
+                if (row){
+                    edit_<?=$controller_name?>();
+                }       
+            }
+        });        
+		cari_<?=$controller_name?>();
+	})(jQuery); 	 
+			
     function addnew_<?=$controller_name?>(){
         xurl_add=CI_ROOT+CI_CONTROL+'<?=$sub_slash?>/add';
 		add_tab_parent("addnew_<?=$controller_name?>",xurl_add);
@@ -367,6 +327,7 @@ if(isset($sub_controller)){
 					if(!r)return false;
 	                xurl_delete=CI_ROOT+CI_CONTROL+'<?=$sub_slash?>/delete/'+row[FIELD_KEY];                             
 	                xparam='';
+	                loading();
 	                $.ajax({
 	                        type: "GET",
 	                        url: xurl_delete,
@@ -375,23 +336,26 @@ if(isset($sub_controller)){
 							try {
 									var result = eval('('+result+')');
 									if(result.success){
+										loading_close();
 										$.messager.show({
 											title:'Success',msg:result.msg
 										});
+										log_msg(result.msg);
 										$('#dg_<?=$controller_name?>').datagrid('reload');	 
 									} else {
+										loading_close();
 										$.messager.show({
 											title:'Error',msg:result.msg
 										});
 										log_err(result.msg);
 									};
 								} catch (exception) {		
-									 
 									// reload kalau output bukan json
 									$('#dg_<?=$controller_name?>').datagrid('reload');	 
 								}
 	                        },
-	                        error: function(msg){$.messager.alert('Info',"Tidak bisa dihapus baris ini !");}
+	                        error: function(msg){log_err("Error");
+	                        	$.messager.alert('Info',"Tidak bisa dihapus baris ini !");}
 	                });         
 				});
 		}
@@ -403,12 +367,18 @@ if(isset($sub_controller)){
 	}
     function cari_<?=$controller_name?>(){
     	xsearch=$('#frmSearch_<?=$controller_name?>').serialize();
-	    //xurl=CI_ROOT+CI_CONTROL+'/browse_data<?=$sub_strip?>?'+xsearch;
 	    xurl2=xurl+'?'+xsearch;
-	    
         $('#dg_<?=$controller_name?>').datagrid({url:xurl2});		
+    }
+    function dlgFilter_close_<?=$controller_name?>(){
+    	$(".pagination-num").val(1);
+    	cari_<?=$controller_name?>();
 		$('#dlgFilter_<?=$controller_name?>').dialog('close');		
     }
+    function dlgFilter_cancel_<?=$controller_name?>(){
+		$('#dlgFilter_<?=$controller_name?>').dialog('close');		
+    }
+    
     function posting_<?=$controller_name?>(){
     	xsearch=$('#frmSearch_<?=$controller_name?>').serialize();
 	    xurl_posting=CI_ROOT+CI_CONTROL+'<?=$sub_slash?>/posting_all?'+xsearch;
@@ -471,8 +441,8 @@ if(isset($sub_controller)){
 		}
 	}
 	function dlgFilter_<?=$controller_name?>_Show(){
-		//$('#dlgFilter').window({left:100,top:window.event.clientY+20});
 		$('#dlgFilter_<?=$controller_name?>').dialog('open').dialog('setTitle','Enter Filter Criteria');
 	}
+
 	
 </script>

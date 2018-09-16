@@ -120,6 +120,13 @@ function save($data){
 	
     $item_no=$data['item_number']; item_need_update($item_no);
 
+	if(isset($data["coa1"])){
+		$data["coa1"]=account_id($data["coa1"]);
+		$data["revenue_acct_id"]=$data["coa1"];	
+	}
+	if(isset($data["coa2"]))$data["coa2"]=account_id($data["coa2"]);
+	if(isset($data["coa3"]))$data["coa3"]=account_id($data["coa3"]);
+	
 	if(isset($data['line_number']))	unset($data['line_number']);
 		
 	if($id!=""){

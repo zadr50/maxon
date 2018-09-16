@@ -1,4 +1,4 @@
-<?
+<?php
 $item=$this->db->select('item_number,description,item_picture,retail,category,item_picture2,
 item_picture3,item_picture4,special_features,view_count,sales_count,
 weight,update_date,update_by,sales_min,insr_name,delivery_by,create_by')
@@ -40,14 +40,14 @@ $cat_sub=$this->db->select("parent_id")->where("parent_id",$item->category)
 						<p><?=$item->delivery_by?></p>
 						
 						<div class='alert alert-info'><p><strong>Informasi Penjual</strong></p>
-						<p><?
+						<p><?php
 						if($item->create_by=='') {
 							echo "<span style='color:red'>Tidak ada penjual untuk barang ini.</span>";
 						} else {
 							echo "<a href='".base_url()."index.php/eshop/toko/view/$item->create_by' title='Informasi penjual'>$item->create_by</a>";
 						}?></p>
 						</div>
-						<? include_once 'box_item_price.php'; ?>
+						<?php include_once 'box_item_price.php'; ?>
 
 					</div>					
 				</div>
@@ -80,7 +80,7 @@ $cat_sub=$this->db->select("parent_id")->where("parent_id",$item->category)
 				</div>
 				<div class='row'>
 					<div class='content col-md-12'>
-						<?
+						<?php
 						
 						$content=$item->special_features;
 						$content=strip_tags($content,"<b><i><strong><p><h1><br><h2><h3><li>");
@@ -101,17 +101,17 @@ $cat_sub=$this->db->select("parent_id")->where("parent_id",$item->category)
 				</ul>
 				<div class="tab-content">
 					  <div role="tabpanel" class="tab-pane fade in active" id="tab1">
-								<?
+								<?php
 								echo load_view("eshop/item_comments"); 
 								?>
 					  </div>
 					  <div role="tabpanel" class="tab-pane fade" id="tab2">
-								<?
+								<?php
 								echo load_view("eshop/item_discuss"); 
 								?>
 					  </div>
 					  <div role="tabpanel" class="tab-pane fade" id="tab3">
-								<?
+								<?php
 								echo load_view("eshop/item_similiar"); 
 								?>
 					  </div>

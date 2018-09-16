@@ -39,6 +39,22 @@ class Absensi extends CI_Controller {
             $data['divisi']=$ruser->divisi;
         }
         $data['flag1']=$user['flag1'];
+        
+        $setwh['dlgBindId']="warehouse";
+        $setwh['dlgRetFunc']="$('#warehouse_code').val(row.location_number);";
+        $setwh['dlgCols']=array( 
+                    array("fieldname"=>"location_number","caption"=>"Kode","width"=>"80px"),
+                    array("fieldname"=>"attention_name","caption"=>"Nama Toko","width"=>"180px"),
+                    array("fieldname"=>"company_name","caption"=>"Kode Pers","width"=>"50px"),
+                    array("fieldname"=>"company","caption"=>"Perusahaan","width"=>"200px")
+                );          
+        $data['lookup_employee']=$this->list_of_values->render(array(
+            "dlgBindId"=>"employee",
+            "dlgRetFunc"=>"$('#nip').val(row.nip);$('#nama').val(row.nama);
+                $('#dept').val(row.dept);$('#divisi').val(row.divisi);",
+            "dlgColsData"=>array("nip","nama","dept","divisi")
+        ));
+        
         $this->template->display('payroll/absensi_data',$data,'');
 	}
 	function data(){

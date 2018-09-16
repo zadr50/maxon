@@ -1,6 +1,5 @@
-<legend>FORMULIR SLIP GAJI KARYAWAN</legend>
 <div class="thumbnail">
-	<?
+	<?php
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print_slip()','print');		
 	echo link_button('Add','','add','false',base_url().'index.php/payroll/salary/add');		
@@ -9,14 +8,15 @@
 	
 	?>
 	<div style='float:right'>
-	<?=link_button('Help', 'load_help(\'salary\')','help');	?>	
-	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip',plain:false">Options</a>
-	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
-		<div>Update</div>
-		<div>MaxOn Forum</div>
-		<div>About</div>
-	</div>
+    	<?=link_button('Help', 'load_help(\'salary\')','help');	?>	
+    	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip',plain:false">Options</a>
+    	<div id="mmOptions" style="width:200px;">
+    		<div onclick="load_help()">Help</div>
+    		<div>Update</div>
+    		<div>MaxOn Forum</div>
+    		<div>About</div>
+    	</div>
+        <?=link_button('Close', 'remove_tab_parent();return false;','cancel');?>     
 	</div>
 </div>
 
@@ -29,7 +29,7 @@
  
 		<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 		
-	   <table class='table' width='100%'>
+	   <table class='table2' width='100%'>
 			<tr><td>Nomor Slip</td>
 				<td>
 					<?php
@@ -43,10 +43,10 @@
 				</td>
 				<td rowspan='4' colspan='2'>
 					<div class="thumbnail" style="width:400px;height:100px">
-						<span id='nama'></span>
+						<span id='nama'><?=$nama_pegawai?></span>
 						<span id='dept'></span>
 						<span id='divisi'></span>
-						<?=$nama_pegawai?>
+						
 					</div>
 				</td>
 		
@@ -54,11 +54,11 @@
 			<tr>
 				<td>NIP</td>
 				<td><? echo form_input('employee_id',$employee_id,"id=employee_id"); 
-				echo link_button("","lookup_employee()","search")?></td>
+				echo link_button("","dlgemployee_show();return false","search")?></td>
 			</tr>
 		    <tr>
 				<td>Periode </td><td><?=form_input('pay_period',$pay_period,"id='pay_period'");
-				echo link_button("","dlgLovPeriode_show()","search")?></td>
+				echo link_button("","dlghr_period_show();return false;","search")?></td>
 		   </tr>
 		    <tr>
 				<td>From Date </td><td><?=form_input('from_date',$from_date,
@@ -85,7 +85,7 @@
 			</tr>
 			<tr>
 				<td>Kelompok</td><td><?=form_input('emp_level',$emp_level,"id=emp_level");
-				echo link_button("","dlgLovGroup_show()","search")?></td>
+				echo link_button("","dlghr_emp_level_show();return false;","search")?></td>
 				<td>Net Gaji</td><td><?=$salary?></td>
 			</tr>
 	   </table>
@@ -170,7 +170,7 @@
 </form>
 	
 <?php 
- include_once "employee_lookup.php"; 
+ echo $lookup_employee;
  echo $lookup_periode;
  echo $lookup_emp_type;
  

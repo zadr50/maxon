@@ -87,7 +87,7 @@
 	background: rgba(17, 16, 17, 0.06);
 	overflow: hidden;
 	overflow-y: auto;
-	min-height:350px;
+	min-height:400px;
 	max-height:420px;
 	
 }
@@ -95,7 +95,13 @@
 	font-size:small;
 }
 .pos .nota table td{
-	padding:10px;
+    padding: 3px;
+    border: 1px #9E9E9E solid;
+}
+.pos .nota table th{
+    padding: 3px;
+    border: 1px #9E9E9E solid;
+    background: #e0d3f6;    
 }
 
 .pos .nota-pay {

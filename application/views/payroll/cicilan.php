@@ -72,7 +72,7 @@ padding:10px 20px;left:100px;top:20px"
 	}
 	function save_cicil() {
         if($('#loan_number').val()===''){alert('Isi dulu nomor pinjaman !');return false;};
-
+        loading();
 		url='<?=base_url()?>index.php/payroll/pinjaman/save';
 		$('#frmCicil').form('submit',{
 			url: url,
@@ -82,11 +82,13 @@ padding:10px 20px;left:100px;top:20px"
 			success: function(result){
 				var result = eval('('+result+')');
 				if (result.success){
+				    loading_close();
 					load_cicil();
 					$('#dlgCicil').dialog('close');				
 					$('#frmCicil').each(function(){ this.reset(); });
 					log_msg('Data sudah tersimpan.');
 				} else {
+				    loading_close();
 					log_err(result.msg);
 				}
 			}
@@ -127,7 +129,7 @@ padding:10px 20px;left:100px;top:20px"
 				success: function(msg){
 					load_cicil();
 				},
-				error: function(msg){alert(msg);}
+				error: function(msg){log_err(msg);}
 			});
 		}
 	}

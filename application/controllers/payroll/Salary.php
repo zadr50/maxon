@@ -60,8 +60,7 @@ class Salary extends CI_Controller {
 
 		 
 		 $data['lookup_periode']=$this->list_of_values->render(array(
-				"dlgBindId"=>"pay_period","dlgId"=>"LovPeriode",
-				"dlgUrlQuery"=>base_url()."index.php/payroll/periode/browse_data/",
+				"dlgBindId"=>"hr_period",
 				"dlgCols"=>array(
 					array("fieldname"=>"period","caption"=>"Kode","width"=>"80px"),
 					array("fieldname"=>"period_name","caption"=>"Keterangan","width"=>"200px"),				
@@ -69,21 +68,26 @@ class Salary extends CI_Controller {
 					array("fieldname"=>"to_date","caption"=>"To","width"=>"80px")
 				),
 				"dlgRetFunc"=>"$('#pay_period').val(row.period);
-				$('#from_date').datebox({value:row.from_date,formatter:format_date,parser:parse_date});
-				$('#to_date').datebox({value:row.to_date,formatter:format_date,parser:parse_date});
-				
+    				$('#from_date').datebox({value:row.from_date,formatter:format_date,parser:parse_date});
+    				$('#to_date').datebox({value:row.to_date,formatter:format_date,parser:parse_date});				
 				"
 			));
 		 $data['lookup_emp_type']=$this->list_of_values->render(array(
-				"dlgBindId"=>"emp_level","dlgId"=>"LovGroup",
-				"dlgUrlQuery"=>base_url()."index.php/payroll/group/browse_data/",
+				"dlgBindId"=>"hr_emp_level",
 				"dlgCols"=>array(
 					array("fieldname"=>"kode","caption"=>"Kode","width"=>"80px"),
 					array("fieldname"=>"keterangan","caption"=>"Keterangan","width"=>"200px")
 				),
 				"dlgRetFunc"=>"$('#emp_level').val(row.kode);"
 			));
-		
+		$data["lookup_employee"]=$this->list_of_values->render(array(
+		  "dlgBindId"=>"employee",
+		  "dlgColsData"=>array("nip","nama","dept","divisi"),
+		  "dlgRetFunc"=>"$('#nip').val(row.nip);
+		      $('#nama').html(row.nama);
+		      $('#dept').html(row.dept);
+		      $('#divisi').html(row.divisi);"
+		));
         return $data;
 	}
 	function index(){$this->browse();}
@@ -171,10 +175,15 @@ class Salary extends CI_Controller {
         $this->template->display_browse2($data);            
     }
     function browse_data($offset=0,$limit=10,$nama=''){
+        $d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));
+        $d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
+        if($d1<'2000-01-01')$d1=date("Y-m-d");        
+        if($d2<'2000-01-01')$d2=date("Y-m-d H:i:s");        
+        
 		$sql="select l.pay_no,l.employee_id,e.nama,e.dept,e.divisi,l.pay_date,l.pay_period 
 		from hr_paycheck l
 		left join employee e on e.nip=l.employee_id 
-		where 1=1";
+		where l.pay_date between '$d1' and '$d2' ";
 		$s=$this->input->get('sid_pay_no');		
 		if($s!=''){
 			$sql.=" and pay_no='$s'";
@@ -183,6 +192,13 @@ class Salary extends CI_Controller {
 			$s=$this->input->get('sid_employee_id');if($s!='')$sql.=" and e.nip='$s'";
 			$s=$this->input->get('sid_dept');if($s!='')$sql.=" and e.dept='$s'";
 		}			
+        $sql.=" order by l.pay_no";
+        if($this->input->get("page"))$offset=$this->input->get("page");
+        if($this->input->get("rows"))$limit=$this->input->get("rows");
+        if($offset>0)$offset--;
+        $offset=$limit*$offset;
+        $sql.=" limit $offset,$limit";
+        
         echo datasource($sql);		
     }
       
@@ -194,8 +210,13 @@ class Salary extends CI_Controller {
 	}
 	function print_slip($pay_no){
 		$pay_no=urldecode($pay_no);
-		$pay=$this->paycheck_model->get_by_id($pay_no)->row();
+		$pay=$this->paycheck_model->get_by_id($pay_no)->row(); 
 		$emp=$this->employee_model->get_by_id($pay->employee_id)->row();
+        if(!$emp){
+            echo "Employee Id not found ! [$pay->employee_id]";
+            exit;
+        }
+        
 		$data['pay']=$pay;
 		$data['emp']=$emp;
 		$this->paycheck_sal_com_model->employee_id=$emp->nip;

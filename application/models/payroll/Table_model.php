@@ -25,6 +25,7 @@ class Table_model extends CI_Model {
         $this->upgrade->add_field('employee_shift',"shift_group");
         
 	}
+    
 	function create_table_hr_jenis_absensi(){
 		$fields[]="kode nvarchar(50)";
 		$fields[]="keterangan nvarchar(250)";

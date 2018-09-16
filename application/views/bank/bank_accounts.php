@@ -1,23 +1,20 @@
 <div class="thumbnail box-gradient">
 	<?php
-	echo link_button('Save', 'save_this()','save');		
-	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','false',base_url().'index.php/banks/banks/add');		
-	echo link_button('Search','','search','false',base_url().'index.php/banks/banks');		
-	if($mode=="view") echo link_button('Refresh','','reload','false',base_url().'index.php/banks/banks/view/'.$bank_account_number);		
+	echo link_button('Save', 'save_this();return false;','save');		
+	echo link_button('Print', 'print();return false','print');		
 	echo "<div style='float:right'>";
-	echo link_button('Help', 'load_help(\'banks\')','help');		
-	
-	?>
-	<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
-	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help('banks')">Help</div>
-		<div onclick="show_syslog('banks','<?=$bank_account_number?>')">Log Aktifitas</div>
-
-		<div>Update</div>
-		<div>MaxOn Forum</div>
-		<div>About</div>
-	</div>
+    	echo link_button('Help', 'load_help(\'banks\')','help');			
+    	?>
+    	<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+    	<div id="mmOptions" style="width:200px;">
+    		<div onclick="load_help('banks')">Help</div>
+    		<div onclick="show_syslog('banks','<?=$bank_account_number?>')">Log Aktifitas</div>
+    
+    		<div>Update</div>
+    		<div>MaxOn Forum</div>
+    		<div>About</div>
+    	</div>
+        <?=link_button('Close', 'remove_tab_parent();return false;','cancel'); ?>    
 	</div>
 </div>
 <div class="easyui-tabs" >
@@ -27,7 +24,7 @@
 		<form id="myform"  method="post" action="<?=base_url()?>index.php/banks/banks/save">
 		<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 		<?php echo validation_errors(); ?>
-		<table class="table" width="100%">
+		<table class="table2" width="100%">
 			<tr>
 				<td>Nomor Rekening / Kode</td><td>
 				<?php
@@ -47,17 +44,17 @@
 				</td>
 			</tr>	 
 			   <tr>
-					<td>Nama Bank / Kas</td><td colspan=2><?php echo form_input('bank_name',$bank_name,"style='width:400px'");?></td>
+					<td>Nama Bank / Kas</td><td colspan=2><?php echo form_input('bank_name',$bank_name,"style='width:200px'");?></td>
 			   </tr>
 			   <tr>
-					<td>Jenis		</td><td><?php echo form_dropdown('type_bank',array("Bank","Kas"),$type_bank,"style='width:200px'");?></td>
+					<td>Jenis</td><td><?php echo form_dropdown('type_bank',array("Bank","Kas"),$type_bank,"style='width:100px'");?></td>
 					<td><?php
-					echo form_radio('has_edc',1,$has_edc=='1'?TRUE:FALSE,"id='has_edc' style='width:30px'");
+					echo form_radio('has_edc',1,$has_edc=='1'?TRUE:FALSE,"id='has_edc' style='width:20px'");
 					echo "Rekening ini dipakai untuk EDC kasir";
 					?></td>
 			   </tr>
 			   <tr>
-					<td>Alamat</td><td colspan=2><?php echo form_input('street',$street,"style='width:400px;'");?></td>
+					<td>Alamat</td><td colspan=4><?php echo form_input('street',$street,"style='width:400px;'");?></td>
 			   </tr>
 			   <tr>
 					<td>Kota</td><td><?php echo form_input('city',$city);?></td>
@@ -70,10 +67,10 @@
 								</td>
 			   </tr>
 			   <tr>
-			       <td>Nomor Bukti Masuk</td><td colspan=2><?php echo form_input('no_bukti_in',$no_bukti_in,"style='width:400px;'");?></td>
+			       <td>Nomor Bukti Masuk</td><td colspan=2><?php echo form_input('no_bukti_in',$no_bukti_in,"style='width:160px'");?></td>
 			   </tr>
 			   <tr>                   
-			       <td>Nomor Bukti Keluar</td><td colspan=2><?php echo form_input('no_bukti_out',$no_bukti_out,"style='width:400px;'");?></td>
+			       <td>Nomor Bukti Keluar</td><td colspan=2><?php echo form_input('no_bukti_out',$no_bukti_out,"style='width:160px'");?></td>
                 </tr>
 
 		   </table>

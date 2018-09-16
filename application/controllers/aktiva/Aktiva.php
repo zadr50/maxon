@@ -23,9 +23,17 @@ class Aktiva extends CI_Controller {
 		$this->load->model('aktiva_model');
 	}
 	function set_defaults($record=NULL){
-            $data=data_table($this->table_name,$record);
-            $data['mode']='';
-            $data['message']='';
+        $data=data_table($this->table_name,$record);
+		$data["acquisition_date"]=date("Y-m-d H:i:s");
+        $data['mode']='';
+        $data['message']='';		
+		
+		$data['lookup_group_aktiva']=$this->list_of_values->render(array(
+			"dlgBindId"=>"fa_asset_group",
+			"dlgColsData"=>array("name","id"),
+			"dlgRetFunc"=>"$('#group_id').val(row.id);"			
+		));
+			
             return $data;
 	}
 	function index()
@@ -53,6 +61,7 @@ class Aktiva extends CI_Controller {
 		$mode=$this->input->post("mode");
 		$this->_set_rules();
 		$data=$this->get_posts();
+		
  		$id=$data['id'];
 		$data['message']='Save Success';
 		$data['mode']='view';
@@ -62,26 +71,21 @@ class Aktiva extends CI_Controller {
 			unset($data['group_list']);
 			if($mode=="add"){
 				$this->aktiva_model->save($data);
-				$data['message']=mysql_error();
-				if($data['message']==''){
-					$data['mode']='view';					
-					$data['message']='Data sudah disimpan.';
-				} else {
-					$data['mode']='add';
-				}
+				$data['message']='Data sudah disimpan.';
 			} else {
 				$this->aktiva_model->update($id,$data);
-				$data['message']=mysql_error();
-				if($data['message']==''){
-					$data['message']='Data sudah disimpan.';
-				}
-				$data['mode']='view';
+				$data['message']='Data sudah disimpan.';
 			}
 			
 		} else {
 			$data['message']='Error Validation.';
 		}
-		$data['group_list']=$this->aktiva_group_model->lookup();
+		$data['lookup_group_aktiva']=$this->list_of_values->render(array(
+			"dlgBindId"=>"fa_asset_group",
+			"dlgColsData"=>array("name","id"),
+			"dlgRetFunc"=>"$('#group_id').val(row.id);"			
+		));
+		
 
 		$this->template->display_form_input($this->file_view,$data,'');
 
@@ -119,7 +123,7 @@ class Aktiva extends CI_Controller {
     function browse($offset=0,$limit=50,$order_column='sales_order_number',$order_type='asc'){
 		$data['controller']='aktiva/'.$this->controller;
 		$data['fields_caption']=array('Kode','Nama Aktiva','Kelompok','Lokasi','Tgl Beli'
-		,'Metode Susut','Waktu');
+		,'Metode','Waktu');
 		$data['fields']=array( 'id','description','group_id','location_id','acquisition_date','depn_method'
             ,'useful_lives');
 		$data['field_key']='id';

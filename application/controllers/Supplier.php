@@ -49,6 +49,25 @@ class Supplier extends CI_Controller {
         
         echo datasource($sql);
     }
+    function select2(){
+        
+        $sql="select supplier_number,supplier_name from suppliers where 1=1";
+        if($search=$this->input->get("q")){
+            if($search!="")$sql.=" and (supplier_number like '%$search%' 
+                or supplier_name like '%$search%')";
+        }
+        $sql.=" order by supplier_number";
+        $sql.=" limit 0,50";
+        
+        $output="";
+        if($qry=$this->db->query($sql)){
+            foreach($qry->result() as $row){
+                $output.=$row->supplier_number." - ".$row->supplier_name."|".$row->supplier_number."|".$row->supplier_name."\n";
+            }
+        }
+        echo $output;
+        
+    }
     
     
 	function set_defaults($record=NULL){

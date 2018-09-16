@@ -26,6 +26,7 @@ class Purchase_request extends CI_Controller {
 		$this->load->model('inventory_model');
 		$this->load->model('type_of_payment_model');
 		$this->load->model('syslog_model');
+		$this->load->library("detail_grid");
 	}
 	function set_defaults($record=NULL){
             $data=data_table($this->table_name,$record);
@@ -299,7 +300,8 @@ class Purchase_request extends CI_Controller {
 	function delete($id){	 	 
 		$id=urldecode($id);
 		if(!allow_mod('_40040.03')){
-			echo json_encode(array("success"=>false,"msg"=>"Anda tidak diijinkan menjalankan proses module ini."));
+			echo json_encode(array("success"=>false,"msg"=>"Anda tidak diijinkan menjalankan 
+				proses module ini. \r\n Module:[_40040.03]"));
 			return false;
 		};			
 		if($this->purchase_order_model->validate_delete_po($id) and $this->purchase_order_model->delete($id) ){

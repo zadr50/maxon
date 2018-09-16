@@ -9,7 +9,7 @@
 			  href="<?=base_url()?>index.php/eshop/item/add"> Add</a></li>
 			</ol>
 		</div>
-		<? 
+		<?php 
 		include_once "item_mas_form_input.php"; 
 		?>
 		<div style='float:right'>

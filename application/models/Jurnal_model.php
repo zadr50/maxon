@@ -59,6 +59,7 @@ function __construct(){
                 
             }
         }
+		$ok=false;
         if($id>0){
             if($data["account_id"]>0)$this->update($id,$data);
             $ok=$id;
@@ -68,9 +69,6 @@ function __construct(){
                 $ok=$this->db->insert_id();
             }
         }
-		if(!$ok){
-			echo "ERR";
-		}
 		return $ok;
 	}
 	function update($id,$data){

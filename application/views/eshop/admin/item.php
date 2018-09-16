@@ -41,10 +41,10 @@
 			<div class='row'>
 				 <?php if($message!="") { ?>
 				<div class="alert alert-success"><? echo $message;?></div>
-				<? } ?>
+				<?php } ?>
 			</div>
 			<div class="row">
-				<? 
+				<?php 
 				include_once "item_form.php"; 
 				?>
 			</div>
@@ -67,7 +67,7 @@
 
 		</script>
 	
-	<? } ?>
+	<?php } ?>
 </div>
 <link rel="stylesheet" type="text/css" href="<?=base_url()?>assets/eshop/eshop.css">
 

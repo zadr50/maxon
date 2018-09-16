@@ -4,9 +4,16 @@
 	 $data['date_from']=date('Y-m-d 00:00:00');
 	 $data['date_to']=date('Y-m-d 23:59:59');
 	 $data['select_date']=true;
+	 
 	$data['criteria1']=true;
 	$data['label1']='Kelompok Barang';
 	$data['text1']='';
+         $data['key1']="kode";
+         $data['fields1'][]=array("kode","80","Kode");
+         $data['fields1'][]=array("category","180","Kelompok");
+         $data['ctr1']='category/select';
+	
+	
 	$data['caption']='KARTU STOCK DETAIL';
 	$data['rpt_controller']="inventory/rpt/$id";
 	$CI->template->display_form_input('criteria',$data,'');
@@ -21,17 +28,6 @@
 <table cellspacing="0" cellpadding="1" border="0" width='800px'> 
      <tr>
      	<td colspan='2'><h2><?=$model->company_name?></h2></td><td colspan='2'><h2>LAPORAN KARTU STOCK SUMMARY</h2></td>     	
-     </tr>
-     <tr>
-     	<td colspan='2'><?=$model->street?></td><td></td>     	
-     </tr>
-     <tr>
-     	<td colspan='2'><?=$model->suite?></td>     	
-     </tr>
-     <tr>
-     	<td>
-     		<?=$model->city_state_zip_code?> - Phone: <?=$model->phone_number?>
-     	</td>
      </tr>
      <tr>
      	<td>

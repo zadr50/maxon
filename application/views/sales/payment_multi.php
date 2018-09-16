@@ -6,60 +6,50 @@
 	echo link_button('Print', 'print()','print');
 	echo link_button('Add','','add','false',base_url().'index.php/payment/add');		
 	echo link_button('Search','','search','false',base_url().'index.php/payment');
-    echo link_button('Close','remove_tab_parent()','remove');      
 		
 	echo "<div style='float:right'>";
-	echo link_button('Help', 'load_help(\'payment\')','help');		
+		echo link_button('Help', 'load_help(\'payment\')','help');		
 	?>
-	<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
-	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help('payment')">Help</div>
-		<div>Update</div>
-		<div>MaxOn Forum</div>
-		<div>About</div>
-	</div>
+		<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+		<div id="mmOptions" style="width:200px;">
+			<div onclick="load_help('payment')">Help</div>
+			<div>Update</div>
+			<div>MaxOn Forum</div>
+			<div>About</div>
+		</div>
+		<?=link_button('Close', 'remove_tab_parent()','cancel');?>		
 	</div>
 </div>
 <div class="thumbnail">	
 	<form id="myform" method="POST" action="<?=base_url()?>index.php/payment/save">
 	<table class='table2' width='100%'>
 		<tr>
-			
-			
             <td>Rekening: </td><td width=200px><?=form_input('how_paid_acct_id',$how_paid_acct_id,"id='how_paid_acct_id'");
                 echo link_button("","dlgbank_accounts_show();return false","search");
                 
                 ?>
-                
-                
-                
-            </td>
-			
+            </td>			
 			<td>Tanggal Bayar: <?=form_input('date_paid',$date_paid,'id="date_paid" 
 			class="easyui-datetimebox"
-			data-options="formatter:format_date,parser:parse_date"
+			data-options="formatter:format_date,parser:parse_date" style="width:200px"
 			');?></td>
 		</tr>
 		<tr>
 			<td>Pelanggan: </td><td colspan='2'><?=form_input('customer_number',$customer_number,"id=customer_number");?>
 				<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" 
-				onclick="dlgcustomers_show()"></a>
+				onclick="cari_cust();return false"></a>
 				<input type='text' disabled id='company' style='width:40%'> 				
 			</td>
 			<td>&nbsp</td>
 
 		</tr>
 		<tr>
-			<td>Jenis Bayar: </td><td><?=form_dropdown('how_paid',array('Cash','Giro','Transfer'),$how_paid,"id=how_paid style='width:150px' 
-			title='
-			*apabila dilakukan pembayaran dengan giro silahkan isi informasi giro dan tanggal 
-			jatuh tempo giro.				
-			'
-			
+			<td>Jenis Bayar: </td><td><?=form_dropdown('how_paid',array('Cash','Giro','Transfer'),$how_paid,"id='how_paid' style='width:150px' 
+				title='*apabila dilakukan pembayaran dengan giro silahkan isi informasi giro dan tanggal  jatuh tempo giro.	'
 			");?></td>
 			<td>
 			<span class='thumbnail'>
-				<p><?=form_input('credit_card_number',$credit_card_number)?>&nbsp Giro Nomor
+				<p><?=form_input('credit_card_number',$credit_card_number,"id='credit_card_number'")?>&nbsp Giro Nomor
 				</p>
 				<p><?=form_input('expiration_date',$expiration_date,'class="easyui-datetimebox"
 				data-options="formatter:format_date,parser:parse_date"
@@ -79,7 +69,7 @@
 		</tr>
 	</table>
 	<div id="divItem" >
-		<table id="dgInvoice" class="easyui-datagrid"  width='100%'
+		<table id="dgInvoice" class="easyui-datagrid"  width='100%' style="max-height:400px"
 			data-options="
 				toolbar: '', fitColumns: true, 
 				singleSelect: true,
@@ -95,6 +85,7 @@
 					<th data-options="field:'saldo',width:80,align:'right'">Saldo</th>
 					<th data-options="field:'bayar',width:150">Bayar</th>
                     <th data-options="field:'ck',width:80">Cmd</th>
+					<th data-options="field:'invoice_number2',width:80,hidden:true">Faktur</th>
 				</tr>
 			</thead>
 		</table>
@@ -112,6 +103,20 @@
 
 <script language='javascript'>
 
+    $().ready(function (){
+        $('#dgInvoice').datagrid({
+            onDblClickRow:function(){
+            	view_invoice();
+            }
+        });        
+    });
+
+	function cari_cust(){
+		
+ 		if($('#how_paid_acct_id').val()==''){log_err('Pilih rekening !');return false;}
+		dlgcustomers_show();
+		
+	}
     function cek_this(i,saldo){
         if($("#fkt"+i).val()==""){
             $("#fkt"+i).val(saldo);            
@@ -155,9 +160,9 @@
 	};
 	
 	function select_invoice(){
- 		if($('#customer_number').val()==''){alert('Pilih pelanggan !');return false;}
- 		if($('#how_paid_acct_id').val()==''){alert('Pilih rekening !');return false;}
- 		if($('#how_paid').val()==''){alert('Pilih jenis pembayaran !');return false;}
+ 		if($('#customer_number').val()==''){log_err('Pilih pelanggan !');return false;}
+ 		if($('#how_paid_acct_id').val()==''){log_err('Pilih rekening !');return false;}
+ 		if($('#how_paid').val()==''){log_err('Pilih jenis pembayaran !');return false;}
 
 		$('#dgInvoice').datagrid({url:'<?=base_url()?>index.php/invoice/invoice_not_paid/'+$('#customer_number').val()});
 		
@@ -170,12 +175,28 @@
             valid_date=false;
         }
         if(!valid_date){alert("Tanggal tidak benar ! Mungkin sudah closing !");return false;}
-	    
+	    if($("#how_paid").val()!="Cash"){
+	    	if($("#credit_card_number").val()==""){
+	    		//log_err("Pembayaran dengan non cash harus ketik nomor giro/transfer!");
+	    		//return false;
+	    	}
+	    }
 		if($('#amount_paid').val()=='0' || $('#amount_paid').val()==''){
 			alert('Input jumlah bayar !');
 			return false;
 		}
 		$('#myform').submit();
+	}
+	function view_invoice(){
+        var row = $('#dgInvoice').datagrid('getSelected');
+        if (row){
+        	var faktur=row.invoice_number2;
+        	var url=CI_ROOT+"invoice/view/"+faktur;
+        	add_tab_parent("View: "+faktur,url);
+            $('#dlg<?=$dlgId?>').dialog('close');
+        }       
+		
+		
 	}
 </script>
  	

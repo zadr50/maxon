@@ -8,7 +8,7 @@
 		class="btn btn-default">Add
 	</button>
 </div>
-<?
+<?php
 if($q=$this->db->limit(10,$page*10)->get("inventory_categories")){
 	echo "<table id='tbl' class='table'><thead><th>Kode#</th><th>Nama Kategori</th>
 	<th>Parent</th><th>Edit</th><th>Delete</th></thead>

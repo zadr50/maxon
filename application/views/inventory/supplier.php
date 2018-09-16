@@ -2,7 +2,7 @@
 	style="width:400px;height:300px;padding:5px 5px;left:100px;top:20px" closed="true" >
 	<form id="frmSupp" name="frmSupp" method="POST">
 	<table class="table2" width="100%">
-	<? 
+	<?php 
 		$search=link_button('','select_supplier()','search');
 		my_input_tr("Kode Supplier","supplier_number","",$search);
 		my_input_tr("Nama Supplier","supplier_name");
@@ -14,7 +14,7 @@
 	</form>
 </div>
 <div id='tbSupp'>
-	<? 
+	<?php 
 	echo link_button("Save","dlgSupp_Save()","save");
 	echo link_button("Close","dlgSupp_Close()","cancel");
 	?>

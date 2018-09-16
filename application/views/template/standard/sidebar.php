@@ -1,4 +1,4 @@
-<div class="easyui-panel " title="USER LOGIN">
+<div class="easyui-panel themes" title="USER LOGIN" data-options="iconCls:'icon-search',collapsible:true">
     <?php
     if($company_code=="")$this->session->userdata('session_company_code','');    
     if($company_code=="")$this->session->userdata('company_code','');    
@@ -6,15 +6,13 @@
     
     echo $this->access->print_info();
 	
-	echo "&nbsp".link_button("Outlet", "show_hide_outlet_widget();return false;",'search');			
-	
-	//echo "<a href='#' onclick='show_hide_outlet_widget();return false;' class='btn' >
-	//		<img src='".base_url()."images/sort_desc.png' title='Show widget outlet'></a>";
-	
-    echo "</br><strong><i>".date('l jS \of F Y h:i:s A')."</i></strong>";
-	
-	
-    echo "<div class='alert alert-info' id='divWidgetOutlet' style='display:none'>";
+    echo "</br><i>".date('l jS \of F Y h:i:s A')."</i>";
+    
+    ?>
+</div>
+<div class="easyui-panel themes" title="OUTLET" data-options="iconCls:'icon-search',collapsible:true,collapsed:true">
+<?php
+    echo "<div class='alert' id='divWidgetOutlet' >";
 	
 
 	    $disabled="disabled";
@@ -29,28 +27,28 @@
         echo form_close();
         
     echo "</div>";
-    
-    ?>
+
+
+?>
 </div>
-<div class="easyui-panel " title="MENU">
+<div class="easyui-panel themes" title="MENU" data-options="iconCls:'icon-search',collapsible:true">
     <?php echo $_left_menu; ?>
 </div>
-<div class="easyui-panel " title="HELP">
+<div class="easyui-panel themes" title="HELP" data-options="iconCls:'icon-search',collapsible:true">
     <div id="help">Untuk bantuan anda bisa tekan tombol help atau panduan 
         secara lengkap silahkan kunjungi 
         <a href='http://help.maxonerp.com' target='_new'>Online Help</a>
     </div>
 </div>
+<div class="easyui-panel themes" title="SYSLOG" data-options="iconCls:'icon-search',collapsible:true">
 <?php 
 if($this->session->userdata('last_running_visible'))include_once "syslog.php";
 //if($this->session->userdata('donate_visible'))
 if($this->config->item('donate_visible')==true) include_once "donate.php";
 if($this->config->item('google_ads_visible')==true) $this->load->view('google_ads');
 ?>
+</div>
 
 <script language="JavaScript">
-	function show_hide_outlet_widget(){
-		$("#divWidgetOutlet").toggle();
-	}	
 	
 </script>

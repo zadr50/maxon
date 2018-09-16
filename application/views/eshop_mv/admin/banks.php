@@ -1,5 +1,5 @@
 <div class="row-fluid" >
-	<?
+	<?php
 	if($cmd=="list") {
 		echo $browse;		
 	} else {
@@ -30,7 +30,7 @@
 			$('#frmBank').ajax_post(url,'undefined',next_url); 
 		};
 		</script>
-	<? } ?>
+	<?php } ?>
 </div>
 <link rel="stylesheet" type="text/css" href="<?=base_url()?>assets/eshop/eshop.css">
 

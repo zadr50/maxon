@@ -1,6 +1,6 @@
 <div><h4>FORMULIR PINJAMAN KARYAWAN</H4>
 <div class="thumbnail">
-	<?
+	<?php
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/pinjaman/add');		
@@ -89,7 +89,7 @@
 	   </form>
 	</div>
 	 
-	<div title='Cicilan'><? include_once "cicilan.php" ?></div>
+	<div title='Cicilan'><?php include_once "cicilan.php" ?></div>
 
 </div>	
 	

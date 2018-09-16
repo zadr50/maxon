@@ -332,7 +332,7 @@ class Receive extends CI_Controller {
 	{
 		$nomor=urldecode($nomor);
 		$sql="select p.item_number,i.description,p.quantity_received as quantity, 
-		p.unit,p.cost,p.id as line_number
+		p.unit,p.cost,p.id as line_number,p.mu_qty,p.multi_unit
 		from inventory_products p
 		left join inventory i on i.item_number=p.item_number
 		where shipment_id='$nomor'";

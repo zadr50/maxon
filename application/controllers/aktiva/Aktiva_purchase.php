@@ -3,8 +3,12 @@
 class Aktiva_purchase extends CI_Controller {
     private $limit=10;
     private $table_name='fa_asset_transaction';
-    private $sql="select journal_id,trans_date,asset_id,trans_value 
-	from fa_asset_transaction ";
+    private $sql="select journal_id,trans_date,asset_id,trans_value ,f.trans_type,
+    fa.description,f.vendor_id 
+	from fa_asset_transaction f 
+	left join fa_asset fa on fa.id=f.asset_id
+	";
+			
     private $file_view='aktiva/asset_purchase';
     private $primary_key='journal_id';
     private $controller='aktiva_purchase';
@@ -166,8 +170,10 @@ class Aktiva_purchase extends CI_Controller {
 	}
     function browse($offset=0,$limit=50,$order_column='',$order_type='asc'){
 		$data['controller']='aktiva/'.$this->controller;
-		$data['fields_caption']=array('Bukti','Tanggal','Aktiva','Type','Jumlah');
-		$data['fields']=array( 'journal_id','trans_date','asset_id','trans_type','trans_value');
+		$data['fields_caption']=array('Bukti','Tanggal','Aktiva','Type','Jumlah',"Nama Asset",
+			"Supplier");
+		$data['fields']=array( 'journal_id','trans_date','asset_id','trans_type','trans_value',
+			"description",'vendor_id');
 		$data['field_key']='journal_id';
 		$data['caption']='DAFTAR PEMBELIAN AKTIVA TETAP';
 

@@ -1,7 +1,7 @@
-<?
+<?php
 //var_dump($_POST);
 ?>
-<?
+<?php
      $CI =& get_instance();
      $CI->load->model('company_model');
      $model=$CI->company_model->get_by_id($CI->access->cid)->row();
@@ -21,7 +21,7 @@
 ?>
 <link href="<?php echo base_url();?>/themes/standard/style_print.css" rel="stylesheet">
 <table cellspacing="0" cellpadding="1" border="0" width='800px'> 
-<? if($with_header) { ?>	
+<?php if($with_header) { ?>	
      <tr>
      	<td colspan='2'><h2><?=$model->company_name?></h2></td><td colspan='2'><h2>NERACA SALDO</h2></td>     	
      </tr>
@@ -41,7 +41,7 @@
      		Periode : <?=$period?>
      	</td>
      </tr>
-<? } ?>     
+<?php } ?>     
      <tr><td colspan=4 style='border-bottom: black solid 1px'></td></tr>
      <tr>
      	<td colspan="8">
@@ -59,7 +59,7 @@
 	     			</tr>
 	     		</thead>
 	     		<tbody>
-     			<?
+     			<?php
      			$sql="select account,account_description,id from chart_of_accounts
 	            order by account_type,account ";
      			$rst_coa=$CI->db->query($sql);

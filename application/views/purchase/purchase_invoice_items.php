@@ -10,7 +10,7 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 	        <input type='hidden' id='po_number_item' name='po_number_item'>
 	        <input type='hidden' id='line_number' name='line_number'>
 	        <input type='hidden' id='gudang_item' name='gudang_item'>
-				<table class='table'>
+				<table class='table2'  width="100%">
 				 <tr><td >Kode Barang</td><td colspan='3'><input onblur='find()' id="item_number" style='width:180px' 
 					name="item_number"   class="easyui-validatebox" required="true">
 					<a href="#" class="easyui-linkbutton" iconCls="icon-search" data-options="plain:false" 
@@ -25,6 +25,16 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 					onclick="searchUnit();return false;" 
 					style='display:none' id='cmdLovUnit'></a> 
 				 </td></tr>
+				<tr>
+					<td colspan=3>
+					<span id='divMultiUnit' style='display:none'>
+						M_Qty <?=form_input("mu_qty","","id='mu_qty' style='width:60px'")?>
+						M_Unit <?=form_input("multi_unit","","id='multi_unit' style='width:60px' ")?>
+						M_Price <?=form_input("mu_harga","","id='mu_harga'")?>
+					</span>
+					</td>
+				</tr>
+				 
 				 <tr><td>Harga</td><td colspan='3'>
 					<input id="price" name="price"  style='width:80px'   onblur="hitung();return false;" class="easyui-validatebox" validType="numeric">
 				 </td></tr>
@@ -61,6 +71,7 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
  
 <script language="JavaScript">
  
+	var qty_conv=0;
 	
 	function addItem(){
 		var mode=$('#mode').val();
@@ -68,6 +79,7 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 			alert("Simpan dulu sebelum tambah item barang !");
 			return false;
 		}
+		qty_conv=0;
 		//$('#dgItemForm').window({left:100,top:window.event.clientY+20});
 		$("#dgItemForm").dialog("open").dialog('setTitle','Input barang');
 	}
@@ -95,8 +107,10 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 						$('#description').val(obj.description);
 						if(obj.multiple_pricing){
 							$("#cmdLovUnit").show();
+							$("#divMultiUnit").show();
 						} else {
 							$("#cmdLovUnit").hide();
+							$("#divMultiUnit").hide();
 						}
 						hitung();
 						
@@ -115,8 +129,17 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 		gross=gross-(gross*disc_3);
 		$('#amount').val(gross);			
 
+		calc_qty_unit();
 		hitung_jumlah();			
 	}
+		function calc_qty_unit(){
+			if(qty_conv=="")qty_conv=1;
+			if(qty_conv=="0")qty_conv=1;
+			qty=$("#quantity").val();
+			qty=qty*qty_conv;
+			$("#mu_qty").val(qty);
+		}
+	
 	function save_item(){
 		var gudang=$("#warehouse_code").val();
 		var url = '<?=base_url()?>index.php/purchase_order/save_item';
@@ -127,6 +150,9 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 //			if(has_receive>0){alert("Nomor PO ini sudah ada penerimaan, tidak bisa diubah.");return false;};
 		$('#po_number_item').val(po);
 		$("#gudang_item").val(gudang);			 
+		
+		loading();
+		
 		$('#frmItem').form('submit',{
 			url: url,
 			onSubmit: function(){
@@ -135,8 +161,11 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 			success: function(result){
 				var result = eval('('+result+')');
 				if (result.success){
+					
+					loading_close();
+					
 					$('#dg').datagrid({url:'<?=base_url()?>index.php/purchase_order/items/'+po+'/json'});
-					$('#dg').datagrid('reload');
+		//			$('#dg').datagrid('reload');
 					
 					hitung();
 					
@@ -147,6 +176,10 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 					close_item();
 					
 				} else {
+					
+					loading_close();
+					log_err(result.msg);
+					
 					$.messager.show({
 						title: 'Error',
 						msg: result.msg
@@ -166,7 +199,10 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 		$('#line_number').val('');
 		$('#quantity').val(1);
 		$('#price').val('0');
-		$('#amount').val('0');						
+		$('#amount').val('0');
+		$("#multi_unit").val("");
+		$("#mu_qty").val("");
+		$("#mu_harga").val("");						
 	}
 	function reloadItem(){
 		var po=$('#purchase_order_number').val();
@@ -197,7 +233,6 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 	function editItem(){
 		var row = $('#dg').datagrid('getSelected');
 		if (row){
-			console.log(row);
 			$('#frmItem').form('load',row);
 			$('#item_number').val(row.item_number);
 			$('#description').val(row.description);
@@ -209,6 +244,16 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 			$('#disc_3').val(row.disc_3);
 			$('#amount').val(row.total_price);
 			$('#line_number').val(row.line_number);
+			$('#multi_unit').val(row.multi_unit);
+			$('#mu_qty').val(row.mu_qty);
+			$('#mu_harga').val(row.mu_harga);
+			
+			if($("#multi_unit").val()!=$("#unit").val()){
+				$("#divMultiUnit").show();
+			} else {
+				$("#divMultiUnit").hide();
+			}
+			
 		}
 		//$('#dgItemForm').window({left:100,top:window.event.clientY+20});
 		$("#dgItemForm").dialog("open");

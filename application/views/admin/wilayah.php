@@ -15,7 +15,7 @@
 				<thead><tr><th>Kode</th><th>Nama Wilayah</th>
 					<th>Action</th></tr></thead>
 				<tbody>
-					<?     			
+					<?php     			
 					$CI =& get_instance();
 					
 					$sql="select * from wilayah";

@@ -29,6 +29,12 @@
 <li><?=anchor('inventory/rpt/max_stock','Laporan Stock Maximum','class="info_link"')?></li>
 <li><?=anchor('inventory/rpt/stock_akum','Laporan Akumulasi Stock Toko','class="info_link"')?></li>
 <li><?=anchor('inventory/rpt/stock_akum_gab','Laporan Akumulasi Gabungan','class="info_link"')?></li>
+<li><?=anchor('inventory/rpt/adjust_list','Laporan Adjustment Stock','class="info_link"')?></li>
+<li><?=anchor('inventory/rpt/opname_list','Laporan Stock Opname','class="info_link"')?></li>
+<li><?=anchor('inventory/rpt/stock_in_etc','Penerimaan barang lainnya','class="info_link"')?></li>
+<li><?=anchor('inventory/rpt/stock_out_etc','Pengeluran barang lainnya','class="info_link"')?></li>
+<li><?=anchor('inventory/rpt/stock_out_etc_type','Pengeluran barang lainnya - by Type','class="info_link"')?></li>
+<li><?=anchor('inventory/rpt/stock_out_etc_project','Pengeluran barang lainnya - by Project','class="info_link"')?></li>
     
 </div>
 		

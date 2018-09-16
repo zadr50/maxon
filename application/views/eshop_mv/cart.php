@@ -8,7 +8,7 @@
 		<head><th>Kode</th><th>Nama Barang</th><th>Qty</th>
 		<th>Harga</th><th>Jumlah</th><th>Action</th></thead>
 		<tbody>
-	<?
+	<?php
 		$total=0;
 		for($i=0;$i<count($cart);$i++){
 			//var_dump($cart[$i]);

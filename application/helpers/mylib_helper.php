@@ -632,6 +632,7 @@ if(!function_exists('account_id')){
 	function account_id($Vkpc0vecc4sp){
 		$Vkpc0vecc4sp=urldecode($Vkpc0vecc4sp);
         $Vnpr0xe0jkmu =& get_instance();
+		$Vnpr0xe0jkmu->load->model("chart_of_accounts_model");
 		$Vpyytnrwhwf3=explode(" - ", $Vkpc0vecc4sp);
 		$Vzy1oh04mqqf=$Vnpr0xe0jkmu->chart_of_accounts_model->get_by_id($Vpyytnrwhwf3[0])->row();
 		if($Vzy1oh04mqqf){
@@ -769,17 +770,18 @@ if ( ! function_exists('pad')) {
 
 if(!function_exists('company_header')){
     function company_header(){
-         $Vnpr0xe0jkmu =& get_instance();
-         $Vnpr0xe0jkmu->load->model('company_model');
-         $Vpkiogqd4nvg=$Vnpr0xe0jkmu->company_model->get_by_id($Vnpr0xe0jkmu->access->cid)->row();
-		 $Vpyytnrwhwf3='';
-		 if($Vpkiogqd4nvg){
-         	$Vpyytnrwhwf3='<div id="divHeader"><h1>'.$Vpkiogqd4nvg->company_name."</h1><h3>".$Vpkiogqd4nvg->street
-                 ."<br/>".$Vpkiogqd4nvg->suite." ".$Vpkiogqd4nvg->city_state_zip_code
-                 ." - Phone: ".$Vpkiogqd4nvg->phone_number.'</h3>
-                     </div>';
+       $CI =& get_instance();
+         $CI->load->model('company_model');
+         $model=$CI->company_model->get_by_id($CI->access->cid)->row();
+		 $data='';
+		 if($model){
+         	$data='<div id="divHeader"><h1>'.$model->company_name.'</h1></div>';
          };
-        return $Vpyytnrwhwf3;
+		 //         	<h3>".$model->street
+         //        ."<br/>".$model->suite." ".$model->city_state_zip_code
+         //        ." - Phone: ".$model->phone_number.'</h3>
+		// 
+        return $data;
     }
 }
 if(!function_exists('getColoumn')){
@@ -850,7 +852,7 @@ function data_table($table,$record=null,$is_sql=false){
         return data_table_v2($table,$record,$is_sql);
     } else {
         $CI =& get_instance();
-        $data='';
+        $data=null;
         if($record){
             foreach ($record as $key => $value) {
                 $data[$key]=$value;
@@ -1669,6 +1671,60 @@ if(!function_exists("date_diff2")){
         
     }
 }
+if(!function_exists('nz')){
+    function nz($value){
+    	if(!$value)$value=0;
+        return $value;
+    }
+}
+if(!function_exists('ns')){
+    function ns($value){
+    	if(!$value)$value="";
+        return $value;
+    }
+}
+if(!function_exists("tool_option")){
+	function tool_option($help){
+		$btn_help=link_button('Help', 'load_help(\'$help\')','help');
+		$btn_close=link_button('Close', 'remove_tab_parent();return false;','cancel');
+				
+		return "
+			<div style='float:right'>		
+				<a href='#' class='easyui-splitbutton' 
+				data-options=\"plain:false,menu:'#mmOptions',iconCls:'icon-tip' \">Options</a>
+				<div id='mmOptions' style='width:200px;'>
+					<div onclick=\"load_help('salesman')\">Help</div>
+					<div onclick=\"show_syslog('$help','$help')\">Log Aktifitas</div>
+					<div>Update</div>
+					<div>MaxOn Forum</div>
+					<div>About</div>
+				</div>
+				$btn_help
+				$btn_close 		
+			</div>
+		";
+			
+	}
+}
+if(!function_exists("info_link")){
+	function info_link($controller,$caption){
+		return "<li>".anchor($controller,$caption,'class="info_link"')."</li>";
+	}
+}
+if(!function_exists("info_link_box")){
+	function info_link_box($controller,$caption,$icon,$keterangan){
+	return "
+			<div class='info thumbnail info_link' href='".base_url($controller)."'>
+				<div class='photo'><img src='$icon'/></div>
+				<div class='detail'>
+					<h4>$caption</h4>
+					</br>$keterangan
+				</div>
+			</div>
+		";
+	}
+}
+
 
 
 }

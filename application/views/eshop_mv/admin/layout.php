@@ -8,27 +8,27 @@ maximum-scale=1.0, user-scalable=no">
    		CI_ROOT = "<?=base_url()?>index.php/";
 		CI_BASE = "<?=base_url()?>"; 		
 </script>
-<?
+<?php
 date_default_timezone_set("Asia/Jakarta");
 echo $library_src;
 echo $script_head;
 ?>
 <div class="container-fluid bg-all" style='padding-top:1px;margin-top:-1px'>
 	<div class='row bg-banner' style="border-bottom:10px solid black">
-	<? include_once "header.php" ?>
-	<? include_once 'box_crumb.php' ?>
+	<?php include_once "header.php" ?>
+	<?php include_once 'box_crumb.php' ?>
 	</div>
 	<div class='row' style='padding:10px'>
 		<div class="col-md-3">
-			<? include_once "left_menu.php"; ?>
+			<?php include_once "left_menu.php"; ?>
 		</div>
 		<div class="col-md-8" style='margin-left:10px'>
-		<?	
+		<?php	
 		$this->load->view($file_content);
 		?>
 		</div> 
 	</div>
-	<div class='row' style="border-top:10px solid black"><? include_once "footer.php" ?></div>
+	<div class='row' style="border-top:10px solid black"><?php include_once "footer.php" ?></div>
 </div>
 </body>
 <link rel="stylesheet" type="text/css" href="<?=base_url()?>assets/eshop/eshop.css">

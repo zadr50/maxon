@@ -10,7 +10,7 @@
 Dibawah ini adalah barang-barang yang dijual oleh toko tersebut:
 </div>
 <div class='div-item '>
-	<?
+	<?php
 			foreach($items->result() as $item){
 				echo "<div style='color:black' onclick='view_item(\"$item->item_number\");return false;' 
 				class='box_item col-sm-3 col-md-3 col-lg-3 '>";
@@ -23,7 +23,7 @@ Dibawah ini adalah barang-barang yang dijual oleh toko tersebut:
 					<div class='item_no'>Kode: <?=$item->item_number?></div>
 					<div class='price'>Rp. <?=number_format($item->retail)?></div>
 				</div>
-	<?
+	<?php
 				echo "</div>";
 			}
 	?>

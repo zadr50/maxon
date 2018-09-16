@@ -1,4 +1,4 @@
- <?
+ <?php
   $CI =& get_instance();
  ?>
 <div class="easyui-tabs" id="tt">	 
@@ -7,9 +7,9 @@
 	<script>$().ready(function(){$("#tt").tabs("select","DASHBOARD");});</script>
 
 	<div title="DASHBOARD" style="padding:10px">
-		<div class="col-md-12 thumbnail">
+		<div class="col-xs-12 thumbnail">
 		
-		<?
+		<?php
 			include_once "survey_widget.php";
 			include_once "kolektor_widget.php";
 		?>

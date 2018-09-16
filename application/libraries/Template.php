@@ -14,19 +14,22 @@ class Template {
  {
     $this->_ci =&get_instance();
     $this->_ci->load->library(array('javascript',"sysvar","upgrade"));
+	
 	$themes=$this->_ci->sysvar->getvar('themes','standard');
 	if($themes==""){
 		$themes="standard";
 	}
+	$versi_lib_js="5";	//ubah v1+1 apabila ada versi barunya libjs biar direload
+	
 	$base=base_url();
 	$this->bootstrap='
 	<link rel="stylesheet" type="text/css" href=".base_url()."assets/bootstrap-3.3.5/css/bootstrap.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'themes/'.$themes.'/style.css">
-	';
+		';
 	$this->bootstrap_only ="<link rel='stylesheet' type='text/css' href='".base_url()."assets/bootstrap-3.3.5/css/bootstrap.css'>";
 	$this->bootstrap_only.=$this->_cjs('assets/jquery/jquery-1.11.3.min.js',true);
     $this->bootstrap_only.=$this->_cjs('assets/bootstrap-3.3.5/js/bootstrap.min.js',true);
-    $this->bootstrap_only.=$this->_cjs('js/lib.js',true);
+    $this->bootstrap_only.=$this->_cjs('js/lib.js?v='.$versi_lib_js,true);
 	
 	$this->library_src =$this->_cjs('assets/jquery/jquery-1.11.3.min.js',true);
     $this->library_src.=$this->_cjs('assets/bootstrap-3.3.5/js/bootstrap.min.js',true);
@@ -35,11 +38,13 @@ class Template {
     $this->library_src.=$this->_cjs('assets/jquery-easyui-1.4.3/plugins/jquery.edatagrid.js',true);
     //$this->library_src.=$this->_cjs('assets/jquery-easyui-1.4.3/jquery.easyui.mobile.js',true);
     $this->library_src.=$this->_cjs('js/autocomplete/jquery.autocomplete.min.js',true);
-    $this->library_src.=$this->_cjs('js/lib.js',true);
     $this->library_src.=$this->_cjs('js/jquery.formatNumber.js',true);
-    $this->library_src.=$this->_cjs('assets/flexslider/jquery.flexslider.js',true);
+    $this->library_src.=$this->_cjs('assets/flexslider/jquery.flexslider-min.js',true);
+    $this->library_src.=$this->_cjs('assets/maphilight-master/jquery.maphilight.min.js',true);
     $this->library_src.=$this->_cjs('js/lib_error.js',true);
-	
+    $this->library_src.=$this->_cjs('js/lib.js?v='.$versi_lib_js,true);
+    $this->library_src.=$this->_cjs('js/lib_input.js?v='.$versi_lib_js,true);
+
     $this->flexslider=$this->_cjs('assets/flexslider/jquery.flexslider.js',true);
 	
   /// $this->script_head=$this->_ci->jquery->_compile();
@@ -94,14 +99,15 @@ function display_main($template="",$data=null){
     if($data['shipping_location']=="")$data['shipping_location']=$this->_ci->session->userdata('default_warehouse','');
     $data['shipping_location_list']=$this->_ci->shipping_locations_model->select_list();
     
-    
-	$header_visible=$this->_ci->session->userdata('header_visible');
-	if($header_visible=="false"){
-		$data['_header']='';
-		$data['header_show']=false;
-	} else {
-		$data['_header']=$this->_ci->load->view('template/standard/header',$data, true);
-	}
+    $header_visible=$this->_ci->session->userdata('header_visible');
+    if($header_visible){
+        $data['_header']='';
+    } else {
+        $data['_header']=$this->_ci->load->view('template/standard/header',$data, true);
+    }
+    if($hmh=$this->_ci->session->userdata("hide_menu_header")){
+        $data["hide_menu_header"]=$hmh;
+    }
 
 	
 	$data['_footer']=$this->_ci->load->view('template/standard/footer',$data, true);
@@ -118,7 +124,10 @@ function display_main($template="",$data=null){
 	}
 	$fm=$this->_ci->session->userdata('_left_menu');
 	if($fm!='') {
-		$data['_left_menu']=$this->_ci->load->view($fm,$data, true);
+		$filename=APPPATH."/view/$fm.php";
+		//if(file_exists($filename)){			
+			$data['_left_menu']=$this->_ci->load->view($fm,$data, true);
+		//}
 	}
 	$data['_left_menu_caption']=$this->_ci->session->userdata('_left_menu_caption');
     
@@ -163,6 +172,11 @@ function display_main($template="",$data=null){
 		}  
 		$data['_content']=$this->_ci->load->view($template,$data, true);
 	}  			
+	
+	if($hmh=$this->_ci->session->userdata("hide_menu_header")){
+		$data["hide_menu_header"]=$hmh;
+	}
+	
 	$this->_ci->load->view('template/standard/template',$data);              		
 }
  function display($template,$data=null)
@@ -171,7 +185,7 @@ function display_main($template="",$data=null){
 	$data['body_class']='';
 	 if(!$this->is_ajax())
 	 {
-		$data['user_id']=$this->_ci->access->user_id();
+		if(!isset($data['user_id']))$data['user_id']=$this->_ci->access->user_id();
 	  	$data['library_src']=$this->library_src;
 	  	$data['script_head']=$this->script_head;
 		if(!isset($data['ajaxed']))$data['ajaxed']=true;
@@ -193,20 +207,25 @@ function display_main($template="",$data=null){
 		if($template=="pos/menu")$data['sidebar_show']=false;
 
 		if(isset($data['_right_menu'])){
-			$fm=$data['_right_menu'];
-			$data['_right_menu']=$this->_ci->load->view($fm,$data, true);
+				$fm=$data['_right_menu'];
+				$data['_right_menu']=$this->_ci->load->view($fm,$data, true);
 		} else {
 			$data['_right_menu']='';
 		}				
 		
 		$fm=$this->_ci->session->userdata('_right_menu');
 		if($fm!=''){	
-			$data['_right_menu']=$this->_ci->load->view($fm,$data, true);
+			$filename=APPPATH.$fm;
+			if(file_exists($filename)){			
+				$data['_right_menu']=$this->_ci->load->view($fm,$data, true);
+			}
 		}
 		$fm=$this->_ci->session->userdata('_left_menu');
 		if($fm!='') {
-			//echo $fm;
-			$data['_left_menu']=$this->_ci->load->view($fm,$data, true);
+			$filename=APPPATH.$fm;
+			if(file_exists($filename)){			
+				$data['_left_menu']=$this->_ci->load->view($fm,$data, true);
+			}
 		}
 		$data['_left_menu_caption']=$this->_ci->session->userdata('_left_menu_caption');
 
@@ -235,7 +254,11 @@ function display_main($template="",$data=null){
 			$data['_content']=$this->_ci->load->view($template,$data, true);
 		} 			
 		if($data['_right_menu']=='')$data['sidebar_show']=false;
-		
+        
+		if($hmh=$this->_ci->session->userdata("hide_menu_header")){
+			$data["hide_menu_header"]=$hmh;
+		}
+        
 		$this->_ci->load->view('template/standard/template',$data);              
 	 } else  {
 		$data['google_ads_visible']=$this->_ci->sysvar->getvar('google_ads_visible','true');
@@ -252,7 +275,7 @@ function display_main($template="",$data=null){
   	$data['library_src']=$this->library_src;
   	$data['script_head']=$this->script_head;
 	$data['file_content']=$template;	
-	$this->_ci->load->view("template/standard/template_articles",$data);	
+	$this->_ci->load->view("template/website/template_articles",$data);	
  }
   function display_login($template,$data=null) {
 	$library_src='
@@ -291,10 +314,22 @@ function display_main($template="",$data=null){
  function display_browse2($data=null){
      
     if(session_company_code()=="" || session_outlet()=="" ){
-         msgbox("Perusahaan yang aktif belum dipilih ! 
-            <br>Silahkan pilih perusahaan dan outlet yang aktif untuk session saat ini 
-            ada disebelah kanan kemudian klik tombol [SUBMIT]");
-         return false;
+    		
+    	 $cek_outlet=true;
+		if($global_module=$this->_ci->session->userdata("global_module")){
+			if($global_module=="sekolah"){
+				$cek_outlet=false;
+			}
+		}
+		if($cek_outlet){				
+			 if($this->_ci->config->item("multi_company")){
+		         msgbox("Perusahaan yang aktif belum dipilih ! 
+		            <br>Silahkan pilih perusahaan dan outlet yang aktif untuk session saat ini 
+		            ada disebelah kanan kemudian klik tombol [SUBMIT]");
+					
+		         return false;						 	
+			 }
+		}
     }        
      
 	$data['body_class']='panel-body';

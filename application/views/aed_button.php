@@ -1,5 +1,6 @@
 <div class="box-gradient">
 	<?php 
+	$help=!isset($help)?"unknown":$help;
 	$show_tool=!isset($show_tool)?true:$show_tool;
 	$show_add=!isset($show_add)?true:$show_add;
 	$show_search=!isset($show_search)?true:$show_search;
@@ -8,7 +9,7 @@
 	$show_refresh=!isset($show_refresh)?true:$show_refresh;
 	$show_delete=!isset($show_delete)?true:$show_delete;
 	$show_save=!isset($show_save)?true:$show_save;
-	$show_posting=!isset($show_posting)?true:$show_posting;
+	$show_posting=!isset($show_posting)?false:$show_posting;
 	$only_posting=!isset($only_posting)?false:$only_posting;
 	$posted=!isset($posted)?false:$posted;
 	
@@ -19,12 +20,12 @@
 		$show_save=false;
 	}
 	if($show_tool) {
-		if($show_add) echo link_button('Add','add_aed()','add');		
-		if($show_search) echo link_button('Search','search_aed()','search');
+		//if($show_add) echo link_button('Add','add_aed()','add');		
+		//if($show_search) echo link_button('Search','search_aed()','search');
 	}
 	if($mode=="view" || $mode=="edit") {
 		if($show_tool) {
-			if($show_edit) echo link_button('Edit','edit_aed()','edit');		
+			//if($show_edit) echo link_button('Edit','edit_aed()','edit');		
             if($show_save) echo link_button('Save', 'save_aed()','save');   
 			if($show_print) echo link_button('Print', 'print_aed();return false;','print');		
 			if($show_refresh) echo link_button('Refresh','refresh_aed();return false;','reload');
@@ -55,6 +56,8 @@
     		<div>Update</div>
     		<div>MaxOn Forum</div>
     		<div>About</div>
-	</div>
+		</div>
+    	<?=link_button('Close', 'remove_tab_parent()','cancel')?>
+
 	</div>
 </div>

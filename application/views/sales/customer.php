@@ -5,18 +5,22 @@
 	echo link_button('Add','','add','false',base_url().'index.php/customer/add');		
 	echo link_button('Refresh','','reload','false',base_url().'index.php/customer/view/'.$customer_number);		
 	echo link_button('Search','','search','false',base_url().'index.php/customer');		
+	
 	echo "<div style='float:right'>";
 	echo link_button('Help', 'load_help(\'customer\')','help');		
 	
 	?>
-	<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
-	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help('customer')">Help</div>
-		<div onclick="show_syslog('customers','<?=$customer_number?>')">Log Aktifitas</div>
-		<div>Update</div>
-		<div>MaxOn Forum</div>
-		<div>About</div>
-	</div>
+	
+		<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+		<div id="mmOptions" style="width:200px;">
+			<div onclick="load_help('customer')">Help</div>
+			<div onclick="show_syslog('customers','<?=$customer_number?>')">Log Aktifitas</div>
+			<div>Update</div>
+			<div>MaxOn Forum</div>
+			<div>About</div>
+		</div>
+		<?=link_button('Close', 'remove_tab_parent();return false;','cancel')?>		
+	
 	</div>
 </div>
 <div class="thumbnail">	
@@ -36,11 +40,9 @@
                 echo form_input('customer_number',$customer_number,"id=customer_number");
             }?>
         </td>
-        <td>
-            Aktif
-        </td>
-        <td> <?=form_radio('active',1,$active=='1'?TRUE:FALSE);?>Yes 
-            <?php echo form_radio('active',0,$active=='0'?TRUE:FALSE);?>No
+        <td colspan=2 width=100>
+            Aktif <?=form_radio('active',1,$active=='1'?TRUE:FALSE,"style='width:30px'");?>Yes 
+            <?php echo form_radio('active',0,$active=='0'?TRUE:FALSE,"style='width:30px'");?>No
             
         </td>
   </tr>
@@ -73,7 +75,7 @@
   	<tr>
          <td>Kota</td><td><?php echo form_input('city',$city,"id=city");?>
              <?=link_button("", "dlgcity_show()","search","false","","Cari kota")?>
-             <?=link_button("", "","add","false",base_url("city/add"),"Tambah kota")?>
+             <?=link_button("", "add_city();return false;","add")?>
 		 </td>
          <td>Kode Pos</td><td><?php echo form_input('zip_postal_code',$zip_postal_code);?></td>
        </tr>
@@ -86,19 +88,19 @@
   		<tr>
          <td>Wilayah</td><td><?php echo form_input('region',$region,"id=region");?>
               <?=link_button("", "dlgregion_show()","search","false","","Cari wilayah")?>
-             <?=link_button("", "","add","false",base_url("region/add"),"Tambah wilayah")?>
+             <?=link_button("", "add_region();return false;","add")?>
 
 		 </td>
          <td>Negara</td><td><?php echo form_input('country',$country,"id=country");?>
              <?=link_button("", "dlgcountry_show()","search","false","","Cari negara")?>
-             <?=link_button("", "","add","false",base_url("country/add"),"Tambah negara")?>
+             <?=link_button("", "add_country();return false;","add")?>
 		 </td>
        </tr>
-	   
+
 			<tr><td>Kelompok </td>
 			 <td><?php echo form_input('customer_record_type',$customer_record_type,"id=customer_record_type");?>
                  <?=link_button("", "dlgcustomer_record_type_show()","search","false","","Cari kelompok customer")?>
-                 <?=link_button("", "","add","false",base_url("customer_type/add"),"Tambah kelompok")?>
+                 <?=link_button("", "add_cust_type();return false","add")?>
 			 </td>
              <td>Tanggal Tagih</td><td><?=form_input('tgl_tagih',$tgl_tagih);?></td>
 			 
@@ -108,11 +110,11 @@
 			<tr><td>Salesman</td><td>
 				<? echo form_input('salesman',$salesman,"id='salesman'");?>
                  <?=link_button("", "dlgsalesman_show()","search","false","","Cari salesman")?>
-                 <?=link_button("", "","add","false",base_url("salesman/add"),"Tambah salesman")?>
+                 <?=link_button("", "add_salesman();return false;","add")?>
 			</td>
 			 <td>Termin Jual</td><td><?=form_input('payment_terms',$payment_terms,"id='payment_terms'");?>
                  <?=link_button("", "dlgpayment_terms_show()","search","false","","Cari termin")?>
-                 <?=link_button("", "","add","false",base_url("type_of_payment/add"),"Tambah termin")?>
+                 <?=link_button("", "add_payment();return false;","add")?>
 			 </td>
 			 </tr>
 		 <tr>
@@ -148,7 +150,7 @@
 			 <td>Akun Piutang </td>
 			 <td colspan="6"><?=form_input('finance_charge_acct',$finance_charge_acct,"id='finance_charge_acct' style='width:300px'");?>
              <?=link_button("", "lookup_coa('finance_charge_acct')","search","false","","Cari kode perkiraan")?>
-             <?=link_button("", "","add","false",base_url("coa/add"),"Tambah kode perkiraan")?>
+             <?=link_button("", "add_coa();return false;","add")?>
 		   </tr>
 		   <tr>
 			<td>Catatan</td><td colspan='6'><?=form_input('comments',$comments,"style='width:300px'");?></td>
@@ -252,6 +254,36 @@
 </div>   
 
 <script>
+
+			 
+	function  add_region(){
+		var url=CI_ROOT+"region/browse";
+		add_tab_parent("Region",url);
+	}  
+	function  add_country(){
+		var url=CI_ROOT+"country/browse";
+		add_tab_parent("Country",url);
+	}  
+	function  add_cust_type(){
+		var url=CI_ROOT+"customer_type/browse";
+		add_tab_parent("Customer Type",url);
+	}  
+	function  add_salesman(){
+		var url=CI_ROOT+"salesman/browse";
+		add_tab_parent("Salesman",url);
+	}  
+	function  add_payment(){
+		var url=CI_ROOT+"type_of_payment/browse";
+		add_tab_parent("Termin",url);
+	}  
+	function  add_coa(){
+		var url=CI_ROOT+"coa/browse";
+		add_tab_parent("Coa",url);
+	}  
+	function add_city(){
+		var url=CI_ROOT+"city/browse";
+		add_tab_parent("City",url)
+	}
 	function add_shipto(){
 		$('#divShipTo').dialog('open').dialog('setTitle','Tambah Ship To');
 	}
@@ -308,6 +340,7 @@
 					if (result.success){
 						$("#mode").val("view");
 						log_msg('Data sudah tersimpan.');
+						remmove_tab_parent();
 					} else {
 						log_err(result.msg);
 					}

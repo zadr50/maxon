@@ -124,5 +124,26 @@ class Region extends CI_Controller {
 		$query=$this->db->query("select * from $table_name where region_id='$nomor'");
 		echo json_encode($query->row_array());
  	}	
+    function select($search=""){
+        
+        $search=urldecode($search);
+        $sql=$this->sql;
+
+        if($search!=""){
+            $sql.=" where (region_id like '$search%' 
+                or region_name like '$search%')";
+        }
+        $sql.=" order by region_id";
+
+        $offset=0; $limit=10;
+        if($this->input->post("page"))$offset=$this->input->post("page");
+        if($this->input->post("rows"))$limit=$this->input->post("rows");
+        if($offset>0)$offset--;
+        $offset=$limit*$offset;
+        $sql.=" limit $offset,$limit";        
+        
+        echo datasource($sql);
+    }
+	
 }
 ?>

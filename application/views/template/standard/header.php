@@ -8,12 +8,21 @@
       <a class="navbar-brand glyphicon glyphicon-home border-hover" 
 	  href="<?=base_url()?>index.php/"> Home</a>
     </div>
-<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+	
+	<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 	<?php 
 	      if(!isset($hide_menu_header))$hide_menu_header=false;
+		 
+		  if($menhed=$this->session->userdata('hide_menu_header')){
+		  	$hide_menu_header=$menhed;
+		  } else {
+		     
+		  }		  
+           $hide_menu_header=$this->config->item("hide_menu_header");
 		  if(!$hide_menu_header) {
 	?>
-      <ul class="nav navbar-nav border-hover" >
+	  
+      <ul class="nav navbar-nav border-hover " >
         <li class="dropdown">
           <a href="#" class="dropdown-toggle glyphicon glyphicon-calendar" data-toggle="dropdown"> Transaksi <b class="caret"></b></a>
 			  <ul class="dropdown-menu">
@@ -45,8 +54,8 @@
           </ul>
         </li>
       </ul>
-
-      <ul class="nav navbar-nav  border-hover">
+      
+	  <ul class="nav navbar-nav  border-hover">
         <li class="dropdown">
           <a href="#" class="dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown"> Master <b class="caret"></b></a>
           <ul class="dropdown-menu">
@@ -68,8 +77,6 @@
           </ul>
         </li>
       </ul>
-
-
       <ul class="nav navbar-nav  border-hover">
         <li class="dropdown">
           <a href="#" class="dropdown-toggle glyphicon glyphicon-folder-open" data-toggle="dropdown"> Laporan  <b class="caret"></b></a>
@@ -99,9 +106,7 @@
           </ul>
         </li>
       </ul>
-	  
-	  <?php } ?>
-      
+  <?php } ?>
       <ul class="nav navbar-nav navbar-right" style='padding-right:20px'>
         <li class="dropdown  border-hover">
           <a href="#" class="dropdown-toggle glyphicon glyphicon-user" data-toggle="dropdown">
@@ -139,8 +144,6 @@
 		
 		
       </ul>
-	  
-	  
     </div><!-- /.navbar-collapse -->
 </nav>
 <?php

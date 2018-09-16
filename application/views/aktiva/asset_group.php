@@ -1,13 +1,10 @@
 <div class="thumbnail box-gradient">
 
-	<?
+	<?php
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','false',base_url().'index.php/aktiva/aktiva_group/add');		
-	echo link_button('Search','','search','false',base_url().'index.php/aktiva/aktiva_group');		
 	echo "<div style='float:right'>";
-	echo link_button('Help', 'load_help()','help');		
-	
+	echo link_button('Help', 'load_help()','help');			
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
@@ -18,6 +15,7 @@
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
+		<?=link_button("Close", "remove_tab_parent();return false", "cancel")?>
 	</div>
 </div>
  
@@ -33,21 +31,20 @@
 <div class="alert alert-success"><? echo $message;?></div>
 <? } ?>
 
- 
+<div class="thumbnail"> 
 
 <form id="myform" role="form" method="post" action="<?=base_url()?>index.php/aktiva/aktiva_group/save"  class="form-horizontal" >
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
-	<table class='table'>
+	<table class='table2'>
 		<tr><td>Kode</td><td><input type="text" id="id" name="id" value="<?=$id?>" placeholder="id"></td></tr>
 		<tr><td>Nama Kelompok Aktiva</td><td><input type="text"   style='width:400px'  id="name" name="name" value="<?=$name?>" placeholder="name">
 		</td></tr>
-		<tr><td>Metode Penyusutan</td><td><input type="radio" name="depn_method" id="depn_method0" value="0" <?=$depn_method=='0'?'checked':'';?>>
-							0 - Straight Line (Garis Lurus)
-		</td></tr>
-		<tr><td></td><td><input type="radio" name="depn_method" id="depn_method1" value="1" <?=$depn_method=='1'?'checked':'';?>>
+		<tr><td>Metode Penyusutan</td><td>
+			<input type="radio" name="depn_method" id="depn_method0" value="0" <?=$depn_method=='0'?'checked':'';?> style="width:20px">
+							0 - Straight Line
+			<input type="radio" name="depn_method" id="depn_method1" value="1" <?=$depn_method=='1'?'checked':'';?> style="width:20px">
 							1 - Declining Balance
-		</td></tr>
-		<tr><td></td><td><input type="radio" name="depn_method" id="depn_method2" value="2" <?=$depn_method=='2'?'checked':'';?>>
+			<input type="radio" name="depn_method" id="depn_method2" value="2" <?=$depn_method=='2'?'checked':'';?> style="width:20px">
 							2 - Sum of Year
 		</td></tr>
 		<tr><td>Disusutkan (n Bulan)</td><td><input type="text"  id="useful_lives" name="useful_lives" value="<?=$useful_lives?>" placeholder="useful_lives">
@@ -81,6 +78,8 @@
 		</td></tr>
 		</table>
 	</form>
+ 
+</div> 
  
 <?=load_view('gl/select_coa_link')?>   	
 

@@ -18,22 +18,6 @@ class Access
  function __construct()
  {
 	 $this->CI =& get_instance();        
- 	 $auth = $this->CI->config->item('auth');
-	
-	 $this->CI->load->helper('cookie');
-	 $this->CI->load->library('session');
-	 $this->CI->load->model('user_model');
-	
-	 $this->users_model =& $this->CI->users_model;
-     $data=$this->CI->session->userdata('logged_in');
-	 if(is_array($data)){
-		 $this->user_id=$data['user_id'];
-		 $this->username=$data['username'];
-		 $this->cid=$data['cid'];   
-		 if(isset($data['flag1']))$this->flag1=$data['flag1'];         
-		 if(isset($data['flag2']))$this->flag2=$data['flag2'];         
-		 if(isset($data['flag3']))$this->flag3=$data['flag3'];         
-	 }
  }
 
  /**
@@ -43,6 +27,13 @@ class Access
  function login($username, $password)
  {
 
+ 	 $auth = $this->CI->config->item('auth');
+	
+	 //$this->CI->load->helper('cookie');
+	 //$this->CI->load->library('session');
+	 $this->CI->load->model('user_model');
+	
+	 $this->users_model =& $this->CI->users_model;
 	 $result = $this->users_model->get_login_info($username);
 	 if ($result) // Result Found
 	 {	
@@ -63,7 +54,17 @@ class Access
  */
     function is_login ()
     {
-           return ($this->user_id!='' ? TRUE :FALSE);
+     if(!isset($_SESSION['logged_in']))  return false;
+	 $data=$_SESSION["logged_in"];
+	 if(is_array($data)){
+		 $this->user_id=$data['user_id'];
+		 $this->username=$data['username'];
+		 $this->cid=$data['cid'];   
+		 if(isset($data['flag1']))$this->flag1=$data['flag1'];         
+		 if(isset($data['flag2']))$this->flag2=$data['flag2'];         
+		 if(isset($data['flag3']))$this->flag3=$data['flag3'];         
+	 }
+     return ($this->user_id!='' ? TRUE :FALSE);
     }
  /**
  * Logout

@@ -5,29 +5,31 @@
 			<ul>
 				<li>
 					<span>Operation</span>
-					<ul><li><span>Sales Order</span>
+					<ul><li data-options="state:'closed'"><span>Sales Order</span>
 						<ul>
 							<li><?=anchor(base_url().'index.php/sales_order/add#new_so','Buat Sales Order','class="info_link"  ');?></li>
 							<li><?=anchor(base_url().'index.php/sales_order','Daftar Sales Order','class="info_link"  ');?></li>
 						</ul>
 						</li>
 					</ul>
-					<ul><li "><span>Delivery Order</span><ul>
+					<ul>
+						<li data-options="state:'closed'"><span>Delivery Order</span><ul>
 							<li><?=anchor(base_url().'index.php/delivery_order/add#new_do','Buat DO Baru','class="info_link"  ');?></li>
 							<li><?=anchor(base_url().'index.php/delivery_order','Daftar Delivery Order (DO)','class="info_link"  ');?></li>
 						</ul></li>
 					</ul>
-					<ul><li><span>Sales Invoice</span><ul>
+					<ul><li data-options="state:'closed'"><span>Sales Invoice</span><ul>
 							<li><?=anchor(base_url().'index.php/invoice/add#new_invoice','Buat Sales Invoice Baru','class="info_link"  ');?></li>
 							<li><?=anchor(base_url().'index.php/invoice','Daftar Sales Invoice','class="info_link"  ');?></li>
 						</ul></li>
 					</ul>
-					<ul><li><span>Payments</span><ul>
+					<ul>
+						<li data-options="state:'closed'"><span>Payments</span><ul>
 							<li><?=anchor(base_url().'index.php/payment/add#new_invoice_payment','Buat Pembayaran Invoice Baru','class="info_link"  ');?></li>
 							<li><?=anchor(base_url().'index.php/payment','Daftar Pembayaran Invoice','class="info_link"  ');?></li>
 					</ul></li>
 					</ul>
-					<ul><li><span>Sales Return Invoice</span><ul>
+					<ul><li data-options="state:'closed'"><span>Sales Return Invoice</span><ul>
 							<li><?=anchor(base_url().'index.php/sales_retur/add#new_invoice_retur','Buat Sales Retur Baru','class="info_link"  ');?></li>
 							<li><?=anchor(base_url().'index.php/sales_retur','Daftar Sales Return','class="info_link"  ');?></li>
                             <li><?=anchor('retur_toko','Retur barang dari toko','class="info_link"');?></li>
@@ -47,7 +49,7 @@
 				<li><?=anchor(base_url().'index.php/sales_dbmemo','Debit Memo','class="info_link"');?></li>
 			</ul>
 			</li>
-				<li>
+				<li data-options="state:'closed'">
 					<span>Report</span>
 					<ul>
 			<li><?=anchor('sales/rpt/so_otstand','Open Sales Order','class="info_link"' )?></li>
@@ -69,12 +71,13 @@
 			<li><?=anchor('sales/rpt/slsman_list','Daftar Salesman','class="info_link"' )?></li>
 					</ul>
 				</li>
-				<li>
+				<li data-options="state:'closed'">
 					<span>Master</span>
 					<ul>
 			<li><?=anchor(base_url().'index.php/customer','Pelanggan','class="info_link"');?></li>
 			<li><?=anchor(base_url().'index.php/salesman','Salesman','class="info_link"');?></li>
 			<li><?=anchor(base_url().'index.php/type_of_payment','Termin','class="info_link"');?></li>
+			<li><?=anchor("company/wilayah","Wilayah","class='info_link'");?></li>
 					</ul>
 				</li>
 			</ul>

@@ -4,7 +4,7 @@
 <div class="btn-group" role="group" aria-label="Navigation Button" style='float:left'>
 	<button onclick="list_item(0);return false;" title='Move to first record'
 	type="button" class="btn btn-default glyphicon glyphicon-step-backward"></button>
-	<button onclick="list_item(<? if($page==0)$page=1; $page=$page-1; echo $page; ?>);return false;" title='Previous page'
+	<button onclick="list_item(<?php if($page==0)$page=1; $page=$page-1; echo $page; ?>);return false;" title='Previous page'
 	type="button" class="btn btn-default glyphicon glyphicon-backward"></button>
 	<button onclick="list_item(<?=$page+1?>);return false;" title='Next page'
 	type="button" class="btn btn-default glyphicon glyphicon-forward"></button>

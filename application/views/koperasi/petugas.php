@@ -1,6 +1,6 @@
 <h4>FORMULIR PETUGAS</H4>
 <div class="thumbnail">
-	<?
+	<?php
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/koperasi/petugas/add');		

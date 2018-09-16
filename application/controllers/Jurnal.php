@@ -228,11 +228,15 @@ class Jurnal extends CI_Controller {
         $this->template->display_browse2($data);            
     }
     function browse_data($offset=0,$limit=100,$nama=''){
-        if($this->input->get('page'))$offset=$this->input->get('page');
-        if($this->input->get('rows'))$limit=$this->input->get('rows');
-        $this->limit=$limit;
-        $this->offset=$offset;
+
 		$sql=$this->build_sql();
+		
+        if($this->input->get("page"))$offset=$this->input->get("page");
+        if($this->input->get("rows"))$limit=$this->input->get("rows");
+        if($offset>0)$offset--;
+        $offset=$limit*$offset;
+        $sql.=" limit $offset,$limit";
+		
         echo datasource($sql);
     }	      
 	function build_sql(){
@@ -259,7 +263,6 @@ class Jurnal extends CI_Controller {
 		}
 		if($not_balance!="")$sql.=" and gl_id in ($not_balance)";
 		
-        $sql.=" limit $this->offset,$this->limit";
         //echo $sql;
 		return $sql;
 	}

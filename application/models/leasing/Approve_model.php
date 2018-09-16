@@ -6,6 +6,13 @@ class Approve_model extends CI_Model {
 
 	function __construct(){
 		parent::__construct();        
+        $multi_company=$this->config->item('multi_company');
+       if($multi_company){
+            $company_code=$this->session->userdata("company_code","");
+            if($company_code!=""){
+               $this->db = $this->load->database($company_code, TRUE);
+           }
+       }         
         
         
 	}

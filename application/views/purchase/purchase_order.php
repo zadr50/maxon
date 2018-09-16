@@ -13,11 +13,11 @@
 	$min_date=$this->session->userdata("min_date","");
 	
 	$disabled="";$disabled_edit="";
-	if(!($mode=="add" or $mode=="edit"))$disabled=" disabled";
+	if(!($mode=="add" or $mode=="edit"))$disabled=" readonly";
 	//if($mode=="edit")$disabled_edit=" disabled";
 	if($mode=="edit" or $mode=="add") echo link_button('Save', 'save_po()','save',"false");		
 	if($mode=="view") {
-		if (!$has_receive) echo link_button('Edit', '','edit','false',base_url().'index.php/purchase_order/view/'.$purchase_order_number.'/edit');		
+		if (!($has_receive) || user_id()=="admin") echo link_button('Edit', '','edit','false',base_url().'index.php/purchase_order/view/'.$purchase_order_number.'/edit');				
 		echo link_button('Add','','add','false',base_url().'index.php/purchase_order/add');		
 		echo link_button('Refresh','','reload','false',base_url().'index.php/purchase_order/view/'.$purchase_order_number);		
 		if (!$has_receive) echo link_button('Delete', 'delete_nomor()','cut','false');		
@@ -53,7 +53,7 @@
    <table class='table2' width="100%">
 		<tr>
 			<td>Nomor PO</td>
-			<td><?php
+			<td width="180"><?php
 				if($mode=="add")$purchase_order_number="AUTO";
 				echo form_input('purchase_order_number',
 				$purchase_order_number,"id='purchase_order_number' 
@@ -70,11 +70,11 @@
             ?>
 			</td>
 			<td>Status </td>
-			<td><?=form_input("doc_status",$doc_status,"id='doc_status' style='width:100px'")?>
+			<td><?=form_input("doc_status",$doc_status,"id='doc_status' style='width:80px'")?>
     			<?=link_button('','dlgdoc_status_show()',"search","false"); ?>	
                 <?php 
                 if($doc_status=="OPEN"){
-                    echo link_button('Approve','approve()',"save","false");                   
+                    echo link_button('Apprv','approve()',"save","false","","Approve this purchase order number.");                   
                 }
             ?>
 			</td>
@@ -95,8 +95,8 @@
 			    if($disabled=="") echo link_button('','dlgterms_show()',"search","false");  
 			
 			?></td>
-            <td>Contact Person</td><td><?=form_input('contact_person',$contact_person,"id='contact_person' style='width:100px'")?></td>
-            <td>No.RFQ#   </td><td><?=form_input("req_no",$req_no,"id='req_no' style='width:120px'")?>
+            <td>Contact</td><td><?=form_input('contact_person',$contact_person,"id='contact_person' style='width:100px'")?></td>
+            <td>No.RFQ#   </td><td><?=form_input("req_no",$req_no,"id='req_no' style='width:80px'")?>
             <?=link_button('','dlgreq_no_show()',"search","false"); ?>  
             <?=link_button('View', 'view_rfq()','search','false');?>
             </td>
@@ -113,7 +113,7 @@
 			 </td>			
 			<td>Expire Day/Date</td><td>
 			    <?php
-			    echo form_input("expire_day",$expire_day,"style='width:70px'"); 
+			    echo form_input("expire_day",$expire_day,"style='width:50px'"); 
 			    echo form_input("po_expire_date",$po_expire_date,'id=po_expire_date  
         	class="easyui-datetimebox" required:true 
 			data-options="formatter:format_date,parser:parse_date"
@@ -124,7 +124,7 @@
             <td>Company </td><td><?=form_input("bill_to_contact",$bill_to_contact,"id='bill_to_contact' style='width:80px'")?>
             <?=link_button('','dlgpreferences_show()',"search","false"); ?>  
             </td>
-            <td>Outlet/Gudang </td><td><?=form_input("warehouse_code",$warehouse_code,"id='warehouse_code' style='width:80px'")?>
+            <td>Gudang </td><td><?=form_input("warehouse_code",$warehouse_code,"id='warehouse_code' style='width:80px'")?>
             <?=link_button('','dlgwarehouse_show()',"search","false"); ?>  
             </td>
                 
@@ -164,10 +164,10 @@
 </form>
 </div> 
 
-    <div title="Items" style="padding:10px">
+    <div title="Items" >
     	<!-- PURCASE_ORDER_LINEITEMS -->	
-    	<div id='divItem'>		 
-    		<div id='dgItem'>
+    	<div id='divItem' >		 
+    		<div id='dgItem' style="padding:10px;min-height:400px">
     			<?php include_once "purchase_order_items.php"; ?>
     		    <?=load_view("purchase/po_item_list",array("purchase_order_number"=>$purchase_order_number))?>
     	<!-- END PURCHASE_ORDER_LINEITEMS -->		
@@ -202,6 +202,8 @@ echo $lookup_terms;
 <script type="text/javascript">
 	var url;	
 	var has_receive='<?=$has_receive?>';
+	
+	
     function save_po(){
         var valid_date=true;
         var min_date='<?=$min_date?>';
@@ -209,7 +211,9 @@ echo $lookup_terms;
         if(po_date<min_date){
             valid_date=false;
         }
+        
         hitung_jumlah();
+        
         //if(!valid_date){alert("Tanggal tidak benar ! Mungkin sudah closing !");return false;}
         if($('#purchase_order_number').val()==''){alert('Isi nomor purchase order !');return false;}
         if($('#supplier_number').val()==''){alert('Pilih kode supplier !');return false;}
@@ -321,46 +325,6 @@ echo $lookup_terms;
 				},
 				error: function(msg){alert(msg);}
 		}); 				
-	}		
-	function load_receive()
-	{
-		var url='<?=base_url()?>index.php/receive_po/list_by_po/<?=$purchase_order_number?>';
-		$('#dgRcv').datagrid({url:url});
-		$('#dgRcv').datagrid('reload');
-	}
-	function view_receive()
-	{
-        row = $('#dgRcv').datagrid('getSelected');
-        if (row){
-			shipment_id=row['shipment_id'];
-			url="<?=base_url()?>index.php/receive_po/view/"+shipment_id;
-			add_tab_parent('view_receive_'+shipment_id,url);
-		}
-	
-	}
-	function add_receive() {
-		var url='<?=base_url()?>index.php/receive_po/add/<?=$purchase_order_number?>';		
-		add_tab_parent('add_receive_<?=$purchase_order_number?>',url);
-	}
-	function load_invoice()
-	{
-		var url='<?=base_url()?>index.php/purchase_invoice/list_by_po/<?=$purchase_order_number?>';
-		$('#dgInvoice').datagrid({url:url});
-		$('#dgInvoice').datagrid('reload');
-	}
-	function view_invoice()
-	{
-        row = $('#dgInvoice').datagrid('getSelected');
-        if (row){
-			invoice_number=row['purchase_order_number'];
-			url="<?=base_url()?>index.php/purchase_invoice/view/"+invoice_number;
-			add_tab_parent('view_invoice_'+invoice_number,url);
-		}
-	
-	}
-	function add_invoice() {
-		var url='<?=base_url()?>index.php/purchase_invoice/add/<?=$purchase_order_number?>';		
-		add_tab_parent('add_invoice_<?=$purchase_order_number?>',url);
 	}		
 	
 	function view_rfq(){

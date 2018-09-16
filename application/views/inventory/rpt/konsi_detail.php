@@ -66,17 +66,6 @@ $caption='RINCIAN LAPORAN HUTANG KONSINYASI';
          
      </tr>
      <tr>
-        <td colspan='2'><?=$model->street?></td><td></td>       
-     </tr>
-     <tr>
-        <td colspan='2'><?=$model->suite?></td>         
-     </tr>
-     <tr>
-        <td>
-            <?=$model->city_state_zip_code?> - Phone: <?=$model->phone_number?>
-        </td>
-     </tr>
-     <tr>
         <td>
             Criteria: Dari Tanggal: <?=$date1?> s/d : <?=$date2?> Kelompok <?=$category?>
             ,Supplier: <?=$supplier?>, Sistim: <?=$sistim?>, Outlet: <?=$outlet.'-'.$outlet_name?>

@@ -1,5 +1,6 @@
 	<div id='divTotal'> 
-		<table class='table' width='100%'>
+		<table class='table2' width='100%'>
+			<tr><td colspan=4><strong>Total</strong></td></tr>
 			<tr>
 				<td>Sub Total: </td><td><input name='sub_total' id='sub_total' value='<?=number_format($subtotal)?>' style='width:100px'></td>				
 				<td>Discount %: </td><td><input name='disc_total_percent' id='disc_total_percent' value='<?=$discount?>' style='width:50px'>

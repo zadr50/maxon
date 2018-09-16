@@ -818,33 +818,27 @@ class Invoice extends CI_Controller {
 			for($i=0;$i<count($arItems);$i++){
 				$detail=$arItems[$i];
                 $unit="";
+                $data_detail['invoice_number']=$id;
                 $data_detail['no_urut']=$detail[0];
-				$data_detail['invoice_number']=$id;
 				$data_detail['item_number']=$detail[1];         
 				$data_detail['description']=$detail[2];
-                
-                if($rItem=$this->db->select("unit_of_measure")
-                    ->where("item_number",$data_detail['item_number'])
-                    ->get("inventory")->row()){
-                   $unit=$rItem->unit_of_measure;                        
-                }
-                
-				$data_detail['unit']=$unit;
-                
-				$data_detail['quantity']=$detail[3];
-				$data_detail['price']=c_($detail[4]);
-				$data_detail['amount']=c_($detail[7]);
-				$data_detail['discount']=$detail[5];
-                $data_detail['discount_amount']=c_($detail[6]);
-                $data_detail['employee_id']=$detail[8]; //tenant
-                $data_detail['from_line_type']=$detail[9];  //ref tenant
-                $data_detail['disc_2']=$detail[10]; 
-                $data_detail['disc_amount_2']=c_($detail[11]); 
-                $data_detail['disc_3']=$detail[12]; 
-                $data_detail['disc_amount_3']=c_($detail[13]); 
-                $data_detail['disc_amount_ex']=c_($detail[14]);
-                $line_number=$detail[15];
-                
+                $data_detail['quantity']=$detail[3];
+				$data_detail['unit']=$detail[4];                
+				$data_detail['price']=c_($detail[5]);
+				$data_detail['discount']=$detail[6];
+                $data_detail['discount_amount']=c_($detail[7]);
+                $data_detail['amount']=c_($detail[8]);
+                $data_detail['employee_id']=$detail[9]; //tenant
+                $data_detail['from_line_type']=$detail[10];  //ref tenant
+                $data_detail['disc_2']=$detail[11]; 
+                $data_detail['disc_amount_2']=c_($detail[12]); 
+                $data_detail['disc_3']=$detail[13]; 
+                $data_detail['disc_amount_3']=c_($detail[14]); 
+                $data_detail['disc_amount_ex']=c_($detail[15]);               
+                $line_number=$detail[16];
+                $data_detail['mu_qty']=c_($detail[17]);
+                $data_detail['multi_unit']=$detail[18];
+                $data_detail['mu_harga']=c_($detail[19]);
                 $data_detail['warehouse_code']=$this->session->userdata("session_outlet","");
                 
                 if($line_number==0){
@@ -886,11 +880,8 @@ class Invoice extends CI_Controller {
             
             //kembalikan lagi arItems untuk di loading
             $dret=null;
-            $q=$this->db->select("no_urut,item_number,description,quantity, 
-                price,discount,discount_amount,amount,employee_id, 
-                from_line_type,unit,line_number,disc_2,disc_amount_2,
-                disc_3,disc_amount_3,disc_amount_ex")->where("invoice_number",$id)
-                ->order_by('no_urut')->get("invoice_lineitems");
+            $q=$this->db->where("invoice_number",$id)
+                ->order_by('line_number')->get("invoice_lineitems");
             if($q){
                 foreach($q->result_array() as $row){
                     $row['discount']=$row['discount']*100;
@@ -1002,6 +993,7 @@ class Invoice extends CI_Controller {
 				    }
 				}
 				if($q=$this->db->where("invoice_number",$invoice_number)
+					->order_by("line_number")
 					->get("invoice_lineitems")){
 						$items=null;
 						foreach($q->result() as $r){
@@ -1040,7 +1032,7 @@ class Invoice extends CI_Controller {
     $telp="";
     $kota="";
     $shipping_location=$this->session->userdata('session_outlet','');
-    if($shipping_location=="")$shipping_location=$this->_ci->session->userdata('default_warehouse','');
+    if($shipping_location=="")$shipping_location=$this->session->userdata('default_warehouse','');
     if($qgdg=$this->shipping_locations_model->get_by_id($shipping_location)){
         if($rgdg=$qgdg->row()){
             if($rgdg->attention_name!="")$nama_toko=$rgdg->attention_name;
@@ -1107,7 +1099,7 @@ if($ukuran_nota==1){
     
     echo "<tr><td>$r->item_number</td>
     <td>$r->description</td></tr>
-    <tr><td>$r->quantity</td><td>x</td><td align='left'>".number_format($r->price)."</td>";
+    <tr><td width=30>$r->quantity</td><td>$r->unit &nbsp x</td><td align='left'>".number_format($r->price)."</td>";
     if($disc_amt>0){
         echo "<td align='right'>-".number_format($disc_amt)."</td>";
     }
@@ -1116,7 +1108,7 @@ if($ukuran_nota==1){
 } else {                         
     echo "<tr><td colspan='5'>$r->item_number</td></tr>
     <td colspan='5'>$r->description</td></tr>
-    <tr><td>$r->quantity</td><td>x</td><td align='right'>".number_format($r->price)."</td>";
+    <tr><td width=30>$r->quantity</td><td>$r->unit &nbsp x</td><td align='right'>".number_format($r->price)."</td>";
     echo "<td>=</td><td align='right'>".number_format($r->amount)."</td>
     </tr>";
     if($disc_amt>0){
@@ -1136,6 +1128,7 @@ $kembali=0;
 $bayar_cash=0;
 $bank_name="";
 $split=false;
+$total_paid=0;
                 if($q=$this->db->where("invoice_number",$invoice_number)
                     ->get("payments")){
                         $cash=0;    $card=0;    $voucher=0;    $rekening="";
@@ -1255,9 +1248,11 @@ echo "<p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><t
 		";
 		echo datasource($sql);
 	}
+	
 	function list_nota_open(){
 	    $sql="select invoice_number,invoice_date,amount from invoice 
-	    where (paid=0 or paid is null) and (saldo_invoice>0 or saldo_invoice is null)";
+	    where invoice_type='I' and (paid=0 or paid is null) 
+	    and (saldo_invoice>0 or saldo_invoice is null)";
         $sql.=" order by invoice_date desc limit 10";
         
         $list_nota=null;

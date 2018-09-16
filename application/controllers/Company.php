@@ -27,6 +27,7 @@ class Company extends CI_Controller {
         $this->load->model("periode_model");
         $this->load->model("user_jobs_model");
         $this->load->library('upgrade');
+		$this->load->model("user_model");
         
     }
     function set_defaults($record=NULL){

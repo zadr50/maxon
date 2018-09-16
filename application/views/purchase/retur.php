@@ -53,10 +53,14 @@ echo $lookup_warehouse;
 <div class="alert alert-success"><? echo $message;?></div>
 <? } ?>
 
+<div class="easyui-tabs">
+	<div title="General" style="padding:5px">
+			
+ 
 	
 <form id='frmRetur' method="post">
 <input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
-<table class="table3" width="100%">
+<table class="table2" width="100%">
 	<tr>
 		<td>Nomor Retur</td><td class='field'>
 			<?="<input type='text' id='purchase_order_number' name='purchase_order_number' value='$purchase_order_number'>"?>
@@ -132,10 +136,10 @@ echo $lookup_warehouse;
             </div>
 
 </form>
-  
+	</div>  
+	 
 
 <!-- PURCASE_ORDER_LINEITEMS -->	
-<div class="easyui-tabs">
 	<div title="Items" style="padding:5px">
 			<div id='dgItem'>
 				<?php include_once "purchase_order_items.php"; ?>
@@ -152,10 +156,12 @@ echo $lookup_warehouse;
 						<th data-options="field:'item_number',width:80">Kode Barang</th>
 						<th data-options="field:'description',width:150">Nama Barang</th>
                         <th data-options="<?=col_number('quantity',2)?>">Qty</th>
-						<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
+						<th data-options="field:'unit',width:50,align:'left',editor:'text'">Unit</th>
                         <th data-options="<?=col_number('price',2)?>">Harga</th>
 						<th data-options="field:'discount',width:50,editor:'numberbox'">Disc%</th>
                         <th data-options="<?=col_number('total_price',2)?>">Jumlah</th>
+                        <th data-options="<?=col_number('mu_qty',2)?>">M Qty</th>
+						<th data-options="field:'multi_unit',width:50,align:'left',editor:'text'">M Unit</th>
 						<th data-options="field:'line_number',width:30,align:'right'">Line</th>
 					</tr>
 				</thead>

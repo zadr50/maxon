@@ -1,6 +1,4 @@
-<script type="text/javascript" src="<?=base_url()?>assets/maphilight-master/jquery.maphilight.min.js"></script>
-
- <?
+ <?php
   $CI =& get_instance();
  ?>
 <div class="easyui-tabs" id="tt">	 
@@ -13,7 +11,7 @@
  
 <div style="margin:10px 0;"></div>
 	<div title="Sales Dashboard" style="padding:10px">
-		<div class="thumbnail col-md-8">
+		<div class="thumbnail col-xs-8">
 			<img src="<?=base_url()?>images/payroll.png" usemap="#sales" class="map">
 			<map id="sales" name="sales">
 			<area shape="circle" alt="Pegawai" coords="70,56,31" href="<?=base_url()?>index.php/payroll/employee" class="info_link" title="Pegawai" />
@@ -31,12 +29,12 @@
 			</map>
 			 
 		</div>
-		<div class='col-md-4'>
+		<div class='col-xs-4'>
             <?php echo load_view("payroll/menu_reports"); ?>            
 		</div>
 		<div class="row">
-			<div class="thumbnail col-md-12 " >
-			<?
+			<div class="thumbnail col-xs-12 " >
+			<?php
 				//if (allow_mod('_18000.001'))	
 				add_button_menu("Department","company/department","ico_payroll.png",
 					"Data master department");
@@ -49,13 +47,13 @@
 			?>
 			</div>
 			
-			<div class="thumbnail col-md-12 " >
+			<div class="thumbnail col-xs-12 " >
 				 
 			</div>
-			<div class="thumbnail col-md-6 " >
+			<div class="thumbnail col-xs-6 " >
 					 
 			</div>
-			<div class="thumbnail col-md-6 " >
+			<div class="thumbnail col-xs-6 " >
 					 
 			</div>
 
@@ -66,15 +64,6 @@
 </div>
 
 </div>
-
-<script  language="javascript">
-
-$().ready(function(){
-
-		$('.map').maphilight({fade: false});
-	 
-	});
-</script>
 <script type="text/javascript" src="<?=base_url()?>assets/flot/excanvas.js"></script>
 <script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.js"></script>
 <script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.categories.js"></script>
@@ -89,15 +78,15 @@ $().ready(function(){
 	var i=0;
 	 
 	$.ajax({
-				url: dataurl,
-				type: "GET",
-				dataType: "json",
-				success: onDataReceived
+			url: dataurl,
+			type: "GET",
+			dataType: "json",
+			success: onDataReceived
 	});
 	function onDataReceived(series) {
 		if (!alreadyFetched[series.label]) {
 			alreadyFetched[series.label] = true;
-			for(j=0;j<5;j++){
+			for(j=0;j<series.length;j++){
 				data[i]={label:series[j][0], data:series[j][1]};
 				i++;
 			}

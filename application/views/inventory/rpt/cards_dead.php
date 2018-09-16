@@ -29,6 +29,7 @@
 		$data['content']=browse_select(array('sql'=>$sql,'show_action'=>false)
 		);
 		 $data['header']=company_header();
+		 $data['criteria']="Kelompok: $kel";
 		$this->load->view('simple_print.php',$data);    		
 		
 	}

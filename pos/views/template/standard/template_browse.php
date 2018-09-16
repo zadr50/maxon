@@ -158,7 +158,7 @@ if(isset($sub_controller)){
     //,pageSize:10,pagination:true
     
     ?>
-    <table  id="dg_<?=$controller_name?>" class="easyui-datagrid", style='height:500px'
+    <table  id="dg_<?=$controller_name?>" class="easyui-datagrid", style='min-height:400px'
       data-options="rownumbers:true,fitColumns:true,pagination:true,
       singleSelect:true,collapsible:false,method:'get',
       url:'<?=base_url()?>index.php/<?=$controller?>/browse_data<?=$sub_strip?>',
@@ -255,6 +255,24 @@ if(isset($sub_controller)){
 </div>
     
 <script type="text/javascript">
+
+		(function($){
+			
+			
+	        $('#dg_<?=$controller_name?>').datagrid({
+	            onDblClickRow:function(){
+	                var row = $('#dg_<?=$controller_name?>').datagrid('getSelected');
+	                if (row){
+	                    edit_<?=$controller_name?>();
+	                }       
+	            }
+	        });        
+			
+			cari_<?=$controller_name?>();
+
+		})(jQuery); 	 
+			
+
         (function($){
             
             cari_<?=$controller_name?>();

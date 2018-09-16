@@ -76,7 +76,7 @@
 	 
 </div>	
 	
-<? include "anggota_lookup.php" ?>
+<?php include "anggota_lookup.php" ?>
 
 <script type="text/javascript">
     function save_this(){

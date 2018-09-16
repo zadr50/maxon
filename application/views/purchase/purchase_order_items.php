@@ -155,6 +155,21 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 	var gdg_count=<?=$gdg_count?>;
 	var allow_addnew_item='<?=$allow_addnew_item?>';
 	var qty_conv=0;
+	
+	
+	
+    $().ready(function (){
+    	
+        $('#dg').datagrid({
+            onDblClickRow:function(){
+				editItem();            	
+            }
+        });        
+    	
+		reloadItem();
+    });
+
+	
 	function addItem(){
 		var mode=$('#mode').val();
 		if(mode=="add"){
@@ -300,7 +315,7 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 				var result = eval('('+result+')');
 				if (result.success){
 					$('#dg').datagrid({url:'<?=base_url()?>index.php/purchase_order/items/'+po+'/json'});
-					$('#dg').datagrid('reload');
+					//$('#dg').datagrid('reload');
 					
 					hitung();
 					
@@ -349,7 +364,7 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 		var po=$('#purchase_order_number').val();
 		var xurl='<?=base_url()?>index.php/purchase_order/items/'+po+'/json';
 		$('#dg').datagrid({url: xurl});
-		$('#dg').datagrid('reload');	// reload the user data
+		//$('#dg').datagrid('reload');	// reload the user data
 	}
 	function deleteItem(){
 		var po=$('#purchase_order_number').val();

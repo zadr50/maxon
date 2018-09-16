@@ -1,4 +1,4 @@
-<?
+<?php
 $item=$this->db->select('item_number,description,item_picture,retail,category')
 	->where('item_number',$item_id)->get('inventory')->row();
 $cat=$this->db->where("kode",$item->category)
@@ -13,8 +13,8 @@ $cat_sub=$this->db->select("parent_id")->where("parent_id",$item->category)
 		  href="<?=base_url()?>index.php/eshop/home"> Home</a></li>
 		  <li class="active"><?=$item->description?></li>
 		</ol>
-		<? include_once 'box_sub_cat.php' ?>
-		<? include_once 'box_item.php' ?>
+		<?php include_once 'box_sub_cat.php' ?>
+		<?php include_once 'box_item.php' ?>
 	</div>
 	<div class="col-sm-9">
 		<div class='item-detail'>

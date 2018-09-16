@@ -42,7 +42,7 @@ if($type_id==""){
 		}
 		echo $s1 . $s . "</tbody></table>";
 	} else {
-		echo "<p class='alert alert-warning'>Unknown Error !</p>";			
+		echo "<p class='alert alert-warning'>Sales price not defined !</p>";			
 	}
 }
 ?>

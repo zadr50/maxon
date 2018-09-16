@@ -1,4 +1,21 @@
-<legend>EMPLOYEE GROUP</legend>
+<div class="thumbnail box-gradient">
+    <?php
+    echo link_button('Save', 'add_group()','save');        
+    ?>
+    <div style='float:right'>
+    <?php echo link_button('Help', 'load_help(\'employee_group\')','help');    ?>  
+    <a href="#" class="easyui-splitbutton" 
+    data-options="menu:'#mmOptions',iconCls:'icon-tip',plain:false">Options</a>
+    <div id="mmOptions" style="width:200px;">
+        <div onclick="load_help('employee_group')">Help</div>
+        <div>Update</div>
+        <div>MaxOn Forum</div>
+        <div>About</div>
+    </div>
+    <?php echo link_button('Close', 'remove_tab_parent()','cancel');        ?>
+    </div>
+</div> 
+
 <div class="col-md-12">
 	<form id="frmNew" method="POST">
 		<table width="100%" class='table'>
@@ -7,7 +24,6 @@
 			</tr>
 			<tr>
 				<td>Keterangan</td><td><?=form_input('keterangan',$keterangan,"style='width:300px'")?></td>
-				<td><?=link_button("Simpan","add_group()","save")?></td>
 			</tr>
 		</table>	
 		<?=form_hidden("mode",$mode,"id='mode'");?>

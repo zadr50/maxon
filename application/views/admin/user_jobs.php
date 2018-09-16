@@ -1,27 +1,49 @@
 <div class="thumbnail">
-	<?=link_button('Save', 'simpan()','save');?>
-	<?=link_button("Find Module","find_module()","search");?>
+	<?=link_button('Save', 'simpan()','save');?>	
+	<?=link_button('Close', 'close_me()','cancel');?>	
 </div>
-<div class="thumbnail">
-	<?php	
-		echo form_open('',"id='myform'");
-		echo my_input('Group ID','user_group_id',$user_group_id,"","col-md-5");
-		echo my_input('Group Name','user_group_name',$user_group_name,"","col-md-5");
-		echo my_input('Description','description',$description,"","col-md-5");
-	?>
-	<p><input type='checkbox' name='ck[]' id='select_all'>Select All</p>
-	<i><p>Silahkan contreng modul-modul yang diijinkan untuk diakses oleh kelompok dibawah ini</p></i>
-	<div id='divDetail' class='thumbnail' style='font-size:small'>
-		<? echo $modules ?>
-		<!--
-		<ul id="tt" class="easyui-tree"
-			url="<?=base_url()?>index.php/jobs/list_modules">
-		</ul>
-		-->
 
+<div class="thumbnail">
+	<div  class="easyui-tabs" style="width:auto;height:auto;min-height: 500px">
+		<div title="Umum" id="box_section" class="thumbnail">
+			<div class="thumbnail">				
+				<table class="table">
+					<tr>
+						<td>Group Id</td><td><?=form_input("user_group_id",$user_group_id,"id='user_group_id'")?></td>
+					</tr>
+					<tr>
+						<td>Group Name</td><td><?=form_input("user_group_name",$user_group_name,"id='user_group_name'")?></td>
+					</tr>
+					<tr>
+						<td>Keterangan</td><td><?=form_input("description",$description,"id='description'")?></td>
+					</tr>				
+				</table>
+			</div>
+		</div>
+		<div title="Jobs" id='box_section_job' class="thumbnail">
+			<div class="thumbnail">
+			<p> 
+				<?php 
+					echo "<label>Pilih Kelompok module: </label>";
+					echo form_input("group_module",$group_module,"id='group_module'");	
+					echo link_button("", "dlggroup_modules_show();return false;","search");
+				?>
+				
+				<input type='checkbox' name='ck[]' id='select_all' style="width:30px">Select All
+			</p>
+			
+			<i><p>Silahkan contreng modul-modul yang diijinkan untuk diakses oleh kelompok 
+				dibawah ini</p></i>
+			
+			<div id='divDetail' class='thumbnail' style='font-size:small;max-height:400px'>
+				<?php echo $modules ?>
+			</div>
+				
+			</div>
+		</div>
 	</div>
-	<?=form_close();?>
-</div>	
+</div>
+	
 <div id='dlgInputBox' class="easyui-dialog"  
 	style="width:400px;height:200px;padding:5px 5px;left:100px;top:20px"
 	closed="true"  toolbar="#tbInputBox">
@@ -30,8 +52,8 @@
 		data module dalam table module job dibawah ini</i></p>
 		<p></p>
 		<p>Enter Text Search:
-			<input type='text' id='txtSearchInputBox'  name='txtSearchInputBox'>
-			<?=link_button('Filter','on_find_module()','search')?>
+			<input type='text' id='txtSearchInputBox'  name='txtSearchInputBox' onchange="on_find_module();return false">
+			<?=link_button('Filter','on_find_module();return false;','search')?>
 		</p>
 	</div>
 </div>
@@ -46,31 +68,53 @@
 		<p><input type='text' id='mod_desc' value='' >&nbsp Module Description</p>
 	</div>
 </div>
+<?php
+echo $lookup_group_modules;
 
+?>
 <script>
 	function simpan(){
-  		if($('#user_group_id').val()==''){alert('Isi kode kelompok user !');return false;}
-  		if($('#user_group_name').val()==''){alert('Isi nama kelompok user !');return false;}
+		
+  		if($('#user_group_id').val()==''){log_err('Isi kode kelompok user !');return false;}
+  		if($('#user_group_name').val()==''){log_err('Isi nama kelompok user !');return false;}
+		 var allVals = [];
+	     $('.checkbox').each(function() {
+	       allVals.push($(this).val());
+	     });
+	    param={modules:allVals,user_group_id:$("#user_group_id").val(),
+	    	user_group_name:$("#user_group_name").val(),
+	    	description:$("#description").val()
+	    }
 		url='<?=base_url()?>index.php/jobs/save';
-			$('#myform').form('submit',{
-				url: url,
-				onSubmit: function(){
-					return $(this).form('validate');
-				},
-				success: function(result){
+		$.ajax({
+			type: "POST",data:param, url: url,
+			success: function(result)
+			{
 					var result = eval('('+result+')');
 					if (result.success){
-						log_msg('Data sudah tersimpan.');
+						log_msg("Data sudah tersimpan.")
 					} else {
 						log_err(result.msg);
 					}
-				}
-			});
+			}
+		});
+		
+	}
+	function list_modules_show(){
+		if($('#user_group_id').val()==""){log_err("Isi Kode kelompok !");return false};
+		url=CI_ROOT+'jobs/list_modules_show/'+$('#user_group_id').val()+'/'+$('#group_module').val();
+		get_this(url,'','divDetail');
+		$('#select_all').prop('checked',false);		
+		
+		return true;
+		//url=CI_ROOT+'jobs/view/'+$('#user_group_id').val()+'/'+$('#group_module').val();
+		//window.open(url,"_self");
+		
 	}
 	function load_modules(){
 		if($('#user_group_id').val()==""){alert("Isi Kode kelompok !");return false};
-		url=CI_ROOT+'jobs/list_modules/'+$('#user_group_id').val();
-		get_this(url,'','divDetail');
+		url=CI_ROOT+'jobs/list_modules_json/'+$('#user_group_id').val()+'/'+$('#group_module').val();
+		//get_this(url,'','divDetail');
 		return true;
 	}
 	$( document ).ready(function() {
@@ -121,10 +165,32 @@
 	}
     $().ready(function (){
         $('#select_all').change(function() {
-            var checkboxes = $(this).closest('form').find(':checkbox');
+            var checkboxes = $(this).closest('#box_section_job').find(':checkbox');
             checkboxes.prop('checked', $(this).is(':checked'));
         }); 
-    
     });
+	$(document).on('change', '.checkbox', function() {
+		var ugix="<?=$user_group_id?>";
+	    if(this.checked) {
+	      // checkbox is checked
+		  var url='<?=base_url()?>index.php/jobs/check/'+ugi+'/'+this.value;
+	      console.log(this.value);
+	    } else {
+		  var url=CI_ROOT+'jobs/un_check/'+ugi+'/'+this.value;
+	    }
+	    console.log(url);
+		$.ajax({
+			type: "GET",
+			url: url,
+			success: function(msg){
+				console.log(msg);
+			},
+			error: function(msg){log_err(msg);}
+		});
 
+	    
+	});    
+	function close_me(){
+		remove_tab_parent();
+	}
 </script>

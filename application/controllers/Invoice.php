@@ -91,6 +91,28 @@ class Invoice extends CI_Controller {
                     array("fieldname"=>"type_of_payment","caption"=>"Termin","width"=>"180px")
                 );          
         $data['lookup_payment_terms']=$this->list_of_values->render($setwh);
+
+        $data['lookup_customer']=$this->list_of_values->render(
+			array(
+				"dlgBindId"=>'customers',
+				"dlgRetFunc"=>"$('#sold_to_customer').val(row.customer_number);
+					$('#salesman').val(row.salesman);
+					$('#payment_terms').val(row.payment_terms);
+					$('#customer_info').html(row.company+', </br>'+row.street+', - '+row.city);
+					",
+        		"dlgCols"=>array( 
+                    array("fieldname"=>"customer_number","caption"=>"Kode","width"=>"80px"),
+                    array("fieldname"=>"company","caption"=>"Pelanggan","width"=>"180px"),
+                    array("fieldname"=>"payment_terms","caption"=>"Termin","width"=>"50px"),
+                    array("fieldname"=>"cust_type","caption"=>"Kelompok","width"=>"50px"),
+                    array("fieldname"=>"city","caption"=>"Kota","width"=>"50px"),
+                    array("fieldname"=>"discount_percent","caption"=>"Diskon","width"=>"50px"),
+                    array("fieldname"=>"salesman","caption"=>"Salesman","width"=>"50px"),
+                    array("fieldname"=>"street","caption"=>"Alamat","width"=>"150px")
+                                    )          
+				
+			)
+		);
                 
 		return $data;
 	}
@@ -518,8 +540,9 @@ class Invoice extends CI_Controller {
 					$row['saldo']=number_format($saldo);
 					$row['bayar']=form_input("bayar[]","","id='fkt$i' style='width:100px;color:black;text-align:right'");
                     $row['ck']=form_checkbox("ck[]",$nomor,'',"onclick='cek_this($i,$saldo);return false;' 
-                    	style='width:50px;height:30px;color:black;'");					
+                    	style='width:30px;height:20px;color:black;'");					
 					$row['invoice_number']=$nomor.form_hidden("faktur[]",$nomor);
+					$row['invoice_number2']=$nomor;
 					$rows[$i++]=$row;
 				}
 			};
@@ -708,13 +731,33 @@ class Invoice extends CI_Controller {
 		$nomor=urldecode($nomor);
 		$sql="select p.item_number,p.description,p.quantity,
 		p.unit,p.price,p.discount,p.amount,p.line_number,p.revenue_acct_id,coa.account,
-		coa.account_description,p.disc_2,p.disc_3,p.cost 
+		coa.account_description,p.disc_2,p.disc_3,p.cost,p.multi_unit,p.mu_qty,p.mu_harga 
 		from invoice_lineitems p
 		left join inventory i on i.item_number=p.item_number
 		left join chart_of_accounts coa on coa.id=p.revenue_acct_id
 		where invoice_number='$nomor'";
 		 
 		echo datasource($sql);
+	}
+	function line_number($line){
+		$line=urldecode($line);
+		$sql="select p.revenue_acct_id,concat(c1.account,' - ',c1.account_description) as coa1_account,
+		concat(c2.account,' - ',c2.account_description) as coa2_account,
+		concat(c3.account,' - ',c3.account_description) as coa3_account 
+		from invoice_lineitems p 
+		left join chart_of_accounts c1 on c1.id=p.revenue_acct_id 
+		left join chart_of_accounts c2 on c2.id=p.coa2
+		left join chart_of_accounts c3 on c3.id=p.coa3 
+		where p.line_number='$line' ";
+		$ret['coa1_account']='';
+		$ret['coa2_account']='';
+		$ret['coa3_account']='';
+		if($q=$this->db->query($sql)){
+			if($r=$q->row()){
+				$ret=(array)$r;
+			}
+		}
+		echo json_encode($ret);
 	}
 	function recalc($nomor=''){
 		$nomor=urldecode($nomor);
@@ -809,21 +852,54 @@ class Invoice extends CI_Controller {
 	}	
 	function save_pos()
 	{
-		$this->load->model("sales/promosi_model");
-		$data=$this->input->get();
-        $id=$this->nomor_bukti();
+		$this->load->model("promosi_model");
+		$data=$this->input->post();
+        if(!isset($data['items'])){
+            echo json_encode(array('success'=>false,'msg'=>'Some errors occured.'));
+            return false;
+            
+        }
+        $header=$data['header'];
+        $tanggal=date("Y-m-d H:i:s");
+        if($set_tanggal=$this->session->userdata("set_tanggal")){
+            $tanggal=$set_tanggal;
+        }
+        //var_dump($tanggal);
+        //var_dump(strtotime(date('Y',$tanggal)));
+        
+        if(date('Y',strtotime($tanggal))=="1970"){	///????
+        	$tanggal=date("Y-m-d H:i:s");        	
+        	$this->session->set_userdata("set_tanggal",$tanggal);
+        }
+        if($header["invoice_number"]=="AUTO"){
+            $id=$this->nomor_bukti();
+            $new=true;
+        } else {
+            $new=false;
+            $id=$header['invoice_number'];
+        }
 		$data_head['invoice_number']=$id;
-		$data_head['invoice_date']=date("Y-m-d H:i:s");
-		$data_head['sold_to_customer']="CASH";
+		$data_head['invoice_date']=$tanggal;
+		$data_head['sold_to_customer']=$header['cust'];
 		$data_head['salesman']=user_id();
 		$data_head['payment_terms']="CASH";
 		$data_head['invoice_type']='I';
-		$data_head['type_of_invoice']='Simple';
+		$data_head['type_of_invoice']=$header['cust_type'];
 		$data_head['due_date']=$data_head['invoice_date'];
-		 
-		$ok=$this->invoice_model->save($data_head);
+		$data_head['discount']=$header['discount'];
+        $data_head['sales_tax_percent']=$header['sales_tax_percent'];
+        $data_head['disc_amount_1']=$header['discount_amount'];
+        $data_head['tax']=$header['tax'];
+        $data_head['amount']=c_($header['amount']);
+        $data_head['other']=c_($header['other']);
+        
+	    if($new){	 
+		  $ok=$this->invoice_model->save($data_head);
+          $this->nomor_bukti(true);
+        } else {
+          $ok=$this->invoice_model->update($id,$data_head);            
+        }
 		if($ok){
-			$this->nomor_bukti(true);
 			$arItems=$data['items'];
 			//arItem.push([td[0],td[1],td[2],q,p,t]);
 			//			arItem.push([td[0],td[1],td[2],t[3],q,p,t,d]);	
@@ -831,18 +907,42 @@ class Invoice extends CI_Controller {
 			$total=0;
 			for($i=0;$i<count($arItems);$i++){
 				$detail=$arItems[$i];
+                $unit="";
+                $data_detail['no_urut']=$detail[0];
 				$data_detail['invoice_number']=$id;
-				$data_detail['item_number']=$detail[1];
+				$data_detail['item_number']=$detail[1];         
 				$data_detail['description']=$detail[2];
-				$data_detail['unit']='';//$detail[2];
-				$data_detail['quantity']=$detail[4];
-				$data_detail['price']=$detail[5];
-				$data_detail['amount']=$detail[6];
-				$data_detail['discount']=$detail[7];
-                $data_detail['disc_amount_ex']=$datail[8];
                 
-				$this->invoice_lineitems_model->save($data_detail);
-				
+                if($rItem=$this->db->select("unit_of_measure")
+                    ->where("item_number",$data_detail['item_number'])
+                    ->get("inventory")->row()){
+                   $unit=$rItem->unit_of_measure;                        
+                }
+                
+				$data_detail['unit']=$unit;
+                
+				$data_detail['quantity']=$detail[3];
+				$data_detail['price']=c_($detail[4]);
+				$data_detail['amount']=c_($detail[7]);
+				$data_detail['discount']=$detail[5];
+                $data_detail['discount_amount']=c_($detail[6]);
+                $data_detail['employee_id']=$detail[8]; //tenant
+                $data_detail['from_line_type']=$detail[9];  //ref tenant
+                $data_detail['disc_2']=$detail[10]; 
+                $data_detail['disc_amount_2']=c_($detail[11]); 
+                $data_detail['disc_3']=$detail[12]; 
+                $data_detail['disc_amount_3']=c_($detail[13]); 
+                $data_detail['disc_amount_ex']=c_($detail[14]);
+                $line_number=$detail[15];
+                
+                $data_detail['warehouse_code']=$this->session->userdata("session_outlet","");
+                
+                if($line_number==0){
+				    $row_id=$this->invoice_lineitems_model->save($data_detail);
+                } else {
+                    $this->invoice_lineitems_model->update($line_number,$data_detail);                    
+                }
+				//$data_detail['line_number']=$row_id;
 				if($qty_extra=$this->promosi_model->promo_qty_extra($data_detail['item_number'],$data_detail['quantity'])){
 					if($qty_extra>0){
 						$data_detail['description']="***extra ".$data_detail['description'];
@@ -856,56 +956,141 @@ class Invoice extends CI_Controller {
 					}
 				}
 				
-				$total=$total+$detail[6];
+				$total=$total+$data_detail['amount'];
 			}
-			$this->db->where('invoice_number',$id)
-				->update("invoice",array("paid"=>1,"amount"=>$total));
-			$payment=$data['payment'];
-			$cash=$payment['cash'];
-			$card=$payment['card'];
-			$debit=$payment['debit'];
-			$kembali=$cash-$total;
-			if($kembali>0){	
-				$cash=$cash-$kembali;
-			}
-			$rec_pay["invoice_number"]=$id;
-			$rec_pay["date_paid"]=date("Y-m-d H:i:s");
-			$rec_pay["amount_alloc"]=$kembali;
-
-			$rec_pay["how_paid"]="CASH";
-			$rec_pay["amount_paid"]=$cash;
-			if($cash<>0) $this->payment_model->save_pos($rec_pay);
+			//$this->db->where('invoice_number',$id)
+			//	->update("invoice",array("paid"=>1,"amount"=>$total));
 			
-			$rec_pay["how_paid"]="CARD";
-			$rec_pay["amount_paid"]=$card;
-            $rec_pay["credit_card_type"]=$payment["credit_card_type"];
-            $rec_pay["credit_card_number"]=$payment["credit_card_number"];
-            $rec_pay["authorization"]=$payment["authorization"];
-            $rec_pay["expiration_date"]=$payment["expiration_date"];
-            $rec_pay["from_bank"]=$payment["from_bank"];
-			if($card<>0) $this->payment_model->save_pos($rec_pay);
+			if(isset($data['payment'])){
+					
+		        $payment=$data['payment'];
+				$this->save_pos_payment($payment,$id,$tanggal);
+					    
+			}
+			if(isset($data['payment_split'])){
+				$payment_split=$data['payment_split'];
+				$this->save_pos_payment_split($payment_split,$id,$tanggal);
+			}
+            $this->invoice_model->recalc($id);
+            //echo "<br>saldo: ".$this->invoice_model->saldo;
             
-			$rec_pay["how_paid"]="DEBIT";
-			$rec_pay["amount_paid"]=$debit;
-            $rec_pay["credit_card_type"]=$payment["credit_card_type"];
-            $rec_pay["credit_card_number"]=$payment["credit_card_number"];
-            $rec_pay["authorization"]=$payment["authorization"];
-            $rec_pay["expiration_date"]=$payment["expiration_date"];
-            $rec_pay["from_bank"]=$payment["from_bank"];
-			if($debit<>0) $this->payment_model->save_pos($rec_pay);
-
-			echo json_encode(array('success'=>true,'invoice_number'=>$id));
+            //kembalikan lagi arItems untuk di loading
+            $dret=null;
+            $q=$this->db->select("no_urut,item_number,description,quantity, 
+                price,discount,discount_amount,amount,employee_id, 
+                from_line_type,unit,line_number,disc_2,disc_amount_2,
+                disc_3,disc_amount_3,disc_amount_ex")->where("invoice_number",$id)
+                ->order_by('no_urut')->get("invoice_lineitems");
+            if($q){
+                foreach($q->result_array() as $row){
+                    $row['discount']=$row['discount']*100;
+                    $dret[]=$row;
+                }   
+            }
+			echo json_encode(array('success'=>true,'invoice_number'=>$id,"arItem"=>$dret));
 		} else {
-			echo json_encode(array('msg'=>'Some errors occured.'.mysql_error()));
+			echo json_encode(array('msg'=>'Some errors occured.'));
 		}
 	}	
+	function save_pos_payment_split($payment_split,$invoice_number,$tanggal){
+		for($i=0;$i<count($payment_split);$i++){
+			$row=$payment_split[$i];
+			$how_paid=$row[0];
+			$amount_paid=c_($row[1]);
+			$rekening=$row[2];
+			$card_voucher_no=$row[3];
+			$card_author=$row[4];
+			$card_expire=$row[5];
+			
+			$rec_pay=null;
+			
+		    $rec_pay["invoice_number"]=$invoice_number;
+		    $rec_pay["date_paid"]=$tanggal;						
+			$rec_pay["how_paid"]=$how_paid;
+			$rec_pay["amount_paid"]=$amount_paid;
+			$rec_pay["amount_alloc"]=$amount_paid;
+			
+	    	if($how_paid=="CARD"){
+			    $rec_pay["credit_card_type"]=$rekening;
+			    $rec_pay["credit_card_number"]=$card_voucher_no;
+			    $rec_pay["authorization"]=$card_author;
+			    $rec_pay["expiration_date"]=$card_expire;	    		
+	    	} else if($how_paid=="VOUCHER"){
+			    $rec_pay["credit_card_number"]=$card_voucher_no;
+			} else {
+	    		unset($rec_pay["credit_card_type"]);
+	    		unset($rec_pay["credit_card_number"]);
+	    		unset($rec_pay["authorization"]);
+	    		unset($rec_pay["expiration_date"]);
+	    	}
+	    							
+			if($amount_paid!=0){
+				$this->payment_model->save_pos($rec_pay,false);
+			}
+		}
+	}
+	function save_pos_payment($payment,$invoice_number,$tanggal){
+        
+	    $cash=c_($payment['cash']);
+	    $card=c_($payment['card']);
+	    $debit=c_($payment['debit']);
+	    $voucher=c_($payment['voucher']);
+	    
+	    $kembali=c_($payment['kembali']);
+	    if($kembali>0){   
+	      $cash=$cash-$kembali;
+	    }
+	    $rec_pay["invoice_number"]=$invoice_number;
+	    $rec_pay["date_paid"]=$tanggal;
+	    $rec_pay["amount_alloc"]=$kembali;
+	
+	    $rec_pay["how_paid"]="CASH";
+	    $rec_pay["amount_paid"]=$cash;
+	    if($cash<>0) $this->payment_model->save_pos($rec_pay,false);
+	
+	    $rec_pay["how_paid"]="VOUCHER";
+	    $rec_pay["amount_paid"]=$voucher;
+	    $rec_pay["credit_card_number"]=$payment["voucher_no"];
+	    
+	    if($voucher<>0) $this->payment_model->save_pos($rec_pay,false);
+        
+	    $rec_pay["how_paid"]="CARD";
+	    $rec_pay["amount_paid"]=$card;
+	    $rec_pay["credit_card_type"]=$payment["credit_card_type"];
+	    $rec_pay["credit_card_number"]=$payment["credit_card_number"];
+	    $rec_pay["authorization"]=$payment["authorization"];
+	    $rec_pay["expiration_date"]=$payment["expiration_date"];
+	    $rec_pay["from_bank"]=$payment["from_bank"];
+	    if($card<>0) $this->payment_model->save_pos($rec_pay);
+	    
+	    $db_pay["amount_paid"]=$debit;
+	    $db_pay["invoice_number"]=$invoice_number;
+	    $db_pay["date_paid"]=$tanggal;
+	    $db_pay["how_paid"]="DEBIT";
+	    $db_pay["amount_paid"]=$debit;
+	    $db_pay["credit_card_type"]=$payment["credit_card_type"];
+	    $db_pay["credit_card_number"]=$payment["credit_card_number"];
+	    $db_pay["authorization"]=$payment["authorization"];
+	    $db_pay["expiration_date"]=$payment["expiration_date"];
+	    $db_pay["from_bank"]=$payment["from_bank"];
+	    if($debit<>0) $this->payment_model->save_pos($db_pay);		
+	}
 	function edit_nota($invoice_number){
 		$data['success']=false;
 		$data['msg']="Invoice not found !";
+        $data['invoice']['company']='';
+        $this->invoice_model->recalc($invoice_number);
+        //echo "<br>saldo: ".$this->invoice_model->saldo;
 		if($q=$this->db->where("invoice_number",$invoice_number)
 			->get("invoice")){
 			if($r=$q->row()){
-				$data['invoice']=$r;
+				$data['invoice']=(array)$r;
+				$sql="select company from customers where customer_number='$r->sold_to_customer'";
+				if($qcst=$this->db->query($sql)){
+				    if($rcst=$qcst->row()){
+				        $data['invoice']['company']=$rcst->company;
+				    }
+				}
 				if($q=$this->db->where("invoice_number",$invoice_number)
 					->get("invoice_lineitems")){
 						$items=null;
@@ -929,6 +1114,218 @@ class Invoice extends CI_Controller {
 		echo json_encode($data);
 		
 	}
+    function print_nota($invoice_number,$reprint=false){
+        $data['success']=false;
+        $data['msg']="Invoice not found !";
+        $this->invoice_model->recalc($invoice_number);
+
+  
+    $company_code=$this->session->userdata('session_company_code','');
+    if($company_code=="")$company_code=$this->access->cid();
+    
+    $company_name=$this->company_model->company_name($company_code);
+    
+    $nama_toko=$company_name;
+    $alamat="";
+    $telp="";
+    $kota="";
+    $shipping_location=$this->session->userdata('session_outlet','');
+    if($shipping_location=="")$shipping_location=$this->_ci->session->userdata('default_warehouse','');
+    if($qgdg=$this->shipping_locations_model->get_by_id($shipping_location)){
+        if($rgdg=$qgdg->row()){
+            if($rgdg->attention_name!="")$nama_toko=$rgdg->attention_name;
+            $alamat=$rgdg->street;
+            $telp=$rgdg->phone;
+            $kota=$rgdg->city;
+        }        
+    }
+    $pembulatan=0;
+    
+    $item_counter=null;
+    $ukuran_nota=getvar("ukuran_nota",0);
+    $garis="================================="; 
+    if($ukuran_nota==1){
+        $garis="======================================================================================================="; 
+    }    
+        if($q=$this->db->where("invoice_number",$invoice_number)
+            ->get("invoice")){
+                
+            if($q->num_rows()==0){
+                echo "<h1>Nomor nota [$invoice_number] tidak ada !";
+            }
+            if($r=$q->row()){
+                $tanggal=$r->invoice_date;
+                $kasir=$r->salesman;
+                $pembulatan=$r->other;
+                
+                $data['invoice']=$r;
+if($ukuran_nota==1){
+    echo "<table width='400px'>";
+    
+} else {
+    echo "<table width='200px'>";
+    
+}             
+echo "<tr><td colspan='5' align='center'>$nama_toko</td></tr>";
+if($reprint)echo "<tr><td colspan='5' align='center'>*** REPRINT ***</td></tr>";
+
+echo "<tr><td colspan='5' align='center'>$alamat</td></tr>
+<tr><td colspan='5' align='center'>$telp</td></tr>
+<tr><td colspan='5' align='center'>$kota</td></tr>
+
+<tr><td colspan='5'>$garis</td></tr>
+<tr><td>Nota#</td><td colspan='4'>$invoice_number</td></tr>
+<tr><td>Tanggal</td><td colspan='4'>$tanggal</td></tr>
+<tr><td>Kasir</td><td colspan='4'>$kasir</td></tr>
+<tr><td colspan='5'>$garis</td></tr>";
+                
+                if($q=$this->db->where("invoice_number",$invoice_number)
+                    ->get("invoice_lineitems")){
+                        $total=0;
+                        foreach($q->result() as $r){
+                            $total+=$r->amount;
+                            if($qitem=$this->inventory_model->get_by_id($r->item_number)){
+                                if($ritem=$qitem->row()){
+                                    if($ritem->type_of_invoice=="0"){
+                                        $item_counter[]=$r;
+                                    }
+                                }
+                            }
+    $disc_amt=$r->discount_amount+$r->disc_amount_2+$r->disc_amount_3+$r->disc_amount_ex;
+                                                        
+if($ukuran_nota==1){
+    
+    echo "<tr><td>$r->item_number</td>
+    <td>$r->description</td></tr>
+    <tr><td>$r->quantity</td><td>x</td><td align='left'>".number_format($r->price)."</td>";
+    if($disc_amt>0){
+        echo "<td align='right'>-".number_format($disc_amt)."</td>";
+    }
+    echo "<td align='right'>= ".number_format($r->amount)."</td>";
+    echo "</tr>";    
+} else {                         
+    echo "<tr><td colspan='5'>$r->item_number</td></tr>
+    <td colspan='5'>$r->description</td></tr>
+    <tr><td>$r->quantity</td><td>x</td><td align='right'>".number_format($r->price)."</td>";
+    echo "<td>=</td><td align='right'>".number_format($r->amount)."</td>
+    </tr>";
+    if($disc_amt>0){
+        echo "<tr><td colspan='5'>-Disc: ".number_format($disc_amt)."</td></tr>";
+    }
+}
+
+                        }
+                }
+        
+echo "<tr><td colspan='5'>$garis</td></tr>
+<tr><td>Sub Total Rp. </td><td align='right' colspan='4'>".number_format($total)."</td></tr>";
+echo "<tr><td>Pembulatan Rp. </td><td align='right' colspan='4'>".number_format($pembulatan)."</td></tr>";
+echo "<tr><td>TOTAL Rp. </td><td align='right' colspan='4'>".number_format($total+$pembulatan)."</td></tr>";
+echo "<tr><td colspan=4>---Payment Info---</td></tr>";
+$kembali=0;
+$bayar_cash=0;
+$bank_name="";
+$split=false;
+$total_paid=0;
+                if($q=$this->db->where("invoice_number",$invoice_number)
+                    ->get("payments")){
+                        $cash=0;    $card=0;    $voucher=0;    $rekening="";
+                        $total_paid=0;
+                        $voucher_no="";
+                        foreach($q->result() as $r){
+                            if($r->how_paid=="CASH"){
+                                $cash+=$r->amount_paid;
+                                if($r->amount_alloc>0){
+                                    $bayar_cash+=$r->amount_paid+$r->amount_alloc;
+                                    $kembali=$r->amount_alloc;    
+                                } else {
+                                    $bayar_cash+=$r->amount_paid;
+                                    $kembali=0;
+                                }
+                            }
+                            if($r->how_paid=="CARD"){
+                            	$split=true;
+                                $card+=$r->amount_paid;
+                                if($rekening==""){
+                                    $rekening=$r->credit_card_type;   
+                                    if($qbank=$this->db->select("bank_name")->where("bank_account_number",$rekening)
+                                        ->get("bank_accounts")){
+                                        if($rbank=$qbank->row()){
+                                            $bank_name=$rbank->bank_name;
+                                        }        
+                                    }
+                                }
+                            }
+                            if($r->how_paid=="VOUCHER"){
+                            	$split=true;
+                                $voucher+=$r->amount_paid;
+                                $voucher_no=$r->credit_card_number;
+                            }
+                            $total_paid+=$r->amount_paid;
+                        }
+
+                        $sisa=$total-$total_paid;
+
+if($cash>0){                        
+    echo "<tr><td>CASH Rp. </td><td align='right' colspan='4'>".number_format($cash)."</td></tr>";
+}
+if($card>0){
+    echo "<tr><td>CARD Rp. </td><td align='right' colspan='4'>".number_format($card)."</td></tr>";
+    if($card>0)echo "<tr><td colspan='4'>-- Rek: $rekening - $bank_name</td><td></td></tr>";    
+}
+if($voucher>0){
+    echo "<tr><td>VOUCHER Rp. </td><td align='right' colspan='4'>".number_format($voucher)."</td></tr>";
+    if($voucher_no!=""){
+        echo "<tr><td colspan='5'>-- Voucher#: ".($voucher_no)."</td></tr>";
+    }        
+}
+                                                
+                }
+                
+if($cash>0 && !$split){
+    
+    echo "
+    <tr><td colspan='5'>$garis</td></tr>
+    <tr><td>Bayar Cash Rp. </td><td align='right' colspan='4'>".number_format($bayar_cash)."</td></tr>";
+    if($kembali>0){        
+        echo "
+        <tr><td>Kembalian  Rp. </td><td align='right' colspan='4'>".number_format($kembali)."</td></tr>";
+    }
+
+}
+echo "<tr><td>Total Pay Rp. </td><td align='right' colspan='4'>".number_format($total_paid)."</td></tr>";
+
+echo "
+<tr><td colspan='5'>$garis</td></tr>
+<tr><td colspan='5' align='center'>Barang yang sudah dibeli tidak</td></tr>
+<tr><td colspan='5' align='center'>bisa ditukar/dikembalikan</td></tr>
+<tr><td colspan='5' align='center'>***Terimakasih***</td></tr>
+</table>";
+                $data['success']=true;
+                $data['msg']="Invoice Found.";
+            }
+        }
+        
+        
+        if($item_counter){
+  
+echo "<p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><table width='200px'><tr><td colspan='5' align='center'>*** ITEM COUNTER ***</td></tr>";
+            for($i=0;$i<count($item_counter);$i++){
+                $r=$item_counter[$i];
+                echo "<tr><td colspan='5'>$r->item_number</td></tr>
+                <td colspan='5'>$r->description</td></tr>
+                <tr><td>$r->quantity</td><td>x</td><td align='right'>".number_format($r->price)."</td>
+                <td>=</td><td align='right'>".number_format($r->amount)."</td>
+                </tr>";
+                
+                if($r->discount_amount>0){
+                    echo "<tr><td colspan='5'>-Disc: ".number_format($r->discount_amount)."</td></tr>";
+                }
+                                
+            }
+            echo "</table><p>&nbsp</p><p>&nbsp</p>";
+        }
+    }    
 	function new_sales_register() {
 		$sql="select il.quantity,il.unit,il.invoice_number,i.invoice_date
 		,il.item_number,il.description 
@@ -949,4 +1346,28 @@ class Invoice extends CI_Controller {
 		";
 		echo datasource($sql);
 	}
+	
+    function next_number(){
+        $ret=$this->nomor_bukti();
+        echo json_encode(array("success"=>true,"nomor"=>$ret));
+    }
+	
+	function list_nota_open(){
+	    $sql="select invoice_number,invoice_date,amount from invoice 
+	    where (paid=0 or paid is null) and (saldo_invoice>0 or saldo_invoice is null)";
+        $sql.=" order by invoice_date desc limit 10";
+        
+        $list_nota=null;
+        if($q=$this->db->query($sql)){
+            foreach($q->result_array() as $r){
+                $list_nota[]=$r;
+            }
+        }
+        $data['success']=true;
+        $data['list_nota']=$list_nota;
+        echo json_encode($data);
+	}
+	
+		
+	
 }

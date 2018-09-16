@@ -1,4 +1,4 @@
-<?  
+<?php  
 $cat_list=array_data_table("inventory_categories","kode","category"); 
 if(!isset($readonly))$readonly='';
 $form_class="form";
@@ -57,16 +57,16 @@ if(!isset($controller))$controller=base_url().'index.php/eshop_admin/items';
 		  </div>
 		  <div role="tabpanel" class="tab-pane fade  " id="tab3">
 				<?=my_input("Item Picture 1","item_picture",$item_picture,'','')?>				
-				<? echo "<img src=".base_url()."tmp/$item_picture>"; ?>
+				<?php echo "<img src=".base_url()."tmp/$item_picture>"; ?>
 				<?=my_input_file("","item_picture_img",'','','')?>				
 				<?=my_input("Item Picture 2","item_picture2",$item_picture2,'','')?>				
-				<? echo "<img src=".base_url()."tmp/$item_picture2>"; ?>
+				<?php echo "<img src=".base_url()."tmp/$item_picture2>"; ?>
 				<?=my_input_file("","item_picture2_img",'','','')?>				
 				<?=my_input("Item Picture 3","item_picture3",$item_picture3,'','')?>				
-				<? echo "<img src=".base_url()."tmp/$item_picture3>"; ?>
+				<?php echo "<img src=".base_url()."tmp/$item_picture3>"; ?>
 				<?=my_input_file("","item_picture3_img",'','','')?>				
 				<?=my_input("Item Picture 4","item_picture4",$item_picture4,'','')?>				
-				<? echo "<img src=".base_url()."tmp/$item_picture4>"; ?>
+				<?php echo "<img src=".base_url()."tmp/$item_picture4>"; ?>
 				<?=my_input_file("","item_picture4_img",'','','')?>				
 		  </div>
 		</div>

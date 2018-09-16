@@ -1,5 +1,5 @@
 <div class="row-fluid" >
-	<?
+	<?php
 	if(!isset($controller)) $controller=base_url()."index.php/eshop_admin/items";
 	if(!isset($cmd))$cmd='view';
 	if($cmd=="list") {
@@ -40,10 +40,10 @@
 			<div class='row'>
 				 <?php if($message!="") { ?>
 				<div class="alert alert-success"><? echo $message;?></div>
-				<? } ?>
+				<?php } ?>
 			</div>
 			<div class="row">
-				<? 
+				<?php 
 				include_once "item_form.php"; 
 				?>
 			</div>
@@ -66,7 +66,7 @@
 
 		</script>
 	
-	<? } ?>
+	<?php } ?>
 </div>
 <link rel="stylesheet" type="text/css" href="<?=base_url()?>assets/eshop/eshop.css">
 

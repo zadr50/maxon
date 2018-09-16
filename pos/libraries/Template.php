@@ -18,20 +18,22 @@ class Template {
     $this->_ci->load->library(array('javascript',"sysvar","upgrade"));
     $this->_ci->load->model("bank_accounts_model");
     
-	$this->_ci->upgrade->process();
-	$themes=$this->_ci->sysvar->getvar('themes','standard');
-	if($themes==""){
+	//$this->_ci->upgrade->process();
+	//$themes=$this->_ci->sysvar->getvar('themes','standard');
+	//if($themes==""){
 		$themes="standard";
-	}
+	//}
 	$base=base_url();
-	$this->bootstrap='
-	<link rel="stylesheet" type="text/css" href="assets/bootstrap-3.3.5/css/bootstrap.css">
+	$versi_lib_js="3";	//ubah v1+1 apabila ada versi barunya libjs biar direload
+
+		$this->bootstrap='
 	<link rel="stylesheet" type="text/css" href="'.base_url().'themes/'.$themes.'/style.css">
+	<link rel="stylesheet" type="text/css" href="assets/bootstrap-3.3.5/css/bootstrap.css">
 	';
 	$this->bootstrap_only ="<link rel='stylesheet' type='text/css' href='".base_url()."assets/bootstrap-3.3.5/css/bootstrap.css'>";
 	$this->bootstrap_only.=$this->_cjs('assets/jquery/jquery-1.11.3.min.js',true);
     $this->bootstrap_only.=$this->_cjs('assets/bootstrap-3.3.5/js/bootstrap.min.js',true);
-    $this->bootstrap_only.=$this->_cjs('js/lib.js',true);
+    $this->bootstrap_only.=$this->_cjs('js/lib.js?v='.$versi_lib_js,true);
 	
 	$this->library_src =$this->_cjs('assets/jquery/jquery-1.11.3.min.js',true);
     $this->library_src.=$this->_cjs('assets/bootstrap-3.3.5/js/bootstrap.min.js',true);
@@ -39,22 +41,26 @@ class Template {
     $this->library_src.=$this->_cjs('assets/jquery-easyui-1.4.3/jquery.easyui.min.js',true);
     //$this->library_src.=$this->_cjs('assets/jquery-easyui-1.4.3/jquery.easyui.mobile.js',true);
     $this->library_src.=$this->_cjs('js/autocomplete/jquery.autocomplete.min.js',true);
-    $this->library_src.=$this->_cjs('js/lib.js',true);
     $this->library_src.=$this->_cjs('js/jquery.formatNumber.js',true);
     $this->library_src.=$this->_cjs('assets/flexslider/jquery.flexslider.js',true);
+    $this->library_src.=$this->_cjs('assets/printThis-master/printThis.js',true);
+    $this->library_src.=$this->_cjs('js/lib.js?v='.$versi_lib_js,true);
+    $this->library_src.=$this->_cjs('assets/pos/lib_pos.js?v='.$versi_lib_js,true);
     $this->library_src.=$this->_cjs('js/lib_error.js',true);
-	
+
+
     $this->flexslider=$this->_cjs('assets/flexslider/jquery.flexslider.js',true);
 	
   /// $this->script_head=$this->_ci->jquery->_compile();
 	$this->script_head='
 	
+	<link rel="stylesheet" type="text/css" href="'.base_url().'themes/'.$themes.'/style.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'js/autocomplete/jquery.autocomplete.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/jquery-easyui-1.4.3/themes/'.$themes.'/easyui.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/jquery-easyui-1.4.3/themes/icon.css">
-	<link rel="stylesheet" type="text/css" href="'.base_url().'themes/'.$themes.'/style.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/datepicker/datepicker.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/bootstrap-3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="'.base_url().'assets/pos/style.css">
 	
 	';
 //	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/jquery-easyui-1.4.3/themes/mobile.css">

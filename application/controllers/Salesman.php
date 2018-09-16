@@ -3,7 +3,7 @@
 class Salesman extends CI_Controller {
     private $limit=10;
     private $table_name='salesman';
-    private $sql="select salesman,salestype,commission_rate_1,user_id,lock_report from salesman";
+    private $sql="select * from salesman";
 
 	function __construct()
 	{
@@ -21,21 +21,10 @@ class Salesman extends CI_Controller {
 	function set_defaults($record=NULL){
 		$data['mode']='';
 		$data['message']='';
-		if($record==NULL){
-			$data['salesman']='';
-			$data['salestype']='';
-			$data['commission_rate_1']='0';
-			$data['commission_rate_2']='0';
-            $data['lock_report']=0;
-			$data['user_id']="";
-		} else {
-			$data['salesman']=$record->salesman;
-			$data['salestype']=$record->salestype;
-			$data['commission_rate_1']=$record->commission_rate_1;
-			$data['commission_rate_2']=$record->commission_rate_2;
-			$data['lock_report']=$record->lock_report;
-			$data['user_id']=$record->user_id;
-		}
+		$data=data_table($this->table_name,$record);
+		if($data['commission_rate_1']=="")$data['commission_rate_1']='0';
+		if($data['commission_rate_2']=="")$data['commission_rate_2']='0';
+
 		$setting['dlgBindId']="salestype";
 		$setting['dlgCols']=array( 
 			array("fieldname"=>"groupid","caption"=>"Kelompok","width"=>"280px")
@@ -51,6 +40,11 @@ class Salesman extends CI_Controller {
 		$setting['dlgRetFunc']="$('#user_id').val(row.user_id);";
 		$data['lookup_user']=$this->list_of_values->render($setting);
 		
+		$data["lookup_wilayah"]=$this->list_of_values->render(array(
+			"dlgBindId"=>"wilayah","dlgColsData"=>array("kode","wilayah"),
+			"dlgRetFunc"=>"$('#wilayah').val(row.kode);"
+		));
+		
 		return $data;
 	}
 	function index()
@@ -59,26 +53,22 @@ class Salesman extends CI_Controller {
         $this->browse();
 	}
 	function get_posts(){
-		$data['salesman']=$this->input->post('salesman');
-		$data['salestype']=$this->input->post('salestype');
-		$data['commission_rate_1']=$this->input->post('commission_rate_1');
-		$data['commission_rate_2']=$this->input->post('commission_rate_2');
-		$data['user_id']=$this->input->post('user_id');
-		$data['lock_report']=$this->input->post('lock_report');
+		$data=$this->input->post();
 		return $data;
 	}
 	function add()
 	{
 		if (!allow_mod2('_30021'))  exit;
-		 $data=$this->set_defaults();
+		$data=$this->set_defaults();
+		 		
 		 $this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();
+			unset($data['mode']);
 			$id=$this->salesman_model->save($data);
 			$message='update success';
 			$this->syslog_model->add($id,"salesman","add");
-
-			$this->browse();		 
+			msgbox("Data sudah disimpan.","Salesman",true);
 		} else {
 			$data['mode']='add';
 			$this->template->display_form_input('sales/salesman',$data,'');
@@ -93,14 +83,14 @@ class Salesman extends CI_Controller {
  		 $id=$this->input->post('salesman');
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();                      
+			unset($data['mode']);
 			$this->salesman_model->update($id,$data);
 			$message='Update Success';
 			$this->syslog_model->add($id,"salesman","edit");
-
-			$this->browse();
+			msgbox("Data sudah disimpan.","Salesman",true);
 		} else {
 			$message='Error Update';
-			$this->view($id,$message);		
+			msgbox($message,"Salesman",true);
 		}	  
 	}
 	function save(){
@@ -144,8 +134,8 @@ class Salesman extends CI_Controller {
 	{
         $data['caption']="DAFTAR SALESMAN";
 		$data['controller']='salesman';
-		$data['fields_caption']=array('Salesman','Kelompok','Komisi','User Id','lock_report');
-		$data['fields']=array('salesman','salestype','commission_rate_1','user_id','lock_report');
+		$data['fields_caption']=array('Salesman','Kelompok','Komisi','Wilayah','User Id','lock_report');
+		$data['fields']=array('salesman','salestype','commission_rate_1','wilayah','user_id','lock_report');
 					
 		if(!$data=set_show_columns($data['controller'],$data)) return false;
 			
@@ -253,6 +243,10 @@ class Salesman extends CI_Controller {
         $sql="select * from salesman_group where groupid like '".$this->input->get('sid_group')."%'";
         echo datasource($sql);       
     }        
+	function target($salesman){
+		$data["salesman"]=$salesman;
+		$this->template->display("sales/sales_target",$data);
+	}
 	
 	
 }

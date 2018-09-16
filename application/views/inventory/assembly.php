@@ -16,7 +16,7 @@
 	</form>
 </div>
 <div id='tbAsm'>
-	<? 
+	<?php 
 	echo link_button("Save","dlgAsm_Save()","save");
 	echo link_button("Close","dlgAsm_Close()","cancel");
 	?>

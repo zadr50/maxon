@@ -13,8 +13,8 @@ body {
 	--background-color: #E9E7E7;
 }
 .bg1 {
-	--background: black;
-	font-family:Verdana;
+	--background: #e0ecff;
+	--font-family:Verdana;
 }
 .bg2 {
 	--background: url(../../images/p1.png);
@@ -403,6 +403,11 @@ p.footer{
 #footer {
 	color: black;
 	font-size: 10px;
+	background: #e0ecff;
+    margin-top: 10px;
+    border-top: lightgray 1px solid;
+    padding-top: 5px;	
+	min-height:400px;
 }
 #footer a {
 	color: black;
@@ -703,10 +708,10 @@ padding-left: 5px;
 }
 
 #tt {
-	background-color: white;
-	min-height: 1000px;
-    padding:5px;
-    width: 100%;
+	--background-color: white;
+	min-height: 500px;
+    padding:1px;
+    --width: 100%;
 }
  table {
 	--border: 1px solid rgb(190, 190, 190);
@@ -717,7 +722,7 @@ padding-left: 5px;
     /* padding: 8px; */
     /* line-height: 1.42857143; */
     #vertical-align: top;
-	padding:0px;
+	padding-left:3px;
     #border-bottom: 1px solid #ddd;
     #border-top: 0px solid #ddd;
 }
@@ -816,5 +821,12 @@ padding-left: 5px;
 }
 .navbar {
     margin-bottom: 2px;
+}
+input[readonly]{
+	background:lightgrey;
+}
+
+.navbar {
+    margin-bottom: 5px; 
 }
    

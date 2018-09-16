@@ -1,4 +1,4 @@
-<?
+<?php
 if(!isset($id_modal))$id_modal="myModal";
 if(!isset($fnc_save))$fnc_save="save_item";
 ?>
@@ -14,7 +14,7 @@ if(!isset($fnc_save))$fnc_save="save_item";
       </div>
       <div class="modal-body" >
 			<div id='textmodal' class='row'  style='padding:10px'>
-			<? 
+			<?php 
 			$readonly="readonly";
 			if(isset($form_input)){
 				include_once $form_input; 

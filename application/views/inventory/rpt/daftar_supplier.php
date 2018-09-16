@@ -4,6 +4,12 @@
 		$data['criteria1']=true;
 		$data['label1']='Kode Supplier';
 		$data['text1']='';
+         $data['key1']="kode";
+         $data['fields1'][]=array("supplier_number","80","Kode");
+         $data['fields1'][]=array("supplier_name","180","Supplier");
+         $data['ctr1']='suppliers/select';
+		
+		
 		$data['caption']='DAFTAR BARANG';
 		$data['rpt_controller']="inventory/rpt/$id";
 		$CI->template->display_form_input('criteria',$data,'');
@@ -20,6 +26,7 @@
 		"group_by"=>array("supplier_number"))
 		);
 		 $data['header']=company_header();
+		 $data['criteria']="Supplier: $kel";
 		$this->load->view('simple_print.php',$data);    		
 		
 	}

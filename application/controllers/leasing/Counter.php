@@ -14,7 +14,16 @@ class Counter extends CI_Controller {
     function __construct()    {
 		parent::__construct();
 		if(!$this->access->is_login())redirect(base_url());
-                 
+                
+        $multi_company=$this->config->item('multi_company');
+       if($multi_company){
+            $company_code=$this->session->userdata("company_code","");
+            if($company_code!=""){
+               $this->db = $this->load->database($company_code, TRUE);
+           }
+       }         
+        
+        
 		$this->load->helper(array('url','form','mylib_helper'));
 		$this->load->library(array('sysvar','template','form_validation'));
 		if($this->sql=="")$this->sql="select * from ls_counter";

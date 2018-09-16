@@ -1,4 +1,4 @@
-<? if($offset==0){ ?>
+<?php if($offset==0){ ?>
 	<div class='thumbnail'>
 		<?=link_button('Add','','add','true',base_url().'index.php/coa/add');?>		
 		<?=link_button('List','list();return false;','list');?>
@@ -9,7 +9,7 @@
 		<? echo $criteria_text; ?>
 		</form>
 	</div>
-	<?
+	<?php
 }
 
 	$s="select * from chart_of_accounts where 1=1";

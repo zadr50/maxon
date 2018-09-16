@@ -1,7 +1,4 @@
-<script type="text/javascript" src="<?=base_url()?>assets/flot/excanvas.js"></script>
-<script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.js"></script>
-<script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.categories.js"></script>
- <?
+ <?php
   $CI =& get_instance();
  ?>
  <script type="text/javascript" src="<?=base_url()?>assets/maphilight-master/jquery.maphilight.min.js"></script>
@@ -10,10 +7,10 @@
 	<script>$().ready(function(){$("#tt").tabs("select","DASHBOARD");});</script>
 
 	<div title="DASHBOARD" style="padding:10px">
-		<div class='col-lg-8 col-md-12 col-sm-12'>
+		<div class='col-xs-12'>
 			<div class="easyui-panel themes" data-options="iconCls:'icon-save',closable:true,
 				collapsible:true,minimizable:true,maximizable:true">
-				<div class='col-md-8'>
+				<div class='col-xs-8'>
 					<img src="<?=base_url()?>images/banks.png" usemap="#mapdata" class="map">
 					<map id="mapdata" name="mapdata">
 					<area shape="circle" alt="Receive Cash" coords="120,92,29" href="<?=base_url()?>index.php/cash_in"  class="info_link" title="Receive Cash" />
@@ -28,27 +25,32 @@
 			</div>
 		</div>
 		
+
+        
+        <div class='col-xs-12'>
+            <div id="p" class="easyui-panel" title="Reports" 
+                data-options="iconCls:'icon-help'" >
+                    <?php include("menu_reports.php"); ?>
+            </div>
+        </div>
 		
 
-        <div class="col-md-4">
+        <div class="col-xs-12">
 
         <div id="p" class="easyui-panel" title="Saldo Rekening" 
             data-options="iconCls:'icon-help'" >
-            <table id="dgSaldo" class="easyui-datagrid"  
-                style="width:100%"
-                data-options="title: '',
+            <table id="dgSaldo" class="easyui-datagrid" 
+                data-options="title: '', 
                         iconCls: 'icon-tip',
                         singleSelect: true,
-                        toolbar: '',
+                        toolbar: '',fitColumns:true,
                         url: '<?=base_url()?>index.php/banks/banks/daftar_saldo/10'
                 ">
                 <thead>
                     <tr>
-                        <th data-options="field:'bank_account_number',width:60">Rek#</th>
-                        <th data-options="field:'bank_name',width:70">Bank</th>
-                        <th data-options="field:'amount',width:90,align:'right',editor:'numberbox',
-                            formatter: function(value,row,index){
-                            return number_format(value,2,'.',',');}">Jumlah</th>
+                        <th data-options="field:'bank_account_number',width:90">Rek#</th>
+                        <th data-options="field:'bank_name',width:170">Bank</th>
+                   		<th data-options="<?=col_number('amount',2)?>">Jumlah</th>
                     </tr>
                 </thead>
             </table>                    
@@ -59,16 +61,8 @@
 		<?php if($this->config->item('google_ads_visible')) $this->load->view('google_ads');?>
 
 
-
         
-        <div class='col-md-12'>
-            <div id="p" class="easyui-panel" title="Reports" 
-                data-options="iconCls:'icon-help'" >
-                    <?php include("menu_reports.php"); ?>
-            </div>
-        </div>
-        
-        <div class='col-md-12'>
+        <div class='col-xs-12'>
             <div id="p" class="easyui-panel" title="Grafik Saldo Rekening" 
                 data-options="iconCls:'icon-help'" >
                 <div id='divRek'   style="width:100%;height:300px;padding:5px;"></div>
@@ -85,6 +79,9 @@
 	
 </div>
 
+<script type="text/javascript" src="<?=base_url()?>assets/flot/excanvas.js"></script>
+<script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.js"></script>
+<script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.categories.js"></script>
 
 
 <script  language="javascript">

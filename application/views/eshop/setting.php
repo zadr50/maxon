@@ -1,4 +1,4 @@
-<?
+<?php
 if(!isset($active_tab))$active_tab=1;
 ?>
  
@@ -17,7 +17,7 @@ if(!isset($active_tab))$active_tab=1;
 				<a href='<?=base_url()?>index.php/eshop/setting/view/member_trans/2'>
 				<span class='glyphicon glyphicon-euro'></span> TAGIHAN</a></li>
 		</ul>
-		<? echo load_view("eshop/$file") ?>
+		<?php echo load_view("eshop/$file") ?>
  
 <script language='javascript'>
 

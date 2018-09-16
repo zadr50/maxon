@@ -1,4 +1,4 @@
-<?
+<?php
 
 	$table="inventory";
 
@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS `inventory` (
   UNIQUE KEY `ix_item` (`item_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysql_error();
+if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
 	$table="inventory";
 
@@ -131,7 +131,7 @@ INSERT INTO `inventory` (`item_number`, `active`, `class`, `category`, `sub_cate
 ('ffsdg', b'1', 'Stock Item', 'MINUMAN', 'MINUMAN', 0, 'ALFAMART', 'fgsdf', '', '', '2014-03-16 00:00:00', 0, 1000, 1200, '', '', '2014-03-16 00:00:00', '2014-03-16 00:00:00', '', 0, 'Pcs', '', '', 0, '', '', '', b'0', b'0', b'0', b'0', b'0', 1417, 1415, 0, 0, 0, 0, 0, 0, 0, b'0', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, b'0', '', 0, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 0, 0, 0, 0, 0, b'0', b'0', 0, 0, 0, 0, 0, 0, 0, b'0', b'0', 0, 0, 0, '2014-03-16 00:00:00', '', '2014-03-16 00:00:00', '', 1396);
 
 ";
-if(mysql_query($sql))$msg .="</br>$table..OK";else $msg .="</br>$table..<br>ERROR -" . mysql_error();
+if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
 	$table="inventory_assembly";
 
@@ -147,7 +147,7 @@ CREATE TABLE IF NOT EXISTS `inventorysource` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg .="</br>$table..OK";else $msg .="</br>$table..<br>ERROR -" . mysql_error();
+if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
 	$table="inventory_assembly";
 
@@ -168,7 +168,7 @@ CREATE TABLE IF NOT EXISTS `inventory_assembly` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg .="</br>$table..OK";else $msg .="</br>$table..<br>ERROR -" . mysql_error();
+if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
 	$table="inventory_categories";
 
@@ -198,7 +198,7 @@ CREATE TABLE IF NOT EXISTS `inventory_categories` (
   PRIMARY KEY  (`kode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg .="</br>$table..OK";else $msg .="</br>$table..<br>ERROR -" . mysql_error();
+if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
 	$table="inventory_categories";
 
@@ -216,7 +216,7 @@ INSERT INTO `inventory_categories` (`kode`, `category`, `update_status`, `custom
 ('MOBIL', 'MOBIL', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 ";
-if(mysql_query($sql))$msg .="</br>$table..OK";else $msg .="</br>$table..<br>ERROR -" . mysql_error();
+if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
 	$table="inventory_class";
 
@@ -233,7 +233,7 @@ CREATE TABLE IF NOT EXISTS `inventory_class` (
   UNIQUE KEY `x1` (`kode`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=16 ;
 ";
-if(mysql_query($sql))$msg .="</br>$table..OK";else $msg .="</br>$table..<br>ERROR -" . mysql_error();
+if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
 	$table="inventory_class";
 
@@ -247,7 +247,7 @@ INSERT INTO `inventory_class` (`kode`, `class`, `id`, `update_status`, `sourceau
 ('Material', 'Material', 14, NULL, NULL, NULL);
 
 ";
-if(mysql_query($sql))$msg .="</br>$table..OK";else $msg .="</br>$table..<br>ERROR -" . mysql_error();
+if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
 	$table="inventory_moving";
 
@@ -273,7 +273,7 @@ CREATE TABLE IF NOT EXISTS `inventory_moving` (
   UNIQUE KEY `x1` (`transfer_id`,`item_number`,`date_trans`,`from_location`,`to_location`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=34 ;
 ";
-if(mysql_query($sql))$msg .="</br>$table..OK";else $msg .="</br>$table..<br>ERROR -" . mysql_error();
+if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
 	$table="inventory_prices";
 
@@ -285,7 +285,7 @@ INSERT INTO `inventory_moving` (`transfer_id`, `item_number`, `date_trans`, `fro
 ('TRX00002', 'DJISAMSU', '2014-03-26 11:08:52', 'Ambon', 1, 'Bali', 1, NULL, 10000, NULL, 31, '', NULL, 10000, 'Bks');
 
 ";
-if(mysql_query($sql))$msg .="</br>$table..OK";else $msg .="</br>$table..<br>ERROR -" . mysql_error();
+if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
 $sql="
 
@@ -302,7 +302,7 @@ CREATE TABLE IF NOT EXISTS `inventory_prices` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-if(mysql_query($sql))$msg .="</br>$table..OK";else $msg .="</br>$table..<br>ERROR -" . mysql_error();
+if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
 	$table="inventory_price_history";
 
@@ -318,8 +318,7 @@ CREATE TABLE IF NOT EXISTS `inventory_price_history` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
-
-	if(mysql_query($sql))$msg .="</br>$table..OK";else $msg .="</br>$table..<br>ERROR -" . mysql_error();
+if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
  
 	
 	

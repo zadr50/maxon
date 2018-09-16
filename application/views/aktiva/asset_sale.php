@@ -5,8 +5,6 @@
 	
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','false',base_url().'index.php/aktiva/aktiva_sale/add');		
-	echo link_button('Search','','search','false',base_url().'index.php/aktiva/aktiva_sale');		
 	echo "<div style='float:right'>";
 		echo link_button('Help', 'load_help()','help');		
 	
@@ -20,10 +18,11 @@
 			<div>MaxOn Forum</div>
 			<div>About</div>
 		</div>
+		<?=link_button("Close", "remove_tab_parent();return false;","cancel")?>
 	</div>
 </div>
 
-<div class="col-md-5">	
+<div class='col-md-12 thumbnail'>
 
 <?php if (validation_errors()) { ?>
 	<div class="alert alert-error">
@@ -35,8 +34,6 @@
  <?php if($message!="") { ?>
 <div class="alert alert-success"><? echo $message;?></div>
 <? } ?>
-
-
 <form id="myform" role="form" method="post" 
 	action="<?=base_url()?>index.php/aktiva/aktiva_sale/save"  class="form-horizontal" >
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
@@ -50,7 +47,7 @@
 		<td><input type="text" class="form-control-horizontal" id="asset_id" name="asset_id" 
 		value="<?=$asset_id?>" placeholder="asset_id" style='width:200px'>
 		<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" 
-						onclick="lookup_asset();return false"></a>
+						onclick="dlgfa_asset_show();return false"></a>
 		<span id='asset_name'><?=$asset_name?></span>
 		</td>
 		</tr>
@@ -71,7 +68,7 @@
 			<input type="text" class=" " id="vendor_id" 
 			style='width:200px' name="vendor_id" value="<?=$vendor_id?>">
 			<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" 
-						onclick="select_customer();return false"></a>	
+						onclick="dlgcustomers_show();return false"></a>	
 			<span id='customer_name'><?=$customer_name?></span>
 		</td></tr>
 		<tr><td>Rekening</td>
@@ -79,7 +76,7 @@
 			<input type="text" class="" id="cash_bank_ap" 
 			style='width:200px' name="cash_bank_ap" value="<?=$cash_bank_ap?>" >
 			<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" 
-						onclick="lookup_bank();return false"></a>			
+						onclick="dlgbank_accounts_show();return false"></a>			
 			<span id='bank_name'><?=$bank_name?></span>
 		</td></tr>
 		
@@ -94,10 +91,9 @@
 	</form>
 </div>
 
-<?=load_view('gl/select_coa')?>   	
-<?=load_view('aktiva/select_asset')?>   	
-<?=load_view('sales/customer_select')?>   	
-<?=load_view('bank/select_bank')?>   	
+<?=$lookup_fa_asset?>   	
+<?=$lookup_customers?>   	
+<?=$lookup_bank_accounts?>   	
        
 <script type="text/javascript">
     function save_this(){

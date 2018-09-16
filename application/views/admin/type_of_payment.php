@@ -1,9 +1,10 @@
 <div class="thumbnail  box-gradient">
-	<?
+	<?php
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','false',base_url().'index.php/type_of_payment/add');		
 	echo link_button('Search','','search','false',base_url().'index.php/type_of_payment');		
+	echo link_button('Close', 'remove_tab_parent();return false;','cancel');		
 	
 	?>
 </div>
@@ -11,7 +12,7 @@
 <form id="myform"  method="post" action="<?=base_url()?>index.php/type_of_payment/save">
 <input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 <?php echo validation_errors(); ?>
-     <table >
+     <table class="table">
 	<tr>
 		<td>Termin Pembayaran</td>
 		<td>

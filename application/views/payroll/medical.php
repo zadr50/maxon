@@ -1,7 +1,5 @@
 <div class="thumbnail box-gradient">
-	<?
-	echo link_button('Add','','add','false',base_url().'index.php/payroll/medical/add');		
-	echo link_button('Search','','search','false',base_url().'index.php/payroll/medical');		
+	<?php
 	echo link_button('Save', 'simpan()','save');		
 	?>
 	<div style='float:right'>
@@ -14,6 +12,7 @@
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
+    <?php echo link_button('Close', 'remove_tab_parent()','cancel');        ?>
 	</div>
 </div> 
 
@@ -28,8 +27,8 @@
 			<tr>
 				<td>NIP</td>
 				<td><? echo form_input('employeeid',$employeeid,"id=employeeid"); 
-				echo link_button("","dlgLovEmployee_show()","search")?>
-				&nbsp<?=form_input('nama_pegawai',$nama_pegawai,"id=nama_pegawai disabled");?></td>
+				echo link_button("","dlgemployee_show()","search")?>
+				&nbsp<?=form_input('nama_pegawai',$nama_pegawai,"id=nama_pegawai disabled style='width:50%'");?></td>
 			</tr>
 		    <tr>
 				<td>Tanggal </td><td><?=form_input('medicaldate',$medicaldate,
@@ -65,6 +64,7 @@
 						$('#id').val(result.id);
 						$('#mode').val('view');
 						log_msg('Data sudah tersimpan.');
+						remove_tab_parent();
 					} else {
 						log_err(result.msg);
 					}

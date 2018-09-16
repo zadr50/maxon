@@ -12,6 +12,7 @@ class Login extends CI_Controller {
    $this->load->library('form_validation');
    $this->load->helper("language");
    $this->lang->load("common");
+ 	$this->load->model('user_model');
 
  }
 
@@ -19,14 +20,17 @@ class Login extends CI_Controller {
 	// cek file maxon_installed.php, if no content install maxon
 	// maxon_installed.php should containt text after install	
 	$filename="./application/config/maxon_installed.php";
-	$handle = fopen($filename, "r");
-	$contents = fread($handle, filesize($filename));
-    
-    fclose($handle);
- 	if($contents==""){
- 		header("location:install");
+	if(filesize($filename) == 0) {
+		header("location:".base_url()."install");
 		exit;
- 	}
+	}
+
+	if(eshop_activated()){
+		// e-commerce view when table maxon_apps contain 'eshop' text
+		header("location:".base_url()."index.php/eshop/home");
+		exit;
+	}  
+	
  	if(website_activated()){
 		// website view when table maxon_apps contain _20000 text
 		$login_view="login_view";
@@ -34,26 +38,40 @@ class Login extends CI_Controller {
 		// default view
 		$login_view="login_view_simple";
 	}
-	 
-	if(eshop_activated()){
-		// e-commerce view when table maxon_apps contain 'eshop' text
-		header("location:".base_url()."index.php/eshop/home");
+    $submit_value=$this->input->post("submit");
+	
+    if($submit_value=="Change Password"){
+        header("location:".base_url()."index.php/login/change_password"); 
+    } else if($submit_value=="Create User"){
+        header("location:".base_url()."index.php/login/create_user"); 
+    } else if($submit_value=="Login" && $this->input->post("user_id") && $this->input->post("password")) {
+	   if(!$company_code=$this->input->post('company'))$company_code="";	 
+	   $multi_company=$this->config->item('multi_company');
+	   if($multi_company){
+	        $this->session->set_userdata("company_code",$company_code);
+	   }             	
+	   $this->form_validation->set_rules('user_id', 'User Id', 'trim|required');
+	   $this->form_validation->set_rules('password', 'Password', 'trim|required|callback_check_database');
+	   $this->form_validation->set_message('check_database', "<strong>Unknown User or Password !</strong>");
+	   if(!$this->form_validation->run()) {	   	
+			$data["message"]=validation_errors();			
+            $data['multi_company']=$this->config->item('multi_company');
+	   }
+	} 
+	// default view
+	if($this->access->is_login()){
+	    
+        $this->welcome();       
+        
 	} else {
-		// default view
-		if($this->access->is_login()){
-		    
-            $this->welcome();       
-            
-		} else {
-			$this->load->model('article_model');
-			$data['message']='';
-			$data['article_cats']=$this->article_model->categories();
-			$data['multi_company']=$this->config->item('multi_company');
-            
-            $data['warehouse_code']="";
-            
-			$this->template->display_login($login_view,$data);
-		}
+		$this->load->model('article_model');
+		$data['message']='';
+		$data['article_cats']=$this->article_model->categories();
+		$data['multi_company']=$this->config->item('multi_company');
+        
+        $data['warehouse_code']="";
+        
+		$this->template->display_login($login_view,$data);
 	}
  }
  function simple(){
@@ -63,6 +81,18 @@ class Login extends CI_Controller {
 	$data['article_cats']=$this->article_model->categories();
 	$this->template->display_login($login_view,$data);
 } 
+function verify_json(){
+   if(!$company_code=$this->input->post('company'))$company_code="";
+   $user_id = $this->input->post('user_id');
+   $password = $this->input->post('password');
+   $ok=$this->check_database($password);
+   if($ok){
+   		$message="Please wait...";
+   } else  {
+   		$message="User atau password salah !";
+   }	
+   echo json_encode(array("success"=>$ok,"message"=>$message));
+}
 function verify(){
   if(!$company_code=$this->input->post('company'))$company_code="";
  
@@ -87,7 +117,8 @@ function verify(){
 	   $this->form_validation->set_rules('password', 'Password', 'trim|required|callback_check_database');
 	   if($this->form_validation->run()) {
 			//echo json_encode(array('success'=>true));
-			header("location:".base_url()."index.php");	
+			//header("location:".base_url()."index.php");
+			$this->index();	
 	   } else {
 	   		//echo json_encode(array('msg'=>'User atau password salah ! '.strip_tags(validation_errors())));
 			$data["message"]="UserID atau Password salah !";			
@@ -201,6 +232,7 @@ function welcome(){
    }
    
    $result = $this->user->login($user_id, $password);
+   
    if($result)  {
 	 my_log("LOGIN","",$user_id);			
      $sess_array = array();
@@ -209,6 +241,7 @@ function welcome(){
        unset($sess_array['password']);
        
        $this->session->set_userdata('logged_in', $sess_array);
+	   
 		// check if this user as admin for backend application ?
 		$this->load->model("user_jobs_model");
 		$user_admin=$this->user_jobs_model->is_job("ADM",$user_id);
@@ -260,14 +293,13 @@ function welcome(){
         $this->session->set_userdata("min_date",$min_date);
         $this->session->set_userdata("max_date",$max_date);
         
-        //$this->session->set_userdata("logged_in",1);
         //$this->session->set_userdata("session_id",$this->session->userdata());
         
         
      }
      return true;
    } else {
-     $this->form_validation->set_message('check_database', lang('login_error'));
+     $this->form_validation->set_message('password', "Error user_id or password !");
      return false;
    }
  }

@@ -22,6 +22,7 @@
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
+    <?=link_button('Close','remove_tab_parent()','cancel');?>      	
 	</div>
 </div>
 		

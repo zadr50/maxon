@@ -54,7 +54,6 @@
         ?></td>
         <td>Doc Status</td><td><?=form_input("status",$status,"id='status'")?></td>
      </tr>
-	 <tr><td>&nbsp</td><td>&nbsp</td></tr>
    </table>
 <!-- LINEITEMS -->	
 <div id='dgItem'><?=load_view('inventory/select_item_no_price.php')?></div>

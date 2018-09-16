@@ -25,6 +25,15 @@ class Jobs extends CI_Controller {
             $data=data_table($this->table_name,$record);
             $data['mode']='';
             $data['message']='';
+			$data['lookup_group_modules']=$this->list_of_values->render(
+				array("dlgBindId"=>"group_modules",
+					"dlgColsData"=>array("module_id","module_name"),
+					"dlgRetFunc"=>"$('#group_module').val(row.module_id);
+					list_modules_show();"
+					
+				)
+			);
+			$data["group_module"]="_00000";
             return $data;
 	}
 	function index()
@@ -87,14 +96,16 @@ class Jobs extends CI_Controller {
 		}
 	}	
 	 
-	function view($id,$message=null){
+	function view($id,$parentid=""){
 		 $id=urldecode($id);
+		 $parentid=urldecode($parentid);
 		 $data['id']=$id;
 		 $model=$this->modules_groups_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
 		 $data['mode']='view';
-         $data['message']=$message;
-		 $data['modules']=$this->list_modules($id);
+//         $data['message']=$message;
+		 if($parentid!="")$data["group_module"]=$parentid;		 
+		 $data['modules']=$this->list_modules($id,$parentid);
          $this->template->display_form_input($this->file_view,$data,'');
 	}
 	 // validation rules
@@ -165,13 +176,22 @@ class Jobs extends CI_Controller {
 	function has_child($id){
 		return $this->db->query("select * from modules where parentid='$id' limit 1")->num_rows();
 	}
+	function list_modules_show($group_id,$parent_id){
+		echo $this->list_modules($group_id,$parent_id);
+	}
 	function list_modules($group_id,$filter=''){
 		$group_id=urldecode($group_id);
 		$filter=urldecode($filter);
-		$sql="select * from modules where (parentid='0' or parentid is null)";
+		if($filter=="")$filter="_00000";
+		$sql="select * from modules where 1=1 ";
+		if($filter==""){
+			$sql.=" and (parentid='0' or parentid is null)";
+		} else  {
+			$sql.=" and (parentid='$filter' or module_id like '$filter%')";			
+		}
 		$sql.=" order by module_id";
 		$modules=$this->db->query($sql);
-		$tbl="<table class='table2', style='width:100%' data-options='singleSelect:true'>
+		$tbl="<table id='tbJobs' class='table2', style='width:100%' data-options='singleSelect:true'>
 		<thead><th>Cek</th><th data-options=\"field:'0'\">Module Name</th>
 		<th data-options=\"field:'1'\">Module Description</th>
 		</thead>
@@ -186,24 +206,28 @@ class Jobs extends CI_Controller {
 			$tbl.="
 			<tr>
 			<td>
-				<input type='checkbox' name='modules[]' value='".$row->module_id."' $checked >
+				<input type='checkbox' name='modules[]' value='".$row->module_id
+					."' $checked class='checkbox' style='width:30px' >
 			</td>
 			<td><strong>".anchor("#",$row->module_name,"onclick=\"mod_expand('".$row->module_id."');return false;\"")."</strong></td>
 			<td><strong>".$row->description." - (".$row->module_id.")</strong></td>
 			</tr>
 			";	
+			if($row->module_id=="_30010"){
+				//echo 1;
+			}
 			$tbl .= $this->level2($row,$filter,$group_id);
 		}
 		$tbl.="
 				<tr>
 			</tbody>		
 		</table>"; 
-	   $s="
-                <link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/default/easyui.css\">
-                <link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/icon.css\">
-                <link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/demo.css\">
-                <script src=\"".base_url()."js/jquery-ui/jquery.easyui.min.js\"></script>                
-            ";
+	   //$s="
+       //         <link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/default/easyui.css\">
+        //        <link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/icon.css\">
+         //       <link rel=\"stylesheet\" type=\"text/css\" href=\"".base_url()."js/jquery-ui/themes/demo.css\">
+          //      <script src=\"".base_url()."js/jquery-ui/jquery.easyui.min.js\"></script>                
+           // ";
 		return $tbl;	
 	}
 	function level2($row,$filter,$group_id){
@@ -211,7 +235,7 @@ class Jobs extends CI_Controller {
 		$sql = "select * from modules 
 		where parentid='".$row->module_id."'";
 		if($filter!='') {
-			$sql.=" and (module_id like '%$filter%' or module_name like '%$filter%')";	
+			$sql.=" and (module_id like '%$filter%' or module_name like '%$filter%' or parentid='$row->module_id')";	
 		}
 		$sql .= " order by module_id";
 
@@ -223,7 +247,7 @@ class Jobs extends CI_Controller {
 					$checked="";
 				}
 				$tbl.="<tr>
-				<td><input type='checkbox' name='modules[]' value='".$lvl1->module_id."' $checked></td>
+				<td><input type='checkbox' name='modules[]' value='".$lvl1->module_id."' $checked  class='checkbox' style='width:30px'></td>
 				<td>&nbsp&nbsp&nbsp".$lvl1->module_name."</td>	
 				<td>&nbsp&nbsp&nbsp".$lvl1->description." (".$lvl1->module_id.")</td>	
 				</tr>";
@@ -250,7 +274,7 @@ class Jobs extends CI_Controller {
 					$checked="";
 				}
 				$tbl.="<tr>
-				<td><input type='checkbox' name='modules[]' value='".$lvl2->module_id."' $checked></td>
+				<td><input type='checkbox' name='modules[]' value='".$lvl2->module_id."' $checked  class='checkbox' style='width:30px'></td>
 				<td>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp".$lvl2->module_name."</td>	
 				<td>".$lvl2->description." (".$lvl2->module_id.")</td>
 				</tr>";

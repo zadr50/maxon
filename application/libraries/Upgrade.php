@@ -41,6 +41,10 @@ class Upgrade
 	}
     //echo "exist $key";exit;       
 	
+	$this->add_field("sales_order","status"); 
+	$this->add_field("invoice","status"); 
+	$this->add_field("purchase_order","doc_status"); 
+    $this->add_field("user", "supervisor");
 	$this->add_field("user","branch_code"); 
 	$this->add_field("salesman","lock_report","INT NOT NULL DEFAULT '0' ");
 	$this->create_unit_of_measure();
@@ -244,13 +248,53 @@ class Upgrade
     $this->add_field("user","logged_in","int");         
     
     $this->create_type_of_vendor();
+
+    $this->add_field('inventory_moving','mu_qty','double');
+    $this->add_field('inventory_moving','multi_unit');
+    $this->add_field('inventory_moving','mu_price','double');
+    $this->add_field('inventory_moving','create_date','datetime');
+    $this->add_field('inventory_moving','create_by');
+    $this->add_field('inventory_moving','update_date','datetime');
+    $this->add_field('inventory_moving','update_by');
+    $this->add_field('inventory_moving','cost_account');
+	$this->add_field("salesman","wilayah");
 	
+	$this->create_salesman_target();
+	
+    $this->create_pph21();
+        
+        	
     if($this->display_output){
     	$this->message.="<br>FINISH";
     	return $this->message;
     }           
     
  }
+    function create_pph21(){
+        $fields[]='kelompok varchar(50)';
+        $fields[]='nomor int';
+        $fields[]='keterangan varchar(500)';
+        $fields[]='jumlah double';
+        $fields[]='rumus varchar(250)';
+        $fields[]='nip varchar(50)';
+        $fields[]='tahun int';
+        $fields[]='bulan int';
+        $this->create_table("pph21_form", $fields);        
+    }
+
+
+  	function create_salesman_target(){
+        $e[]="period_id varchar(50)";
+        $e[]="salesman_id varchar(50)";
+        $e[]="category_id varchar(50)";
+        $e[]="region_id varchar(50)";
+        $e[]="sales_target double";
+        $e[]="sales_real double";                
+        $this->create_table("salesman_target",$e);            
+ 		
+ 	}
+ 
+ 
  	function create_type_of_vendor(){
         $e[]="type_id varchar(50)";
         $e[]="type_name varchar(200)";

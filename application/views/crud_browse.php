@@ -12,11 +12,11 @@ if(!isset($field_key))$field_key="id";
 	
 <?php } ?>
 
-<table id="dg<?=$hwnd?>" class="easyui-datagrid "  title="<?=$title?>"
+<table id="dg<?=$hwnd?>" class="easyui-datagrid "  title="<?=ucfirst($title).", Hwnd: [$hwnd]"?>"
 	data-options="iconCls: 'icon-edit',pagination:true,pageSize:10,
-		singleSelect: true, fitColumns: false,  method: 'get', 
+		singleSelect: true, fitColumns: true,  method: 'get', 
 		url: '<?=$url?>/browse_data/<?=$hwnd?>',toolbar:'#tb<?=$hwnd?>'
-	">
+	" width=800 style="min-height:300px;max-height:400px">
 	<thead>
 		<tr>
 		<?php 
@@ -64,22 +64,31 @@ if(!isset($field_key))$field_key="id";
 
 <div id="tb<?=$hwnd?>">
     <?php 
-    echo link_button('Add',"new_$hwnd();return false;",'add');
-    echo link_button('Delete',"delete_$hwnd();return false;",'remove');
-    echo link_button('Edit',"edit_$hwnd();return false;",'edit');
-    echo link_button('Filter',"filter_$hwnd();return false;",'filter');
-    echo link_button('Print',"print_$hwnd();return false;",'print');
-    echo link_button('Reload',"reload_$hwnd();return false;",'reload');
-    echo " Find: <input type='text' id='tb_search_$hwnd'>";
-    echo link_button('Find',"find_$hwnd();return false;",'search');
-    if(isset($other_buttons)){
-        echo $other_buttons;
+    if($show_toolbar){
+	    echo link_button('Add',"new_$hwnd();return false;",'add');
+	    echo link_button('Delete',"delete_$hwnd();return false;",'remove');
+	    echo link_button('Edit',"edit_$hwnd();return false;",'edit');
+	    echo link_button('Filter',"filter_$hwnd();return false;",'filter');
+	    	
+	    echo link_button('Print',"print_$hwnd();return false;",'print');
+	    echo link_button('Reload',"reload_$hwnd();return false;",'reload');
+	    echo " Find: <input type='text' id='tb_search_$hwnd'>";
+	    echo link_button('Find',"find_$hwnd();return false;",'search');
+	    if(isset($other_buttons)){
+	        echo $other_buttons;
+	    }
+		if($show_button_close){
+			echo "<span style='float:right'>".link_button("Close","close_$hwnd();return false","cancel").'</span>';			
+		}
     }
-    echo "<p><i>Silahkan klik tombol diatas [$hwnd]</i></p>";
+	
 	?>	
 </div>
 
 <script language="javascript">
+function close_<?=$hwnd?>(){
+	remove_tab_parent();
+}
 function new_<?=$hwnd?>(){
     var URL="<?=$url?>";
     var FIELD_KEY="<?=$field_key?>";
@@ -93,7 +102,16 @@ function new_<?=$hwnd?>(){
 		} else {
 			$fieldname=$field;
 		}
-		echo "$('#".$fieldname."').val('');";
+		$value="";
+		if($default_value){
+			foreach ($default_value as $arKey => $arValue) {
+				if($arKey==$fieldname){
+					$value=$arValue;
+					break;
+				}
+			}			
+		}
+		echo "$('#".$fieldname."').val('$value');";
 	}
 	?>
     //$('#dlg'+HWND).window({left:window.event.clientX-10,top:window.event.clientY-10});	
@@ -110,26 +128,26 @@ function delete_<?=$hwnd?>(){
 		$.messager.confirm('Confirm','Are you sure you want to remove this line ?',function(r)
 		{
 			if(!r)return false;
-			xurl=URL+'/delete/'+HWND+'/'+row.id;                        
+			xurl=URL+'/delete/'+HWND+'/'+row.id;                       
+			loading();
+			
+			 
 			$.ajax({
 				type: "GET",	url: xurl,
 				success: function(result){
-				try {
-						var result = eval('('+result+')');
-						if(result.success){
-							$.messager.show({
-								title:'Success',msg:result.msg
-							});
+					loading_close();
+					try {
+							var result = eval('('+result+')');
+							if(result.success){
+								log_err("Success");
+								$('#dg'+HWND).datagrid('reload');	 
+							} else {
+								loading_close();
+								log_err(result.msg);
+							};
+						} catch (exception) {		
 							$('#dg'+HWND).datagrid('reload');	 
-						} else {
-							$.messager.show({
-								title:'Error',msg:result.msg
-							});
-							log_err(result.msg);
-						};
-					} catch (exception) {		
-						$('#dg'+HWND).datagrid('reload');	 
-					}
+						}
 				},
 				error: function(msg){$.messager.alert('Info',"Tidak bisa dihapus baris ini !");}
 			});         
@@ -171,6 +189,8 @@ function save_<?=$hwnd?>(){
     var HWND="<?=$hwnd?>";
     var url2=URL+"/save/"+HWND;
     console.log(url2);
+    loading();
+   
 	$('#frm'+HWND).form('submit',{
 		onSubmit: function(){
 			return $(this).form('validate');
@@ -178,14 +198,17 @@ function save_<?=$hwnd?>(){
 		success: function(result){
 			var result = eval('('+result+')');
 			if (result.success){
+				loading_close();
 				$("#mode").val("add");
 				$('#dlg'+HWND).dialog('close');
 				log_msg('Data sudah tersimpan. Silahkan direload untuk melihat data terbaru.');
-			} else {
+			} else {				
+				loading_close();
 				log_err(result.msg);
 			}
 		},
 		error: function(result) {
+			loading_close();
 			log_err(result);			
 		}
 	});	
@@ -223,7 +246,7 @@ function save_<?=$hwnd?>(){
 
 			var loadDataMethod = $.fn.datagrid.methods.loadData;
 			$.extend($.fn.datagrid.methods, {
-				clientPaging: function(jq){
+				clientPaging<?=$hwnd?>: function(jq){
 					return jq.each(function(){
 						var dg = $(this);
                         var state = dg.data('datagrid');
@@ -268,13 +291,28 @@ function save_<?=$hwnd?>(){
             var FIELD_KEY="<?=$field_key?>";
             var HWND="<?=$hwnd?>";
 			$('#dg'+HWND).datagrid('clientPaging<?=$hwnd?>');
+			
+	        $('#dg'+HWND).datagrid({
+	            onDblClickRow:function(){
+	                var row = $('#dg'+HWND).datagrid('getSelected');
+	                if (row){
+	                    edit_<?=$hwnd?>();
+	                }       
+	            }
+	        });        
+			
+			
+dlg<?=$hwnd?>
+			
 		});
+		
+		
 </script>
 
 
 
 <!-- DIALOG SHOW -->
-<div id='dlg<?=$hwnd?>' class="easyui-dialog"
+<div id='dlg<?=$hwnd?>' class="easyui-dialog" data-options="iconCls:'icon-save'"
     style="width:600px;height:400px;padding:10px 20px;top:100px;left:100px;top:20px" 
     title="<?=ucfirst($table)?>"
     closed="true" modal="true" buttons="#tbDlg<?=$hwnd?>">
@@ -291,7 +329,7 @@ function save_<?=$hwnd?>(){
                 } else {
                     $fieldname=$field;
                 }
-                $field_caption=ucfirst($fieldname);
+                $field_caption=ucwords(str_replace("_"," ",$fieldname));
                 echo "<tr><td align='right'><strong>$field_caption</strong></td><td>";
                 if(strpos($type,"date")!==false){
                     echo "<input type='text' class='easyui-datetimebox'
@@ -316,8 +354,11 @@ function save_<?=$hwnd?>(){
     <?php        echo form_close(); ?>
 </div>
 <div id="tbDlg<?=$hwnd?>">
-    <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg<?=$hwnd?>').dialog('close')">Cancel</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg<?=$hwnd?>').dialog('close');return false;">Cancel</a>
     <a href="#" class="easyui-linkbutton" iconCls="icon-save" onclick="save_<?=$hwnd?>();return false">Save</a>
 </div>
 <!-- END DIALOG -->
+
+
+
 

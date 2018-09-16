@@ -1,5 +1,5 @@
 <div class="row-fluid" >
-	<?
+	<?php
 	$limit=100;
 	if($cmd=="list") {
 		$this->load->library("browser");
@@ -40,5 +40,5 @@
 		}
 	?>
 	
-	<? } ?>
+	<?php } ?>
 </div>

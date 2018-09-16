@@ -1,10 +1,10 @@
-        <table id="dg" class="easyui-datagrid"  width="100%"
+        <table id="dg" class="easyui-datagrid"   style="width:1000px;min-height:340px;"
              
             data-options="
                 iconCls: 'icon-edit',
                 singleSelect: true,
-                toolbar: '#tb',fitColumns: true, 
-                url: '<?=base_url()?>index.php/purchase_order/items/<?=$purchase_order_number?>/json'
+                toolbar: '#tb',fitColumns: false, 
+                url: ''
             ">
             <thead>
                 <tr>

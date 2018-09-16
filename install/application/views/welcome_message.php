@@ -3,7 +3,8 @@
 	<h2>MaxOn ERP Software 8.1.01 !</h2>
   <p>MaxOn ERP adalah generasi terbaru dari solusi software untuk pengelolaan 
   database transaksi secara online atau cloud.</p>
-  <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a></p>
+  <p><a class="btn btn-primary btn-lg" href="http://help.maxonerp.com" target="_blank" 
+  	role="button">Learn more</a></p>
 </div>
 <div class="row">
   <div class="col-sm-5 col-md-4">
@@ -38,8 +39,9 @@
       </div>
 	  <div class='thumbnail'>
 		<div style='height:300px;overflow:scroll'>
-			<? include_once "license.txt" ?>
+			<?php include_once "license.txt" ?>
 		</div>
+		<p>&nbsp;</p>
 		<p align="right">
 			<span>I agree to the license</span>&nbsp;<input type="checkbox" 
 			name="license" id="license">  

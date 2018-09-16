@@ -1,4 +1,5 @@
 <?php
+
 //start creating tables
 for($nomor=1;$nomor<44;$nomor++){
 //	ob_start();
@@ -6,6 +7,7 @@ for($nomor=1;$nomor<44;$nomor++){
 	case 1: 
 		include "maxon_apps.php";
 		break;
+ 
 	case 2: include 'articles.php'; break;
 	case 3: include "modules.php"; break; 
 	case 4: include "sysvar.php"; break;
@@ -26,8 +28,10 @@ for($nomor=1;$nomor<44;$nomor++){
 	case 19: include "customer.php"; break;
 	case 20: include "department.php"; break;
 	case 21: include "fixed_asset.php"; break;
+ 
 	case 22: 
 		include "financial.php"; break;
+ 
 	case 23: include "gl_project.php"; break;
 	case 24: include "accounting.php"; break;
 	case 25: include "inventory.php"; break;

@@ -1,7 +1,14 @@
-<script language="JavaScript">
-    CI_BASE='<?=base_url()?>';
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<head><title>MaxOn ERP Online</title></head>
+<script type="text/javascript">
+    CI_ROOT = "<?=base_url()?>index.php/";
+    CI_BASE = "<?=base_url()?>"; 		
 </script>
 
+<BODY>	 
 
 <link rel="stylesheet" type="text/css" href="<?=base_url()?>../js/jquery-ui/themes/standard/easyui.css">
 <link rel="stylesheet" type="text/css" href="<?=base_url()?>../js/jquery-ui/themes/icon.css">
@@ -17,3 +24,5 @@
 	<div class='row'><?=$page?></div>
 	<div class='row'><?=$footer?></div>
 </div>
+
+</BODY>

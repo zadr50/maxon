@@ -14,7 +14,7 @@
 	?>
 	<p></p><i><p>Silahkan contreng modul-modul yang diijinkan untuk diakses oleh kelompok dibawah ini</p></i>
 	<div id='divDetail' class='thumbnail' style='font-size:small'>
-		<? echo $modules ?>
+		<?php echo $modules ?>
 		<!--
 		<ul id="tt" class="easyui-tree"
 			url="<?=base_url()?>index.php/jobs/list_modules">

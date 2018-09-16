@@ -3,7 +3,7 @@
 <div><div class="thumbnail">
 <legend>EDIT ARTICLE</legend>
 
-	<?
+	<?php
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
 	
@@ -20,7 +20,7 @@
 <?php } ?>
  <?php if($message!="") { ?>
 <div class="alert alert-success"><? echo $message;?></div>
-<? } ?>
+<?php } ?>
 
 
 <form id="myform" role="form" method="post" action="<?=base_url()?>index.php/help/save"  class="form-horizontal" >

@@ -2,20 +2,23 @@
 	<?php
 	   $min_date=$this->session->userdata("min_date","");
 	
-    echo link_button('Save','save_bukti()','save');       
-	echo link_button('Add','','add','false',base_url().'index.php/delivery/add');		
-	echo link_button('Print', 'print_delivery()','print');		
-	echo link_button('Delete','','remove','false',base_url().'index.php/delivery/delete/'.$shipment_id);		
-	echo link_button('Search','','search','false',base_url().'index.php/delivery');		
-    echo link_button('Refresh','reload_bukti()','reload');      
+//	echo link_button('Add','','add','false',base_url().'index.php/delivery/add');		
+	echo link_button('Print', 'print_delivery()','print');
+	if($mode!=="add"){
+	    echo link_button('Save','save_bukti()','save');       
+		echo link_button('Delete','','remove','false',base_url().'index.php/delivery/delete/'.$shipment_id);		
+	    if($posted){
+	        echo link_button('UnPosting','unposting()','save');     
+	        
+	    } else {
+	        echo link_button('Posting','posting()','save');     
+	        
+	    }		
+			
+		//echo link_button('Search','','search','false',base_url().'index.php/delivery');		
+	    echo link_button('Refresh','reload_bukti()','reload');      
+	}
     
-    if($posted){
-        echo link_button('UnPosting','unposting()','save');     
-        
-    } else {
-        echo link_button('Posting','posting()','save');     
-        
-    }
     	
 	echo "<div style='float:right'>";
 	echo link_button('Help', 'load_help(\'delivery\')','help');		
@@ -72,11 +75,13 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
             class="easyui-datetimebox" required 
 			data-options="formatter:format_date,parser:parse_date"');?>
             </td>
-            <td>Pengirim</td><td><?php echo form_input('supplier_number',$supplier_number,'id=supplier_number');?></td>
+            <td>Tujuan</td><td><?php echo form_input('supplier_number',$supplier_number,'id=supplier_number');?></td>
        </tr>
        <tr>
-            <td>Jenis Transaksi</td><td><?=form_input('doc_type',$doc_type,"id='doc_type' ");?>
+            <td>Jenis Transaksi</td><td><?=form_input('doc_type',$doc_type,"id='doc_type' style='width:80px' ");?>
                 <?=link_button('','dlgdoc_type_show()',"search","false"); ?>      
+                <?=link_button('','dlgdoc_type_list()',"add","false"); ?>      
+                
              </td>          
             <td>Nomor Ref#</td><td><?=form_input('ref1',$ref1,"id='ref1' ");?>   
              </td>          
@@ -94,12 +99,14 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
        </tr>
    </table>
 	<div id="tb_item" class='thumbnail'>
-        <a href="#" class="easyui-linkbutton" iconCls="icon-add"  onclick="addItem()">Add Item</a>
-		<a href="#" class="easyui-linkbutton" iconCls="icon-edit"  onclick="editItem()">Edit</a>
-		<a href="#" class="easyui-linkbutton" iconCls="icon-remove"   onclick="deleteItem()">Delete</a>	
+        <a href="#" class="easyui-linkbutton" iconCls="icon-add"  onclick="addItem();return false;">Add Item</a>
+		<a href="#" class="easyui-linkbutton" iconCls="icon-edit"  onclick="editItem();return false;">Edit</a>
+		<a href="#" class="easyui-linkbutton" iconCls="icon-remove"   onclick="deleteItem();return false;">Delete</a>	
+	    <?php echo link_button('Refresh','load_items()','reload');      ?>
 	</div> 
-	<div id='divItem' class='box-gradient' style='display:<?=$mode=="add"?"":""?>'>
-		<table id="dg" class="easyui-datagrid table"  width="100%"
+<div class="easyui-tabs" >
+    <div id='divGeneral' title='Items'> 
+		<table id="dg" class="easyui-datagrid"  width="800"
 			data-options="
 				iconCls: 'icon-edit',
 				singleSelect: true,
@@ -110,16 +117,18 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
 				<tr>
 					<th data-options="field:'item_number',width:80">Kode Barang</th>
 					<th data-options="field:'description',width:150">Nama Barang</th>
-					<th data-options="field:'quantity',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
-					<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
-					<th data-options="field:'cost',width:50,align:'left',editor:'text'">Cost</th>
-					<th data-options="field:'total_amount',width:50,align:'left',editor:'text'">Total</th>
+                    <th data-options="<?=col_number('quantity',2)?>">Qty</th>
+					<th data-options="field:'unit',width:50,align:'left',editor:'text'">Unit</th>
+                    <th data-options="<?=col_number('mu_qty',2)?>">M Qty</th>
+					<th data-options="field:'multi_unit',width:50,align:'left',editor:'text'">M Unit</th>
+                    <th data-options="<?=col_number('cost',2)?>">Cost</th>
+                    <th data-options="<?=col_number('total_amount',2)?>">Total</th>
 					<th data-options="field:'line_number',width:30,align:'right'">Line</th>
 				</tr>
 			</thead>
 		</table>
 	</div>	
-
+	<?=load_view("gl/jurnal_view",array("gl_id"=>$shipment_id));?>
 </div>
    
 </form>
@@ -144,6 +153,14 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
 	var url_save_item = '<?=base_url()?>index.php/delivery/save_item';
 	var url_load_item = url_detail();
 	var url_del_item  = '<?=base_url()?>index.php/delivery/del_item';
+	
+	$().ready(function (){
+	    $('#dg').datagrid({
+	        onDblClickRow:function(){
+	        	editItem();
+	        }
+	    });        
+	});
 
     function url_detail(){
 	 	var nomor=$('#shipment_id').val();
@@ -163,27 +180,30 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
         if(tanggal<min_date){
             valid_date=false;
         }
-        if(!valid_date){alert("Tanggal tidak benar ! Mungkin sudah closing !");return false;}
+        if(!valid_date){log_err("Tanggal tidak benar ! Mungkin sudah closing !");return false;}
 
-
+		loading();
 		$.ajax({
 				type: "GET",
 				url: "<?=base_url()?>/index.php/delivery/delete/<?=$shipment_id?>",
 				data: "",
 				success: function(result){
+					loading_close();
 					var result = eval('('+result+')');
 					if(result.success){
+						log_msg(result.msg);
 						$.messager.show({
 							title:'Success',msg:result.msg
 						});	
 						window.open('<?=base_url()?>index.php/delivery','_self');
 					} else {
+						log_err(result.msg);
 						$.messager.show({
 							title:'Error',msg:result.msg
 						});							
 					};
 				},
-				error: function(msg){alert(msg);}
+				error: function(msg){log_err(msg);}
 		}); 				
 	}    
 	function save() {
@@ -193,7 +213,7 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
         if(tanggal<min_date){
             valid_date=false;
         }
-        if(!valid_date){alert("Tanggal tidak benar ! Mungkin sudah closing !");return false;}
+        if(!valid_date){log_err("Tanggal tidak benar ! Mungkin sudah closing !");return false;}
 
         var url="<?=base_url()?>index.php/delivery/save";
 		var shipment_id=$('#shipment_id').val();
@@ -203,22 +223,30 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
 		save_item();		
 	}
 	function editItem(){
-		var row = $('#'+grid_output).datagrid('getSelected');
+		var row = $('#dg').datagrid('getSelected');
 		if (row){
-			console.log(row);
 			$('#frmItem').form('load',row);
 			$('#item_number').val(row.item_number);
 			$('#description').val(row.description);
 			$('#quantity').val(row.quantity);
 			$('#unit').val(row.unit);
-			$('#line_number').val(row.line_number);
-			 
+			$('#id').val(row.line_number);
+			$('#multi_unit').val(row.multi_unit);
+			$('#mu_qty').val(row.mu_qty);
+			$("#cost").val(row.cost);
+			$("#total_amount").val(row.total_amount); 
+			if($("#multi_unit").val()!=$("#unit").val()){
+				$("#divMultiUnit").show();
+			} else {
+				$("#divMultiUnit").hide();
+			}
+			show_input_item();
 		}
 	}    
     function reload_bukti(){
         nomor=$("#shipment_id").val();
         if(nomor=="AUTO"){
-            alert("Simpan dulu !");
+            log_err("Simpan dulu !");
             return false;
         }
         url="<?=base_url()?>index.php/delivery/view/"+nomor;
@@ -250,15 +278,17 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
         var row = $('#dg').datagrid('getSelected');
         if (row){
             $.messager.confirm('Confirm','Are you sure you want to remove this line?',function(r){
+            	loading();
                 if (r){
                     url=url_del_item+'/'+row.line_number;
                     $.ajax({
                         type: "GET",url: url,param: '',
                         success: function(result){
+                            loading_close();
                             var result = eval('('+result+')');
                             if (result.success) load_items();
                         },
-                        error: function(msg){$.messager.alert('Info',msg);}
+                        error: function(msg){loading_close();log_err(msg);}
                 });
                     
                 }
@@ -268,6 +298,8 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
 
     function save_item(){
         if (!valid()) return false;
+        loading();
+        
         var _param=get_input_values();
         $.ajax({
             type: "POST",
@@ -278,22 +310,22 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
                 if (result.success){
                     $("#shipment_id").val(result.shipment_id);
                     load_items();
+                    log_msg("Success");
                     $.messager.show({title: 'Success',msg: 'Success'});
                     close_item();                    
+                    loading_close();
                 } else {
+                	log_err(result.msg);
+                	loading_close();
+                	log_err(result.msg);
                     $.messager.show({title: 'Error',msg: result.msg });
                 }
             },
-            error: function(result){alert("Some error !");}
+            error: function(result){log_err("Some error !");}
         });
     }
     
     
-    function hitung(){
-        
-    }
-
-
     function show_input_item(){
         //$('#dgItemForm').window({left:10,top:window.event.clientY-50});
         $("#dgItemForm").dialog("open").dialog('setTitle','Input barang');
@@ -307,10 +339,16 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
     function clear_input(){
         $('#item_number').val('');
         $('#description').val('');
-        $('#line_number').val('');
+        $('#id').val('');
         $('#quantity').val(1);
         $("#unit").val("Pcs");
         $("#id").val("");
+        $("#mu_qty").val("");
+        $("#multi_unit").val("");
+        $("#mu_harga").val("");
+        $("#cost").val("");
+        $("#total_amount").val("");
+        
     }
 
     function valid(){
@@ -320,12 +358,12 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
         if(tanggal<min_date){
             valid_date=false;
         }
-        if(!valid_date){alert("Tanggal tidak benar ! Mungkin sudah closing !");return false;}
+        if(!valid_date){log_err("Tanggal tidak benar ! Mungkin sudah closing !");return false;}
         
         var shipment_id=$('#shipment_id').val();
-        if(shipment_id=='' ){alert('Isi nomor bukti !');return false;}
+        if(shipment_id=='' ){log_err('Isi nomor bukti !');return false;}
         if($('#warehouse_code').val()==''){alert('Isi gudang!');return false;} 
-        if($('#supplier_number').val()==''){alert('Isi pengirim / customer!');return false;} 
+        //if($('#supplier_number').val()==''){alert('Isi pengirim / customer!');return false;} 
         
         return true;        
     } 
@@ -346,6 +384,10 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
             receipt_by:$("#receipt_by").val(),
             ref2:$("#ref2").val(),
             cost_account:$("#cost_account").val(),            
+            mu_qty:$("#mu_qty").val(),
+            multi_unit:$("#multi_unit").val(),
+            cost:$("#cost").val(),
+            total_amount:$("#total_amount").val(),
             id:$("#id").val()};
        return _param; 
     }
@@ -355,16 +397,20 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
     
     function addItem(){
         if (!valid()) return false;
+        
         clear_input();
+        qty_conv=0;
+        
         show_input_item();
     }
     function load_items(){
         var nomor=$('#shipment_id').val();
         $('#dg').datagrid({url: url_detail()});
+      
     }
     function save_bukti(){
         if($("#shipment_id").val()=="AUTO"){
-            alert("Silahkan diklik AddItem.");
+            log_err("Silahkan diklik AddItem.");
             return false;
         }
         
@@ -397,6 +443,9 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
         });
         
     }
-	
+	function dlgdoc_type_list(){
+		var url=CI_ROOT+"sysvar_data/browse";
+		add_tab_parent("doc_type_delivery",url);
+	}	
  </script>
 	

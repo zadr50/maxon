@@ -45,7 +45,7 @@ function __construct()
 		
 	}
 	function cek_db_process(){
-		$dpost=$this->input->post();
+		$dpost=$this->input->post();		
 		$server=$dpost['server'];
 		$database=$dpost['database'];
 		$user_id=$dpost['user_id'];
@@ -53,7 +53,7 @@ function __construct()
 		$ok=false;
 		$msg="";
 		// cek connection
-		$link=mysql_connect($server,$user_id,$user_pass);
+		$link=mysqli_connect($server,$user_id,$user_pass);
 		if( !$link ){
 			$msg="Error connecting server!";
 			$ok=false;
@@ -63,7 +63,7 @@ function __construct()
 		}
 		// cek database if already canot continue
 		if($ok){
-			$ok=mysql_select_db($database);
+			$ok=mysqli_select_db($link,$database);
 			if( $ok ){
 				$ok=false;
 				$msg.="<br>Invalid Database: [".$database."] already exist cannot continue.";
@@ -73,7 +73,7 @@ function __construct()
 		}
 		if( $ok ) {
 			// create new database
-			$ok=mysql_query('CREATE DATABASE '.$database, $link);
+			$ok=mysqli_query($link,'CREATE DATABASE '.$database);
 			if ( !$ok ) {
 				$msg.="<br>Error creating new database [".$database."], cannot continue.";
 			} else {
@@ -81,10 +81,10 @@ function __construct()
 			}
 			if ( $ok ) {
 				// select with new database
-				$ok=mysql_select_db($database);
+				$ok=mysqli_select_db($link,$database);
 				if(!$ok){
 					$msg.="<br>Error opening new database [".$database."].";
-					mysql_query("DROP DATABASE ".$database,$link);
+					mysqli_query($link,"DROP DATABASE ".$database);
 				}
 			}
 		}	
@@ -97,7 +97,7 @@ function __construct()
 \$db['default']['username'] = '$user_id';
 \$db['default']['password'] = '$user_pass';
 \$db['default']['database'] = '$database';
-\$db['default']['dbdriver'] = 'mysql';
+\$db['default']['dbdriver'] = 'mysqli';
 \$db['default']['dbprefix'] = '';
 \$db['default']['pconnect'] = TRUE;
 \$db['default']['db_debug'] = TRUE;
@@ -133,7 +133,7 @@ function __construct()
 			   $msg.="<br>The file $filename is not writable, check permission file or directory. <br>";
 			   $ok=false;
 			}
-			if( !$ok )	mysql_query("DROP DATABASE ".$database,$link);
+			if( !$ok )	mysqli_query($link,"DROP DATABASE ".$database);
 		}
 		// create flag file maxon_installed
 		if($ok){
@@ -159,7 +159,7 @@ function __construct()
 			   $msg.="<br>The file $filename is not writable";
 			   $ok=false;
 			}
-			if( !$ok )	mysql_query("DROP DATABASE ".$database,$link);
+			if( !$ok )	mysql_query($link,"DROP DATABASE ".$database,$link);
 
 		}
 		
@@ -174,8 +174,8 @@ function __construct()
 		$user_pass=$dpost['user_pass'];
 		$this->session->set_userdata('setserver',$dpost);
 		// cek connection
-		$link=mysql_connect($server,$user_id,$user_pass);
-		$ok=mysql_select_db($database);
+		$link=mysqli_connect($server,$user_id,$user_pass);
+		$ok=mysqli_select_db($link,$database);
 		$ok=true;
 		$msg="Creating tables and queries";
 		$path=realpath(dirname(__FILE__));
@@ -198,8 +198,8 @@ function __construct()
 			$msg="<p>Unable get session server !</p>";
 			$ok=false;
 		} else {
-			$link=mysql_connect($dpost['server'],$dpost['user_id'],$dpost['user_pass']);
-			$ok=mysql_select_db($dpost['database']);
+			$link=mysqli_connect($dpost['server'],$dpost['user_id'],$dpost['user_pass']);
+			$ok=mysqli_select_db($link,$dpost['database']);
 			if( !$ok ) {
 				$msg="<p>Unable opening database ".$dpost['database']." !</p>";
 			} else {

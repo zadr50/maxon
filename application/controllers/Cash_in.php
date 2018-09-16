@@ -102,7 +102,7 @@ class Cash_in extends CI_Controller {
                 "dlgRetFunc"=>"$('#org_id_item').val(row.dept_code);",
                 "dlgCols"=>array(array("fieldname"=>"dept_code","caption"=>"Dept Code","width"=>"100px"),
                 array("fieldname"=>"dept_name","caption"=>"Keterengan","width"=>"250px"))));
-            
+            $data["lookup_gl_projects"]=$this->list_of_values->lookup_gl_projects("ref2");
             return $data;
 	}
 	function index()
@@ -122,6 +122,7 @@ class Cash_in extends CI_Controller {
  		 $data['mode']='add';
 		 $data['voucher']='AUTO'; //$this->nomor_bukti();
 		 $data['org_id']=session_company_code();
+		 $data['check_date']=date("Y-m-d H:i:s");
 	     $this->template->display_form_input($this->file_view,$data,'');
 	}
 	function save(){
@@ -255,7 +256,7 @@ class Cash_in extends CI_Controller {
     }	 
 	function items($voucher) {
 		$sql="select cwi.account_id,coa.account,coa.account_description as description,
-			amount,comments,invoice_number,ref1,line_number,cwi.org_id	
+			amount,comments,invoice_number,cwi.ref1,line_number,cwi.org_id
 			from check_writer_items cwi
 			left join chart_of_accounts coa on coa.id=cwi.account_id
 			where trans_id in (
@@ -286,7 +287,7 @@ class Cash_in extends CI_Controller {
 		$data['amount']=$this->input->post('amount');
 		$data['comments']=$this->input->post('comments');
         $data['org_id']=$this->input->post('org_id_item');
-		
+		$data["invoice_number"]=$this->input->post("invoice_number");
 		$ret['success']=false;
 		$ret['msg']="Unknown Error";
 		if($line_number==0){

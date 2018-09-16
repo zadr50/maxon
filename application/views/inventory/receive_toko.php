@@ -27,7 +27,7 @@
 </div>
 <div class="thumbnail">	
 
-   <table width="100%" class="table">
+   <table width="100%" class="table2">
 	<tr>
 		<td>Nomor Bukti</td><td>
 		<?php
@@ -169,10 +169,9 @@
 
 	
 	}    
-	function recv_no(){
-        if (!valid()) return false;
-	    dlgdo_gudang_show();
-	}
+
+	
+	
     function valid(){
         var valid_date=true;
         var min_date='<?=$min_date?>';
@@ -180,12 +179,12 @@
         if(tanggal<min_date){
             valid_date=false;
         }
-        if(!valid_date){alert("Tanggal tidak benar ! Mungkin sudah closing !");return false;}
+        if(!valid_date){log_err("Tanggal tidak benar ! Mungkin sudah closing !");return false;}
         
         var shipment_id=$('#shipment_id').val();
         if(shipment_id==''){alert('Isi nomor bukti !');return false;}
-        if($('#warehouse_code').val()==''){alert('Isi gudang yang menerima barang !');return false;} 
-        if($('#supplier_number').val()==''){alert('Isi pengirim atau supplier!');return false;} 
+        if($('#warehouse_code').val()==''){log_err('Isi gudang yang menerima barang !');return false;} 
+        if($('#supplier_number').val()==''){log_err('Isi pengirim atau gudang sumber !');return false;} 
         
         return true;        
     } 
@@ -306,7 +305,35 @@
             $('#id').val(row.line_number);
         }
     }
+	function recv_no(){
+        if (!valid()) return false;
+        
+		search_id=$('#dlgdo_gudang_search_id').val();
+		from_gudang=$("#supplier_number").val();
+		to_gudang=$("#warehouse_code").val();
+        from="";
+        to="";
+        
+        
+        var vUrl=CI_ROOT+'receive_toko/sj_from_gudang/'+from_gudang+'/'+to_gudang;
+		$('#dgdo_gudang').datagrid({url:vUrl});
+
+		idd_do_gudang="do_gudang";
+        $("#dlgdo_gudang_search_id").focus();		
+        $('#dlgdo_gudang').window({left:100,top:50});  
+		$('#dlgdo_gudang').dialog('open').dialog('setTitle','Daftar Pilihan [do_gudang]');
+        
+	}
+	function dlgdo_gudang_search(){
+		recv_no();
+	}
+	function dlgdo_gudang_select(){
+		
+	}
+	
+	    
     function add_sj_item(nomor){
+    	loading();
         target=$("#shipment_id").val();
         gudang=$("#warehouse_code").val();
         supplier=$("#supplier_number").val();
@@ -315,12 +342,13 @@
             success: function(result){
                 var result = eval('('+result+')');
                 if (result.success) {
+                	loading_close();
                     $("#shipment_id").val(result.shipment_id);
                     load_items();
                     
                 }
             },
-            error: function(msg){$.messager.alert('Info',msg);}
+            error: function(msg){loading_close();log_err(msg);}
         });
     }
 </script>

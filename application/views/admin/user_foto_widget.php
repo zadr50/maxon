@@ -20,7 +20,7 @@
                     
 			<?="</form>"?>
 			<div id='error_upload'></div>
-			<p><? echo $path_image ?></p>
+			<p><?php echo $path_image ?></p>
  
 <script language='javascript'>
   	function do_upload()

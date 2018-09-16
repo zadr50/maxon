@@ -1,21 +1,20 @@
-<legend>FORMULIR PINJAMAN KARYAWAN</legend>
 <div class="thumbnail">
-	<?
-	echo link_button('Save', 'save_this()','save');		
-	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','true',base_url().'index.php/payroll/pinjaman/add');		
-	echo link_button('Refresh','','reload','true',base_url().'index.php/payroll/pinjaman/view/'.$loan_number);		
-	echo link_button('Search','','search','true',base_url().'index.php/payroll/pinjaman');		
-	echo link_button('Help', 'load_help(\'pinjaman\')','help');		
-	
+	<?php
+	echo link_button('Save', 'save_this();return false;','save');		
+	echo link_button('Print', 'print();return false;','print');		
+	echo link_button('Help', 'load_help(\'pinjaman\')','help');			
 	?>
-	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
-	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
-		<div>Update</div>
-		<div>MaxOn Forum</div>
-		<div>About</div>
+	<div style="float:right">
+        <a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+        <div id="mmOptions" style="width:200px;">
+            <div onclick="load_help()">Help</div>
+            <div>Update</div>
+            <div>MaxOn Forum</div>
+            <div>About</div>
+        </div>
+        <?=link_button('Close', 'remove_tab_parent()','cancel')?>	    
 	</div>
+	
 </div>
 
 <?php echo validation_errors(); ?>
@@ -92,11 +91,11 @@
 	   </form>
 	</div>
 	 
-	<div title='Cicilan'><? include_once "cicilan.php" ?></div>
+	<div title='Cicilan'><?php include_once "cicilan.php" ?></div>
 
 </div>	
 	
-<? include_once "employee_lookup.php" ?>
+<?php include_once "employee_lookup.php" ?>
 <script type="text/javascript">
     function save_this(){
         if($('#nip').val()===''){alert('Isi dulu NIP Karyawan !');return false;};

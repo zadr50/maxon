@@ -45,9 +45,9 @@ class Aktiva_proses extends CI_Controller {
 		return $data;
 	}
 	
-	function load($period) {
+	function load($period,$reload=false) {
 		$period=urldecode($period);
-		$rows=$this->aktiva_model->load_by_period($period);
+		$rows=$this->aktiva_model->load_by_period($period,$reload);
         $data['total']=count($rows);
         $data['rows']=$rows;                    
         echo json_encode($data);

@@ -153,11 +153,11 @@ private $table_name='suppliers';
 		return $cnt;
 	}
     function info($id){
-        $data=$this->get_by_id($id)->row();
-        if(count($data)){    
+    	$ret='';
+        if($data=$this->get_by_id($id)->row()){
             $ret='<strong>'.$id.' - '.$data->supplier_name.'</strong> - '
-                    .$data->street.' '.$data->city;
-        } else $ret='';
+                .$data->street.' '.$data->city;
+        }
         return $ret;
     }
 	function saldo_hutang_summary_old()

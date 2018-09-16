@@ -67,18 +67,15 @@ class Customer_type_model extends CI_Model {
 	}
 	function get_prices($cust_type){
 		$retval=array();
-		$this->load->model("inventory_model");
-		if($item_list=$this->inventory_model->item_list_all())
-		{
-			for($i=0;$i<count($item_list);$i++)
-			{
-				$item=$item_list[$i];
-				$price=$this->get_price($cust_type,$item['item_number']);
-				$retval[]=array("item_no"=>$item['item_number'],
-				"description"=>$item["description"],"retail"=>$item["retail"],
-				"prices"=>$price);
+		$sql="select i.item_number,i.description,i.retail,ipc.*
+			from inventory i join inventory_price_customers ipc 
+			on i.item_number=ipc.item_no where ipc.cust_type='$cust_type'";
+		if(!$query=$this->db->query($sql)){
+			foreach($query->result_array() as $row){
+				$retval[]=$row;
 			}
 		}
+		
 		return $retval;
 	}
 }

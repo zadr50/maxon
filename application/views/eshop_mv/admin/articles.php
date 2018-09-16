@@ -6,7 +6,7 @@ silahkan edit pada baris yang diinginkan, tentukan dan setting posisi dimana
 article tersebut ingin ditampilkan.</p>
 </div>
 <div class="row-fluid" >
-	<?
+	<?php
 	$limit=100;
 	if($cmd=="list") {
 		$this->load->library("browser");
@@ -87,7 +87,7 @@ article tersebut ingin ditampilkan.</p>
 
 		</script>
 	
-	<? } ?>
+	<?php } ?>
 </div>
 <link rel="stylesheet" type="text/css" href="<?=base_url()?>assets/eshop/eshop.css">
 

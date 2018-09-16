@@ -2,17 +2,16 @@
 	<?php
 	$min_date=$this->session->userdata("min_date","");
 	
-	echo link_button('Add','','add','false',base_url().'index.php/receive_po/add');		
 	echo link_button('Print', 'print_receive()','print');		
 	echo link_button('Delete','delete_receive2()','remove','false');	
     echo link_button('Save', 'simpan()','save');        
     
-	echo link_button('Search','','search','false',base_url('index.php/receive_po'));		
 	if($mode=="view") echo link_button('Refresh','','reload','false',base_url().'index.php/receive_po/view/'.$shipment_id);		
     if($mode=="view") echo link_button('Verify', 'doc_status_verify()','save');       
     
 	echo "<div style='float:right'>";
 	echo link_button('Help', "load_help('receipt_po')",'help');		
+    echo link_button('Close','remove_tab_parent()','cancel');      
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
@@ -26,7 +25,7 @@
 <div class="thumbnail">	
     <form id='myform' method='post' action='<?=base_url()?>index.php/receive_po/save'>
     
-   <table class='table' width="100%">
+   <table class='table2' width="100%">
        <tr>
            <td>Receipt No:</td><td><strong><?=$shipment_id?></strong>
                <?=form_hidden("shipment_id",$shipment_id)?>                        
@@ -44,7 +43,7 @@
             <td>Gudang:</td><td><?php echo form_dropdown('warehouse_code',
                     $warehouse_list,$warehouse_code,'id=warehouse_code');?>
             </td>
-           <td>No SuratJalan#:</td>
+           <td>Surat Jalan#:</td>
            <td><?=form_input('ref1',$ref1,'id=ref1');?></td>
 			
        </tr>
@@ -56,7 +55,10 @@
             <td>Keterangan</td>
             <td colspan=4><?=form_input('comments',$comments,'id=comments style="width:300px"');?>
             </td>
-			<td></td>
+			
+       </tr>
+       <tr>
+            <td>Selected by Invoice? <?=$selected?></td>       	
        </tr>
 
    </table>
@@ -77,8 +79,11 @@
 				<th data-options="field:'unit',width:50">Unit</th>
 				<th data-options="field:'cost',width:50">Cost</th>
 				<th data-options="field:'total_amount',width:50">Total</th>
+				<th data-options="field:'mu_qty',width:80">M Qty</th>
+				<th data-options="field:'multi_unit',width:50">M Unit</th>
+				<th data-options="field:'mu_price',width:50">M Price</th>
+                <th data-options="field:'manufacturer',width:80">Merk</th>				
 				<th data-options="field:'id',width:50">Id</th>
-                <th data-options="field:'manufacturer',width:80">Merk</th>
 			</tr>
 		</thead>
 	</table>

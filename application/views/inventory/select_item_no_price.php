@@ -1,13 +1,10 @@
 <div id='dgItemInv' class="alert alert-info">
-    <p><i>* Pilih kode barang dibawah ini kemudian isi quantity 
-        dan klik tombol [Save Item] agar tampil didaftar barang 
-        dibawah ini</i></p>
-	<table width="100%" class="table">
+	<table width="100%" class="table2">
 		<tr>
 			<td>Kode Barang</td>
 			<td><input onblur='find()' id="item_number" style='width:180px' 
 					name="item_number"   class="easyui-validatebox" >
-					<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
+					<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" 
 					onclick="searchItem();return false;"></a>
 			</td>
 			<td>Qty</td>
@@ -28,6 +25,9 @@
 		<input type='hidden' id='ref_number' name='ref_number'>
 		<input type='hidden' id='line_number' name='line_number'>		
 	</table>	
+    <p style="font-size:small"><i>* Pilih kode barang dibawah ini kemudian isi quantity 
+        dan klik tombol [Save Item] agar tampil didaftar barang 
+        dibawah ini</i></p>
 </div>
 
 <?=load_view("inventory/select_unit_jual")?>

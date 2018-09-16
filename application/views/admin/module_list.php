@@ -22,10 +22,10 @@
 	</script>
 	
 </div>
-	<div class="thumbnail">
-		<ul id='tt' class="easyui-tree"
+	<div class="thumbnail" style="max-height:450px">
+		<ul id='tt' class="easyui-tree" style="max-height:400px;" 
 			data-options="url:'<?=base_url()?>index.php/modules/list_json',
-			animate:true,
+			animate:true, height:300,
 			onContextMenu: function(e,node){
 				e.preventDefault();
 				pageX=e.pageX;
@@ -48,7 +48,7 @@
         <div onclick="reload()" data-options="iconCls:'icon-reload'">Refresh</div>
 	</div>
 
-<? include_once "modules.php"; ?>
+<?php include_once "modules.php"; ?>
 
 <script language="javascript">
     pageX=0;

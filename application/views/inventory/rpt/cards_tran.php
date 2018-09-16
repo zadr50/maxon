@@ -5,12 +5,24 @@
 		$data['criteria1']=true;
 		$data['label1']='Kelompok Barang';
 		$data['text1']='';
+         $data['key1']="kode";
+         $data['fields1'][]=array("kode","80","Kode");
+         $data['fields1'][]=array("category","180","Kelompok");
+         $data['ctr1']='category/select';
+		
 		$data['criteria2']=true;
 		$data['label2']='Kode Barang';
 		$data['text2']='';
+         $data['key2']="item_number";
+         $data['fields2'][]=array("item_number","80","Kode");
+         $data['fields2'][]=array("description","180","Nama Barang");
+         $data['ctr2']='inventory/select';
+		
+		
 		 $data['date_from']=date('Y-m-d 00:00:00');
 		 $data['date_to']=date('Y-m-d 23:59:59');
 		 $data['select_date']=true;
+		 
 		$data['rpt_controller']="inventory/rpt/$id";
 		$CI->template->display_form_input('criteria',$data,'');
 	} else {
@@ -33,6 +45,7 @@
 		'group_by'=>array('item_number'),'order_by'=>array('item_number'))
 		);
 		 $data['header']=company_header();
+		 $data['criteria']="Kelompok: $kel, Kode Barang: $item";
 		$this->load->view('simple_print.php',$data);    		
 		
 	}

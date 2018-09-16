@@ -6,24 +6,23 @@
     CI_CAPTION='<?=$caption?>';
 </script>
 
-<?
+<?php
 date_default_timezone_set("Asia/Jakarta");
-
 echo $library_src;
 echo $script_head;
 $controller_name=str_replace("/","_",$controller);
-
-
 ?>
-<div class='container'>
-	<div class='col-lg-12 clearfix'>
-<?
-	add_button_menu("MAXON APPS","market/apps","ico_manuf.png",
-	"Download New Application from MaxOn Market. You can download 
-	free application or paid application from publisher.","view_url()");
-?>
+<div class='thumbnail'>
+	<div class="col-lg-12 clearfix">
+		<h2>MaxOn Market</h2> 
+		<p>	You can download free application or paid application from publisher. 
+			<?=anchor("market/apss","Download")?>
+		</p>
 	</div>
-	<div id='isi' class='col-lg-12'></div>
+	<div id='isi' class='col-lg-12 thumbnail ' ">
+		
+		
+	</div>
 </div>
 
 <script type="text/javascript">
@@ -44,6 +43,7 @@ $(document).ready(function(){
 					var html='';
 					for(i=0;i<result.rows.length;i++){
 						app=result.rows[i];
+						html=html+'<div class="col-md-5"> ';
 						html=html+'<div class="panel panel-info info2 ">';
 						html=html+"<div class='panel-heading '><div class='glyphicon glyphicon-list'>";
 						html=html+"<strong> "+app.app_name+"</strong> &nbsp [AppId: <i>"+app.app_id+"</i>]";
@@ -62,6 +62,7 @@ $(document).ready(function(){
 						}
 						html=html+"</div>";
 						html=html+"</div>";
+						html=html+"</div>"
 					}
 					$('#isi').html(html);	 
 				} else {

@@ -4,7 +4,7 @@ class Cash_mutasi extends CI_Controller {
     private $limit=10;
     private $table_name='check_writer';
     private $sql="select voucher,check_date,payment_amount,posted
-            ,account_number,payee,supplier_number
+            ,account_number,payee,supplier_number,ref1
             ,trans_type,check_number,memo,trans_id,
             org_id
                 from check_writer
@@ -72,6 +72,7 @@ class Cash_mutasi extends CI_Controller {
                 array("fieldname"=>"bank_name","caption"=>"Nama Bank","width"=>"250px"),
                 array("fieldname"=>"org_id","caption"=>"Company","width"=>"80px"))));
             
+			$data["lookup_gl_projects"]=$this->list_of_values->lookup_gl_projects("ref1");
             
             return $data;
 	}
@@ -92,6 +93,7 @@ class Cash_mutasi extends CI_Controller {
  		 $data['mode']='add';
 		 $data['voucher']="AUTO"; //$this->nomor_bukti();
          $data['org_id']=session_company_code();
+		 $data['check_date']=date("Y-m-d H:i:s");
   	     $this->template->display_form_input($this->file_view,$data,'');
 	}
 	function save(){
@@ -169,10 +171,10 @@ class Cash_mutasi extends CI_Controller {
      function browse($offset=0,$limit=50,$order_column='voucher',$order_type='asc'){
 		$data['controller']=$this->controller;
 		$data['fields_caption']=array('Nomor Bukti','Tanggal','Jumlah','Posted','Rekening Sumber','Untuk'
-		,'Rekening Tujuan','Jenis Transaksi','Nomor Giro','Keterangan','Company','Trans Id');
+		,'Rekening Tujuan','Jenis Transaksi','Nomor Giro','Keterangan','Company','Project','Trans Id');
 		$data['fields']=array('voucher','check_date','payment_amount','posted'
             ,'account_number','payee','supplier_number'
-            ,'trans_type','check_number','memo','org_id','trans_id');
+            ,'trans_type','check_number','memo','org_id','ref1','trans_id');
 					
 		if(!$data=set_show_columns($data['controller'],$data)) return false;
 			

@@ -2,11 +2,9 @@
 	<?
 	echo link_button('Save', 'save()','save');		
 	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','false',base_url().'index.php/project/project/add');		
-	echo link_button('Refresh','','reload','false',base_url().'index.php/project/project/view/'.$kode);		
-	echo link_button('Search','','search','false',base_url().'index.php/project/project');		
-    echo "<div style='float:right'>";
+	echo "<div style='float:right'>";
 	echo link_button('Help', 'load_help(\'project\')','help');	
+    echo link_button('Close','remove_tab_parent()','cancel');      
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip',plain:false">Options</a>
 	<div id="mmOptions" style="width:200px;">
@@ -16,12 +14,17 @@
 		<div>About</div>
 	</div>
 	</div>
+	
 </div>
 <div class="thumbnail">	
+	
+	
 <form id="myform"  method="post" role="form">
 <input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 <?php $err=validation_errors();if($err<>"")echo "<div class='alert alert-warning'>$err</div>"; ?>
-<table class="table" width="100%">
+
+
+<table class="table2" width="100%">
 	<tr>
 		<td>Kode Proyek</td> 
 		<td><?php

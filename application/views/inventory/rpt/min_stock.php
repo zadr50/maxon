@@ -7,6 +7,10 @@ if(!$CI->input->post('cmdPrint')){
 	$data['criteria1']=true;
 	$data['label1']='Kelompok Barang';
 	$data['text1']='';
+         $data['key1']="kode";
+         $data['fields1'][]=array("kode","80","Kode");
+         $data['fields1'][]=array("category","180","Kelompok");
+         $data['ctr1']='category/select';
 	$data['caption']='DAFTAR UNDER STOCK';
 	$data['rpt_controller']="inventory/rpt/$id";
 	$CI->template->display_form_input('criteria',$data,'');
@@ -25,19 +29,8 @@ if(!$CI->input->post('cmdPrint')){
 		<h2>DAFTAR STOCK MINIMUM</h2></td>     	
      </tr>
      <tr>
-     	<td colspan='2'><?=$model->street?></td><td></td>     	
-     </tr>
-     <tr>
-     	<td colspan='2'><?=$model->suite?></td>     	
-     </tr>
-     <tr>
      	<td>
-     		<?=$model->city_state_zip_code?> - Phone: <?=$model->phone_number?>
-     	</td>
-     </tr>
-     <tr>
-     	<td>
-     		Criteria: Dari Tanggal: <?=$date1?> s/d : <?=$date2?>
+     		Criteria: Dari Tanggal: <?=$date1?> s/d : <?=$date2?>, Suppplier: <?=$supplier?>
      	</td>
      </tr>
      <tr><td colspan=4 style='border-bottom: black solid 1px'></td></tr>

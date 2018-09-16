@@ -33,7 +33,7 @@
 <input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>	
 <input type='hidden' name='trans_type' id='trans_type'	value='Purchase'>	
 <input type='hidden' id='transtype' name='transtype' value='PO-DEBIT MEMO'>
-   <table class="table" width="100%">
+   <table class="table2" width="100%">
 		<tr>
 			<td>Nomor Bukti</td>
 			<td>
@@ -218,6 +218,10 @@
 		});
     }
 		function save_item(){
+			
+			if($("#kodecrdb").val()=="AUTO"){
+				log_err("Simpan dulu !");return false;
+			}
 			url = '<?=base_url()?>index.php/crdb/save_item';
 			$('#kodecrdb_no').val($('#kodecrdb').val());
 						 

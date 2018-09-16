@@ -20,7 +20,7 @@
 </div>
 <div class="thumbnail">	
 	<form id="myform" method="POST" action="<?=base_url()?>index.php/payables_payments/save">
-	<table width="100%" class="table">	
+	<table width="100%" class="table2">	
 		<tr>
 			<td>Supplier: </td><td colspan=4><?=form_input('supplier_number',$supplier_number,"id=supplier_number");?>
 				<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" 
@@ -48,10 +48,9 @@
 			');?></td>
 			 
 			<td>Jenis Bayar: </td><td><?=form_dropdown('how_paid',array('Cash','Giro',
-				'Transfer',
-				"title='Apabila dilakukan pembayaran dengan giro 
-				silahkan isi informasi giro dan tanggal jatuh tempo giro.' "),
-				$how_paid,"id='how_paid'  style='width:200px'");?></td>
+				'Transfer'),$how_paid,"id='how_paid'  style='width:200px' 
+					title='Apabila dilakukan pembayaran dengan giro silahkan isi informasi giro dan tanggal jatuh tempo giro.'
+				");?></td>
 				
 				
 		</tr>

@@ -34,8 +34,12 @@ input[type="radio"], input[type="checkbox"] {
 .navbar-maxon {
 	background-color: #D9E5F0;
 	color:#fff;
+<<<<<<< HEAD
 	border:1px solid transparent;
     border-bottom: 1px solid #bfcee6;
+=======
+	border:1px solid black;
+>>>>>>> 8f07a81... Update Versi 7
 }
  
 .clear				{ clear: both; }
@@ -730,6 +734,7 @@ padding-left: 5px;
 }
 .msg-inbox {
 	pointer:cursor;
+<<<<<<< HEAD
 }
 
 
@@ -786,3 +791,6 @@ padding-left: 5px;
 
 
 
+=======
+}
+>>>>>>> 8f07a81... Update Versi 7

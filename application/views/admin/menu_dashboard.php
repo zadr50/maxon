@@ -1,12 +1,12 @@
- <?
+ <?php
   $CI =& get_instance();
  ?>
 <div class="easyui-tabs" id="tt">	 
-	<div title="HOME"><? include_once __DIR__."/../home.php";?></div>
+	<div title="HOME"><?php include_once __DIR__."/../home.php";?></div>
 	<script>$().ready(function(){$("#tt").tabs("select","DASHBOARD");});</script>
 	<div title="DASHBOARD" style="padding:10px">
-		<div class="col-md-12" style="margin:0 auto">
-		<?
+		<div class="col-xs-12" style="margin:0 auto">
+		<?php
 			add_button_menu("Perusahaan","company","ico_asset.png",
 			"Pengaturan nama dan alamat perusahaan");		
 			add_button_menu("User Login","user","ico_customer.png",

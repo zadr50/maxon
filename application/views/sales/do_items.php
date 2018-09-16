@@ -15,6 +15,8 @@
 				<th data-options="field:'description',width:180">Description</th>
 				<th data-options="field:'quantity',width:80">Quantity</th>
 				<th data-options="field:'unit',width:80">Unit</th>
+				<th data-options="field:'mu_qty',width:80">M Qty</th>
+				<th data-options="field:'multi_unit',width:80">M Unit</th>
 
 			</tr>
 		</thead>

@@ -451,8 +451,9 @@ class Purchase_order extends CI_Controller {
 		function select_open_po($supplier=''){
 			$supplier=urldecode($supplier);
             $sql="select p.purchase_order_number,p.po_date,p.due_date,p.terms
-            ,p.supplier_number,p.doc_status,p.bill_to_contact 
+            ,p.supplier_number,p.doc_status,p.bill_to_contact,s.supplier_name 
             from purchase_order  p
+            left join suppliers s on s.supplier_number=p.supplier_number
             where p.potype='O'  and ifnull(received,false)=false";
             if($supplier!="")$sql.=" and p.supplier_number='$supplier' ";
             if($search=$this->input->get('s')){
@@ -472,8 +473,10 @@ class Purchase_order extends CI_Controller {
 			$nomor=urldecode($nomor);
 			if($nomor){
 
-				$sql="select item_number,description,quantity,unit,qty_recvd,line_number 
-				from purchase_order_lineitems where purchase_order_number='$nomor' and ifnull(received,false)=false ";				 
+				$sql="select item_number,description,quantity,unit,qty_recvd,line_number,
+				mu_qty,multi_unit,mu_harga 
+				from purchase_order_lineitems 
+				where purchase_order_number='$nomor' and ifnull(received,false)=false ";				 
 				 
 				$query=$this->db->query($sql);
 				$i=0;
@@ -481,8 +484,18 @@ class Purchase_order extends CI_Controller {
 				if($query){ 
 					foreach($query->result_array() as $row){
 						$qty_sisa=$row['quantity']-$row['qty_recvd'];
-						$row['qty']=form_input("qty[]",$qty_sisa,"style='width:50px'");
-						$row['line']=$row['line_number'].form_hidden("line[]",$row['line_number']);
+						if($row['quantity']>0){
+							$ratio=$row['mu_qty']/$row['quantity'];
+						} else {
+							$ratio=1;
+						}
+						$mu_qty=$ratio*$qty_sisa;
+						//qty_receive input
+						$row['qty']=form_input("qty[]",$qty_sisa,"id='qty_$i' style='width:50px' onchange='calc_ratio($i);return false;'");
+						$row['line']=$row['line_number'].
+							form_input("line[]",$row['line_number'],"readonly style='width:10px'").
+							form_input("ratio[]",$ratio,"readonly style='width:10px' id='ratio_$i'");
+						$row['mu_qty']=form_input("mu_qty[]",$mu_qty,"readonly id='mu_qty_$i' style='width:50px'");
 						
 						$rows[$i++]=$row;
 					};

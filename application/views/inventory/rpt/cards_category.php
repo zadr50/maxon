@@ -29,6 +29,8 @@
 		'group_by'=>array('category'))
 		);
 		 $data['header']=company_header();
+ 		 $data['criteria']="Kelompok: $kel";
+		 
 		$this->load->view('simple_print.php',$data);    		
 		
 	}

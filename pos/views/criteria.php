@@ -38,6 +38,8 @@ $target_window="_self";
 			if(!isset($criteria4))$criteria4=false;
 			if(!isset($criteria5))$criteria5=false;
 			if(!isset($module))$module="";
+			
+			echo "<div class='col-md-6'>";
 			if($select_date){
 				echo "<strong>Dari Tanggal :</strong>
 				  <p>".form_input('txtDateFrom',$date_from,'id="txtDateFrom" 
@@ -57,6 +59,8 @@ $target_window="_self";
 				if(isset($ctr1))echo link_button("","lov1()","search"); 
 				echo "</p>";
 			}
+			echo "</div>";
+			echo "<div class='col-md-3'>";
 			if($criteria2){
 				if(isset($ctr2)){
 					echo "<strong>".$label2."</strong>";
@@ -118,6 +122,7 @@ $target_window="_self";
 				}
 				echo "</p>";
 			}
+			echo "</div>";
 			
 		?>
 	</div>

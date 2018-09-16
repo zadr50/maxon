@@ -1,6 +1,6 @@
 <h4>FORMULIR PINJAMAN ANGGOTA</H4>
 <div class="thumbnail">
-	<?
+	<?php
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/koperasi/pinjaman/add');		
@@ -25,7 +25,7 @@
 		<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 	   <table>
 			<tr>
-				<td>Nomor Anggota</td><td><? echo form_input('no_anggota',$no_anggota,"id=no_anggota"); 
+				<td>Nomor Anggota</td><td><?php echo form_input('no_anggota',$no_anggota,"id=no_anggota"); 
 				echo link_button("","select_anggota()","search")?></td>
 
 				<td rowspan='4' colspan='4'>
@@ -36,7 +36,7 @@
 				
 			</tr>
 			<tr>
-				<td>Jenis Pinjaman</td><td><? echo form_dropdown('jenis_pinjaman',$jenis_pinjaman_list,$jenis_pinjaman,"id=jenis_pinjaman");?></td>
+				<td>Jenis Pinjaman</td><td><?php echo form_dropdown('jenis_pinjaman',$jenis_pinjaman_list,$jenis_pinjaman,"id=jenis_pinjaman");?></td>
 			</tr>
 			<tr>
 				<td>Nomor Pinjaman</td>
@@ -73,15 +73,15 @@
 	   </form>
 	</div>
 	<div title='Cicilan'>
-		<? include_once "cicilan.php" ?>
+		<?php include_once "cicilan.php" ?>
 	</div>
 	  
 
 
 </div>	
 	
-<? include_once "anggota_select.php" ?>
-<? include_once "rekening_lookup.php" ?>
+<?php include_once "anggota_select.php" ?>
+<?php include_once "rekening_lookup.php" ?>
 
 <script type="text/javascript">
     function save_this(){

@@ -119,8 +119,18 @@ class Type_of_payment extends CI_Controller {
         $this->template->display_browse2($data);
     }
     function browse_data($offset=0,$limit=10,$nama=''){
+    	if($nama=='x')$nama="";
         $sql=$this->sql." where type_of_payment like '$nama%'";
+				
+        if($this->input->get("page"))$offset=$this->input->get("page");
+        if($this->input->get("rows"))$limit=$this->input->get("rows");
+        if($offset>0)$offset--;
+        $offset=$limit*$offset;
+        $sql.=" limit $offset,$limit";
         echo datasource($sql);
+
+
+ 
     }
 	function delete($id){
 		$id=urldecode($id);

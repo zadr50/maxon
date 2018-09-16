@@ -183,21 +183,16 @@ class Stock_adjust extends CI_Controller {
 	}
 	function update()
 	{
-		 $data=$this->set_defaults(); 
-        	 $data=$this->get_posts();
-		 $this->_set_rules();
- 		 $id=$this->input->post('shipment_id');
-             
-		 if ($this->form_validation->run()=== TRUE){
-			$this->inventory_card_header_model->update($id,$data);
-		    $data['message']='update success';
+       	 $data=$this->get_posts();
+ 		 $id=$data['transfer_id'];
+		 $ok=$this->inventory_moving_model->update($id,$data);
+		 if($ok){		 	
+		    $msg='Update Success';
 			$this->syslog_model->add($id,"stock_adjust","edit");
-
 		} else {
-			$data['message']='Error Update';
-		}
-	  
- 		$this->view($id);		
+			$msg='Error Update';
+		}	  
+ 		echo json_encode(array("success"=>$ok,"msg"=>$msg));
 	}
 	
 	function view($id,$message=null){
@@ -214,7 +209,7 @@ class Stock_adjust extends CI_Controller {
 	{
 		$nomor=urldecode($nomor);
 		$sql="select p.item_number,i.description,p.from_qty,p.to_qty, 
-		p.unit,p.cost,p.from_location,p.id as line_number
+		p.unit,p.cost,p.from_location,p.id as line_number,p.multi_unit,p.mu_qty
 		from inventory_moving p
 		left join inventory i on i.item_number=p.item_number
 		where transfer_id='$nomor'";
@@ -324,8 +319,8 @@ class Stock_adjust extends CI_Controller {
 			}
             $item=$this->inventory_model->get_by_id($item_no)->row();
             if($item){
-            	$cost=$item->cost;
-                $unit=$item->unit_of_measure;
+            	$cost=nz($item->cost);                
+                if($unit=="") $unit=ns($item->unit_of_measure);
             } else {
             	$cost=0;
             }
@@ -338,8 +333,8 @@ class Stock_adjust extends CI_Controller {
             $qty_adj=$qty-$qty_stock;
                 
             $data['item_number']=$item_no;
-            $data['from_qty']=$qty;
-            $data["to_qty"]=$qty_adj;
+            $data['from_qty']=$qty_stock;
+            $data["to_qty"]=$qty;
             $data['cost']=$cost;
             $data['unit']=$unit;
             $data['transfer_id']=$id;
@@ -349,8 +344,24 @@ class Stock_adjust extends CI_Controller {
 			$data['trans_type']='ADJ';
 			$data['date_trans']=$this->input->post('date_trans');;
 			$data['comments']=$this->input->post('comments');;
+			$data['trans_by']=$this->input->post("trans_by");
 			
-			$ok=$this->inventory_moving_model->save($data);
+			$mu_qty = $this->input->post("mu_qty");
+			
+			$data['multi_unit']=$this->input->post('multi_unit');
+			if($data['multi_unit']==$data['unit'] || $data['multi_unit']==""){
+				$mu_qty=$qty;
+			} 
+			$data['mu_qty']=$mu_qty; 
+						
+			$line=$this->input->post('id');
+			if($line==""){
+				$ok=$this->inventory_moving_model->save($data);
+			} else {
+				$ok=$this->inventory_moving_model->update($line,$data);				
+			}
+						
+			
 			if ($ok){
 				echo json_encode(array('success'=>true,'transfer_id'=>$id));
 			} else {
@@ -370,9 +381,9 @@ class Stock_adjust extends CI_Controller {
 			$data['content']=load_view('inventory/rpt/print_adjust',$data);
 			$this->load->view('pdf_print',$data);
         }
-    function del_item(){
-    	$id=$this->input->post('line_number');
-        $ok=$this->inventory_products_model->delete_item($id);
+    function del_item($id){
+    	$id=urldecode($id);
+        $ok=$this->inventory_moving_model->delete_item($id);
 		if ($ok){
 			echo json_encode(array('success'=>true));
 		} else {

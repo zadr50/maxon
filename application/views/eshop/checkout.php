@@ -1,7 +1,7 @@
  
-		<? if($so_number == "") { ?>
+		<?php if($so_number == "") { ?>
 			<div class="alert alert-warning" role="alert">Belum ada item yang dibeli.</div>
-		<? } else {
+		<?php } else {
 			$so=$this->db->where('sales_order_number',$so_number)
 				->get('sales_order')->row();
 			$so_detail=$this->db->where('sales_order_number',$so_number)
@@ -32,7 +32,7 @@
 			<head><th>Kode</th><th>Nama Barang</th><th>Qty</th>
 			<th>Harga</th><th>Jumlah</th></thead>
 			<tbody>
-		<?
+		<?php
 			$total=0;
 			foreach($so_detail->result() as $item){
 				$jumlah=$item->amount;
@@ -53,7 +53,7 @@
 			<div class='col-lg-5'>
 			<h4>Total Tagihan Rp. <?=number_format($total)?></h4>
 			<h5>Mohon ditransfer ke salah satu Rekening berikut </h5>
-			<?
+			<?php
 			  $q=$this->db->get('bank_accounts');
 			  echo "<table class='table'><thead><th>Nomor Rekening</th><th>Nama Bank</th>
 			  <th>Cabang</th><th>Atas Nama</th></thead>
@@ -74,7 +74,7 @@
 			setelah pembayaran anda masuk ke rekening kami.</i>
 			</p>
 			</div>
-		<? } ?>
+		<?php } ?>
  
  
 <script language='javascript'>

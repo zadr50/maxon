@@ -2,12 +2,12 @@
 <div class="btn-group" role="group" aria-label="Navigation Button" style='float:left'>
 	<button onclick="list_item(1);return false;" title='Move to first record'
 	type="button" class="btn btn-default glyphicon glyphicon-step-backward"></button>
-	<button onclick="list_item(<? 
+	<button onclick="list_item(<?php 
 		if($page<=0)$page=1; $page=$page-1; 
 		echo $page; 
 		?>);return false;" title='Previous page'
 	type="button" class="btn btn-default glyphicon glyphicon-backward"></button>
-	<button onclick="list_item(<? 
+	<button onclick="list_item(<?php 
 		if($page>$item_page_max-2)$page=$item_page_max-2; 
 		echo $page+2
 		?>);return false;" title='Next page'

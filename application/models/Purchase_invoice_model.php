@@ -93,7 +93,7 @@ class Purchase_invoice_model extends CI_Model {
 	    $this->amount=$this->purchase_order_lineitems_model->sum_total_price($nomor);
 		$this->sub_total=$this->amount;
     	$po=$this->get_by_id($nomor)->row();
-		if(count($po)==0){
+		if(!$po){
 			return 0;
 		}
 		$this->potype=$po->potype;
@@ -573,6 +573,10 @@ class Purchase_invoice_model extends CI_Model {
             $data['disc_2']=$disc_2;
             $data['disc_3']=$disc_3;
             $data['from_line_type']="RCV";
+			$data['mu_qty']=$row->mu_qty;
+			$data['multi_unit']=$row->multi_unit;
+			$data['mu_harga']=$row->mu_price;
+			
             $ok=$this->purchase_order_lineitems_model->save($data);
         }
 

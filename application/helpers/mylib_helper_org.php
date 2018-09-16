@@ -870,24 +870,17 @@ if ( ! function_exists('pad')) {
 
 if(!function_exists('company_header')){
     function company_header(){
-         $CI =& get_instance();
-                
-       $multi_company=$CI->config->item('multi_company');
-       if($multi_company){
-            $company_code=$CI->session->userdata("company_code","");
-            if($company_code!=""){
-               $CI->db = $CI->load->database($company_code, TRUE);
-           }
-       }         
+       $CI =& get_instance();
          $CI->load->model('company_model');
          $model=$CI->company_model->get_by_id($CI->access->cid)->row();
 		 $data='';
 		 if($model){
-         	$data='<div id="divHeader"><h1>'.$model->company_name."</h1><h3>".$model->street
-                 ."<br/>".$model->suite." ".$model->city_state_zip_code
-                 ." - Phone: ".$model->phone_number.'</h3>
-                     </div>';
+         	$data='<div id="divHeader"><h1>'.$model->company_name.'</h1></div>';
          };
+		 //         	<h3>".$model->street
+         //        ."<br/>".$model->suite." ".$model->city_state_zip_code
+         //        ." - Phone: ".$model->phone_number.'</h3>
+		// 
         return $data;
     }
 }

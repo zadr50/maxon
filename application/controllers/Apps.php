@@ -12,12 +12,14 @@ class Apps extends CI_Controller {
     function __construct()    {
 		parent::__construct();        
         
-		if(!$this->access->is_login())redirect(base_url());
+		//if(!$this->access->is_login())redirect(base_url());
+		
 		$this->load->helper(array('url','form','mylib_helper'));
-		$this->load->library(array('sysvar','template','form_validation'));
+		$this->load->library(array('sysvar','form_validation'));
+		$this->load->model('apps_model');
+		
 		if($this->controller=="")$this->controller=$this->file_view;
 		if($this->sql=="")$this->sql="select * from ".$this->table_name;
-		$this->load->model('apps_model');
 		$this->fields=$this->apps_model->fields;
     }
     function set_defaults($record=NULL){
@@ -26,7 +28,9 @@ class Apps extends CI_Controller {
 		$data=data_table($this->table_name,$record);
 		return $data;
     }
-    function index()    {	
+    function index()    
+    {
+        $this->load->library("template");	
 		$this->browse();
     }
     function get_posts(){
@@ -34,6 +38,7 @@ class Apps extends CI_Controller {
 		return $data;
     }
     function add()   {
+        $this->load->library("template");   
 		$data=$this->set_defaults();
 		$this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
@@ -69,6 +74,7 @@ class Apps extends CI_Controller {
     function view($id,$message=null)	{
 		$id=urldecode($id);
 		$message=urldecode($message);
+        $this->load->library("template");   
 		$data[$this->primary_key]=$id;
 		$model=$this->apps_model->get_by_id($id)->row();
 		$data=$this->set_defaults($model);
@@ -88,6 +94,7 @@ class Apps extends CI_Controller {
 		
 		$data['mode']='edit';
 		$data['fields']=$this->fields;
+        $this->load->library("template");   
 		$this->template->display_form_input($this->file_view,$data);
     }
      // validation rules
@@ -101,7 +108,7 @@ class Apps extends CI_Controller {
             return true;
      }
     }
-   function browse($offset=0,$limit=50,$order_column="",$order_type='asc'){
+   function browse($offset=0,$limit=50,$order_column="", $order_type='asc'){
 		if($order_column=="")$order_column=$this->primary_key;
 		$data['controller']=$this->controller;
 		$data['fields']=$this->apps_model->fields;
@@ -113,6 +120,7 @@ class Apps extends CI_Controller {
 		$data['criteria']=$faa;
 		$data['col_width']=array("app_name"=>100);
 		$data['view_mode']='apps_install';
+        $this->load->library("template");   
         $this->template->display_browse($data);            
     }
     function browse_data($offset=0,$limit=100,$nama=''){
@@ -191,6 +199,28 @@ class Apps extends CI_Controller {
 	}
 	function download(){
 		var_dump($_SESSION);
-	}
+	}	
+    function sekolah(){
+       $data['company_code']=$this->session->userdata("company_code","");
+       $data['message']='';
+       $data['multi_company']=$this->config->item('multi_company');
+	   $data['title']='Sistim Informasi Sekolah Online';
+	   
+	   $this->load->library("upgrade");       
+        $this->upgrade->process();
+       
+        $user_id=user_id();
+        $session_id=$this->session->userdata("__ci_last_regenerate");        
+        $this->db->query("update `user` set session_id='$session_id',logged_in='1'   where user_id='$user_id' ");
+
+		if($this->access->is_login()){
+			redirect(base_url("login/welcome"));
+		}  else  {
+	        $view="sekolah/home";        
+	    	$this->load->library("tpl/website/template");
+	        $this->template->display($view,$data);			
+		}				
+    }
+    		
 }
 ?>

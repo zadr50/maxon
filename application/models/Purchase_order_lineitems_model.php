@@ -261,8 +261,11 @@ function sum_total_price($nomor)
 		
 	}
 	function save_alloc($data){
-         
+        	
+        if(!isset($data['qty_alloc']))return false;
+		 
 		$qty=$data['qty_alloc'];
+		
 		$line=$data['line_number_alloc'];
 		$gdg=$data['gdg'];
 		$ok=true;

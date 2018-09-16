@@ -112,6 +112,29 @@ for($i=0;$i<20;$i++){
     );
 }
 
+$db["simak"] = array(
+    'dsn'   => '',
+    'hostname' => 'localhost',
+    'username' => 'root',
+    'password' => '',
+    'database' => "simak",
+    'dbdriver' => 'mysqli',
+    'dbprefix' => '',
+    'pconnect' => false,
+    'db_debug' => (ENVIRONMENT !== 'production'),
+    'cache_on' => TRUE,
+    'cachedir' => '',
+    'char_set' => 'utf8',
+    'dbcollat' => 'utf8_general_ci',
+    'swap_pre' => '',
+    'encrypt' => FALSE,
+    'compress' => FALSE,
+    'stricton' => FALSE,
+    'failover' => array(),
+    'save_queries' => FALSE
+    );
+
+
 
 $CI =& get_instance();  
 $multi_company=$CI->config->item('multi_company');
@@ -125,5 +148,8 @@ if($multi_company){
         $active_group=$company_code;
     }
 }         
+//apabila multi_company=false aktifkan dibawah ini untuk hanya pilih satu database
+//$active_group="simak";
+
 //echo "Database: $active_group";
 

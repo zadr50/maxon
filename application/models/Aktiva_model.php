@@ -9,6 +9,7 @@ private $item=null;	//recordset this aktiva
 private $book_value=0;
 private $akum_value=0;
 private $expenses_value=0;
+private $reload_period=false;
 
 function __construct(){
 	parent::__construct();        
@@ -67,12 +68,18 @@ function __construct(){
 		}
 		return $rows;
 	}
-	function load_by_period($period){
+	function load_by_period($period,$reload=false){
 		$period=str_replace("-","",$period);
 		$this->period=$period;
 		$aktiva=$this->load_all();
 		$rows=array();
 		$depn=null;
+		$this->reload_period=$reload;
+		if($this->reload_period){
+			$sql="delete from fa_asset_depreciation_schedule 
+				where depn_year='$this->period'";
+			$this->db->query($sql);
+		}
 		foreach($aktiva->result() as $row_aktiva) {
 			$this->asset_id=$row_aktiva->id;
 			$this->item=$row_aktiva;
@@ -81,6 +88,7 @@ function __construct(){
 				$row_data['description']=$row_aktiva->description;
 				$row_data['depr_amount']=$depn['amount'];
 				$row_data['book_amount']=$depn['book'];
+				
 				$rows[]=$row_data;
 			}
 		}
@@ -89,9 +97,11 @@ function __construct(){
 	function schedule(){
 		$data['amount']=0;
 		$data['book']=0;
-		if($q=$this->db->where("asset_id",$this->asset_id)
-			->where("depn_year",$this->period)
-			->get("fa_asset_depreciation_schedule"))
+		
+		$this->db->where("depn_year",$this->period);
+		if($this->asset_id!="")$this->db->where("asset_id",$this->asset_id);
+					
+		if($q=$this->db->get("fa_asset_depreciation_schedule"))
 			{
 				$data_ads['asset_id']=$this->asset_id;
 				$data_ads['depn_year']=$this->period;
@@ -123,7 +133,7 @@ function __construct(){
 				}
 				$data['amount']=$data_ads['accum_depn'];
 				$data['book']=$data_ads['book_value'];
-			}
+		}
 	
 		return $data;
 	}

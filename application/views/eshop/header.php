@@ -49,7 +49,7 @@ $email="contact@talagasoft.com";
 		</div>
 		
 		<div class='col-md-12'>
-		<? 
+		<?php 
 		$categories=$this->db->get("inventory_categories");
 		if(isset($categories)){ ?>
 		
@@ -65,9 +65,9 @@ $email="contact@talagasoft.com";
 					<select class='form-control' name="search_category" id="search_category" 
 					class="cat-select absolute">
 					<option value="">Semua Kategori</option>
-					<? foreach($categories->result() as $cat) { ?>
+					<?php foreach($categories->result() as $cat) { ?>
 						<option <?=$search_category==$cat->kode?'selected':''?> class="ml-10" value="<?=$cat->kode?>"><?=$cat->category?></option>
-					<? } ?>
+					<?php } ?>
 					</select>
 				</div>
 				<button type="submit" class="btn btn-default glyphicon glyphicon-search"> Cari</button>
@@ -75,7 +75,7 @@ $email="contact@talagasoft.com";
 
 			<a href="<?=base_url()?>index.php/eshop/cart" 
 			class="btn btn-default glyphicon glyphicon-shopping-cart"> Troly <span class='badge'><?=$current_cart?></span></a>
-			<?
+			<?php
 			$is_login=$this->session->userdata('cust_login');
 			if($is_login){
 			?>
@@ -83,16 +83,16 @@ $email="contact@talagasoft.com";
 					class="btn btn-default glyphicon glyphicon-user glyphicon "> Account</a>
 				<a href="<?=base_url()?>index.php/eshop/login/logout" 
 					class="btn btn-warning glyphicon glyphicon-off"> Logout</a>
-			<? } else { ?>
+			<?php } else { ?>
 				<a href="<?=base_url()?>index.php/eshop/login/start" 
 					class="btn btn-default glyphicon glyphicon-off"> Login</a>
-			<? } ?>
+			<?php } ?>
 		   
 		   
 			  </form> 
 			  
 			</ul>   
-		<? } ?>
+		<?php } ?>
 		</div>
 	</div>    
 </nav> 

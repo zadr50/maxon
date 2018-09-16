@@ -23,18 +23,42 @@ class Sales extends CI_Controller {
     function index(){	
 	}
     function rpt($id){
+	     $has_criteria=false;	//apabila criteria dalam file view
 		 $data['date_from']=date('Y-m-d 00:00:00');
 		 $data['date_to']=date('Y-m-d 23:59:59');
 		 $data['select_date']=true;		 
     	 switch ($id) {
+		 	 case 'sls_cat_wil':
+				 $has_criteria=true;
+                 $data['criteria4']=true;
+                 $data['label4']='Category Item';
+                 $data['text4']='';
+                 $data['output4']="text4";
+                 $data['key4']="kode";
+                 $data['fields4'][]=array("category","180","Category");
+                 $data['fields4'][]=array("kode","80","Kode");
+                 $data['ctr4']='category/select';
+
+                 $data['criteria5']=true;
+                 $data['label5']='Wilayah';
+                 $data['text5']='';
+                 $data['output5']="text5";
+                 $data['key5']="region_id";
+                 $data['fields5'][]=array("region_name","180","Nama");
+                 $data['fields5'][]=array("region_id","80","Kode");
+                 $data['ctr5']='region/select';
+
+					
              case 'sls_cat':
              case 'faktur_cust':
              case 'age_dtl':
+			 case 'age_sum':
              case 'pay_type':
              case 'faktur_slsman':
              case 'pay_list':
 			 case 'retur_item':
              case 'faktur_sum':
+				 $has_criteria=true;
                  $data['criteria1']=true;
                  $data['label1']='Kode Salesman';
                  $data['text1']='';
@@ -65,6 +89,7 @@ class Sales extends CI_Controller {
                  break;          
 
 			 case 'so_otstand_item':
+				 $has_criteria=true;
 				 $data['criteria1']=true;
 				 $data['label1']='Kode Pelanggan';
 				 $data['text1']='';
@@ -100,6 +125,7 @@ class Sales extends CI_Controller {
 
 				 break;			 
 			 case 'ar_dtl':
+				 $has_criteria=true;
 				 $data['criteria1']=true;
 				 $data['label1']='Kode Pelanggan';
 				 $data['text1']='';
@@ -111,6 +137,7 @@ class Sales extends CI_Controller {
 				 $data['ctr1']='customer/select';
 				 break;			 
 			 case 'age_dtlx':
+				 $has_criteria=true;
 				 $data['criteria1']=true;
 				 $data['label1']='Kode Pelanggan';
 				 $data['text1']='';
@@ -123,6 +150,7 @@ class Sales extends CI_Controller {
 
 				 break;			 
              case 'sls_rl_item':
+				 $has_criteria=true;
                  $data['criteria1']=true;
                  $data['label1']='Kode Supplier';
                  $data['text1']='';
@@ -148,6 +176,7 @@ class Sales extends CI_Controller {
 				$data['select_date']=false;	
 				break;
              case 'sls_item':
+				 $has_criteria=true;
                  $data['criteria1']=true;
                  $data['label1']='Category';
                  $data['text1']='';
@@ -172,13 +201,13 @@ class Sales extends CI_Controller {
 			 default:
 				 break;
 		 }
-		 $rpt='sales/rpt/'.$id;
-		 $data['rpt_controller']=$rpt;
+		 $rpt_view='sales/rpt/'.$id;
+		 $data['rpt_controller']=$rpt_view;
 		 
-		if(!$this->input->post('cmdPrint')){
+		if(!$this->input->post('cmdPrint') && $has_criteria){
 			$this->template->display_form_input('criteria',$data,'');
 		} else {
-			$this->load->view($rpt);
+			$this->load->view($rpt_view,array("id"=>$id));
 		}
    }
 	function reports(){

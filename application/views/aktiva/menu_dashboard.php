@@ -1,13 +1,12 @@
- <?
+ <?php
   $CI =& get_instance();
  ?>
- <script type="text/javascript" src="<?=base_url()?>assets/maphilight-master/jquery.maphilight.min.js"></script>
 <div class="easyui-tabs" id="tt">	 
 	<div title="HOME"><? include_once __DIR__."/../home.php";?></div>
 	<script>$().ready(function(){$("#tt").tabs("select","DASHBOARD");});</script>
 	<div title="DASHBOARD" style="padding:10px">
 	
-		<div class='col-lg-8 col-md-12 col-sm-12'>
+		<div class='col-xs-12'>
 			<div class='thumbnail'>
 			<img src="<?=base_url()?>images/aktiva.png" usemap="#mapdata" class="map">
 			<map id="mapdata" name="mapdata">
@@ -62,6 +61,7 @@
 	</div>
 </div>
 
+ <script type="text/javascript" src="<?=base_url()?>assets/maphilight-master/jquery.maphilight.min.js"></script>
 
 
 <script  language="javascript">

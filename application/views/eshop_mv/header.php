@@ -1,4 +1,4 @@
-<?
+<?php
 if( !isset($search_items) )$search_items='';
 if( !isset($search_category)) $search_category='';
 $current_cart=($this->session->userdata('cart')==true)?count($this->session->userdata('cart')):0;
@@ -15,7 +15,7 @@ $current_cart=($this->session->userdata('cart')==true)?count($this->session->use
 		</button>
 	</div> 
 	<div class="collapse navbar-collapse" id='nav1'>	  
-		<? 
+		<?php 
 		$categories=$this->db->get("inventory_categories");
 		if(isset($categories)){ ?>
 			<ul class="nav navbar-nav navbar-left">
@@ -36,11 +36,11 @@ $current_cart=($this->session->userdata('cart')==true)?count($this->session->use
 				<button type="submit" class="btn btn-default glyphicon glyphicon-search"> Cari</button>
 			  </form>
 			</ul>
-		<? } ?>
+		<?php } ?>
 		  <ul class="navbar-nav navbar-right">	
 			<a href="<?=base_url()?>index.php/eshop/cart" 
 			class="btn btn-default glyphicon glyphicon-shopping-cart"> Troly <span class='badge'><?=$current_cart?></span></a>
-			<?
+			<?php
 			$is_login=$this->session->userdata('cust_login');
 			if($is_login){
 			?>
@@ -48,12 +48,12 @@ $current_cart=($this->session->userdata('cart')==true)?count($this->session->use
 					class="btn btn-default glyphicon glyphicon-user glyphicon "> Account</a>
 				<a href="<?=base_url()?>index.php/eshop/login/logout" 
 					class="btn btn-warning glyphicon glyphicon-off"> Logout</a>
-			<? } else { ?>
+			<?php } else { ?>
 				<a href="<?=base_url()?>index.php/eshop/member/add" 
 					class="btn btn-default glyphicon glyphicon-plus"> Daftar</a>
 				<a href="<?=base_url()?>index.php/eshop/login" 
 					class="btn btn-default glyphicon glyphicon-off"> Login</a>
-			<? } ?>
+			<?php } ?>
 			<a href="<?=base_url()?>index.php/eshop/help" 
 				class="btn btn-default glyphicon glyphicon-search"> Bantuan</a>
 			
@@ -62,7 +62,7 @@ $current_cart=($this->session->userdata('cart')==true)?count($this->session->use
  
 </nav>
 
-<?
+<?php
 	function menu($title,$url,$func=false){
 		if(!$func){
 			echo "<div><a href='".base_url()."index.php/".$url."' class='easyui-linkbutton' data-options='plain:true'>".$title."</a></div>";	

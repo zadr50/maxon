@@ -1,6 +1,4 @@
-<script type="text/javascript" src="<?=base_url()?>assets/maphilight-master/jquery.maphilight.min.js"></script>
-
- <?
+ <?php
   $CI =& get_instance();
  ?>
 <div class="easyui-tabs" id="tt">	 
@@ -12,7 +10,7 @@
  
 <div style="margin:10px 0;"></div>
 	<div title="Sales Dashboard" style="padding:10px">
-		<div class='col-lg-8 col-md-12 col-sm-12'>
+		<div class='col-xs-12'>
 		<div class="thumbnail">
 			<img src="<?=base_url()?>images/manuf.png" usemap="#sales" class="map">
 			<map id="sales" name="sales">
@@ -35,7 +33,7 @@
 		
 		
 		</div>
-		<div class='col-lg-12 col-md-12'>
+		<div class='col-xs-12'>
 			<?php include_once "reports.php" ?>
 		
 		</div>
@@ -43,17 +41,17 @@
 	
 		
 		<div class="row">
-			<div class="thumbnail col-md-6 " >
+			<div class="thumbnail col-xs-6 " >
 				 
 			</div>
 			
-			<div class="thumbnail col-md-6 " >
+			<div class="thumbnail col-xs-6 " >
 				 
 			</div>
-			<div class="thumbnail col-md-6 " >
+			<div class="thumbnail col-xs-6 " >
 					 
 			</div>
-			<div class="thumbnail col-md-6 " >
+			<div class="thumbnail col-xs-6 " >
 					 
 			</div>
 

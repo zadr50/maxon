@@ -26,13 +26,23 @@ padding:10px 20px;left:100px;top:20px"
 </div>
 
  <script language='javascript'>
+ 
+$().ready(function (){
+    $('#dgSelectDo').datagrid({
+        onDblClickRow:function(){
+			selected_do_number();        	
+    }
+    });        
+});
+
+ 
 	function select_do_open() {
 		var cust=$("#sold_to_customer").val();
 		if(cust==""){alert("Pilih kode pelanggan dulu.!");return false;}
 		var mode=$("#mode").val();
 		if(mode=="add"){alert("Simpan dulu nomor ini");return false;};
 		$('#dgSelectDo').datagrid({url:'<?=base_url()?>index.php/delivery_order/select_do_open/'+cust});
-		$('#dgSelectDo').datagrid('reload');			
+//		$('#dgSelectDo').datagrid('reload');			
 		$('#dlgSelectDo').dialog('open').dialog('setTitle','Cari nomor surat jalan / DO');
 	}
 	function selected_do_number(){

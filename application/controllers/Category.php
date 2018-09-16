@@ -84,6 +84,25 @@ class Category extends CI_Controller {
         
 		echo datasource($sql);
 	}
+    function select2(){
+        
+        $sql="select category,code from inventory_categories where 1=1";
+        if($search=$this->input->get("q")){
+            if($search!="")$sql.=" and (category like '%$search%' 
+            or code like '%$search%')";
+        }
+        $sql.=" order by code";
+        $sql.=" limit 0,50";
+        
+        $output="";
+        if($qry=$this->db->query($sql)){
+            foreach($qry->result() as $row){
+                $output.=$row->code." - ".$row->category."|".$row->code."\n";
+            }
+        }
+        echo $output;
+        
+    }
 	
 	function update()
 	{

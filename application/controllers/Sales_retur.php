@@ -187,6 +187,8 @@ class Sales_retur extends CI_Controller {
 			array(
 				"dlgBindId"=>"customers",
 				"dlgRetFunc"=>"$('#sold_to_customer').val(row.customer_number);
+					$('#salesman').val(row.salesman);
+					$('#payment_terms').val(row.payment_terms);								
 					$('#customer_info').html(row.company+'<br>'+row.street+'<br>'+row.city);
 					",
 				"dlgCols"=>array(

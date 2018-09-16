@@ -1,6 +1,6 @@
  
 	<div class="row" >
-		<?
+		<?php
 		echo "<h3>List Order Number</h3>
 		<table class='table'><thead><th>Order#</th><th>Tanggal</th><th>Jumlah</th><th>Lunas</th></thead>
 		<tbody>";
@@ -16,7 +16,7 @@
 		?>
 	</div>
 	<div class="row ">
-		<? include_once "sales_form.php"; ?>
+		<?php include_once "sales_form.php"; ?>
 
 	</div>
  

@@ -185,7 +185,7 @@ if ( ! function_exists('browse_select'))
 							}
 						}
 						if(!$lhide){
-							if($type[$i]=='real' || $type[$i]=='5'){
+							if($type[$i]=='real' || $type[$i]=='5' || $type[$i]=="double" || $type[$i]=="int" || $type[$i]==3){
 								$val=$row[$fld];
 								if($val>0 and $val<1){
 									$val=number_format($val,2);
@@ -276,6 +276,7 @@ if ( ! function_exists('browse_select'))
 			} else {
 				$s[$i]="";
 			}
+			$s[0]="<strong>GRAND TOTAL</strong>";
 		}
         $CI->table->add_row($s);
 		if($class=="")$class="titem";

@@ -120,7 +120,7 @@
 -->
 			</tr>
 			<tr><td>Salesman</td><td>
-				<? echo form_input('salesman',$salesman,"id='salesman'");?>
+				<?php echo form_input('salesman',$salesman,"id='salesman'");?>
 				 <a href='#' onclick='dlgsalesman_show();return false'
 					class='btn btn-default glyphicon glyphicon-search'
 					title='Cari kode salesman'>

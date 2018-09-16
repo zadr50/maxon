@@ -1,4 +1,4 @@
-<?
+<?php
  
 	$table="qry_kartu_piutang";
 	
@@ -30,7 +30,7 @@ $sql="CREATE  VIEW qry_kartu_piutang AS
   left join invoice i on i.invoice_number=c.docnumber
   where transtype='SO-DEBIT MEMO' and invoice_type='I'
 ";
-if(mysql_query($sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysql_error();
+if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 	
 	
-	?>
+?>

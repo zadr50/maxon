@@ -22,6 +22,7 @@
         <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="false" onclick="addItem();return false;">Add</a>
         <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="false" onclick="editItem();return false;">Edit</a>
         <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="false" onclick="deleteItem(); return false;">Delete</a>  
+        <?=link_button("Refresh", "load_item();return false","reload")?>
     </div>    
 </div>
 
@@ -31,7 +32,7 @@
     <form method='post' id='frmItem'>
     <input type='hidden' id='line_number' name='line_number'>
     <input type='hidden' id='voucher_item' name='voucher_item'>
-    <table class='table' width='100%'>
+    <table class='table2' width='100%'>
         <tr>
             <td>Kode</td><td><input type='text' id='account' name='account' style='width:80px'>
                 <?=link_button('','lookup_coa()','search')?></td>
@@ -46,6 +47,9 @@
             <td>Department</td><td><input type='text' id='org_id_item' name='org_id_item' style='width:80px'>
                 <?=link_button('','dlgdepartments_show()','search')?></td>
         </tr>
+        <tr>
+            <td>Invoice</td><td><input type='text' id='invoice_number' name='invoice_number' ></td>
+        </tr>
         <tr>        
             <td>Catatan</td><td><input type='text' id='comments' name='comments' style='width:300px'></td>
         </tr>
@@ -53,5 +57,17 @@
     </form>    
 </div>    
 <div id='btnItem'>
-     <?=link_button('Add Item','save_item()','save')?>    
+     <?=link_button('Submit','save_item()','save')?>    
+     <?=link_button('Cancel','cancel_item()','cancel')?>    
 </div>
+<script>
+    $().ready(function (){
+        $('#dgItemCoa').datagrid({
+            onDblClickRow:function(){
+            	editItem();
+            }
+        });        
+        load_item();
+    });
+	
+</script>

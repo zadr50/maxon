@@ -154,7 +154,7 @@ function update($id,$data){
 	}
     if(isset($data['no_urut']))if($data['no_urut']=='null')unset($data['no_urut']);
     
-	if($data['quantity']>"0"){
+	if($data['quantity']>0){
 	    
 		$this->db->where($this->primary_key,$id);
 		return $this->db->update($this->table_name,$data);

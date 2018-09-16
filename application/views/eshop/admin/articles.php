@@ -87,7 +87,7 @@ article tersebut ingin ditampilkan.</p>
 
 		</script>
 	
-	<? } ?>
+	<?php } ?>
 </div>
 <link rel="stylesheet" type="text/css" href="<?=base_url()?>assets/eshop/eshop.css">
 

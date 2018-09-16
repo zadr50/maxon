@@ -1,6 +1,6 @@
 <div><h4>FORMULIR SETORAN SIMPANAN</H4>
 <div class="thumbnail">
-	<?
+	<?php
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/pinjaman/add');		
@@ -47,7 +47,7 @@
 				</td>
 			</tr>	 
 			<tr>
-				<td>Nomor Anggota</td><td><? echo form_input('nip',$nip,"id=nip"); echo link_button("","lookup_employee()","search")?></td>
+				<td>Nomor Anggota</td><td><?php echo form_input('nip',$nip,"id=nip"); echo link_button("","lookup_employee()","search")?></td>
 			</tr>
 		   <tr>
 				<td>Tanggal Setor</td><td><?=form_input('date_loan',$date_loan,"class='easyui-datetimebox' style='width:150px'");?></td>
@@ -70,11 +70,11 @@
 	   </form>
 	</div>
 	 
-	<div title='Daftar 10 Transksi'><? include_once "transaksi.php" ?></div>
+	<div title='Daftar 10 Transksi'><?php include_once "transaksi.php" ?></div>
 
 </div>	
 	
-<? include_once "employee_lookup.php" ?>
+<?php include_once "employee_lookup.php" ?>
 <script type="text/javascript">
     function save_this(){
         if($('#nip').val()===''){alert('Isi dulu NIP Karyawan !');return false;};

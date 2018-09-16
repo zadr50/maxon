@@ -1,17 +1,13 @@
- <?
+ <?php
   $CI =& get_instance();
  ?>
- <script type="text/javascript" src="<?=base_url()?>assets/flot/excanvas.js"></script>
-<script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.js"></script>
-<script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.categories.js"></script>
- <script type="text/javascript" src="<?=base_url()?>assets/maphilight-master/jquery.maphilight.min.js"></script>
 <div class="easyui-tabs" id="tt" style="padding:5px">	 
-	<div title="HOME"><? include_once __DIR__."/../home.php";?></div>
+	<div title="HOME"><?php include_once __DIR__."/../home.php";?></div>
 	<script>$().ready(function(){$("#tt").tabs("select","DASHBOARD");});</script>
 
 	<div title="DASHBOARD" style="padding:10px;height:auto">
 		<div class="row">
-			<div class="col-md-7 thumbnail">
+			<div class="col-xs-12 thumbnail">
 				<img src="<?=base_url()?>images/gl.png" usemap="#mapdata" class="map">
 				<map id="mapdata" name="mapdata">
 					<area shape="circle" alt="Jurnal Umum" coords="120,92,29" href="<?=base_url()?>index.php/jurnal"  class="info_link" title="Jurnal Umum" />
@@ -23,30 +19,31 @@
 					<area shape="default" nohref="nohref" alt="" />
 				</map>
 			</div>
-	         <div class="thumbnail col-md-4" >
+		</div>	
+		<div class="col-xs-12 thumbnail">
+                <div class="easyui-panel themes" title="Reports" 
+                    data-options="iconCls:'icon-save',closable:true,
+                    collapsible:true,minimizable:true,maximizable:true">
+                    <?php include_once "menu_reports.php" ?>
+
+                </div>					
+		</div>
+
+	<?php if($this->config->item('google_ads_visible')) $this->load->view('google_ads');?>
+
+	         <div class="thumbnail col-xs-12" >
                 <h4>Saldo Perkiraan</h4>
                 <div id='divAkun' style="height:200px;padding:5px;"></div>
             </div>
 
 
-		</div>	
-
-                <div class="easyui-panel themes" title="Reports" 
-                    data-options="iconCls:'icon-save',closable:true,
-                    collapsible:true,minimizable:true,maximizable:true">
-
-                    <?php include_once "menu_reports.php" ?>
-
-                </div>		
-
-	<?php if($this->config->item('google_ads_visible')) $this->load->view('google_ads');?>
 
                 <div class="easyui-panel themes" title="Neraca" 
                     data-options="iconCls:'icon-save',closable:true,
                     collapsible:true,minimizable:true,maximizable:true">
 	
             		<div class="row">
-            			<div class="col-md-6">
+            			<div class="col-xs-6">
             				<div id='divNeraca'></div>
             			</div>
             		</div>
@@ -54,6 +51,10 @@
 				</div>
 	</div>
 </div>
+ <script type="text/javascript" src="<?=base_url()?>assets/flot/excanvas.js"></script>
+<script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.js"></script>
+<script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.categories.js"></script>
+ <script type="text/javascript" src="<?=base_url()?>assets/maphilight-master/jquery.maphilight.min.js"></script>
 
 <script  language="javascript">
 $().ready(function(){

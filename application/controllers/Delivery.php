@@ -4,13 +4,14 @@ class Delivery extends CI_Controller {
     private $limit=10;
     private $table_name='inventory_products';
     private $sqlx="select distinct shipment_id,ip.item_number,i.description,
+    	
         concat(year(date_received),'-',month(date_received),'-',day(date_received)) as date_received,
         ip.warehouse_code,ip.doc_type
                 from inventory_products ip left join inventory i
                 on ip.item_number=i.item_number
                 where receipt_type='ETC_OUT' 
                 ";
-    private $sql="select distinct shipment_id,
+    private $sql="select distinct shipment_id,ip.ref2,
         concat(year(date_received),'-',month(date_received),'-',day(date_received)) as date_received,
        ip.warehouse_code,ip.doc_type,ip.supplier_number
                 from inventory_products ip 
@@ -193,10 +194,10 @@ class Delivery extends CI_Controller {
         $data['caption']='DAFTAR PENGELURAN BARANG NON SALES ORDER';
 		$data['controller']=$this->controller;		
 		$data['fields_caption']=array('Nomor Bukti','Tanggal',
-		'Gudang','Tujuan','Doc Type');
+		'Gudang','Tujuan','Doc Type','Project');
 		$data['fields']=array('shipment_id','date_received',
 		'warehouse_code','supplier_number',
-        'doc_type');
+        'doc_type','ref2');
 					
 		if(!$data=set_show_columns($data['controller'],$data)) return false;
 			
@@ -306,14 +307,26 @@ class Delivery extends CI_Controller {
         }
 		$line=$this->input->post("id");
         $data['item_number']=$item_no;
-        $data['quantity_received']=$this->input->post('quantity');
+		
+		$qty=$this->input->post('quantity');
+		if($qty==0 || $qty=="")$qty=1;
+		
+        $data['quantity_received']=$qty;
+		
         $item=$this->inventory_model->get_by_id($data['item_number'])->row();
-       	$cost=item_cost($item_no);
+		
+		$cost=$this->input->post("cost");
+       	if($cost==0 || $cost==""){
+	       	$cost=item_cost($item_no);       		
+       	}
+		
         $data['cost']=$cost;
         $data['unit']=$this->input->post('unit');
         $data['shipment_id']=$id;
         $data['warehouse_code']=$this->input->post('warehouse_code');
-        $data['total_amount']=$data['quantity_received']*$data['cost'];
+        
+        $data['total_amount']=$qty*$cost;
+		
 		$data['receipt_type']='ETC_OUT';
 		$data['date_received']=$this->input->post('date_received');;
 		$data['comments']=$this->input->post('comments');;
@@ -360,12 +373,20 @@ class Delivery extends CI_Controller {
 	{
 		$nomor=urldecode($nomor);
 		$sql="select p.item_number,i.description,p.quantity_received as quantity, 
-		p.unit,p.cost,p.id as line_number,p.total_amount
+		p.unit,p.cost,p.id as line_number,p.total_amount,p.multi_unit,p.mu_qty,p.mu_price
 		from inventory_products p
 		left join inventory i on i.item_number=p.item_number
 		where shipment_id='$nomor'";
 		 
 		echo datasource($sql);
+	}
+	function posting($nomor){
+		$this->inventory_products_model->posting($nomor);
+		redirect("delivery/view/$nomor");
+	}
+	function unposting($nomor){
+		$this->inventory_products_model->unposting($nomor);
+		redirect("delivery/view/$nomor");		
 	}
     
     

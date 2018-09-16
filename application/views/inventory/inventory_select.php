@@ -1,6 +1,4 @@
 <div id="tb_search" style="height:auto" class="box-gradient">
-	<div style="float:left">
-	
 	<input type='checkbox' id='only_item_supplier' name='only_item_supplier'  
 	title='Filter by related selected supplier' style='width:30px'>Supplier
 	Field: <?php 
@@ -12,10 +10,9 @@
     ?>
 	Enter Text: <input  id="search_item" style='width:100px' name="search_item" 
 		onchange='filterItem();return false;' >
-	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" 
-	onclick="filterItem();return false;">Search</a>        
-	</div>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok"  onclick="selectSearchItem();return false;">Select</a>
+	<?=link_button("Search", "filterItem();return false;","search")?>	
+	<?=link_button("Select", "selectSearchItem();return false;","save")?>	
+	<?=link_button("Close", "dlgSearchItem_close();return false;","cancel")?>	
 </div>
 
 <div id='dlgSearchItem' class="easyui-dialog" style="width:750px;height:480px;;left:50px;top:20px"
@@ -30,8 +27,6 @@
 			">
 			<thead>
 				<tr>
-<!--                    <th data-options="field:'ck',width:50">Pilih</th>
- -->   
 					<th data-options="field:'description',width:250">Nama Barang</th>
 					<th data-options="field:'item_number',width:100">Kode Barang</th>
 					<th data-options="field:'category',width:80">Kelompok</th>
@@ -45,27 +40,20 @@
 
 
 <script type="text/javascript">
-$().ready(function (){
-    $('#select_all').change(function() { 
-        var checkboxes = $('#divItemSearchResult').find(':checkbox');
-        checkboxes.prop('checked', $(this).is(':checked'));
-    }); 
-    
-    $('#dgItemSearch').datagrid({
-        onDblClickRow:function(){
-            var row = $('#dgItemSearch').datagrid('getSelected');
-            if (row){
-            	selectSearchItem();
-            }       
-        }
-    });        
-    
-    filterItem();
-    
-    
-    
-});
-		function find(){
+	$().ready(function (){
+	    $('#dgItemSearch').datagrid({
+	        onDblClickRow:function(){
+	            var row = $('#dgItemSearch').datagrid('getSelected');
+	            if (row){
+	            	selectSearchItem();
+	            }       
+	        }
+	    });        
+	});
+	function dlgSearchItem_close(){
+		$("#dlgSearchItem").dialog("close");
+	}
+	function find(){
 			var cust_type=$('#cust_type').val();
 			 
 			var item=$("#item_number").val();
@@ -73,6 +61,9 @@ $().ready(function (){
 			var cust_no=$("#sold_to_customer").val();
 		    xurl=CI_ROOT+'inventory/find/'+$('#item_number').val()+'/'+cust_type ;
 			var param={item_no:item,cust_type:cust_type,cust_no:cust_no};
+			
+			loading();
+			
 		    $.ajax({
 				type: "GET",
 				url: xurl,
@@ -82,6 +73,8 @@ $().ready(function (){
 					$('#item_number').val(obj.item_number);
 					$('#price').val(obj.retail);
 					$('#cost').val(obj.cost);
+					if(obj.cost)$("#cost").val(obj.cost_from_mfg);
+					
 					$('#unit').val(obj.unit_of_measure);
 					$('#description').val(obj.description);
 					$("#discount").val(obj.discount);
@@ -90,13 +83,21 @@ $().ready(function (){
 					$("#disc_3").val(obj.disc_prc_3);
 					if(obj.multiple_pricing){
 						$("#cmdLovUnit").show();
+						$("#divMultiUnit").show();
 					} else {
 						$("#cmdLovUnit").hide();
+						$("#divMultiUnit").hide();
 					}
 					$("#quantity").val("1");
+
+					loading_close();
+					
 					hitung();
 				},
-				error: function(msg){alert(msg);}
+				error: function(msg){
+					loading_close();
+					log_err(msg);
+				}
 		    });
 		};
 		function selectSearchItemSubmitxx(){
@@ -151,12 +152,8 @@ $().ready(function (){
 		}
 		function searchItem()
 		{
+    		filterItem();
 			//$('#dlgSearchItem').window({left:100,top:window.event.clientY-50});
 			$('#dlgSearchItem').dialog('open').dialog('setTitle','Cari data barang');
 		}
-		function dlgSearchItem_Close(){
-			$("#dlgSearchItem").dialog("close");
-		}
-
-		
 </script>

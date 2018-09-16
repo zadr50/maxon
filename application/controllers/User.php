@@ -364,7 +364,7 @@ class User extends CI_Controller {
 		from syslog
 		where year(tgljam)=".date("Y")." and month(tgljam)=".date("m")."
 		group by DATE_FORMAT(tgljam,'%d')
-		order by tgljam asc
+		order by DATE_FORMAT(tgljam,'%d') asc
 		limit 0,50";
 		$query=$this->db->query($sql);
 		$dt[]='';

@@ -1,6 +1,6 @@
 <div><h4>FORMULIR KELOMPOK ANGGOTA</H4>
 <div class="thumbnail">
-	<?
+	<?php
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/koperasi/kelompok/add');		
@@ -36,7 +36,7 @@
 				</td>
 			</tr>	 
 			<tr>
-				<td>Nama Kelompok</td><td><? echo form_input('kelompok',$kelompok,"id=kelompok"); 
+				<td>Nama Kelompok</td><td><?php echo form_input('kelompok',$kelompok,"id=kelompok"); 
 				?></td>
 			</tr>
 	   </table>

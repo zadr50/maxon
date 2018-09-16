@@ -343,15 +343,19 @@ class Banks extends CI_Controller {
 	}
 	function select2(){
 		
-		$sql="select bank_account_number,bank_name from bank_accounts where 1=1";
+		$sql="select bank_name,bank_account_number from bank_accounts where 1=1";
 		if($account=$this->input->get("q")){
-			if($account!="")$sql.=" and bank_account_number like '$account%'";
+			if($account!="")$sql.=" and (bank_account_number like '%$account%' 
+			     or bank_name like '%$account%')";
 		}
-        $sql.=" order by bank_account_number";
+        $sql.=" order by bank_name";
+        $sql.=" limit 0,50";
+        
 		$output="";
 		if($qry=$this->db->query($sql)){
 			foreach($qry->result() as $row){
-				$output.=$row->bank_account_number." - ".$row->bank_name."|".$row->bank_account_number."\n";
+			    $txt=$row->bank_account_number." - ".$row->bank_name;
+				$output.=$txt."|".$row->bank_account_number."|".$row->bank_name."\n";
 			}
 		}
 		echo $output;

@@ -129,7 +129,7 @@ function save_item(){
         <h4 class="modal-title" id="myModalLabel">Edit Barang</h4>
       </div>
       <div class="modal-body">
-			<? 
+			<?php 
 			$readonly="readonly";
 			include_once "item_mas_form_input.php"; ?>
       </div>

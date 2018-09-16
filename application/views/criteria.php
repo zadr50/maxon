@@ -1,24 +1,31 @@
-<legend>Filter atau kriteria proses: </legend>
- 
-	<p><strong><?if(isset($caption))echo $caption?></strong></p>
-	<div class='alert alert-info'>Silahkan isi kriteria pencetakan untuk laporan 
-	<strong>[<?=$rpt_controller?>]</strong>
-	di halaman ini dengan benar, kemudian tekan tombol print/posting/preview.
-	</div>
- 
-
-<div class=" ">		
-	<?
+<?php
 if(!isset($target_window)){
 	$target_window=" target='_blank_$rpt_controller'";
 } else {
 	$target_window="_self";
 }
+if(!isset($output1))$output1="text1";
+if(!isset($output2))$output2="text2";
+if(!isset($output3))$output3="text3";
+if(!isset($output4))$output4="text4";
+if(!isset($output5))$output5="text5";
+if(!isset($module))$module="";
+
 ?>
-<div class="row">
+<div class='col-sm-12 thumbnail'>       
+    <p><strong><?if(isset($caption))echo $caption?></strong></p>
+    <div class='alert alert-info'>Silahkan isi kriteria pencetakan untuk laporan 
+        <strong>[<?=$rpt_controller?>]</strong>
+        di halaman ini dengan benar, kemudian tekan tombol print/posting/preview.
+    </div>
+</div> 
+ 
+<div class="col-sm-12 thumbnail">
+		
 	<form id='frmPrint' method='post' 
-	action="<?=base_url()?>index.php/<?=$rpt_controller?>" <?=$target_window?>">
-	<div class="col-md-5">
+		action="<?=base_url()?>index.php/<?=$rpt_controller?>" <?=$target_window?>  >
+	
+	
 		<?php
 			if(!isset($select_date))$select_date=false;
 			if(!isset($criteria1))$criteria1=false;
@@ -27,22 +34,24 @@ if(!isset($target_window)){
 			if(!isset($criteria4))$criteria4=false;
 			if(!isset($criteria5))$criteria5=false;
 			if(!isset($module))$module="";
+			
 			if($select_date){
-				echo "<strong>Dari Tanggal :</strong>
-				  <p>".form_input('txtDateFrom',$date_from,'id="txtDateFrom" 
-						 class="easyui-datetimebox" required style="width:150px"
-						data-options="formatter:format_date,parser:parse_date"
-						')."</p>
-				  <strong>Sampai Tanggal :</strong>
-				  <p>".form_input('txtDateTo',$date_to,'id="txtDateTo" 
-						 class="easyui-datetimebox" required style="width:150px"
-						data-options="formatter:format_date,parser:parse_date"
-					')."</p>
-				";
+				echo "<strong>Dari Tanggal :</strong>";
+				echo "<p>".form_input('txtDateFrom',$date_from,'id="txtDateFrom" 
+						 class="easyui-datetimebox" required style="width:180px"
+						data-options="formatter:format_date,parser:parse_date" 
+						')."</p>";
+				echo "  <strong>Sampai Tanggal :</strong>";
+				echo "  <p>";
+				echo form_input('txtDateTo',$date_to,'id="txtDateTo" 
+						 class="easyui-datetimebox" required style="width:180px"
+						data-options="formatter:format_date,parser:parse_date"');
+				echo "</p>";
 			}
 			if($criteria1){
-				echo "<strong>".$label1."</strong>";
-				echo "<p>".form_input('text1',$text1,"id='text1' ");
+				echo "<strong>$label1</strong>";
+				echo "<p>";
+				echo form_input('text1',$text1,"id='text1' ");
 				if(isset($ctr1))echo link_button("","lov1()","search"); 
 				echo "</p>";
 			}
@@ -51,31 +60,33 @@ if(!isset($target_window)){
 					echo "<strong>".$label2."</strong>";
 					if(is_array($ctr2)){
 						echo "<p>".form_dropdown('text2',$ctr2,$text2,"id='text2' ");
+						echo "</p>";
 					} else {
 						echo "<p>".form_input('text2',$text2,"id='text2'   ");
 						echo link_button("","lov2()","search"); 
+						echo "</p>";
 					}
 				} else {
 					echo "<strong>".$label2."</strong>";
-					echo "<p>".form_input('text2',$text2,"id='text2'");
+					echo "<p>".form_input('text2',$text2,"id='text2'")."</p>";
 				}
-				echo "</p>";
 				
 			}
 			if($criteria3){
 				if(isset($ctr3)){
 					echo "<strong>".$label3."</strong>";
+					echo "<p>";
 					if(is_array($ctr3)){
-						echo "<p>".form_dropdown('text3',$ctr3,$text3,"id='text3'");
+						echo form_dropdown('text3',$ctr3,$text3,"id='text3'");
 					} else {
-						echo "<p>".form_input('text3',$text3,"id='text3'");					
+						echo form_input('text3',$text3,"id='text3'");					
 						echo link_button("","lov3()","search"); 
 					}
+					echo "</p>";
 				}  else {
 					echo "<strong>".$label3."</strong>";
-					echo "<p>".form_input('text3',$text3,"id='text3'");					
+					echo "<p>".form_input('text3',$text3,"id='text3'")."</p>";					
 				}
-				echo "</p>";
 			}
 			if($criteria4){
 				if(isset($ctr4)){
@@ -86,11 +97,12 @@ if(!isset($target_window)){
 						echo "<p>".form_input('text4',$text4,"id='text4'");					
 						echo link_button("","lov4()","search"); 
 					}
+					echo "</p>";
 				}  else {
 					echo "<strong>".$label4."</strong>";
 					echo "<p>".form_input('text4',$text4,"id='text4'");					
+					echo "</p>";
 				}
-				echo "</p>";
 			}
 			if($criteria5){
 				if(isset($ctr5)){
@@ -101,29 +113,53 @@ if(!isset($target_window)){
 						echo "<p>".form_input('text5',$text5,"id='text5'");					
 						echo link_button("","lov5()","search"); 
 					}
+					echo "</p>";
+					
 				}  else {
 					echo "<strong>".$label5."</strong>";
 					echo "<p>".form_input('text5',$text5,"id='text5'");					
+					echo "</p>";
 				}
-				echo "</p>";
 			}
 			
 		?>
-	</div>
-	<div class="col-md-3">
-		<?	
+</div>
+<p></p>	
+<div class="col-sm-12 box-gradient thumbnail" >
+		<?php	
 			if($module==""){
-				echo "<input type='submit' name='cmdPrint' value='Print' class='btn btn-primary'>";
+				echo "<input type='submit' name='cmdPrint' value='Print' class='btn btn-primary' >";
 			} 
 			if($module=="posting"){
 				echo "<input type='submit' name='cmdPosting' value='Posting' class='btn btn-primary'>";
 				echo "&nbsp&nbsp<input type='submit' name='cmdUnPosting' value='UnPosting' class='btn btn-default'>";	
 			}
 		?>
-	</div>
+</div>
+
+	
 	</form>
 
-</div>
+
+<SCRIPT language="javascript">
+    function cmdOK_Click(){
+        $("#dialog_print").dialog("close");
+        url='<?=base_url()?>index.php/<?=$rpt_controller?>';
+        $('#frmPrint').form('submit',{
+            url: url,
+            onSubmit: function(){
+                return $(this).form('validate');
+            },
+            success: function(result){
+                window.open(url,<?=$target_window?>);
+            }
+        });
+    }
+    function dialog_print_print(){
+        cmdOK_Click();
+    }
+
+</SCRIPT>
 <!-- PILIHAN LOV 1 --> 
 
 <? if(isset($ctr1)){ ?>
@@ -357,6 +393,9 @@ if(!isset($target_window)){
 	<?=link_button("Pilih","lov5_ok()","ok")?>
 </div>
 <SCRIPT language="javascript">
+
+
+
     $('#dg5').datagrid({
         onDblClickRow:function(){
             var row = $('#dg5').datagrid('getSelected');
@@ -364,7 +403,7 @@ if(!isset($target_window)){
             	lov5_ok();
             }       
         }
-    });        
+    });  
 
 	function lov5(){
 		search=$('#search5').val(); $('#dlg5').dialog('open').dialog('setTitle','Pilihan');

@@ -1,4 +1,4 @@
-<?
+<?php
 $item=$this->db->select('item_number,description,item_picture,retail,category,item_picture2,
 item_picture3,item_picture4,special_features,view_count,sales_count,
 weight,update_date,update_by,sales_min,insr_name,delivery_by,create_by')

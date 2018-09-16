@@ -29,16 +29,18 @@ class Medical extends CI_Controller {
 		$data['medicaldate']= date('Y-m-d H:i:s', strtotime($data['medicaldate']));
 		$id=$data['id'];
 		$data['nama_pegawai']=$this->employee_model->info($data['employeeid']);
-		$data['lookup_employee']=$this->list_of_values->render(array(
-				"dlgBindId"=>"employeeid","dlgId"=>"LovEmployee",
-				"dlgUrlQuery"=>base_url()."index.php/payroll/employee/browse_data/",
-				"dlgCols"=>array(
-					array("fieldname"=>"nip","caption"=>"Nip","width"=>"80px"),
-					array("fieldname"=>"nama","caption"=>"Nama","width"=>"200px")
-				),
-				"dlgRetFunc"=>"$('#employeeid').val(row.nip);
-				$('#nama_pegawai').val(row.nama);"
-			));
+        $data['lookup_employee']=$this->list_of_values->render(array(
+                "dlgBindId"=>"employee", 
+                "dlgCols"=>array(
+                    array("fieldname"=>"nip","caption"=>"Nip","width"=>"80px"),
+                    array("fieldname"=>"nama","caption"=>"Nama","width"=>"200px"),
+                    array("fieldname"=>"dept","caption"=>"Dept","width"=>"80px"),
+                    array("fieldname"=>"divisi","caption"=>"Divisi","width"=>"80px")
+                ),
+                "dlgRetFunc"=>"$('#nip').val(row.nip);$('#employeeid').val(row.nip);
+                $('#nama_pegawai').val(row.nama);"
+            ));
+            
 		
         return $data;
 		

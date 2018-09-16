@@ -1,5 +1,5 @@
 <?php
-class Template_eshop {
+class Template_eshop_mv {
  protected $_ci;
  private $library_src='';
  private $script_head='';

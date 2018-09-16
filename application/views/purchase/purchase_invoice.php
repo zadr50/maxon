@@ -10,23 +10,29 @@
 	if($has_retur=="")$has_retur=0;
 	if(!isset($has_memo))$has_memo=false;
 	if($has_memo=="")$has_memo=0;
-	 
+	$disabled="";$disabled_edit="";
+	if(!($mode=="add" or $mode=="edit"))$disabled=" readonly";
+	if($supplier_number=="")$disabled="";
+	if($terms=="")$disabled="";
+		 
 	echo link_button('Save', 'save_po()','save');		
-	echo link_button('Print', 'print_faktur()','print');		
-	echo link_button('Add','','add','false',base_url().'index.php/purchase_invoice/add');		
-	echo link_button('Search','','search','false',base_url().'index.php/purchase_invoice');		
-	echo link_button('Refresh','','reload','false',base_url().'index.php/purchase_invoice/view/'.$purchase_order_number);		
-	echo link_button('Delete', 'delete_nomor()','cut');
-	
-	if($posted) {
-		echo link_button('UnPosting','','cut','false',base_url().'index.php/purchase_invoice/unposting/'.$purchase_order_number);		
-	} else {
-		echo link_button('Posting','','ok','false',base_url().'index.php/purchase_invoice/posting/'.$purchase_order_number);		
+//	echo link_button('Add','','add','false',base_url().'index.php/purchase_invoice/add');		
+//	echo link_button('Search','','search','false',base_url().'index.php/purchase_invoice');		
+	if($mode!="add"){
+		echo link_button('Refresh','','reload','false',base_url().'index.php/purchase_invoice/view/'.$purchase_order_number);		
+		echo link_button('Delete', 'delete_nomor()','cut');
+		echo link_button('Print', 'print_faktur()','print');	
+		if($posted) {
+			echo link_button('UnPosting','','cut','false',base_url().'index.php/purchase_invoice/unposting/'.$purchase_order_number);		
+		} else {
+			echo link_button('Posting','','ok','false',base_url().'index.php/purchase_invoice/posting/'.$purchase_order_number);		
+		}
+			
 	}
     ?>
 	<div style='float:right'>
         <?php
-    	echo link_button('Doc Receive', 'select_receive();return false;','search');
+//    	echo link_button('Doc Receive', 'select_receive();return false;','search');
         echo link_button('Close','remove_tab_parent()','cancel');      
         ?>
     	<a href="#" class="easyui-splitbutton" data-options="plain:false, menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
@@ -68,17 +74,18 @@
             
             echo form_input('supplier_number',$supplier_number,
             "id=supplier_number class='easyui-validatebox' data-options='required:true,
-			validType:length[3,30]'");
-			echo link_button('','dlgsuppliers_show()',"search","false"); 
-			   
+			validType:length[3,30]' ".$disabled);
+			if($disabled=="") echo link_button('','dlgsuppliers_show()',"search","false"); 			   
 			?>
             </td>
             
         </tr>	 
        <tr>
-            <td>Termin</td><td><?php echo form_dropdown('terms'
-                    ,$terms_list,$terms,"id=terms");?>
-            </td>
+            <td>Termin</td><td><?php echo form_input('terms',$terms,"id='terms' 
+			     class='easyui-validatebox' data-options='required:true' ".$disabled);
+			    if($disabled=="") echo link_button('','dlgterms_show()',"search","false");  
+			
+			?></td>
 
              <td>Jangka Waktu</td>
             <td><?=form_input('due_date',$po_date,'id=due_date  class="easyui-datetimebox" 
@@ -93,36 +100,14 @@
                 echo link_button('','dlgbank_accounts_bank_show()',"search","false"); 
                 ?>
            </td>
-            <td>Recv#  </td><td><?php 
-                echo form_input("ref1",$ref1,"id='ref1' 
-                    title='Pilih nomor terima barang untuk menambahkan item barang dibawah'");
-                echo link_button('','select_receive()',"search","false"); 
-                ?>
-            </td>    
-           
-       </tr>
-       <tr>
-            <td>PO#: </td><td><?php 
-                echo form_input("po_ref",$po_ref,"id='po_ref'");
-                echo link_button('','dlgpurchase_order_show()',"search","false"); 
-                ?>
-            </td>
-            <td>Sales#</td><td> <?php 
-                echo form_input("ref2",$ref2,"id='ref2'");
-                echo link_button('','dlgsales_show()',"search","false"); 
-                ?>
-             </td>   
-           
-       </tr>
-       <tr>
            <td>Proyek</td><td><?=form_input('org_id',$org_id,"id='org_id' ");?>
                 <?=link_button('','dlggl_projects_show()',"search","false"); ?>      
            </td>          
-
+           
        </tr>
        <tr>
             <td>Keterangan</td><td colspan="3"><?php echo form_input('comments'
-                    ,$comments,'id=comments style="width:400px"');?></td>
+                    ,$comments,'id=comments style="width:500px"');?></td>
        </tr>	  
    </table>
     <div id='divTotal' class='thumbnail'> 
@@ -157,8 +142,41 @@
 		<div id='divItem'>
 		<div id='dgItem'>
 			<? if(!$posted) include_once "purchase_invoice_items.php"; ?>
+			
+			
 		</div>
-		<table id="dg" class="easyui-datagrid table"  width="100%"
+		<div class="thumbnail">
+			<p class='alert alert-info'>
+				Silahkan pilih tombol dibawah ini untuk menambahkan item barang dengan nomor Receipt atau nomor PO.
+			</p>
+			<table class="table2" width="100%">
+	       <tr>
+	            <td>Nomor Recv#/Pmb#  </td><td><?php 
+	                echo form_input("ref1",$ref1,"id='ref1' 
+	                    title='Pilih nomor terima barang untuk menambahkan item barang dibawah'");
+	                echo link_button('','select_receive()',"search","false"); 
+	                ?>
+	            </td>    
+	           
+	            <td>Nomor PO#: </td><td><?php 
+	                echo form_input("po_ref",$po_ref,"id='po_ref'");
+	                echo link_button('','dlgpurchase_order_show()',"search","false"); 
+	                ?>
+	            </td>
+	       </tr>
+	       <tr>
+	            <td>Tarik Data Sales#</td><td> <?php 
+	                echo form_input("ref2",$ref2,"id='ref2'");
+	                echo link_button('','dlgsales_show()',"search","false"); 
+	                ?>
+	             </td>   
+	       </tr>
+				
+			</table>
+			
+		</div>
+		
+		<table id="dg" class="easyui-datagrid table2"  width="100%"
 			data-options="
 				iconCls: 'icon-edit',fitColumns:true,
 				singleSelect: true,
@@ -170,14 +188,15 @@
                     <th data-options="field:'item_number',width:80">Kode Barang</th>
                     <th data-options="field:'description',width:150">Nama Barang</th>
                     <th data-options="<?=col_number('quantity',2)?>">Qty</th>
-                    <th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
+                    <th data-options="field:'unit',width:80">Unit</th>
                     <th data-options="<?=col_number('price',2)?>">Harga</th>
                     <th data-options="field:'discount',width:50,editor:'numberbox'">Disc%1</th>
                     <th data-options="field:'disc_2',width:50,editor:'numberbox'">Disc%2</th>
                     <th data-options="field:'disc_3',width:50,editor:'numberbox'">Disc%3</th>
                     <th data-options="<?=col_number('total_price',2)?>">Jumlah</th>
-                    <th data-options="field:'qty_recvd',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty Recvd</th>
-                    <th data-options="<?=col_number('retail',2)?>">Jual</th>
+                    <th data-options="field:'mu_qty',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">M Qty</th>
+                    <th data-options="field:'multi_unit',width:80">M Unit</th>
+                    <th data-options="<?=col_number('retail',2)?>">H Jual</th>
                     <th data-options="field:'margin',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Margin</th>
                     <th data-options="field:'line_number',width:30,align:'right'">Line</th>
 					
@@ -290,6 +309,8 @@
     echo $lookup_suppliers;
     echo $lookup_po;
     echo $lookup_project;
+	echo $lookup_terms;
+	
     include_once "select_sales_tran.php";
     
 ?>    
@@ -335,6 +356,9 @@
         
 	}
     function save_po(){
+    	
+    	loading();
+    	
         var valid_date=true;
         var min_date='<?=$min_date?>';
         var tanggal=$('#po_date').datetimebox('getValue'); 
@@ -367,8 +391,11 @@
 						var nomor=$('#purchase_order_number').val();
 						$('#mode').val('view');
 						$('#dg').datagrid({url:'<?=base_url()?>index.php/purchase_order/items/'+nomor+'/json'});
-						$('#dg').datagrid('reload');
+						//$('#dg').datagrid('reload');
+						loading_close();
+						
 						log_msg('Data sudah tersimpan. Silahkan pilih nama barang.');
+						
 					} else {
 						log_err(result.msg);
 					}

@@ -11,7 +11,16 @@ class Orders extends CI_Controller {
 	{
 		parent::__construct();
  		$this->load->helper(array('url','form'));
-                 
+                
+        $multi_company=$this->config->item('multi_company');
+       if($multi_company){
+            $company_code=$this->session->userdata("company_code","");
+            if($company_code!=""){
+               $this->db = $this->load->database($company_code, TRUE);
+           }
+       }         
+        
+        
 		$this->load->library('template_eshop_admin');
 	}
 	function index(){ $this->browse(); }

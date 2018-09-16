@@ -17,12 +17,15 @@
 <li><?=anchor('sales/rpt/faktur_cust','Penjualan per Pelanggan',"class='info_link'")?></li>
 <li><?=anchor('sales/rpt/sls_item','Penjualan per Item',"class='info_link'")?></li>
 <li><?=anchor('sales/rpt/sls_cat','Penjualan per Item Kategori',"class='info_link'")?></li>
-<li><?=anchor('sales/rpt/sls_supplier','Pernjualan per Item Supplier',"class='info_link'")?></li>
+<li><?=anchor('sales/rpt/sls_item_supplier','Penjualan per Item Supplier',"class='info_link'")?></li>
+<li><?=anchor('sales/rpt/sls_item_customer','Penjualan per Item Pelanggan',"class='info_link'")?></li>
 <li><?=anchor('sales/rpt/sls_rl_item','Rugi Laba Penjualan per Item',"class='info_link'")?></li>
 <li><?=anchor('sales/rpt/sls_rl_invoice','Rugi Laba Penjualan per Invoice',"class='info_link'")?></li>
 <li><?=anchor('sales/rpt/sls_rl_supplier','Rugi Laba Penjualan per Supplier',"class='info_link'")?></li>
+<li><?=anchor('sales/rpt/sls_rl_customer','Rugi Laba Penjualan per Customer',"class='info_link'")?></li>
 <li><?=anchor('sales/rpt/sls_top_qty','Top Ten Sales by Qty',"class='info_link'")?></li>
 <li><?=anchor('sales/rpt/sls_top_amount','Top Ten Sales by Amount',"class='info_link'")?></li>
+<li><?=anchor('sales/rpt/sls_cat_wil','Penjualan Salesman, Kategori,Wilayah ',"class='info_link'")?></li>
 </div>
 <div class='col-md-4'>
 <li><?=anchor('sales/rpt/memo_list','Daftar Kredit/Debit Memo',"class='info_link'")?></li>

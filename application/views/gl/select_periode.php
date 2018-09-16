@@ -16,16 +16,27 @@ closed="true"
 		</table>
 </div>
 <div id="tbPeriode" style="height:auto">
-	Enter Text: <input  id="search_periode" style='width:180' name="search_periode">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-	onclick="search_coa()"></a>        
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="select_periode()">Select</a>
+	Enter Text: <input  id="search_periode" style='width:180' name="search_periode" onchange="lookup_periode();return false;" >
+	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" 
+	onclick="lookup_periode();return false"></a>        
+	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="false" onclick="select_periode();return false;">Select</a>
+	<div style="float:right"><?=link_button("Close","remove_tab_parent();return false","cancel")?></div>
 </div>
 <script type="text/javascript">
+    $().ready(function (){
+        $('#dgPeriode').datagrid({
+            onDblClickRow:function(){
+            	select_periode();
+            }
+        });        
+    });
+
 	function lookup_periode() {
 		$('#dlgPeriode').dialog('open').dialog('setTitle','Cari periode');
 		periode=$('#search_periode').val();
-		$('#dgPeriode').datagrid({url:'<?=base_url()?>index.php/periode/select'});
+		var _url='<?=base_url()?>index.php/periode/select';
+		if(periode!="")_url=_url+"/"+periode;
+		$('#dgPeriode').datagrid({url:_url});
 		$('#dgPeriode').datagrid('reload');
 	}
 	function select_periode() {

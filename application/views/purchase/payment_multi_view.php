@@ -1,5 +1,5 @@
 <div class="thumbnail box-gradient">
-	<?
+	<?php
 	if($posted=="")$posted=0;
 	if($closed=="")$closed=0;	
 	echo link_button('Print', 'print_pay()','print');		
@@ -14,7 +14,6 @@
 	} else {
 		echo link_button('Posting','','ok','false',base_url().'index.php/payables_payments/posting/'.$voucher);		
 	}
-    echo link_button('Close','remove_tab_parent()','cancel');      
 	?>
 	<div style='float:right'>
 	<a href="#" class="easyui-splitbutton" data-options="plain:false, menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
@@ -25,6 +24,7 @@
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
+    <?=link_button('Close','remove_tab_parent()','cancel');?>      
 	</div>
 </div>
 

@@ -191,7 +191,7 @@ function __construct(){
 						$credit=0;
 				} else if(strpos($how_paid,' trx')) {
 						$debit=0;
-						$credit=$rec->deposit_amount;
+						$credit=$rec->payment_amount;
 				} else {
 						$this->recalc($voucher,'payment_amount');
 						$credit=$rec->payment_amount;
@@ -217,7 +217,7 @@ function __construct(){
 				if(strpos($how_paid,' trx')) {
 					// posting for mutasi antar rekening
 					$credit=0;
-					$debit=$rec->deposit_amount;
+					$debit=$rec->payment_amount;
 					$account_id=$this->bank_accounts_model->get_by_id($rec->supplier_number)->row()->account_id;
 					//echo mysql_error();
 					$custsuppbank=$rec->supplier_number;

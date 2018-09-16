@@ -1,6 +1,6 @@
 <h4>FORMULIR REKENING SIMPANAN</H4>
 <div class="thumbnail">
-	<?
+	<?php
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/koperasi/rekening/add');		
@@ -44,14 +44,14 @@
 				</td>
 			</tr>	 
 			<tr>
-				<td>Nomor Anggota</td><td><? echo form_input('no_anggota',$no_anggota,"id=no_anggota"); 
+				<td>Nomor Anggota</td><td><?php echo form_input('no_anggota',$no_anggota,"id=no_anggota"); 
 				echo link_button("","select_anggota()","search");?></td>
 			</tr>
 		   <tr>
 				<td>Tanggal Daftar</td><td><?=form_input('tanggal',$tanggal,"class='easyui-datetimebox' style='width:150px'");?></td>
 		   </tr>
 		   <tr>
-				<td>Jenis Simpanan</td><td><? echo form_dropdown('jenis',$jenis_list, $jenis); ?></td>
+				<td>Jenis Simpanan</td><td><?php echo form_dropdown('jenis',$jenis_list, $jenis); ?></td>
 		   </tr>
 			<tr>
 				<td>Setoran Awal</td><td><?=form_input('setor_awal',$setor_awal);?></td>

@@ -37,7 +37,7 @@ public $sub_total=0;
 	    $this->amount=$this->purchase_order_lineitems_model->sum_total_price($nomor);
 		$this->sub_total=$this->amount;
     	$po=$this->get_by_id($nomor)->row();
-		if(count($po)==0){
+		if(!$po){
 			return 0;
 		}
 		$disc_amount=$po->discount*$this->sub_total;

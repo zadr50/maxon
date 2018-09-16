@@ -67,12 +67,19 @@ class Modules_groups_model extends CI_Model {
 	
 	function save_module($group_id,$modules){
 		//hapus dulu sebelum masuk
-		$query=$this->db->query("delete from user_group_modules where group_id='$group_id'");
+		//jangan hapus !!!
+//		$query=$this->db->query("delete  from user_group_modules where group_id='$group_id'");
+	
 		for($i=0;$i<count($modules);$i++){
 			$data['group_id']=$group_id;
 			$data['module_id']=$modules[$i];
+			if($data['module_id']=='_19000'){
+				echo 1;
+			}
 			try{
-				$this->db->insert("user_group_modules",$data);
+				if(!$this->exist($group_id, $data['module_id'])){
+					$this->db->insert("user_group_modules",$data);					
+				}
 			} catch (Exception $e) {
 			    echo 'Caught exception: ',  $e->getMessage(), "\n";
 			}

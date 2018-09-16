@@ -84,7 +84,24 @@ class Delivery_order extends CI_Controller {
                 );          
         $data['lookup_salesman']=$this->list_of_values->render($setwh);
 
+        $data['lookup_so_open']=$this->list_of_values->render(array(
+        	"dlgBindId"=>"sales_order_open",
+        	"dlgRetFunc"=>"			
+        		$('#sales_order_number').val(row.sales_order_number);
+				$('#sold_to_customer').val(row.sold_to_customer);
+        		selected_so_number2();
+        	",
+        	"dlgCols"=>array(
+                array("fieldname"=>"sales_order_number","caption"=>"Nomor SO","width"=>"80px"),
+                array("fieldname"=>"sales_date","caption"=>"Tanggal","width"=>"80px"),
+                array("fieldname"=>"sold_to_customer","caption"=>"Customer","width"=>"100px"),
+                array("fieldname"=>"company","caption"=>"Perusahaan","width"=>"200px")        	        		
+        	)
+        ));
         
+        $data['lookup_customers']=$this->list_of_values->lookup_customers();
+		$data['lookup_inventory']=$this->list_of_values->lookup_inventory();
+                
         		
 		return $data;
 	}
@@ -107,13 +124,9 @@ class Delivery_order extends CI_Controller {
 		$this->load->model('shipping_locations_model');
 		$data['mode']='add';
 		$data['message']='';
-        //$data['customer_list']=$this->customer_model->select_list();
-		//$data['salesman_list']=$this->salesman_model->select_list();
-		//$data['so_list']=$this->sales_order_model->select_list_not_delivered();
         $data['sold_to_customer']="";
         $data['amount']=$this->input->post('amount');
-        $data['customer_info']=$this->customer_model->info($data['sold_to_customer']);
-		 
+        $data['customer_info']=$this->customer_model->info($data['sold_to_customer']);		 
 		$this->template->display_form_input($this->file_view,$data,'');			
 	}
 	function save()
@@ -139,13 +152,13 @@ class Delivery_order extends CI_Controller {
 		if($mode=="add"){
 
 			$ok=$this->invoice_model->save($data);
-			$this->invoice_model->save_from_so_items($data['invoice_number'],
-			$this->input->post('qty_order'),
-			$this->input->post('line_number'),
-			$this->input->post('warehouse_code'),
-			$this->input->post('invoice_date'),
-			$this->input->post('qty_unit')
-			
+			$this->invoice_model->save_from_so_items(
+				$data['invoice_number'],
+				$this->input->post('qty_order'),
+				$this->input->post('line_number'),
+				$this->input->post('warehouse_code'),
+				$this->input->post('invoice_date'),
+				$this->input->post('qty_unit')
 			);
 
 		} else {
@@ -426,7 +439,7 @@ class Delivery_order extends CI_Controller {
 		$nomor=urldecode($nomor);
 		$sql="select p.item_number,i.description,p.quantity 
 		,p.unit,p.price,p.discount,p.amount,p.line_number,
-		p.discount,p.disc_2,p.disc_3
+		p.discount,p.disc_2,p.disc_3,p.multi_unit,p.mu_qty
 		from invoice_lineitems p
 		left join inventory i on i.item_number=p.item_number
 		where invoice_number='$nomor'";

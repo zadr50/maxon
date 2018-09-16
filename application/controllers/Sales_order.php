@@ -115,7 +115,9 @@ class Sales_order extends CI_Controller {
                     );          
             $data['lookup_payment_terms']=$this->list_of_values->render($setwh);
     
-    
+            $data['lookup_customers']=$this->list_of_values->lookup_customers();
+			$data['lookup_inventory']=$this->list_of_values->lookup_inventory();
+	
 
 			return $data;
 	}
@@ -371,7 +373,7 @@ class Sales_order extends CI_Controller {
 		$nomor=urldecode($nomor);
 		$sql="select p.item_number,p.description,p.quantity 
 		,p.unit,p.price,p.discount,p.amount,p.line_number,p.ship_qty,p.ship_date
-		,p.disc_2,p.disc_3
+		,p.disc_2,p.disc_3,p.multi_unit,p.mu_qty,p.mu_harga
 		from sales_order_lineitems p
 		left join inventory i on i.item_number=p.item_number
 		where sales_order_number='$nomor'";
@@ -530,8 +532,10 @@ class Sales_order extends CI_Controller {
    	}
 	function list_open_so($customer){
 		$customer=urldecode($customer);
-		$sql="select p.sales_order_number,p.sales_date,p.due_date,p.payment_terms,p.salesman 
+		$sql="select p.sales_order_number,p.sales_date,p.due_date,p.payment_terms,p.salesman,
+		 p.sold_to_customer,c.company
 		from sales_order  p
+		left join customers c on c.customer_number=p.sold_to_customer
 		where p.sold_to_customer='$customer'";
 		echo browse_simple($sql,'',500,300,'dgSoList');
 
@@ -554,37 +558,47 @@ class Sales_order extends CI_Controller {
 		$nomor=urldecode($nomor);
 		$this->load->model('sales_order_lineitems_model');
 		$query=$this->db->query("select * from sales_order_lineitems where sales_order_number='$nomor'");
-		$table="<table class='table' width='100%'>
+		$table="
+		<p>Silahkan isi quantity pengiriman dikolom [Kirim] dibawah ini</p>
+		<table class='table2' width='100%'>
 		<thead><tr><th>Item Number</th>
 			<th>Description</th>
-			<th>Qty Order</th>
+			<th>Order</th>
 			<th>Unit</th>
-			<th>Q Terkirim</th>
-			<th>Qty Sisa</th>
-			<th>Qty Kirim</th>
-			<th>Satuan</th>
+			<th>Tkirim</th>
+			<th>Sisa</th>
+			<th>Kirim</th>
+			<th>Unit</th>
+			<th>Cmd</th>
 		</tr></thead>";
 		
 		$table.="
 		<tbody>";
+		$row_cnt=0;
 		foreach($query->result() as $row){
 			$qty_sisa=$row->quantity-$row->ship_qty;
 			$q_tkirim=0;
 			if($row->ship_qty)$q_tkirim=$row->ship_qty;
 			if($qty_sisa>0) {
+				$row_cnt++;
 				$table.="<tr><td>".$row->item_number."</td><td>".$row->description."</td><td>"
 				.$row->quantity."</td><td>".$row->unit."</td>
 				<td>".$q_tkirim."</td><td>".$qty_sisa."</td>
 				<td><input type='text' name='qty_order[]' style='width:80px' value='' 
 				    id='qty_id_$row->line_number' onblur='qty_max($qty_sisa,$row->line_number);return false;'</td>
 				<td><input type='text' name='qty_unit[]' style='width:80px' value='' '</td>
+				<td><input onclick='cek_this($row->line_number,$qty_sisa);return false' type='checkbox' name='cek[]' style='width:20px;height:20px'  '</td>
 				<input type='hidden' name='line_number[]' value='".$row->line_number."'>
 				</tr>";
 			}
 		}
 		$table.="</tbody>
 		</table>";
-		echo $table;			 
+		echo $table;		
+		if($row_cnt==0){
+			$sql="update sales_order set delivered=true where sales_order_number='$nomor'";
+			$this->db->query($sql);
+		}	 
 
 	}
 	function delivery($sales_order_number) {

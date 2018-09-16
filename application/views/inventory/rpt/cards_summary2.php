@@ -7,14 +7,25 @@
 	$data['criteria1']=true;
 	$data['label1']='Kelompok Barang';
 	$data['text1']='';
+         $data['key1']="kode";
+         $data['fields1'][]=array("kode","80","Kode");
+         $data['fields1'][]=array("category","180","Kelompok");
+         $data['ctr1']='category/select';
 	
 	$data['criteria2']=true;
 	$data['label2']='Gudang';
 	$data['text2']='';
+         $data['key2']="location_number";
+         $data['fields2'][]=array("location_number","80","Gudang");
+         $data['ctr2']='gudang/select';
 
 	$data['criteria3']=true;
 	$data['label3']='Kode Barang';
 	$data['text3']='';
+         $data['key3']="item_number";
+         $data['fields3'][]=array("item_number","80","Kode");
+         $data['fields3'][]=array("description","180","Nama Barang");
+         $data['ctr3']='inventory/select';
 	
 	$data['caption']='DAFTAR KARTU STOCK SUMMARY';
 	$data['rpt_controller']="inventory/rpt/$id";
@@ -35,19 +46,9 @@
      	<td colspan='2'><h2><?=$model->company_name?></h2></td><td colspan='2'><h2>LAPORAN KARTU STOCK SUMMARY</h2></td>     	
      </tr>
      <tr>
-     	<td colspan='2'><?=$model->street?></td><td></td>     	
-     </tr>
-     <tr>
-     	<td colspan='2'><?=$model->suite?></td>     	
-     </tr>
-     <tr>
-     	<td>
-     		<?=$model->city_state_zip_code?> - Phone: <?=$model->phone_number?>
-     	</td>
-     </tr>
-     <tr>
      	<td>
      		Criteria: Dari Tanggal: <?=$date1?> s/d : <?=$date2?>
+     		Kelompok: <?=$kel?>, Gudang: <?=$gudang?>, Kode Barang: <?=$kode?>
      	</td>
      </tr>
      <tr><td colspan=4 style='border-bottom: black solid 1px'></td></tr>

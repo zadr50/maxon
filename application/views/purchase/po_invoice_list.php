@@ -3,7 +3,7 @@
             data-options="
                 iconCls: 'icon-edit',fitColumns: true, 
                 singleSelect: true, toolbar: '#tbInvoice',
-                url: '<?=base_url()?>index.php/purchase_invoice/list_by_po/<?=$purchase_order_number?>'
+                url: ''
             ">
             <thead>
                 <tr>
@@ -23,3 +23,37 @@
     <?=link_button('Refresh','load_invoice()','reload');    ?>  
     <?=link_button('View','view_invoice()','edit'); ?>  
 </div>
+
+<script language="JavaScript">
+	
+    $().ready(function (){
+		load_invoice();
+    });	
+	function load_invoice(){
+		var po=$('#purchase_order_number').val();
+        if(po=="AUTO")return false;
+		var xurl='<?=base_url()?>index.php/purchase_invoice/list_by_po/'+po;
+		$('#dgInvoice').datagrid({url: xurl});
+	}
+	function view_invoice()
+	{
+        row = $('#dgInvoice').datagrid('getSelected');
+        if (row){
+			invoice_number=row['purchase_order_number'];
+			url="<?=base_url()?>index.php/purchase_invoice/view/"+invoice_number;
+			add_tab_parent('view_invoice_'+invoice_number,url);
+		}
+	
+	}
+	function add_invoice() {
+		var po=$('#purchase_order_number').val();
+		if(po=="AUTO"){
+			log_err("Simpan dulu !");return false;
+		}
+		var url='<?=base_url()?>index.php/purchase_invoice/add/'+po;		
+		add_tab_parent('add_invoice_'+po,url);
+	}		
+
+	
+	
+</script>

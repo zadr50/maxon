@@ -82,8 +82,22 @@ class Periode extends CI_Controller {
 		$data['criteria']=$faa;
         $this->template->display_browse2($data);            
     }
-    function browse_data($offset=0,$limit=10,$nama=''){
+    function browse_data($offset=0,$limit=12,$nama=''){
 		$sql="select p.* from hr_period p ";
+        
+        $sql=$this->sql." where 1=1";
+        if($this->input->get('sid_period')!='')$sql.=" and year_id like '".$this->input->get('sid_period')."%'";
+        if($this->input->get('tb_search')!='')$sql.=" and year_id like '%".$this->input->get('tb_search')."%'";
+ 
+        $sql=$this->sql." order by period";
+        
+        if($this->input->get("page"))$offset=$this->input->get("page");
+        if($this->input->get("rows"))$limit=$this->input->get("rows");
+        
+        if($offset>0)$offset--;
+        $offset=$limit*$offset;
+        $sql.=" limit $offset,$limit";
+        
         echo datasource($sql);		
     }
       

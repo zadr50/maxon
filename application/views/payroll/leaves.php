@@ -1,7 +1,5 @@
 <div class="thumbnail box-gradient">
 	<?php
-	echo link_button('Add','','add','false',base_url().'index.php/payroll/cuti/add');		
-	echo link_button('Search','','search','false',base_url().'index.php/payroll/cuti');		
 	echo link_button('Save', 'simpan()','save');		
 	?>
 	<div style='float:right'>
@@ -14,6 +12,7 @@
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
+    <?php echo link_button('Close', 'simpan()','cancel');   ?>     
 	</div>
 </div> 
 
@@ -31,7 +30,7 @@ if(!isset($disabled))$disabled="";
 			<tr>
 				<td>NIP / Nomor Induk Pegawai</td>
 				<td><? echo form_input('nip',$nip,"id='nip' $disabled"); 
-				if($disabled=="") echo link_button("","dlgLovEmployee_show()","search")?>
+				if($disabled=="") echo link_button("","dlgemployee_show()","search")?>
 				&nbsp<?=form_input('nama_pegawai',$nama_pegawai,"id='nama_pegawai' disabled style='width:300px'");?></td>
 			</tr>
 		    <tr>

@@ -8,14 +8,14 @@ maximum-scale=1.0, user-scalable=no">
 </script>
 <head><title>MaxOn ERP Online Demo</title></head>
 <body style='background-color: rgb(92, 92, 92);'>
-<?
+<?php
 date_default_timezone_set("Asia/Jakarta");
 echo $library_src;
 echo $script_head;
 ?>
 
 <div class="container">
-	<div class='row col-md-12 col-sm-12 col-lg-12'><? include_once "header.php" ?></div>
+	<div class='row col-md-12 col-sm-12 col-lg-12'><?php include_once "header.php" ?></div>
 	<div class='row col-md-12 col-sm-12 col-lg-12'>
 		<div class='container'>
 		
@@ -27,7 +27,7 @@ echo $script_head;
 	<div class='row col-md-12 col-sm-12 col-lg-12'>
 		<div class='container'>
 		<div class='col-md-10 col-sm-10 col-lg-10'>
-			<? include_once "footer.php" ?>
+			<?php include_once "footer.php" ?>
 		</div>
 		</div>
 	</div>

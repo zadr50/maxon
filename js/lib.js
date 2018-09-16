@@ -4,6 +4,79 @@ var STR_PAD_LEFT = 1;
 var STR_PAD_RIGHT = 2;
 var STR_PAD_BOTH = 3;
 
+$(document).ready(function(){
+	
+	$('.datepicker').datepicker();
+	$(".dialog_print").click(function(event){
+		event.preventDefault(); 
+		var url = $(this).attr('href');
+		console.log(url);
+		var n = url.lastIndexOf("/");
+		var j=url.lastIndexOf("#");
+		if(j>0){
+			var title=url.substr(j+1);
+		} else {
+			var title=url.substr(n+1);
+		}
+		if(title=='reports'){
+			title=url.substr(n-10);
+			title=title.substr(title.indexOf("/"));
+		}
+		if(url.indexOf("/menu")>5){
+			window.open(url,"_self");
+		} else {
+			$('#dialog_print').dialog("open").dialog("setTitle",title);
+			get_this(url,"","dialog_print_content");
+		}
+	});
+	
+	$(".info_link").click(function(event){
+		event.preventDefault(); 
+		var url = $(this).attr('href');
+		console.log(url);
+		var n = url.lastIndexOf("/");
+		var j=url.lastIndexOf("#");
+		if(j>0){
+			var title=url.substr(j+1);
+		} else {
+			var title=url.substr(n+1);
+		}
+		if(title=='reports'){
+			title=url.substr(n-10);
+			title=title.substr(title.indexOf("/"));
+		}
+		if(url.indexOf("/menu")>5){
+			window.open(url,"_self");
+		} else {
+			add_tab_parent(title,url);
+		}
+	});
+	
+	$(".info_linkx").click(function(event){
+		event.preventDefault(); 
+		var url = $(this).attr('href');
+		console.log(url);
+		var n = url.lastIndexOf("/");
+		var j=url.lastIndexOf("#");
+		if(j>0){
+			var title=url.substr(j+1);
+		} else {
+			var title=url.substr(n+1);
+		}
+		if(title=='reports'){
+			title=url.substr(n-10);
+			title=title.substr(title.indexOf("/"));
+		}
+		if(url.indexOf("/menu")>5){
+			window.open(url,"_self");
+		} else {
+			add_tab(title,url);
+		}
+	});
+	
+});
+
+ 
 function pad(str, len, pad, dir) {
     if (typeof(len) == "undefined") { var len = 0; }
     if (typeof(pad) == "undefined") { var pad = ' '; }
@@ -145,13 +218,15 @@ function loading_close()
 		}
 	}
 	function remove_tab_parent(){
-		t=setTimeout(function(){remove_tab_parent_delay()}, 3000);
+		loading();
+		t=setTimeout(function(){remove_tab_parent_delay()}, 1000);
 	}
 	function remove_tab_parent_delay(){
 		var tab = window.parent.$('#tt').tabs('getSelected');
 		if (tab){
 			var index = window.parent.$('#tt').tabs('getTabIndex', tab);
 			window.parent.$('#tt').tabs('close', index);
+			loading_close();
 		}		
 	}
 	
@@ -309,6 +384,7 @@ function myformatter(date){
 }
 
 function parse_date(date) { return myparser(date) }
+
 function myparser(s){
         if (!s) return new Date();
 		var sign=s.indexOf("/")>0?'/':'-';
@@ -337,6 +413,36 @@ function myparser(s){
                 return new Date();
         }
 }
+function parse_date_no_time(s){
+        if (!s) return new Date();
+		var sign=s.indexOf("/")>0?'/':'-';
+		var sa = s.split(' ');
+		var ss = sa[0].split(sign);
+        var y = parseInt(ss[0],10);
+        var m = parseInt(ss[1],10);
+        var d = parseInt(ss[2],10);
+		if(sign=="/"){
+			m = parseInt(ss[0],10);
+			d = parseInt(ss[1],10);
+			y = parseInt(ss[2],10);
+		}
+		var h=0;
+		var i=0;
+		var s=0;
+		if (sa.length>1) {
+			st = sa[1].split(':')
+			h = parseInt(st[0],10);
+			i = parseInt(st[1],10);
+			s = parseInt(st[2],10);
+		} 
+        if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
+                return new Date(y,m-1,d);
+        } else {
+                return new Date();
+        }
+}
+
+
 function next_number(kode,divOutput){
     $.ajax({
         type: "GET",
@@ -557,29 +663,6 @@ function ajax_get(url,param,next_url)
 	});		
 }
  
-$(document).ready(function(){
-	$(".info_link").click(function(event){
-		event.preventDefault(); 
-		var url = $(this).attr('href');
-		console.log(url);
-		var n = url.lastIndexOf("/");
-		var j=url.lastIndexOf("#");
-		if(j>0){
-			var title=url.substr(j+1);
-		} else {
-			var title=url.substr(n+1);
-		}
-		if(title=='reports'){
-			title=url.substr(n-10);
-			title=title.substr(title.indexOf("/"));
-		}
-		if(url.indexOf("/menu")>5){
-			window.open(url,"_self");
-		} else {
-			add_tab_parent(title,url);
-		}
-	});
-});
 
 
 function DataGrid(){
@@ -679,9 +762,130 @@ function findPos(obj) {
     return [curtop];
     }
 }
+
 $(document).ready(function(){
 	$("#user_log").click(function(){
 		add_tab_parent("Alert",CI_BASE+"index.php/maxon_inbox/list_msg");
 	})
 });
+
+
+	function lookup1(param){
+		//contoh penggunaan lihat view/invoice_add_item_simple fungsi: cari_coa
+		var id=param.id;
+		var fields=param.fields;
+		var url=param.url;
+		var result2=param.result;
+		var dlg="dialog_"+id;
+		var table="table_"+id;
+		var btn_ok_fnc="on_search_"+id+"()";
+		var btn_ok="<a href='#' class='lbtn_search' onclick='on_search_"+id+"();return false;'>Search</a>";
+		var btn_save="<a href='#' class='lbtn_save' onclick='on_select_"+id+"();return false;'>Select</a>";
+		var btn_cancel="<a href='#' style='float:right' class='lbtn_cancel' onclick='on_cancel_"+id+"();return false;'>Cancel</a>";
+		
+		if(! $("#"+dlg).html() ){
+			var tbl="<div id='"+dlg+"' ><table id='"+table+"' width=660 height=300  > \r </table>  \r </div>" +
+			"<div id='toolbar_"+id+"' class='box-gradient'>  \r" +
+				" Find: <input id='search_"+id+"' style='width:180' onchange='on_search_"+id+"();return false;' \r" +
+				" name='search_"+id+"'>" + btn_ok + btn_save + btn_cancel +
+			"</div>" + 
+			"<script> \r"+ "var r=null; \r " + result2 +  "\r" +
+				"function on_cancel_"+id+"(){ \r" + 
+					"$('#"+dlg+"').dialog('close'); \r" + 
+				"}; \r" +
+				"function on_select_"+id+"(){ \r" +
+					"var row = $('#"+table+"').datagrid('getSelected'); \r" +
+	                "if (row){ \r" +
+						"$('#"+dlg+"').dialog('close'); \r" +
+	                	"r={success:true,data:row,idd:'"+id+"'}; \r" +
+	                	"result.call();" +
+	                "}" +  				
+				"};" + 
+				"function on_search_"+id+"(){ \r" +
+					"var search=$(\"#search_"+id+"\").val(); \r"+
+					"var _url='"+url+"/'+search; \r" +
+					"$('#"+table+"').datagrid({url: _url}); \r" +
+				"};"+
+			"<\/script> \r";
+			$("body").append( $( tbl ) );
+		}
+		$("#"+dlg).dialog({title: 'Pilih baris.', toolbar: '#toolbar_'+id,
+			top:50,left:50,width: 700, height: 400, closed: false, cache: false,
+			modal: true});		 
+		$("#"+dlg).dialog("open").dialog("setTitle","Lookup: "+id);
+		
+		var _url=url;
+
+		$('#'+table).datagrid({url:_url,columns:fields});
+		
+		$('.lbtn_search').linkbutton({iconCls:'icon-search'});
+		$('.lbtn_save').linkbutton({iconCls:'icon-save'});
+		$('.lbtn_cancel').linkbutton({iconCls:'icon-cancel'});
+		
+		$().ready(function(){
+			$('#'+table).datagrid({onClickRow: function(){eval("on_select_"+id+"();")}});				
+		});
+		
+	}
+	function pagerFilter(data){
+		if ($.isArray(data)){	// is array
+			data = {
+				total: data.length,
+				rows: data
+			}
+		}
+		var dg = $(this);
+		var state = dg.data('datagrid');
+		var opts = dg.datagrid('options');
+		if (!state.allRows){
+			state.allRows = (data.rows);
+		}
+		var start = (opts.pageNumber-1)*parseInt(opts.pageSize);
+		var end = start + parseInt(opts.pageSize);
+		data.rows = $.extend(true,[],state.allRows.slice(start, end));
+		return data;
+	}
+
+	var loadDataMethod = $.fn.datagrid.methods.loadData;
+	$.extend($.fn.datagrid.methods, {
+		clientPaging: function(jq){
+			return jq.each(function(){
+				var dg = $(this);
+                var state = dg.data('datagrid');
+                var opts = state.options;
+                opts.loadFilter = pagerFilter;
+                var onBeforeLoad = opts.onBeforeLoad;
+                opts.onBeforeLoad = function(param){
+                    state.allRows = null;
+                    return onBeforeLoad.call(this, param);
+                }
+				dg.datagrid('getPager').pagination({
+					onSelectPage:function(pageNum, pageSize){
+						opts.pageNumber = pageNum;
+						opts.pageSize = pageSize;
+						$(this).pagination('refresh',{
+							pageNumber:pageNum,
+							pageSize:pageSize
+						});
+						dg.datagrid('loadData',state.allRows);
+					}
+				});
+                $(this).datagrid('loadData', state.data);
+                if (opts.url){
+                	$(this).datagrid('reload');
+                }
+			});
+		},
+        loadData: function(jq, data){
+            jq.each(function(){
+                $(this).data('datagrid').allRows = null;
+            });
+            return loadDataMethod.call($.fn.datagrid.methods, jq, data);
+        },
+        getAllRows: function(jq){
+        	return jq.data('datagrid').allRows;
+        }
+	})
+								
+
 	

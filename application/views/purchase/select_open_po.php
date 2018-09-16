@@ -1,6 +1,6 @@
 <!-- PILIH FAKTUR --> 
-<div id='dlgSelectFaktur'class="easyui-dialog" style="width:700px;height:380px;
-padding:10px 20px;left:100px;top:20px"
+<div id='dlgSelectFaktur'class="easyui-dialog" style="width:780px;height:380px;
+padding:10px 20px;left:10px;top:50px"
      closed="true" toolbar="#button-select-faktur">
      <div id='divSelectFaktur'> 
 		<table id="dgSelectFaktur" class="easyui-datagrid"  
@@ -16,6 +16,7 @@ padding:10px 20px;left:100px;top:20px"
 					<th data-options="field:'terms',width:80">Termin</th>
                     <th data-options="field:'due_date',width:80">Due</th>
                     <th data-options="field:'supplier_number',width:80">Supplier</th>
+                    <th data-options="field:'supplier_name',width:180">Supplier Name</th>
                     <th data-options="field:'doc_status',width:80">Status</th>
                     <th data-options="field:'bill_to_contact',width:80">Company</th>
 				</tr>
@@ -24,9 +25,12 @@ padding:10px 20px;left:100px;top:20px"
     </div>   
 </div>
 <div id="button-select-faktur" style="height:auto">
-	Enter Text: <input  id="search_supp" style='width:180' name="search_supp" onblur="filter_po();return false;">
+	Enter Text: <input  id="search_supp" style='width:180' name="search_supp" onchange="filter_po();return false;">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="filter_po();return false;"></a>        
 	<a href="#" class="easyui-linkbutton" iconCls="icon-ok"  onclick="selected_po();return false;">Select</a>
+	<span style="float:right">
+		<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="dlgSelectFaktur_Close();return false;">Cancel</a>        		
+	</span>
 </div>
 <SCRIPT language="javascript">
     $().ready(function (){
@@ -39,7 +43,9 @@ padding:10px 20px;left:100px;top:20px"
             }
         });        
     });
-
+	function dlgSelectFaktur_Close(){
+			$('#dlgSelectFaktur').dialog('close');		
+	}
 	function select_po(){
         //$('#dlgSelectFaktur').window({left:100,top:window.event.clientY-50});
 		$('#dlgSelectFaktur').dialog('open').dialog('setTitle','Cari nomor PO');
@@ -68,7 +74,7 @@ padding:10px 20px;left:100px;top:20px"
 	{
 		url=CI_ROOT+"purchase_order/items_not_received/"+nomor_po;
 		$('#dgRcv').datagrid({url:url});
-		//$('#dgRcv').datagrid('reload');
+		//$('#dgRcv').datagrid('reload'); dimatikan karena akan reload dua kali
 	}
 	
 </SCRIPT>

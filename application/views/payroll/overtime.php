@@ -1,37 +1,55 @@
-<legend>INPUT DATA OVERTIME</legend>
+<div class="thumbnail">
+    <?php
+    echo link_button('Simpan','add_ot()','save','false');
+    echo link_button('Print', 'print_slip()','print');      
+    echo link_button('Refresh','','reload','false',base_url().'index.php/payroll/overtime');            
+    ?>
+    <div style='float:right'>
+        <?=link_button('Help', 'load_help(\'salary\')','help'); ?>  
+        <a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip',plain:false">Options</a>
+        <div id="mmOptions" style="width:200px;">
+            <div onclick="load_help()">Help</div>
+            <div>Update</div>
+            <div>MaxOn Forum</div>
+            <div>About</div>
+        </div>
+        <?=link_button('Close', 'remove_tab_parent();return false;','cancel');?>     
+    </div>
+</div>
+
 <div class='row'>
 <div class="col-sm-5 ">
-	<form id="frmOvertime" method="POST">
-	<table class='table' width='100%'>
-	    
-	  <tr><td>NIP</td><td><input value='<?=$nip?>' id="nip" <?=$flag1==1?'disabled':''?> 
-	      onblur="cari_nip();return false;" name="nip">
-	  <?php
-	  if($flag1!=1) echo link_button('','lookup_employee()','search')?>
-	  </td></tr>
-	  <tr><td>Tanggal</td><td><input id="tanggal" name="tanggal" value="<?=$tanggal?>" class="easyui-datetimebox" 
-					data-options="formatter:format_date,parser:parse_date"
-					style="width:140px"></td></tr>
-	  <tr><td>Jam Awal</td><td><input id="time_in" name="time_in"></td></tr>
-	  <tr><td>Jam Akhir</td><td><input id="time_out" name="time_out"></td></tr>
-	  <tr><td>Supervisor</td><td><input id="supervisor" name="supervisor"></td></tr>
-	  <tr><td>Hari Libur</td><td><input id="hari_libur" name="hari_libur" type="checkbox"></td></tr>
-	  <tr><td>&nbsp;</td></tr>
-	  <tr><td  colspan='5'> <?=link_button('Simpan','add_ot()','save','false')?></td></tr>
-	  <tr><td><input id="id" name="id" type="hidden"></td></tr>
-	</table>
-	</form>
+    <div class="thumbnail">
+        <form id="frmOvertime" method="POST">
+        <table class='table2' width='100%'>
+            
+          <tr><td>NIP</td><td><input value='<?=$nip?>' id="nip" <?=$flag1==1?'disabled':''?> 
+              onblur="cari_nip();return false;" name="nip">
+          <?php
+          if($flag1!=1) echo link_button('','lookup_employee()','search')?>
+          </td></tr>
+          <tr><td>Tanggal</td><td><input id="tanggal" name="tanggal" value="<?=$tanggal?>" class="easyui-datetimebox" 
+                        data-options="formatter:format_date,parser:parse_date"
+                        style="width:140px"></td></tr>
+          <tr><td>Jam Awal</td><td><input id="time_in" name="time_in"></td></tr>
+          <tr><td>Jam Akhir</td><td><input id="time_out" name="time_out"></td></tr>
+          <tr><td>Supervisor</td><td><input id="supervisor" name="supervisor"></td></tr>
+          <tr><td>Hari Libur</td><td><input id="hari_libur" name="hari_libur" type="checkbox" style="width:20px"></td></tr>
+          <tr><td><input id="id" name="id" type="hidden"></td></tr>
+        </table>
+        </form>
+        
+    </div>
 </div>
 <div class="col-sm-6 thumbnail">
-   <table width='100%' class='table'>
+   <table width='100%' class='table2'>
 	  <tr><td>Nama</td><td><input id="nama" name="nama" disabled value='<?=$nama?>'></td></tr>
 	  <tr><td>Dept</td><td><input id="dept" name="dept" disabled value='<?=$dept?>'></td></tr>
 	  <tr><td>Divisi</td><td><input id="divisi" name="divisi" disabled value='<?=$divisi?>'></td></tr>
 	  <tr><td>Nip Id</td><td><input id="nip_id" name="nip_id" disabled></td></tr>
 	  <tr><td>Type</td><td><input id="emptype" disabled></td></tr>
-	  <tr><td>
-	 
-	  </td></tr>
+	  <tr><td><?=form_checkbox("chkClear","","","id='chkClear' style='width:20px'")?> Refresh after save?<td></tr>
+	      
    </table>
 </div>
 </div>
@@ -39,7 +57,7 @@
 <table id="dg" class="easyui-datagrid"  
 				style="width:auto;height:400px"
 				data-options="iconCls: 'icon-edit',singleSelect: true,toolbar: '#tb', fitColumns: true,
-					url: '<?=base_url()?>index.php/payroll/overtime/data/<?=$nip?>'">
+					url: ''">
 				<thead>
 					<tr>
 						<th data-options="field:'nip',width:100">NIP</th>
@@ -63,8 +81,12 @@
 	<?=link_button("Remove	","delete_row()","remove");?>
 </div>
 <?php } ?>
-<? include_once "employee_lookup.php" ?>
+<?php include_once "employee_lookup.php" ?>
 <script type="text/javascript">
+
+    $().ready(function(){
+        load_data();
+    });
 	function load_overtime(){
 		var row = $('#dg').datagrid('getSelected');
 		if(row){
@@ -86,9 +108,12 @@
 	                    $('#divisi').val(obj.divisi);
 	                    $('#emptype').val(obj.emptype);
 	                },
-	                error: function(msg){alert(msg);}
+	                error: function(msg){log_err(msg);}
 	    });
 		
+	}
+	function load_data(){	   
+        $('#dg').datagrid({url:'<?=base_url()?>index.php/payroll/overtime/data'});
 	}
     function add_ot(){
         if($('#nip').val()===''){alert('Isi NIP !');return false;};
@@ -108,10 +133,9 @@
 					$("#supervisor").val('');
 					$("#hari_libur").val('');
 					$("#id").val(0);
-					
-					$('#dg').datagrid({url:'<?=base_url()?>index.php/payroll/overtime/data'});
-					$('#dg').datagrid('reload');
 					log_msg("Data sudah tersimpan.");
+					if ($('#chkClear')[0].checked) load_data();
+					
 				} else {
 					log_err(result.msg);
 				}
@@ -126,10 +150,9 @@
 				$.ajax({
 							type: "GET", url: url,
 							success: function(msg){
-								$('#dg').datagrid({url:'<?=base_url()?>index.php/payroll/overtime/data'});
-								$('#dg').datagrid('reload');
+                                load_data();
 							},
-							error: function(msg){alert(msg);}
+							error: function(msg){log_err(msg);}
 				});
 			}	
 	}
@@ -158,7 +181,7 @@
 								$('#divisi').val(obj.divisi);
 								$('#emptype').val(obj.emptype);
 							},
-							error: function(msg){alert(msg);}
+							error: function(msg){log_err(msg);}
 				});
 			}	
 	}

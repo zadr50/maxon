@@ -3,8 +3,11 @@
 class Aktiva_sale extends CI_Controller {
     private $limit=10;
     private $table_name='fa_asset_transaction';
-    private $sql="select journal_id,trans_date,asset_id,trans_value 
-	from fa_asset_transaction ";
+    private $sql="select f.journal_id,f.trans_date,f.asset_id,f.trans_value,f.trans_type,
+    fa.description,f.vendor_id 
+	from fa_asset_transaction f 
+	left join fa_asset fa on fa.id=f.asset_id
+	";
     private $file_view='aktiva/asset_sale';
     private $primary_key='journal_id';
     private $controller='aktiva_sale';
@@ -30,6 +33,30 @@ class Aktiva_sale extends CI_Controller {
 			 $data['bank_name']="";
 			 $data['customer_name']="";
 			 $data['asset_name']="";
+			 
+		$data['lookup_fa_asset']=$this->list_of_values->render(array(
+			"dlgBindId"=>"fa_asset",
+			"dlgColsData"=>array("description","id"),
+			"dlgRetFunc"=>"$('#asset_id').val(row.id);
+				$('#asset_name').html(row.description);
+			"			
+		));
+			 
+		$data['lookup_customers']=$this->list_of_values->render(array(
+			"dlgBindId"=>"customers",
+			"dlgColsData"=>array("company","customer_number"),
+			"dlgRetFunc"=>"$('#vendor_id').val(row.customer_number);
+			$('#customer_name').html(row.company);"			
+		));
+		$data['lookup_bank_accounts']=$this->list_of_values->render(array(
+			"dlgBindId"=>"bank_accounts",
+			"dlgColsData"=>array("bank_account_number","bank_name"),
+			"dlgRetFunc"=>"$('#cash_bank_ap').val(row.bank_account_number);
+				$('#bank_name').html(row.bank_name);
+			"			
+		));
+			 
+			 
             return $data;
 	}
 	function nomor_bukti($add=false)
@@ -88,7 +115,7 @@ class Aktiva_sale extends CI_Controller {
 			unset($data['bank_name']);
 			if($mode=="add"){
 				$this->aktiva_tran_model->save($data);
-				$data['message']=mysql_error();
+				$data['message']="";
 				if($data['message']==''){
 					if($mode=="add") $this->nomor_bukti(true);
 					$data['mode']='view';					
@@ -101,7 +128,7 @@ class Aktiva_sale extends CI_Controller {
 				}
 			} else {
 				$this->aktiva_tran_model->update($id,$data);
-				$data['message']=mysql_error();
+				$data['message']="";
 				if($data['message']==''){
 					$data['message']='Data sudah disimpan.';
 					$this->syslog_model->add($id,"asset_sale","edit");
@@ -115,6 +142,10 @@ class Aktiva_sale extends CI_Controller {
 		} else {
 			$data['message']='Error Validation.';
 		}
+		$def=$this->set_defaults();
+		$data['lookup_fa_asset']=$def['lookup_fa_asset'];
+		$data['lookup_customers']=$def['lookup_customers'];		
+		$data['lookup_bank_accounts']=$def['lookup_bank_accounts'];	
 		$this->template->display_form_input($this->file_view,$data,'');
 
 
@@ -151,8 +182,10 @@ class Aktiva_sale extends CI_Controller {
 	}
     function browse($offset=0,$limit=50,$order_column='',$order_type='asc'){
 		$data['controller']='aktiva/'.$this->controller;
-		$data['fields_caption']=array('Bukti','Tanggal','Aktiva','Type','Jumlah');
-		$data['fields']=array( 'journal_id','trans_date','asset_id','trans_type','trans_value');
+		$data['fields_caption']=array('Bukti','Tanggal','Aktiva','Type','Jumlah',"Nama Asset",
+			"Customer");
+		$data['fields']=array( 'journal_id','trans_date','asset_id','trans_type','trans_value',
+			"description",'vendor_id');
 		$data['field_key']='journal_id';
 		$data['caption']='DAFTAR PENJUALAN AKTIVA TETAP';
 
@@ -167,8 +200,13 @@ class Aktiva_sale extends CI_Controller {
     	$sql=$this->sql." where trans_type='0'";
 		if($this->input->get('sid_number')!='')$sql.=" and journal_id like '".$this->input->get('sid_number')."%'";	
 		if($this->input->get('sid_nama')!='')$sql.=" asset_id like '".$this->input->get('sid_nama')."%'";
-        $sql.=" limit $offset,$limit";
 		
+        if($this->input->get("page"))$offset=$this->input->get("page");
+        if($this->input->get("rows"))$limit=$this->input->get("rows");
+        if($offset>0)$offset--;
+        $offset=$limit*$offset;
+        $sql.=" limit $offset,$limit";
+
         echo datasource($sql);
     }	 
 	function delete($id){

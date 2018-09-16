@@ -80,7 +80,7 @@
 		<div class="clearfix"></div>
 		
 			<div id="add_me" class="col-md-5 thumbnail" style="margin-top:10px;height:auto;display:none">
-				<? include "add_me.php"; ?>
+				<?php include "add_me.php"; ?>
 			</div>
 				
 				

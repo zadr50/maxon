@@ -11,7 +11,11 @@ body {
     padding:5px;
     margin:0 auto;
 	--width: auto; 
+<<<<<<< HEAD
 	background-color: #ffffff;
+=======
+	background-color: #2F6E2C;
+>>>>>>> 8f07a81... Update Versi 7
 }
 input,select {
 	padding:3px;
@@ -33,8 +37,12 @@ input[type="radio"], input[type="checkbox"] {
 .navbar-maxon {
 	background-color: #D9E5F0;
 	color:#fff;
+<<<<<<< HEAD
 	border:1px solid transparent;
     border-bottom: 1px solid #bfcee6;
+=======
+	border:1px solid black;
+>>>>>>> 8f07a81... Update Versi 7
 }
 .clear				{ clear: both; }
 .demo-info{
@@ -607,7 +615,11 @@ padding-left: 5px;
 	font-weight: 900;
 }
 .mxmod {
+<<<<<<< HEAD
 	margin: 1px;
+=======
+	margin: 10px;
+>>>>>>> 8f07a81... Update Versi 7
 	--width: 300px;
 	--height: 120px;
 	float: left;
@@ -659,9 +671,13 @@ padding-left: 5px;
     padding-left:5px;
 }
 .table2 td, .table2 th { 
+<<<<<<< HEAD
   padding-left: 5px; 
   padding-right: 5px; 
   border:1px solid transparent;
+=======
+  padding: 5px; 
+>>>>>>> 8f07a81... Update Versi 7
   border-bottom: 1px solid #ccc; 
   text-align: left;
 }
@@ -731,6 +747,7 @@ padding-left: 5px;
 }
 .info_link{
 	cursor:pointer;
+<<<<<<< HEAD
 }
 
 
@@ -758,3 +775,6 @@ padding-left: 5px;
     border-color: #bce8f1;
 }
 
+=======
+}
+>>>>>>> 8f07a81... Update Versi 7

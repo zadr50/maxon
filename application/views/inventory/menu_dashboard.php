@@ -1,17 +1,14 @@
-<script type="text/javascript" src="<?=base_url()?>assets/flot/excanvas.js"></script>
-<script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.js"></script>
-<script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.categories.js"></script>
- <?
+ <?php
   $CI =& get_instance();
  ?>
  <script type="text/javascript" src="<?=base_url()?>assets/maphilight-master/jquery.maphilight.min.js"></script>
 <div class="easyui-tabs" id="tt">	 
-	<div title="HOME"><? include_once __DIR__."/../home.php";?></div>
+	<div title="HOME"><?php include_once __DIR__."/../home.php";?></div>
 	<script>$().ready(function(){$("#tt").tabs("select","DASHBOARD");});</script>
 
 	<div title="DASHBOARD" style="padding:10px">
 	    
-	<div class='col-lg-12 col-md-12 col-sm-12'>
+	<div class='col-xs-12'>
 
 		<div class="easyui-panel themes" data-options="iconCls:'icon-save',closable:true,
 			collapsible:true,minimizable:true,maximizable:true" 
@@ -36,7 +33,7 @@
 	</div>
 	
     
-    <div class='col-lg-12'>
+    <div class='col-xs-12'>
         <div id="p" class="easyui-panel themes" title="Reports" 
             data-options="iconCls:'icon-help',closable:true,collapsible:true,
             minimizable:true,maximizable:true" >
@@ -50,14 +47,14 @@
     </div>
     
     	
-	<div class='col-lg-6 col-md-5 col-sm-12'>
+	<div class='col-xs-12'>
 		<div id="p" class="easyui-panel themes" title="Top Ten Sales" 
 			data-options="iconCls:'icon-help',closable:true,collapsible:true,
 			minimizable:true,maximizable:true" >
 			<div id='divSales'   style="width:90%;height:200px;padding:5px;"></div>
 		</div>
 	</div>
-	<div class='col-lg-6 col-md-5 col-sm-12'>
+	<div class='col-xs-12'>
 
 		<div id='divFaktur'  style="height:200px;padding:5px;">
 			<table id="dgRetur" class="easyui-datagrid"  
@@ -87,6 +84,9 @@
 
 
 </div>
+<script type="text/javascript" src="<?=base_url()?>assets/flot/excanvas.js"></script>
+<script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.js"></script>
+<script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.categories.js"></script>
 
 <script  language="javascript">
 $().ready(function(){

@@ -32,8 +32,7 @@ Class Inventory extends CI_Controller {
 		$this->sql="select i.item_number,i.description,unit_of_measure,
                 i.retail,cost_from_mfg,i.supplier_number,
                 s.supplier_name,i.class,i.category,c1.category as cat_name,
-                i.sub_category,i.type_of_invoice
-                 
+                i.sub_category,i.type_of_invoice,i.quantity_in_stock
                 from ".cidt()."inventory i
                 left join ".cidt()."suppliers s on s.supplier_number=i.supplier_number
                 left join inventory_categories c1 on c1.kode=i.category
@@ -316,13 +315,13 @@ Class Inventory extends CI_Controller {
 			$data['caption']='DAFTAR BARANG DAN JASA';
 			$data['controller']='inventory';		
 			
-			$data['fields_caption']=array('Kode','Nama Barang','Unit','Harga Jual','Harga Beli',
+			$data['fields_caption']=array('Kode','Nama Barang','Qty','Unit','Harga Jual','Harga Beli',
 				'Kode Supplier','Nama Supplier','Kelas','Category','Cat Name','Sub','Sistim');
 				
-			$data['fields']=array('item_number','description','unit_of_measure',
+			$data['fields']=array('item_number','description','quantity_in_stock','unit_of_measure',
 					'retail','cost_from_mfg','supplier_number','supplier_name','class',
 					'category','cat_name','sub_category','type_of_invoice');
-			
+			$data["col_width"]=array("description"=>200,"quantity_in_stock"=>50,"unit_of_measure"=>50);
 					
 			if(!$data=set_show_columns($data['controller'],$data)) return false;
 			
@@ -464,8 +463,8 @@ Class Inventory extends CI_Controller {
         
                 
         $limit=getvar("max_row");
-        if($limit=="")$limit=100;        
-        if($limit<10)$limit=100;
+        if($limit=="")$limit=50;        
+        if($limit<10)$limit=50;
         $sql.=" limit $limit";
         //echo $sql;
         

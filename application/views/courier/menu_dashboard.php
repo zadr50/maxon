@@ -14,7 +14,7 @@
     <script>$().ready(function(){$("#tt").tabs("select","DASHBOARD");});</script>
 
     <div title="DASHBOARD" style="padding:10px">
-        <div class="col-md-12 thumbnail">
+        <div class="col-xs-12 thumbnail">
             <?php
             add_button_menu("Booking Domestik","courier/booking_dom","ico_akun.png",
                     "Proses register nomor booking titipan pengiriman barang darat,laut dan udara");

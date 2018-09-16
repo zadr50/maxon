@@ -32,21 +32,30 @@ style="width:700px;height:380px;padding:10px 20px;left:10px;top:20px"
     ?> 
 	<a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="filter_sales();return false;"></a>        
 	<a href="#" class="easyui-linkbutton" iconCls="icon-ok"  onclick="selected_sales();return false;">Proses</a>
+    <?=link_button('Close','dlgSelectFaktur_Close()','cancel');?>      	
 </div>
 <SCRIPT language="javascript">
+	function dlgSelectFaktur_Close(){
+		$('#dlgSelectFaktur').dialog('close');
+	}
 	function dlgsales_show(){
+
+		if($("#mode").val()=="add"){log_err("Simpan dulu nomor ini untuk meneruskan memilih nomor receive! ");return false};
+		
+        var supp=$('#supplier_number').val();
+        if(supp==""){
+            log_err("Pilih dulu supplier ! Untuk membuat daftar penjualan untuk supplier yang bersaangkutan.");
+            return false;
+        }
+		
         //$('#dlgSalesTran').window({left:100,top:window.event.clientY-50});
 		$('#dlgSalesTran').dialog('open').dialog('setTitle','Filter transaksi penjualan');
 		filter_sales();
 	};	
 	function filter_sales(){
-        var supp=$('#supplier_number').val();
-        if(supp==""){
-            alert("Pilih dulu supplier !");
-            return false;
-        }
         var d1=$("#txtDateFrom").val();
         var d2=$("#txtDateTo").val();
+        var supp=$('#supplier_number').val();
         
         var vUrl='<?=base_url()?>index.php/po/konsinyasi/item_sales/'+d1+'/'+d2+'/'+supp;
         $('#dlgSalesTranGrid').datagrid({url:vUrl});

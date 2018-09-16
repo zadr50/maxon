@@ -54,8 +54,6 @@ input[type="radio"], input[type="checkbox"] {
     background-color: #f5f5f5;
     border-color: #bce8f1;
 }
-
-
  
 .clear				{ clear: both; }
 .container {
@@ -375,6 +373,11 @@ p.footer{
 #footer {
 	color: black;
 	font-size: 10px;
+    background: #f9f9f9;
+    margin-top:10px;
+    border-top:1px solid lightgray;	
+    height:400px;
+    padding-top:10px;
 }
 #footer a {
 	color: black;
@@ -770,6 +773,3 @@ padding-left: 5px;
 .navbar {
     margin-bottom: 2px;
 }
-   
-
-

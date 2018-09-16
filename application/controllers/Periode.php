@@ -149,14 +149,23 @@ class Periode extends CI_Controller {
         
         $this->template->display_browse($data);            
     }
-    function browse_data($offset=0,$limit=100,$nama=''){
-		$sql=$this->sql." order by year_id,period,sequence";
+    function browse_data($offset=0,$limit=12,$nama=''){
+        $sql=$this->sql." where 1=1";
+        if($this->input->get('sid_tahun')!='')$sql.=" and year_id like '".$this->input->get('sid_tahun')."%'";
+        if($this->input->get('tb_search')!='')$sql.=" and year_id like '%".$this->input->get('tb_search')."%'";
+
+        if($this->input->get('sid_tahun')=='' && $this->input->get('tb_search')==''){
+            $sql.=" and year_id like '".date("Y")."%'";
+        }
+        $sql=$this->sql." order by year_id,period,sequence";
         
         if($this->input->get("page"))$offset=$this->input->get("page");
         if($this->input->get("rows"))$limit=$this->input->get("rows");
+        
         if($offset>0)$offset--;
         $offset=$limit*$offset;
         $sql.=" limit $offset,$limit";
+        
         echo datasource($sql);
     }	      
 	function delete($id){

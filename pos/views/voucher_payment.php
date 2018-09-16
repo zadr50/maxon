@@ -11,7 +11,7 @@ style="width:500px;height:400px;padding:10px 10px;left:200px;top:100px">
 </div>
 <div id="btnCard">
     <?=link_button("CANCEL","dlgVoucher_Cancel()","cancel");?>
-    <?=link_button("OK","dlgVoucher_Ok()","ok");?>
+    <?=link_button("SUBMIT","dlgVoucher_Ok()","save");?>
 </div>
 
 

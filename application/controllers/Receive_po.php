@@ -123,7 +123,7 @@ class Receive_po extends CI_Controller {
 		} 
         $setsupp['dlgBindId']="suppliers";
         $setsupp['dlgRetFunc']="$('#supplier_number').val(row.supplier_number);
-        $('#supplier_name').html(row.supplier_name);
+       		 $('#supplier_name').html(row.supplier_name);
         ";
         $setsupp['dlgCols']=array( 
                     array("fieldname"=>"supplier_name","caption"=>"Nama Supplier","width"=>"180px"),
@@ -174,7 +174,8 @@ class Receive_po extends CI_Controller {
     function receive_items($id){
 		$id=urldecode($id);
         $sql="select i.item_number,s.description,i.quantity_received,
-            i.unit,i.id,i.cost,i.total_amount,s.manufacturer
+            i.unit,i.id,i.cost,i.total_amount,s.manufacturer,i.mu_qty,
+            i.multi_unit,i.mu_price
             from inventory_products i
             left join inventory s on s.item_number=i.item_number
             where shipment_id='".$id."'";
@@ -352,6 +353,9 @@ class Receive_po extends CI_Controller {
         
 		$qty=$this->input->post('qty');
 		$line=$this->input->post('line');
+		$mu_qty_data=$this->input->post("mu_qty");
+		$ratio=$this->input->post("ratio");
+		
 		//var_dump(count($qty));
 		for($i=0;$i<count($qty);$i++){
 			if($qty[$i]>0){
@@ -361,7 +365,7 @@ class Receive_po extends CI_Controller {
 				$stock=$this->inventory_model->get_by_id($itemno)->row();
 				$qty_now=$qty[$i];
 				$qty_sisa=($poline->quantity-$poline->qty_recvd);
-				if($qty_now>$qty_sisa) $qty_now=$qty_sisa;
+				//if($qty_now>$qty_sisa) $qty_now=$qty_sisa;
 				$unit=$poline->unit;
 				if($unit=="")$unit=$stock->unit_of_measure;
 				if($stock){
@@ -369,14 +373,24 @@ class Receive_po extends CI_Controller {
 					if($cost==0)$cost=$stock->cost_from_mfg;
 					$itemno=$stock->item_number;
 				}
+				$multi_unit=$poline->multi_unit;
+				$mu_harga=$poline->mu_harga;
+				if(c_($mu_qty_data[$i])>0){
+					$mu_qty=$ratio[$i]*$qty_now;
+				} else {
+					$mu_qty=$poline->mu_qty;					
+				}			
 				$data['item_number']=$itemno;
 				$data['cost']=$cost;
 				$data['quantity_received']=$qty_now;
 				$data['unit']=$unit;
-				$data['total_amount']=$data['quantity_received']*$data['cost'];
+				$data['total_amount']=$qty_now*$data['cost'];
 				$data['from_line_number']=$line[$i];
+				$data["mu_qty"]=$mu_qty;
+				$data["multi_unit"]=$multi_unit;
+				$data["mu_price"]=$poline->mu_harga;
 				$this->inventory_products_model->save($data);
-				$this->purchase_order_lineitems_model->update_qty_received($line[$i],$qty_now);
+				$this->purchase_order_lineitems_model->update_qty_received($poline->line_number,$qty_now);
 			}
 		}
 		$this->purchase_order_model->update_received($po_number);
@@ -418,6 +432,7 @@ class Receive_po extends CI_Controller {
 		from inventory_products
 		where receipt_type='PO' and (selected=false or isnull(selected))
 		and supplier_number='$supplier_number'";
+				
 		$query=$this->db->query($sql);
 		
 		$i=0;
@@ -426,7 +441,7 @@ class Receive_po extends CI_Controller {
 		foreach($query->result() as $row){
 			$data.="<tr><td>".$row->shipment_id."</td><td>".$row->date_received."</td><td>".$row->warehouse_code."</td>";
             $data.="<td>$row->purchase_order_number</td>";
-			$data.="<td><input type='checkbox' name='nomor[]' value='".$row->shipment_id."'></td>";
+			$data.="<td><input type='checkbox' name='nomor[]' value='".$row->shipment_id."' style='height:30px;width:30px'></td>";
 			$data.="</tr>";
 			$i++;
 		}
@@ -453,8 +468,9 @@ class Receive_po extends CI_Controller {
         $faktur["po_ref"]=$po_nos;
         $faktur['ref1']=$recv_nos;
         $this->db->where("purchase_order_number",$invoice_number)->update("purchase_order",$faktur);
+
 		echo json_encode(array('success'=>true,'purchase_order_number'=>$invoice_number,
-		  "ref1"=>$recv_nos,"ref2"=>$po_nos));
+			  "ref1"=>$recv_nos,"ref2"=>$po_nos));
 
 	}
 	
@@ -502,6 +518,9 @@ class Receive_po extends CI_Controller {
 			$data['disc_2']=$disc_2;
 			$data['disc_3']=$disc_3;
 			$data['from_line_type']="RCV";
+			$data['mu_qty']=$row->mu_qty;
+			$data['multi_unit']=$row->multi_unit;
+			$data['mu_harga']=$row->mu_price;
 			$ok=$this->purchase_order_lineitems_model->save($data);
             
 		}

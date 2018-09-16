@@ -1,6 +1,6 @@
 <div><h4>FORMULIR PERMOHONAN PINJAMAN</H4>
 <div class="thumbnail">
-	<?
+	<?php
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/pinjaman_mohon/add');		
@@ -70,7 +70,7 @@
 
 </div>	
 	
-<? include_once "employee_lookup.php" ?>
+<?php include_once "employee_lookup.php" ?>
 <script type="text/javascript">
     function save_this(){
         if($('#no_anggota').val()===''){alert('Isi dulu nomor anggota !');return false;};

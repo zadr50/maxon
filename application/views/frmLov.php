@@ -11,7 +11,7 @@
 ?>
 <div id='dlg<?=$dlgId?>' class="easyui-dialog"  background='black'
     style="width:<?=$dlgWidth?>px;height:<?=$dlgHeight?>px;padding:5px 5px;"
-    closed="true"  toolbar="#<?=$dlgTool?>"
+    closed="true"  toolbar="#<?=$dlgTool?>" data-options="iconCls:'icon-search'"
 >
 <?php 
     if($show_checkbox)echo form_open($url_submit,"id='frmLovItem_$dlgId'"); 
@@ -76,13 +76,14 @@
 	var fnc_after_select_<?=$dlgId?>="";
 	var show_checkbox_<?=$dlgId?>='<?=$show_checkbox?>';
 	
+			
     $().ready(function (){
         $('#select_all_<?=$dlgId?>').change(function() { 
             var checkboxes = $('#dlg<?=$dlgId?>').find(':checkbox');
             checkboxes.prop('checked', $(this).is(':checked'));
         }); 
         $('#dg<?=$dlgId?>').datagrid({
-            onDblClickRow:function(){
+            onClickRow:function(){
                 var row = $('#dg<?=$dlgId?>').datagrid('getSelected');
                 if (row){
                     <?=$dlgRetFunc?>
@@ -94,6 +95,8 @@
         <?php if($show_checkbox){ ?>
             filterItemIsc();
         <?php } ?>
+        
+        
     });
     
 	<?=$before_submit?>
@@ -104,30 +107,19 @@
         //var mainEvent = subEvent ? subEvent : window.event;
         //var w=<?=$dlgWidth?>;
         //var x=screen.width*0.5-w*0.5;
-        //var y=mainEvent.screenY/2;    
-        
-		idd_<?=$dlgId?>="<?=$dlgBindId?>";
-        $("#dlg<?=$dlgId?>_search_id").focus();
+        //var y=mainEvent.screenY/2;
+        <?php    
+			if($before_lookup!=""){
+			    echo $before_lookup;
+	        } 
+        ?>
+
+		dlg<?=$dlgId?>_search();        
 		
+		idd_<?=$dlgId?>="<?=$dlgBindId?>";
+        $("#dlg<?=$dlgId?>_search_id").focus();		
         $('#dlg<?=$dlgId?>').window({left:100,top:50});  
 		$('#dlg<?=$dlgId?>').dialog('open').dialog('setTitle','<?=$dlgTitle?>');
-		search_id=$('#dlg<?=$dlgId?>_search_id').val();
-
-		from="";
-		to="";
-		
-		<?php if($show_date_range) { ?>
-		  from=$("#<?=$dlgId?>_date_from").datetimebox('getValue'); 
-            to=$("#<?=$dlgId?>_date_to").datetimebox('getValue'); 
-        <?php } ?>
-        
-		var vUrl='<?=$dlgUrlQuery?>/'+search_id+"?from="+from+"&to="+to;
-		<?php if($before_lookup!=""){
-		    echo $before_lookup;
-        } 
-        ?>
-		$('#dg<?=$dlgId?>').datagrid({url:vUrl});
-		
 	}
 	function submit_selected_<?=$dlgId?>(){
 	       before_submit_<?=$dlgId?>();
@@ -171,7 +163,6 @@
         <?php } ?>
 
         var vUrl='<?=$dlgUrlQuery?>/'+search_id+"?from="+from+"&to="+to;
-        console.log(vUrl);
 		$('#dg<?=$dlgId?>').datagrid({url:vUrl});
 	}
     function dlg<?=$dlgId?>_list(){

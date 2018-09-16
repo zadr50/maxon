@@ -1,4 +1,4 @@
-<?
+<?php
 $table='maxon_apps'; 
 $msg.="";
 $sql=" 
@@ -18,7 +18,8 @@ CREATE TABLE IF NOT EXISTS `maxon_apps` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg .="<br>- maxon_apps..OK";else $msg .="<br>- maxon_apps..<br>ERROR -" . mysql_error();
+if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
 $sql="
 REPLACE INTO `maxon_apps` (`app_name`, `app_desc`, `app_type`, `app_ico`, `app_path`, `is_core`, `is_active`, `app_create_by`, `app_url`, `id`, `app_id`, `app_controller`) VALUES
 	('Pembelian', 'Pembuatan purchase order (PO) supplier, beserta pengelolaan hutang dan pelunasan hutang.', 'Modul', 'ico_purchase.png', '', 1, 1, 'andri', 'purchase', 1, '_40000', 'purchase'),
@@ -40,7 +41,8 @@ REPLACE INTO `maxon_apps` (`app_name`, `app_desc`, `app_type`, `app_ico`, `app_p
 	('Setting', 'Seting user login, kelompok user atau job dan modul yang boleh di akses.', 'Modul', 'ico_setting.png', '', 1, 1, 'andri', '', 17, '_00000', 'admin'),
 	('Website', 'Halaman utama untuk website perusahaan', 'Modul', 'office.png', '', 0, 0, 'andri', '', 18, '_20000', 'website');
 ";
-if(mysql_query($sql))$msg .="</br>- maxon_apps..OK";else $msg .="</br>- maxon_apps..<br>ERROR -" . mysql_error();
+if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
 $sql="
 CREATE TABLE IF NOT EXISTS `maxon_chat` (
   `userid` varchar(50) DEFAULT NULL,
@@ -49,13 +51,15 @@ CREATE TABLE IF NOT EXISTS `maxon_chat` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg .="</br>maxon_chat..OK";else $msg .="</br>maxon_chat..<br>ERROR -" . mysql_error();
+if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
 $sql="
 REPLACE INTO `maxon_chat` (`userid`, `message`, `id`) VALUES
 	('Guest', 'test', 1),
 	('Guest', 'dfdafsafafdfas', 2);
 ";
-if(mysql_query($sql))$msg .="</br>- maxon_chat..OK";else $msg.="</br>- maxon_chat..<br>ERROR -" . mysql_error();
+if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
 $sql="
 CREATE TABLE IF NOT EXISTS `maxon_inbox` (
   `rcp_from` varchar(250) DEFAULT NULL,
@@ -68,7 +72,8 @@ CREATE TABLE IF NOT EXISTS `maxon_inbox` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8;
 ";
-if(mysql_query($sql))$msg .= "</br>- maxon_inbox..OK";else $msg .= "</br> - maxon_inbox..<br>ERROR -" . mysql_error();
+if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
 $sql="
 REPLACE INTO `maxon_inbox` (`rcp_from`, `rcp_to`, `subject`, `message`, `is_read`, `msg_date`, `id`) VALUES
 	('andri', 'admin', 'subject', 'message', NULL, '2014-11-19 16:42:19', 1),
@@ -76,7 +81,8 @@ REPLACE INTO `maxon_inbox` (`rcp_from`, `rcp_to`, `subject`, `message`, `is_read
 	('andri', 'admin', 'subject', 'message', NULL, '2014-11-19 16:47:30', 3),
 	('col', 'AdmLs', '14120011-1 - belum tertagih', 'Belum tertagih invoice 14120011-1 janji bayar tanggal 2014-12-29 14:46:57', NULL, '2014-12-29 14:47:02', 34);
 ";
-if(mysql_query($sql))$msg .= " </br>- maxon_inbox..OK";else $msg .= "</br>- maxon_inbox..<br>ERROR -" . mysql_error();
+if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
 $sql="
 CREATE TABLE IF NOT EXISTS `syslog` (
   `tgljam` datetime DEFAULT NULL,
@@ -88,7 +94,8 @@ CREATE TABLE IF NOT EXISTS `syslog` (
   `jenis` varchar(50) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg .= "</br> - syslog..OK";else $msg .= "</br> - syslog..<br>ERROR -" . mysql_error();
+if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
 
 
 $sql="
@@ -103,7 +110,7 @@ CREATE TABLE IF NOT EXISTS `user_roles` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
-if(mysql_query($sql))$msg .= "</br> - user_roles..OK";else $msg .= "</br> - user_roles..<br>ERROR -" . mysql_error();
+if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
 
 

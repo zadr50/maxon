@@ -1,5 +1,5 @@
 <div class="row-fluid" >
-	<?
+	<?php
 	if($cmd=="list") {
 		$this->load->library("browser");
 		$browse=new browser();
@@ -59,7 +59,7 @@
 
 		</script>
 	
-	<? } ?>
+	<?php } ?>
 </div>
 <link rel="stylesheet" type="text/css" href="<?=base_url()?>assets/eshop/eshop.css">
 

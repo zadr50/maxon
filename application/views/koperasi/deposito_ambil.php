@@ -91,11 +91,11 @@
 	   </form>
 	</div>
 	 
-	<div title='Cicilan'><? include_once "cicilan.php" ?></div>
+	<div title='Cicilan'><?php include_once "cicilan.php" ?></div>
 
 </div>	
 	
-<? include_once "employee_lookup.php" ?>
+<?php include_once "employee_lookup.php" ?>
 <script type="text/javascript">
     function save_this(){
         if($('#nip').val()===''){alert('Isi dulu NIP Karyawan !');return false;};

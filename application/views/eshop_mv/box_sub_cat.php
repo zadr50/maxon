@@ -2,7 +2,7 @@
 <div class='col-md-11'>
 	<h4>Categories</h4>
 	<div class="list-group" >
-	<? 
+	<?php 
 	if( !isset($cat_id)) $cat_id='';
 	$all_cat=$this->db->get("inventory_categories");	
 	foreach($all_cat->result() as $c) {
@@ -12,7 +12,7 @@
 		<li class="list-group-item <?=$active ?> " >
 			<a href="<?=base_url()?>index.php/eshop/categories/view/<?=$c->kode?>">
 			<?=$c->category?> <span class='badge' style='float:right'><?=$cnt?></span></a>
-			<?
+			<?php
 				if($active != "") {
 					if($cat_sub=$this->db->where("parent_id",$c->kode)->get("inventory_categories"))
 					{
@@ -31,7 +31,7 @@
 			
 			?>
 		</li>
-	<? } ?>
+	<?php } ?>
 	</div>
 </div>
 </div>

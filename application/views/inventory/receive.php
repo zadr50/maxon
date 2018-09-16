@@ -29,6 +29,7 @@
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
+    	<?=link_button('Close','remove_tab_parent()','cancel');?>      
 	</div>
 </div> 
 <?php 
@@ -48,54 +49,88 @@ if( $mode=="view" || $mode=="add" || $mode=="" )
 if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
 ?>
 
- 
-<form id="frmItem" method='post' >
-   <table class='table' width='100%'>
-	<tr>
-		<td>Nomor Bukti</td><td>
-		<?php echo form_input('shipment_id',$shipment_id,"id=shipment_id"); ?>
-                </td>
-		<td>Gudang</td><td><?php 
-            echo form_input('warehouse_code',$warehouse_code,'id=warehouse_code');
-            echo link_button('','dlgwarehouse_show()',"search","false");  
-		?></td>
-				
-	</tr>	 
-   <tr>
-		<td>Tanggal</td><td><?php echo form_input('date_received',$date_received,'id=date_received ,
-		 class="easyui-datetimebox" required 
-			data-options="formatter:format_date,parser:parse_date"
-			');?>
-		</td>
-		<td>Pengirim</td><td><?php echo form_input('supplier_number',$supplier_number,'id=supplier_number');?></td>
-   </tr>
-   <tr>
-        <td>Received By</td><td><?php echo form_input('receipt_by',$receipt_by,'id=receipt_by');?></td>
-        <td>Ref#</td><td><?php echo form_input('other_doc_number',$other_doc_number,"id='other_doc_number'");?></td>
-       
-   </tr>
-   <tr>
-        <td>Doc Type</td><td><?php echo form_input('doc_type',$doc_type,'id=doc_type');?></td>
-        <td>Doc Status</td><td><?php echo form_input('doc_status',$doc_status,'id=doc_status');?></td>
-       
-   </tr>
-   <tr>
-        <td>Posted</td><td><?php echo form_input('posted',$posted,'id=posted');?></td>
-       
-   </tr>
-
-   <tr>
-		<td>Catatan</td><td colspan='4'><?php echo form_input('comments',$comments,'id=comments style="width:500px"');?></td>
-   </tr>
-   <tr>
-        <td>Kode Akun (Credit)</td><td colspan=4><?php echo form_input('ref1',$ref1,"id='ref1' style='width:400px' ");
-            echo link_button('',"lookup_coa('ref1')",'search');
-            
-            ?></td>
-       
-   </tr>
-   </table>
-</form>
+<div  class="easyui-tabs" style="width:auto;height:auto;min-height: 500px">
+	<div title="Umum" id="box_section" style="padding:10px">	
+		<form id="frmItem" method='post' >
+		
+	   <table class='table2' width='100%'>
+		<tr>
+			<td>Nomor Bukti</td><td>
+			<?php echo form_input('shipment_id',$shipment_id,"id=shipment_id"); ?>
+	                </td>
+			<td>Gudang</td><td><?php 
+	            echo form_input('warehouse_code',$warehouse_code,'id=warehouse_code');
+	            echo link_button('','dlgwarehouse_show()',"search","false");  
+			?></td>
+					
+		</tr>	 
+	   <tr>
+			<td>Tanggal</td><td><?php echo form_input('date_received',$date_received,'id=date_received ,
+			 class="easyui-datetimebox" required 
+				data-options="formatter:format_date,parser:parse_date"
+				');?>
+			</td>
+			<td>Pengirim</td><td><?php echo form_input('supplier_number',$supplier_number,'id=supplier_number');?></td>
+	   </tr>
+	   <tr>
+	        <td>Received By</td><td><?php echo form_input('receipt_by',$receipt_by,'id=receipt_by');?></td>
+	        <td>Ref#</td><td><?php echo form_input('other_doc_number',$other_doc_number,"id='other_doc_number'");?></td>
+	       
+	   </tr>
+	   <tr>
+	        <td>Doc Type</td><td><?php echo form_input('doc_type',$doc_type,'id=doc_type');?></td>
+	        <td>Doc Status</td><td><?php echo form_input('doc_status',$doc_status,'id=doc_status');?></td>
+	       
+	   </tr>
+	   <tr>
+	        <td>Posted</td><td><?php echo form_input('posted',$posted,'id=posted');?></td>
+	       
+	   </tr>
+	
+	   <tr>
+			<td>Catatan</td><td colspan='4'><?php echo form_input('comments',$comments,'id=comments style="width:500px"');?></td>
+	   </tr>
+	   <tr>
+	        <td>Kode Akun (Credit)</td><td colspan=4><?php echo form_input('ref1',$ref1,"id='ref1' style='width:400px' ");
+	            echo link_button('',"lookup_coa('ref1')",'search');
+	            
+	            ?></td>
+	       
+	   </tr>
+	   </table>
+		</form>
+	</div>
+	<div title="Items" id="box_section" style="padding:10px">
+		<div id='divItem' style='display:<?=$mode=="add"?"":""?>'>
+			<table id="dg" class="easyui-datagrid"  width="100%"
+				data-options="
+					iconCls: 'icon-edit',
+					singleSelect: true,
+					toolbar: '#tb_item',fitColumns:true 
+				">
+				<thead>
+					<tr>
+						<th data-options="field:'item_number',width:80">Kode Barang</th>
+						<th data-options="field:'description',width:150">Nama Barang</th>
+						<th data-options="field:'quantity',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
+						<th data-options="field:'unit',width:50,align:'left',editor:'text'">Unit</th>
+						<th data-options="field:'mu_qty',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">M Qty</th>
+						<th data-options="field:'multi_unit',width:50,align:'left',editor:'text'">M Unit</th>
+						<th data-options="field:'line_number',width:30,align:'right'">Line</th>
+					</tr>
+				</thead>
+			</table>
+		</div>	
+		<!-- LINEITEMS -->
+		</div> 
+	</div>
+	
+<div id="tb_item" class='thumbnail box-gradient'>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-add"  onclick="addItem();return false;">Add</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-edit"  onclick="editItem();return false;">Edit</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-remove"   onclick="deleteItem();return false;">Delete</a>	
+	<a href="#" class="easyui-linkbutton" iconCls="icon-reload"   onclick="refreshItem();return false;">Refresh</a>	
+</div> 
 
 <?php 
     echo load_view('inventory/inventory_select'); 
@@ -107,32 +142,7 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
 
 ?>
 
-<div id="tb_item" class='thumbnail box-gradient'>
-    <a href="#" class="easyui-linkbutton" iconCls="icon-add"  onclick="addItem()">Add Item</a>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-edit"  onclick="editItem()">Edit Edit</a>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-remove"   onclick="deleteItem()">Delete</a>	
-</div> 
 
-<div id='divItem' style='display:<?=$mode=="add"?"":""?>'>
-	<table id="dg" class="easyui-datagrid"  width="100%"
-		data-options="
-			iconCls: 'icon-edit',
-			singleSelect: true,
-			toolbar: '#tb',fitColumns:true 
-		">
-		<thead>
-			<tr>
-				<th data-options="field:'item_number',width:80">Kode Barang</th>
-				<th data-options="field:'description',width:150">Nama Barang</th>
-				<th data-options="field:'quantity',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
-				<th data-options="field:'unit',width:50,align:'left',editor:'text'">Satuan</th>
-				<th data-options="field:'line_number',width:30,align:'right'">Line</th>
-			</tr>
-		</thead>
-	</table>
-</div>	
-<!-- LINEITEMS -->
-</div> 
  <script language='javascript'>
  	var grid_output="dg";
 	var url_save_item = '<?=base_url()?>index.php/receive/save_item';
@@ -142,6 +152,12 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
    $().ready(function (){
         load_items();
     });
+    function refreshItem(){
+    	load_items();
+    }
+    function hitung(){
+    	calc_qty_unit();
+    }
     function deleteItem(){
         var nomor=$('#shipment_id').val();
         var row = $('#dg').datagrid('getSelected');
@@ -165,6 +181,7 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
 
     function save_item(){
         if (!valid()) return false;
+        loading();
         var _param=get_input_values();
         $.ajax({
             type: "POST",
@@ -173,11 +190,14 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
             success: function(result){
                 var result = eval('('+result+')');
                 if (result.success){
+                	loading_close();
                     $("#shipment_id").val(result.shipment_id);
                     load_items();
                     $.messager.show({title: 'Success',msg: 'Success'});
                     close_item();                    
                 } else {
+                	loading_close();
+                	log_err(result.msg);
                     $.messager.show({title: 'Error',msg: result.msg });
                 }
             },
@@ -207,6 +227,8 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
         $('#line_number').val('');
         $('#quantity').val(1);
         $("#unit").val("Pcs");
+        $('#mu_qty').val("");
+        $("#multi_unit").val("");
         $("#id").val("");
     }
 
@@ -217,12 +239,12 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
         if(tanggal<min_date){
             valid_date=false;
         }
-        if(!valid_date){alert("Tanggal tidak benar ! Mungkin sudah closing !");return false;}
+        if(!valid_date){log_err("Tanggal tidak benar ! Mungkin sudah closing !");return false;}
         
         var shipment_id=$('#shipment_id').val();
-        if(shipment_id==''){alert('Isi nomor bukti !');return false;}
-        if($('#warehouse_code').val()==''){alert('Isi gudang!');return false;} 
-        if($('#supplier_number').val()==''){alert('Isi outlet atau tujuan!');return false;} 
+        if(shipment_id==''){log_err('Isi nomor bukti !');return false;}
+        if($('#warehouse_code').val()==''){log_err('Isi gudang!');return false;} 
+        //if($('#supplier_number').val()==''){log_err('Isi outlet atau tujuan!');return false;} 
         
         return true;        
     } 
@@ -241,6 +263,8 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
             doc_type:$("#doc_type").val(),
             doc_status:$("#doc_status").val(),
             receipt_by:$("#receipt_by").val(),
+            mu_qty:$("#mu_qty").val(),
+            multi_unit:$("#multi_unit").val(),
             id:$("#id").val()};
        return _param; 
     }
@@ -304,6 +328,8 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
             $('#quantity').val(row.quantity);
             $('#unit').val(row.unit);
             $('#id').val(row.line_number);
+            $('#mu_qty').val(row.mu_qty);
+            $('#multi_unit').val(row.multi_unit);
         }
     }
     function load_items(){

@@ -16,18 +16,19 @@
 	}
     echo link_button('Kas Masuk',"view_kas('$voucher')",'search','false');       
 	echo "<div style='float:right'>";
-	echo link_button('Help', 'load_help(\'payment\')','help');		
-	
-	?>
-	
-		<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
-	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help('payment')">Help</div>
-		<div onclick="show_syslog('payment','<?=$voucher?>')">Log Aktifitas</div>
-		<div>Update</div>
-		<div>MaxOn Forum</div>
-		<div>About</div>
-	</div>
+		echo link_button('Help', 'load_help(\'payment\')','help');		
+		
+		?>
+		
+			<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+		<div id="mmOptions" style="width:200px;">
+			<div onclick="load_help('payment')">Help</div>
+			<div onclick="show_syslog('payment','<?=$voucher?>')">Log Aktifitas</div>
+			<div>Update</div>
+			<div>MaxOn Forum</div>
+			<div>About</div>
+		</div>
+		<?=link_button('Close', 'remove_tab_parent()','cancel');?>		
 	</div>
 </div>
 

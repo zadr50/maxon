@@ -40,8 +40,7 @@ class Cuti extends CI_Controller {
         }
         
 		$data['lookup_employee']=$this->list_of_values->render(array(
-				"dlgBindId"=>"nip","dlgId"=>"LovEmployee",
-				"dlgUrlQuery"=>base_url()."index.php/payroll/employee/browse_data",
+				"dlgBindId"=>"employee", 
 				"dlgCols"=>array(
 					array("fieldname"=>"nip","caption"=>"Nip","width"=>"80px"),
 					array("fieldname"=>"nama","caption"=>"Nama","width"=>"200px"),

@@ -119,14 +119,14 @@ class Lookup extends CI_Controller {
         $this->template->display_form_input("blank",$data);
         
     }	
-	function query_sysvar_lookup_ac($key){
+	function query_sysvar_lookup2($key){
 		$sql="select varvalue,keterangan from system_variables where varname='lookup.$key'";
 		if($search=$this->input->get("q"))$sql.=" and varvalue like '$search%'";
 		$sql.=" order by varvalue";
 		$output="";
 		if($qry=$this->db->query($sql)){
 			foreach($qry->result() as $row){
-				$output.=$row->varvalue." - ".$row->keterangan."\n";
+				$output.=$row->varvalue." - ".$row->keterangan."|".$row->varvalue."\n";
 			}
 		}
 		echo $output;
@@ -139,17 +139,13 @@ class Lookup extends CI_Controller {
 	}
 	function query($what,$search='',$with_autocomplete=false){
         $sql=$this->list_of_values->get_by_name($what,$search);
-           
-        
 		if($sql==""){
 			echo "<div class='alert alert-warning'>Invalid Query Check Controller Lookup.php !!!</div>";
 		} else {
 		    if($what=="recv_po"){
-                echo datasource($sql,true,"shipment_id");
-		        
+                echo datasource($sql,true,"shipment_id");		        
 		    } else {
                 echo datasource($sql);
-		        
 		    }
 		}
 	}
@@ -170,7 +166,24 @@ class Lookup extends CI_Controller {
             return 0;
         }
     }
-    
+    function table($table,$field_key,$field2){
+        $sql="select $field_key,$field2 from $table where 1=1";
+        if($search=$this->input->get("q")){
+            if($search!="")$sql.=" and ($field_key like '%$search%' 
+                or $field2 like '%$search%')";
+        }
+        $sql.=" order by $field_key";
+        $sql.=" limit 0,50";
+        
+        $output="";
+        if($qry=$this->db->query($sql)){
+            foreach($qry->result_array() as $row){
+                $output.=$row[$field_key]." - ".$row[$field2]."|".$row[$field_key]."|".$row[$field2]."\n";
+            }
+        }
+        echo $output;
+                
+    }
  
 }
 

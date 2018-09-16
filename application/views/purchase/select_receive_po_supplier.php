@@ -1,5 +1,5 @@
-<div id='dlgSelectReceive'class="easyui-dialog" style="width:800px;height:380px;
-padding:10px 20px;left:100px;top:20px"
+<div id='dlgSelectReceive'class="easyui-dialog" style="width:700px;height:380px;
+padding:10px 20px;left:10px;top:20px"
      closed="true" buttons="#btnSelectReceive">
 	 <form id='frmReceive' method='post'>
      <div id='divSelectReceive'> 
@@ -8,13 +8,21 @@ padding:10px 20px;left:100px;top:20px"
 	</form>
 </div>
 <div id="btnSelectReceive" style="height:auto">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="false" onclick="selected_received_no();return false;">Proses</a>
+    <?=link_button('Close','dlgSelectReceive_Close()','cancel');?>      	
+	<a href="#" class="easyui-linkbutton" iconCls="icon-save" plain="false" onclick="selected_received_no();return false;">Submit</a>
 </div>
 <SCRIPT language="javascript">
+	function dlgSelectReceive_Close(){
+		$('#dlgSelectReceive').dialog('close');
+	}
 	function select_receive(){
 		var supplier=$("#supplier_number").val();
-		if(supplier==""){alert("Pilih supplier dulu !");return false};
-		if($("#mode").val()=="add"){alert("Simpan dulu nomor ini !");return false};
+		if(supplier==""){
+			log_err("Pilih supplier dulu ! Untuk loading nomor receive berdasarkan supplier bersangkutan.");
+			return false;
+			
+		}
+		if($("#mode").val()=="add"){log_err("Simpan dulu nomor ini untuk meneruskan memilih nomor receive! ");return false};
 		
 		var url='<?=base_url()?>index.php/receive_po/list_open/'+supplier;
 		var param='';
@@ -24,6 +32,8 @@ padding:10px 20px;left:100px;top:20px"
 	};	
 	function selected_received_no(){
 		$('#dgSelectReceive').dialog('close');
+		loading();
+		
 		var nomor=$("#purchase_order_number").val();
 		var url='<?=base_url()?>index.php/receive_po/create_new_invoice/'+nomor;
 			$('#frmReceive').form('submit',{
@@ -37,8 +47,9 @@ padding:10px 20px;left:100px;top:20px"
 					    $("#ref1").val(result.ref1);
 					    $("#po_ref").val(result.ref2);
 						$('#dlgSelectReceive').dialog('close');
-						$('#dg').datagrid({url:'<?=base_url()?>index.php/purchase_order/items/'+nomor+'/json'});
-						$('#dg').datagrid('reload');					
+						save_po();
+						//$('#dg').datagrid({url:'<?=base_url()?>index.php/purchase_order/items/'+nomor+'/json'});
+						//$('#dg').datagrid('reload');					
 					} else {
 						$.messager.show({
 							title: 'Error',

@@ -1,9 +1,9 @@
 
-			<? if(! $so_pay) { 	?>
+			<?php if(! $so_pay) { 	?>
 				<p>Belum ada data pembayaran untuk nomor tagihan ini.</p>
 				<a href='<?=base_url()?>index.php/eshop/cart/confirm' 
 					class='btn btn-primary'>Konfirmasi</a>
-			<? } else { 
+			<?php } else { 
 				echo "<h3>Data Pembayaran</h3>";
 				echo "<table class='table'><tr><td>Tanggal Bayar : </td><td>$so_pay->date_paid</td></tr>
 				<tr><td>Cara Bayar : </td><td>$so_pay->how_paid</td></tr>

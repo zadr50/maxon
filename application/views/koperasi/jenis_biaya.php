@@ -1,6 +1,6 @@
 <div><h4>JENIS BIAYA</H4>
 <div class="thumbnail">
-	<?
+	<?php
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/jenis_biaya/add');		
@@ -36,7 +36,7 @@
 				</td>
 			</tr>	 
 			<tr>
-				<td>Jumlah Rp.</td><td><? echo form_input('jumlah',$jumlah,"id=jumlah"); ?></td>
+				<td>Jumlah Rp.</td><td><?php echo form_input('jumlah',$jumlah,"id=jumlah"); ?></td>
 			</tr>
 		   <tr>
 				<td>Kode Perkiraan</td><td><?=form_input('account_id',$account_id);?></td>

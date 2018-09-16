@@ -18,22 +18,35 @@ echo $script_head;
 
     function login(){
     	$("#lblMessage").html('<?=lang("wait")?>');
-		url='<?=base_url()?>index.php/login/verify';
-			$('#frmLogin').form('submit',{
-				url: url,
-				onSubmit: function(){
-					return $(this).form('validate');
+		url='<?=base_url()?>index.php/login/verify';			
+		loading();
+		$.ajax({
+				url: url, type: "POST", data: {user_id:$("#user_id").val(),password:$("#password").val()},
+				error: function (xhr, ajaxOptions, thrownError) {
+					console.log(xhr.responseText);
+					log_err(xhr.responseText);
+					loading_close();
 				},
-				success: function(result){
-					var result = eval('('+result+')');
-					if (result.success){
-						window.open("<?=base_url()?>index.php","_self");
-					} else {
-						$("#lblMessage").show();
-						$("#lblMessage").html(result.msg);
+				success: function(result)
+				{
+					if(IsJsonString(result))
+					{
+						var result = eval('('+result+')');
+						if (result.success)
+						{
+							loading_close();
+							log_msg(result.message);
+							window.open("<?=base_url()?>index.php","_self");
+						} else {
+							loading_close();
+							log_err(result.message);
+						}
+					} else { 
+						loading_close();
+						log_err(result);
 					}
 				}
-			});
+		});									
     }
 </script>
  
@@ -69,7 +82,7 @@ echo $script_head;
 		<?
 			$category="home";
 			$found_article=false;
-			include_once "articles.php";
+			include_once "website/articles.php";
 			if(! $found_article) {
 				include_once "home_default.php";
 			}
@@ -78,7 +91,7 @@ echo $script_head;
 	</div>
 	<div class="row col-md-4 thumbnail" style="margin-left:10px">
 		<? include_once "login_panel.php"; ?>
-		<? include_once "article_cats.php"; ?>			
+		<? include_once "website/article_cats.php"; ?>			
 		<? $this->load->view('google_ads'); ?>
 
 	</div>

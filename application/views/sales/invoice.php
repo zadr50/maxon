@@ -5,8 +5,8 @@
     
 	echo link_button('Save', 'save()','save');		
 	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','false',base_url().'index.php/invoice/add');		
-	echo link_button('Search','','search','false',base_url().'index.php/invoice');		
+//	echo link_button('Add','','add','false',base_url().'index.php/invoice/add');		
+//	echo link_button('Search','','search','false',base_url().'index.php/invoice');		
 	if($mode=="view") echo link_button('Delete','','cut','false',base_url().'index.php/invoice/delete/'.$invoice_number);		
 	if($mode=="view") echo link_button('Refresh','','reload','false',base_url().'index.php/invoice/view/'.$invoice_number);		
 
@@ -17,23 +17,18 @@
 	}
 	?>
 	<div style='float:right'>	    
-	<?php echo link_button('Help', 'load_help(\'invoice\')','help'); ?>
-	<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
-	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help('invoice')">Help</div>
-		<div onclick="show_syslog('invoice','<?=$invoice_number?>')">Log Aktifitas</div>
-		<div>Update</div>
-		<div>MaxOn Forum</div>
-		<div>About</div>
-	</div>
+		<?php echo link_button('Help', 'load_help(\'invoice\')','help'); ?>
+		<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+		<div id="mmOptions" style="width:200px;">
+			<div onclick="load_help('invoice')">Help</div>
+			<div onclick="show_syslog('invoice','<?=$invoice_number?>')">Log Aktifitas</div>
+			<div>Update</div>
+			<div>MaxOn Forum</div>
+			<div>About</div>
+		</div>
+		<?=link_button('Close', 'remove_tab_parent()','cancel');?>		
 	</div>
 </div>
-<?php 
-echo $lookup_gudang;
-echo $lookup_salesman;
-echo $lookup_payment_terms;
-
-?>
 
 <div class="thumbnail">	
 
@@ -59,8 +54,8 @@ echo $lookup_payment_terms;
         echo form_input('sold_to_customer',$sold_to_customer,'id=sold_to_customer'); 
         ?>
         	<? if($mode=='add') { ?>
-			<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-			onclick="select_customer()"></a>
+			<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" 
+			onclick="dlgcustomers_show()"></a>
 			<? } ?>     
 		</td>
 		<td rowspan="3" colspan='6'>
@@ -167,7 +162,7 @@ echo $lookup_payment_terms;
 				<td>&nbsp</td><td>&nbsp</td>
 				<td>JUMLAH: </td><td><input id='total' name='amount' value='<?=number_format($amount)?>' style='width:100px;'>
 					 <a id='divHitung' href="#" class="easyui-linkbutton" data-options="iconCls:'icon-sum'"  
-					   plain='true' title='Hitung ulang' onclick='hitung_jumlah()'></a>
+					   plain='true' title='Hitung ulang' onclick='hitung_jumlah();return false;'></a>
 					
 				</td>
 			</tr>
@@ -179,14 +174,14 @@ echo $lookup_payment_terms;
     
     </div>
     
-    <div id='divItem' title='Items'>
+    <div id='divItem' title='Items' style="min-height:350px">
 		<div id='dgItem'>
 			<? include_once "invoice_add_item_simple.php"; ?>
 		</div>
 		
-		<table id="dg" class="easyui-datagrid"  width='100%'			 
+		<table id="dg" class="easyui-datagrid"  width='800px' style="width:800px;min-height:400px"			 
 			data-options="
-				iconCls: 'icon-edit', fitColumns: true, 
+				iconCls: 'icon-edit', fitColumns: false, 
 				singleSelect: true,
 				toolbar: '#tb',
 				url: '<?=base_url()?>index.php/invoice/items/<?=$invoice_number?>/json'
@@ -213,6 +208,8 @@ echo $lookup_payment_terms;
 					<th data-options="field:'cost',width:60,align:'right',editor:'numberbox',
 						formatter: function(value,row,index){
 							return number_format(value,2,'.',',');}">Cost</th>
+					<th data-options="field:'mu_qty',align:'right',editor:{type:'numberbox',options:{precision:2}}">M Qty</th>
+					<th data-options="field:'multi_unit',align:'left',editor:'text'">M Unit</th>
 						
 					<th data-options="field:'line_number',align:'right'">Line</th>
 				</tr>
@@ -223,12 +220,12 @@ echo $lookup_payment_terms;
 		
 	</div>
 
-	<div id='divPay' title="Payments"'>
+	<div id='divPay' title="Payments"  >
 	<?
 		include_once "payment_list.php";
 	?>
 	</div>
-	<div id='divRetur' title='Retur'>
+	<div id='divRetur' title='Retur'  style="min-height:350px">
 		<table id="dgRetur" class="easyui-datagrid"  width='100%'
 			data-options="
 				iconCls: 'icon-edit', fitColumns: true, 
@@ -254,7 +251,7 @@ echo $lookup_payment_terms;
 	<div id='tbCrdb'>
 		<?=link_button('Delete','delete_crdb()','remove');?>
 	</div>
-	<DIV title="Memo" style="padding:10px">	
+	<DIV title="Memo" style="padding:10px"  style="min-height:350px">	
 		<table id="dgCrdb" class="easyui-datagrid"  width='100%'
 			data-options="
 				iconCls: 'icon-edit', fitColumns: true, 
@@ -273,12 +270,12 @@ echo $lookup_payment_terms;
 	</DIV>
 	
 <!-- JURNAL -->
-	<DIV title="Jurnal" style="padding:10px">
+	<DIV title="Jurnal" style="padding:10px"  style="min-height:350px">
 		<div id='divJurnal' class='thumbnail'>
 		<table id="dgCrdb" class="easyui-datagrid"  width='100%'
 			data-options="
 				iconCls: 'icon-edit', fitColumns: true,
-				singleSelect: true,toolbar:'#tbCrdb',
+				singleSelect: true,toolbar:'#tbJurnal',
 				url: '<?=base_url()?>index.php/jurnal/items/<?=$invoice_number?>'
 			">
 			<thead>
@@ -304,7 +301,7 @@ echo $lookup_payment_terms;
 			
 	</DIV>	
 <!-- SUMMARY -->
-	<DIV title="Summary" style="padding:10px">
+	<DIV title="Summary" style="padding:10px"  style="min-height:350px">
 		<div id='divSum' class='thumbnail'>		
 			<?=$summary_info?>		
 		</div>
@@ -315,10 +312,16 @@ echo $lookup_payment_terms;
 </div>
 		
 <?php 
-include_once 'customer_select.php'; 
+//include_once 'customer_select.php'; 
 include_once 'delivery_select.php';
 echo load_view('inventory/inventory_select');
+echo $lookup_gudang;
+echo $lookup_salesman;
+echo $lookup_payment_terms;
+echo $lookup_customer;
+
 ?>
+
 
 </div> 
 
@@ -590,6 +593,7 @@ echo load_view('inventory/inventory_select');
         return false;
       }
 		function hitung_jumlah(){
+			loading();
 		    url=CI_ROOT+'invoice/recalc/'+$('#invoice_number').val();
 		    if($('#disc_total_percent').val()=='')$('#disc_total_percent').val(0);
 		    if($('#sales_tax_percent').val()=='')$('#sales_tax_percent').val(0);
@@ -611,9 +615,9 @@ echo load_view('inventory/inventory_select');
                     $('#saldo').val(obj.saldo);
                     $('#disc_amount_1').val(obj.disc_amount_1);
                     $('#tax').val(obj.tax);
-					
+					loading_close();
                 },
-                error: function(msg){alert(msg);}
+                error: function(msg){loading_close();log_err(msg);}
 		    });
 			
 		}

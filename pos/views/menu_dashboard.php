@@ -32,14 +32,11 @@ if($pembulatan=="")$pembulatan=0;
 ?>
 <input type='hidden' id='debit' name='debit'>
 
-<div class='row thumbnail'>
-    
-                
+<div class='row '>
     
     <div class='col-md-12'>
         
     <div class='col-md-9'>
-        
         
 <div class='pos'>    
     <div class='pos-content'>
@@ -47,21 +44,28 @@ if($pembulatan=="")$pembulatan=0;
             <div class='row'>
                 
         <div class='col-sm-12' id='pos_top' style="background: #e2e2f4;padding-top:10px;">
+        	<div class='col-md-1'>
+        		<a href="<?=base_url()?>" target="_blank">
+        		<img src="<?=base_url('images/logo_maxon.png')?>" width=70 height=30>
+        		</a>
+        	</div>
+        	<div class='col-md-11'>
             <span class='nama_toko' style='font-weight:900;'>
                 <?php 
                 
             echo form_dropdown("shipping_location",$shipping_location_list,$shipping_location,"id='shipping_location' style='width:185px'");
             echo link_button('Change','submit_session()','save','false');
             
-            echo "<span style='color:black'> $company_name - $company_code</span>";
+            echo "<span style='color:black;max-width:100px'> $company_name - $company_code</span>";
                 
             //    $company_name
                 
             ?></span>
             
-            <span class='label_display' style='float:right;font-size:24px;'>
-                Rp. <span class='total' id='ttl_nota'>0</span>
+            <span class='label_display' style='margin-bottom:10px;float:right;font-size:24px;border:1px solid lightgray;min-width:200px'>
+                Rp. <span class='total' id='ttl_nota' style="float:right">0</span>
             </span>        
+            </div>
         </div>
                 
                 <div class='col-sm-12' style="background: #e0d3f6;">
@@ -90,13 +94,19 @@ if($pembulatan=="")$pembulatan=0;
                
             </div>
             <div class='row thumbnail'>
-                <div class='nota col-sm-12' id="divNota" style=""></div>
+                <div class='nota col-sm-12' id="divNota" style="overflow:scroll"></div>
             </div>
-            <div class='row thumbnail'>
+            <div class='row' style="border:1px solid lightgray;padding:5px">
+            	<div class="col-md-10">
                 <p>
-                    <button id="btn_up" class="glyphicon glyphicon-triangle-top" > Up </button>
-                    <button id="btn_dn" class="glyphicon glyphicon-triangle-bottom" > Down </button>
-                    <button id="btn_del" class="del-button glyphicon glyphicon-scissors" > Del </button>
+                    <button id="btn_up" class="nav-button glyphicon glyphicon-triangle-top" 
+                    	style="height:30px">Up</button>
+                    <button id="btn_dn" class="nav-button glyphicon glyphicon-triangle-bottom"  
+                    	style="height:30px">Down</button>
+                    <button id="btn_del" class="del-button glyphicon glyphicon-scissors"  
+                    	style="height:30px">Del</button>
+                    <button id="btn_edit" class="edit-button glyphicon glyphicon-pencil"  
+                    	style="height:30px">Edit</button>
 
                 </p>
                 <table width='100%'>
@@ -112,6 +122,10 @@ if($pembulatan=="")$pembulatan=0;
                         <td><?=link_button('Calc','total_nota()','sum','false')?></td>
                     </tr>
                 </table>
+                </div>
+                <div class="col-md-2">
+                	<div class="thumbnail">Picture</div>
+                </div>
             </div>
             <div class='row thumbnail' style="background: #e0d3f6; display:none">
                 <p><strong>Data Pembayaran</strong></p>
@@ -142,9 +156,9 @@ if($pembulatan=="")$pembulatan=0;
 
     </div>
     
-    <div class='col-md-3' style="background: #6868a8;padding:4px">
+    <div class='col-md-3' style="background: #6868a8;padding:2px">
             <div class='thumbnail'>
-            <?php include_once "input_barang.php"; ?>
+                  <?php include_once "input_barang.php"; ?>
             </div>
       
             <div class='thumbnail'>
@@ -192,19 +206,20 @@ include_once("card_payment.php");
 include_once("voucher_payment.php");
 include_once("cash_payment.php");
 include_once("split_payment.php");
+include_once "inventory/select_unit_jual.php";
 
 ?>
 
-<div id="dlgMain"  name='dlgMain' class="easyui-dialog" style="width:1200px;height:650px" 
+<div id="dlgMain"  name='dlgMain' class="easyui-dialog" style="width:1000px;height:600px;padding:5px;left:50px;top:50px" 
     closed="true" >
-    <div class="easyui-tabs" id="tt"></div>
+    <div class="easyui-tabs" id="tt" style="padding:3px;height:400xp"></div>
 </div>
 
 <script type='text/javascript' language="JavaScript">	
     var base_url='<?=base_url()?>';
-    var url_cat='<?=base_url()?>pos.php/inventory/pos_category/';
-    var url_item_filter='<?=base_url()?>pos.php/inventory/pos_items_filter/';
-    var url_list_barang ='<?=base_url()?>pos.php/inventory/pos_items/';
+    var url_cat='<?=base_url()?>index.php/inventory/pos_category/';
+    var url_item_filter='<?=base_url()?>index.php/inventory/pos_items_filter/';
+    var url_list_barang ='<?=base_url()?>index.php/inventory/pos_items/';
     var url_save_pos="<?=base_url()?>pos.php/invoice/save_pos";
     var url_edit_nota="<?=base_url()?>pos.php/invoice/edit_nota/";
     var url_print_nota="<?=base_url()?>pos.php/invoice/print_nota/";
@@ -213,7 +228,7 @@ include_once("split_payment.php");
     var alamat="<?=$street?>";
     var telp="<?=$phone_number?>";
     var kota="<?=$city_state_zip_code?>";
-    var url_item_find ='<?=base_url()?>pos.php/inventory/find/';
+    var url_item_find ='<?=base_url()?>index.php/inventory/find/';
     var tanggal="<?=str_pad(date("Y-m-d H:i:s"),10,"&nbsp")?>";
     var kasir="<?=str_pad(user_id(),10,"&nbsp")?>";
     var trun=0;
@@ -261,11 +276,12 @@ include_once("split_payment.php");
         });
     }
 
-        
 </script>
 <style>
-.calc_total{width:100px;}
+.calc_total{
+    width:100px;
+}
+p{
+    padding:0 0 2px;
+}
 </style>
-<link rel="stylesheet" type="text/css" href="<?=base_url()?>assets/pos/style.css">
-<script type="text/javascript" charset="utf-8" src="<?=base_url()?>assets/printThis-master/printThis.js"></script>
-<script type="text/javascript" charset="utf-8" src="<?=base_url()?>assets/pos/lib_pos.js"></script>

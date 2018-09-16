@@ -66,6 +66,8 @@ class Coa extends CI_Controller {
 		if($this->input->get('sid_nama')!='')$sql.=" and account_description like '".$this->input->get('sid_nama')."%'";
 		if($this->input->get('sid_kel')!='')$sql.=" and group_type like '".$this->input->get('sid_kel')."%'";
 		$sql.=" order by account";
+		
+		
         if($this->input->get("page"))$offset=$this->input->get("page");
         if($this->input->get("rows"))$limit=$this->input->get("rows");
         if($offset>0)$offset--;

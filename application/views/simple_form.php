@@ -1,5 +1,5 @@
-<div class='container'>
-<div class='col-md-3 col-lg-3 thumbnail'>
+<div class='containerx'>
+<div class='thumbnail'>
 <?	
 if($mode=='view'){ 	$disabled='disable';} else {$disabled='';}
 require_once(__DIR__.'/aed_button.php');	
@@ -107,12 +107,7 @@ foreach($fields as $field) {
 				if (result.success){
 					$('#mode').val('view');
 					log_msg('Data sudah tersimpan.');
-					if(closed==1){
-					    remove_tab_parent();
-					} else {
-                        url='<?=base_url()?>index.php/<?=$form_controller?>/view/'+field_key_value;
-                        window.open(url,"_self");					    
-					}
+				    remove_tab_parent();
 				} else {
 					log_err(result.msg);
 				}

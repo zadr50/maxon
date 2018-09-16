@@ -272,11 +272,22 @@ class Receive_toko extends CI_Controller {
         $supplier_number=urldecode($supplier_number);
         $ok=false;
         $msg="";
+    	$company="";
+    	$from="";
+    	$to="";
+    	if($q=$this->db->query("select company_name from shipping_locations 
+    		where location_number='$supplier_number'"))	{
+    		if($r=$q->row())$company="kagum_$r->company_name.";
+    	}	
+    		
+		
         if($to_id=="AUTO"){
             $to_id=$this->nomor_bukti();
             $this->nomor_bukti(true);            
         }
-        if($q=$this->db->where("shipment_id",$from_id)->get("inventory_products")){
+        if($q=$this->db->where("shipment_id",$from_id)->get($company."inventory_products")){
+        	$this->db->query("update ".$company."inventory_products set selected=1
+        		where shipment_id='$from_id' ");
             foreach($q->result_array() as $data){
                 $data2["shipment_id"]=$to_id;
                 $data2['date_received']= date( 'Y-m-d H:i:s');
@@ -422,6 +433,29 @@ class Receive_toko extends CI_Controller {
 
         }
     }    
-    
+    function sj_from_gudang($gudang,$to_gudang,$search=""){
+    	$company="";
+    	$from="";
+    	$to="";
+    	if($q=$this->db->query("select company_name from shipping_locations 
+    		where location_number='$gudang'"))	{
+    		if($r=$q->row())$company="kagum_$r->company_name.";
+    	}	
+    		
+        $sql="select distinct shipment_id,
+        concat(year(date_received),'-',month(date_received),'-',day(date_received)) as date_received,
+        warehouse_code,supplier_number  
+        from ".$company."inventory_products where receipt_type='ETC_OUT' and doc_type='1'";
+		$sql.=" and warehouse_code='$gudang' and supplier_number='$to_gudang'";
+	    $sql.=" and (selected is null or selected=0)";
+	    
+	    if($search!="")$sql.=" and (shipment_id like '%$search%' or supplier_number like '%$search%')";
+	    if($from!=""){
+	        $sql.=" and date_received between '$from' and '$to'";                    
+	    }
+	    $sql.=" order by date_received desc";
+	  					
+		echo datasource($sql);
+    }
     
 }

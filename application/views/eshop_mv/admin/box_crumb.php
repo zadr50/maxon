@@ -1,6 +1,6 @@
  
 			<ol class="breadcrumb  bg-head-foot">
-			  <?
+			  <?php
 				$brc="";
 				$url=base_url()."index.php/";
 				for($i=1;$i<5;$i++) {

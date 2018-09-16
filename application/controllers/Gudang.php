@@ -133,5 +133,23 @@ class Gudang extends CI_Controller {
 
 	 	$this->browse();
 	}
-	
+    function select($search=''){
+        $search=urldecode($search);
+        $sql=$this->sql;
+
+        if($search!=""){
+            $sql.=" where (location_number like '$search%' 
+                or attention_name like '$search%')";
+        }
+        $sql.=" order by location_number";
+
+        $offset=0; $limit=10;
+        if($this->input->post("page"))$offset=$this->input->post("page");
+        if($this->input->post("rows"))$limit=$this->input->post("rows");
+        if($offset>0)$offset--;
+        $offset=$limit*$offset;
+        $sql.=" limit $offset,$limit";
+        
+        echo datasource($sql);
+    }	
 }

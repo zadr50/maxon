@@ -1,4 +1,4 @@
-<? if($offset==0){ ?>
+<?php if($offset==0){ ?>
 	<div class='thumbnail'>
 		<?=link_button("Add", "add();return false;","add","true");?>
 		<?=link_button('List','list();return false;','list');?>
@@ -6,10 +6,10 @@
 	</div>
 	<div class='thumbnail'>
 		<form id='frmSearch'>
-		<? echo $criteria_text; ?>
+		<?php echo $criteria_text; ?>
 		</form>
 	</div>
-	<?
+	<?php
 }
 
 	$s="select item_number,description,unit_of_measure,quantity_in_stock,category,

@@ -4,10 +4,7 @@ class Customer extends CI_Controller {
     private $limit=10;
     private $offset=0;
     private $table_name='customers';
-	private $sql="select customer_number,company,street,city,phone,fax,
-	    email,country,suite,active,region,customer_record_type,
-	    salesman,payment_terms,finance_charge_acct
-	    from customers ";
+	private $sql="select *  from customers ";
 
 	function __construct()
 	{
@@ -64,7 +61,7 @@ class Customer extends CI_Controller {
 			array("fieldname"=>"region_id","caption"=>"Kode","width"=>"80px"),
 			array("fieldname"=>"region_name","caption"=>"Nama Wilayah","width"=>"200px")
 		);
-		$setting['dlgRetFunc']="$('#region').val(row.region_id+' - '+row.region_name);";
+		$setting['dlgRetFunc']="$('#region').val(row.region_id);";
 		$data['lookup_region']=$this->list_of_values->render($setting);
 
 		$setting['dlgBindId']="customer_record_type";
@@ -167,9 +164,10 @@ class Customer extends CI_Controller {
 	function browse($offset=0,$limit=10,$order_column='company',$order_type='asc')
 	{
         $data['caption']='DAFTAR MASTER PELANGGAN';
+        
 		$data['controller']='customer';		
-		$data['fields_caption']=array('Kode','Nama Pelanggan','Kota','Telp','Fax','Salesman','Kelompok');
-		$data['fields']=array('customer_number','company','city','phone','fax','salesman','customer_record_type');
+		$data['fields_caption']=array('Kode','Nama Pelanggan','Wilayah','Kota','Telp','Fax','Salesman','Kelompok');
+		$data['fields']=array('customer_number','company','region','city','phone','fax','salesman','customer_record_type');
 					
 		if(!$data=set_show_columns($data['controller'],$data)) return false;
 			

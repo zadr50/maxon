@@ -38,7 +38,7 @@ if($err!=""){
 				<td>Kode Pegawai - NIP  </td>
 				<td><?=form_input('nip',$nip,"id=nip $readonly");?></td>
 				<td>Group</td><td><?=form_dropdown('emptype',$group_list,$emptype,"id=emptype");?>
-				<?php echo link_button('Add','add_groups();return false;','add');		?>
+				<?php echo link_button('','add_groups();return false;','add');		?>
 				</td>
                 <td>Location</td><td><? echo form_input('location',$location,"id='location'");
                     echo link_button('','dlgshipping_locations_show()',"search"); 
@@ -51,7 +51,7 @@ if($err!=""){
 			</tr>
 			   <tr>
 					<td>Departemen</td><td><?=form_dropdown('dept',$dept_list,$dept,"id=dept");?>
-					<?php echo link_button('Add','add_dept();return false;','add');		?>
+					<?php echo link_button('','add_dept();return false;','add');		?>
 					
 					</td>
 					<td>Level</td><td><?=form_dropdown('emplevel',$level_list,$emplevel,"id=emplevel");?>
@@ -60,7 +60,7 @@ if($err!=""){
 			   </tr>
 			   <tr>
 					<td>Divisi</td><td><?=form_dropdown('divisi',$div_list,$divisi,"id=divisi");?>
-					<?php echo link_button('Add','add_divisi();return false;','add');		?>
+					<?php echo link_button('','add_divisi();return false;','add');		?>
 					
 					</td>
 					<td>Posisi</td><td><?=form_input('position',$position,"id=position");?>
@@ -72,7 +72,7 @@ if($err!=""){
 			   <tr></tr>
 			   <tr>
 					<td>Status</td><td><?=form_dropdown('status',$status_list,$status,"id=status");?>
-					<?php echo link_button('Add','add_ptkp();return false;','add');		?>
+					<?php echo link_button('','add_ptkp();return false;','add');		?>
 					
 					</td>
 					<td>ID Mesin</td><td><?=form_input('nip_id',$nip_id);?></td>

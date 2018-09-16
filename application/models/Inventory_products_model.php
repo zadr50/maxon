@@ -201,6 +201,10 @@ private $table_name='inventory_products';
                 $account_id=$inv;
                 $debit=$amount;
                 $credit=0;
+				if($row->receipt_type=="ETC_OUT"){
+					$debit=0;
+					$credit=$amount;					
+				}
                 $operation="Posting $row->receipt_type";
                 $source=$row->comments;
                 $cid=cid();
@@ -212,6 +216,10 @@ private $table_name='inventory_products';
                 $account_id=$cogs;
                 $debit=0;
                 $credit=$amount;
+				if($row->receipt_type=="ETC_OUT"){
+					$debit=$amount;
+					$credit=0;					
+				}
                 
                 $this->jurnal_model->add_jurnal($gl_id,$account_id,$date,$debit,$credit,$operation,
                     $source,$cid="",$ref="");

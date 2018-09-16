@@ -30,19 +30,24 @@ function recalc($nomor){
 	
 	if($nomor=='undefined')$nomor=$this->session->userdata('invoice_number');
 	
+	$getdata=$this->input->get();
     $inv=$this->get_by_id($nomor)->row();
     if($inv) {
 		$this->invoice_lineitems_model->check_revenue_acct($nomor,$inv->invoice_type);
+		if(isset($getdata["discount"]))$inv->discount=c_($this->input->get("discount"));
+		if(isset($getdata["freight"]))$inv->freight=c_($this->input->get("freight"));
+		if(isset($getdata["tax"]))$inv->sales_tax_percent=c_($this->input->get("tax"));
+		
 	    $this->sub_total=$this->invoice_lineitems_model->sum_total_price($nomor);
 		if($inv->discount=='')$inv->discount=0;
 		if($inv->sales_tax_percent=='')$inv->sales_tax_percent=0;
 		
-		if($inv->discount>1)$inv->discount=$inv->discount/100;
+		if($inv->discount>0)$inv->discount=$inv->discount/100;
 		$this->disc_amount_1=$inv->discount*$this->sub_total;
 		
 	    $this->amount=$this->sub_total-$this->disc_amount_1;
 		
-		if($inv->sales_tax_percent>1)$inv->sales_tax_percent=$inv->sales_tax_percent/100;
+		if($inv->sales_tax_percent>0)$inv->sales_tax_percent=$inv->sales_tax_percent/100;
 		$this->tax=$inv->sales_tax_percent*$this->amount;
 		
 		$this->amount=$this->amount+$this->tax;
@@ -59,7 +64,7 @@ function recalc($nomor){
 			+$this->crdb_amount;
 		
 		$sql="update invoice set paid=";
-		if($this->saldo==0){
+		if($this->saldo==0 & $this->amount!=0){
 			$sql.="true";
 		} else {
 			$sql.="false";
@@ -69,7 +74,6 @@ function recalc($nomor){
 		discount='".$inv->discount."',sales_tax_percent='".$inv->sales_tax_percent."',
 		disc_amount='".$this->disc_amount_1."',tax='".$this->tax."' 
 			where invoice_number='$nomor'";
-		//var_dump($sql);
 		
 		$this->db->query($sql);
 
@@ -145,12 +149,13 @@ function save($data){
 		}
 	}
 	if(!isset($data['due_date'])){
-		$terms=$data['payment_terms'];
+		$terms="";
+		if(isset($data["payment_terms"]))$terms=$data['payment_terms'];
 		if($terms=="")$terms="CASH";
 		if($t=$this->db->query("select days from type_of_payment 
 			where type_of_payment='$terms'")){
 			if($t=$t->row()){
-				$due_date=add_date($row->invoice_date,$t->days);
+				$due_date=add_date($data['invoice_date'],$t->days);
 				$data['due_date']=$due_date;
 			}
 		}
@@ -178,22 +183,24 @@ function update($id,$data){
 			$data['warehouse_code']=$r_item->warehouse_code;
 		}
 	}
+	if(!isset($data['invoice_date']))$data['invoice_date']= date('Y-m-d H:i:s');
+	if(isset($data['invoice_date']))$data['invoice_date']= date('Y-m-d H:i:s', strtotime($data['invoice_date']));
+	if(isset($data['due_date']))$data['due_date']= date( 'Y-m-d H:i:s', strtotime($data['due_date']));
+    
+    if(!isset($data['inv_amount']))$data["inv_amount"]=0;
+
 	if(!isset($data['due_date'])){
-		$terms=$data['payment_terms'];
-		if($terms=="")$terms="CASH";
+		$terms="CASH";
+		if(isset($data['payment_terms']))$terms=$data['payment_terms'];
 		if($t=$this->db->query("select days from type_of_payment 
 			where type_of_payment='$terms'")){
-			if($t=$t->row()){
-				$due_date=add_date($row->invoice_date,$t->days);
+			if($top=$t->row()){
+				$due_date=add_date($data['invoice_date'],$top->days);
 				$data['due_date']=$due_date;
 			}
 		}
 	}
 
-	if(isset($data['invoice_date']))$data['invoice_date']= date('Y-m-d H:i:s', strtotime($data['invoice_date']));
-	if(isset($data['due_date']))$data['due_date']= date( 'Y-m-d H:i:s', strtotime($data['due_date']));
-    
-    if(!isset($data['inv_amount']))$data["inv_amount"]=0;
     
 	$this->db->where($this->primary_key,$id);
 	return $this->db->update($this->table_name,$data);
@@ -228,10 +235,13 @@ function delete($id){
     }
 	function save_from_so_items($faktur,$qty_order,$from_so_line,$gudang,
 		$ship_date,$qty_unit){
+		
+		if (!$qty_order) return false;
+		
 		$this->load->model('sales_order_lineitems_model');
 		$this->load->model('inventory_model');
 		$this->load->model('invoice_lineitems_model');
-		for($i=0;$i<=count($qty_order)-1;$i++){
+		for($i=0;$i<count($qty_order);$i++){
 			$line_number=$from_so_line[$i];
 			$qty_do=$qty_order[$i];
 			
@@ -379,6 +389,12 @@ function delete($id){
 					$this->db->query("update invoice_lineitems set cost=".$item->cost." where line_number=".$item->line_number);
 				}
 			}
+			$coa_sales_line=$item->revenue_acct_id;
+			if($coa_sales_line!="")$coa_sales=$coa_sales_line;
+			$coa_inv_line=$item->coa2;
+			if($coa_inv_line!="")$coa_stock=$coa_inv_line;
+			$coa_cogs_line=$item->coa3;
+			if($coa_cogs_line!="")$coa_cogs=$coa_cogs_line;
 			
 			$sales_amt=$item->price*$item->quantity;
 			$disc_amt=$item->discount_amount+$item->disc_amount_2+$item->disc_amount_3;
@@ -487,6 +503,7 @@ function delete($id){
 		$detail=$this->invoice_lineitems_model->get_by_nomor($nomor);
 		foreach($detail->result() as $item) {
 			//-- posting invoice_lineitems
+			
 			//-- ambil akun dari master barang
 			$r_stok=$this->db->query("select sales_account,inventory_account,cogs_account,cost,cost_from_mfg 
 				from inventory where item_number='".$item->item_number."'")->row();
@@ -495,15 +512,24 @@ function delete($id){
 				if($coa_sales=="" or $coa_sales=="0")	$coa_sales=$set->inventory_sales;
 				$coa_stock=$r_stok->inventory_account>0?$r_stok->inventory_account:$set->inventory;
 				$coa_hpp=$r_stok->cogs_account>0?$r_stok->cogs_account:$set->inventory_cogs;
+				
 				if($item->cost==0){
 					$item->cost=$r_stok->cost;
-					$this->db->query("update invoice_lineitems set cost=".$item->cost." where line_number=".$item->line_number);
 				}
 				if($item->cost==0){
 					$item->cost=$r_stok->cost_from_mfg;
-					$this->db->query("update invoice_lineitems set cost=".$item->cost." where line_number=".$item->line_number);
 				}
+				if($item->cost==0){
+					$item->cost=0;
+				}
+				$this->db->query("update invoice_lineitems set cost=".$item->cost." where line_number=".$item->line_number);
 			}
+			$coa_sales_line=$item->revenue_acct_id;
+			if($coa_sales_line!="")$coa_sales=$coa_sales_line;
+			$coa_inv_line=$item->coa2;
+			if($coa_inv_line!="")$coa_stock=$coa_inv_line;
+			$coa_cogs_line=$item->coa3;
+			if($coa_cogs_line!="")$coa_cogs=$coa_cogs_line;
 			
 			$sales_amt=$item->price*$item->quantity;
 			$disc_amt=$item->discount*$sales_amt;

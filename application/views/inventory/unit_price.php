@@ -13,7 +13,7 @@
 	</form>
 </div>
 <div id='tbUnitPrice'>
-	<? 
+	<?php 
 	echo link_button("Save","dlgUnitPrice_Save()","save");
 	echo link_button("Delete","dlgUnitPrice_Delete()","remove");
 	echo link_button("Close","dlgUnitPrice_Close()","cancel");

@@ -62,12 +62,20 @@ class Purchase_invoice extends CI_Controller {
 
             $data['lookup_po']=$this->list_of_values->render(
                 array("dlgBindId"=>"purchase_order",
-                "dlgRetFunc"=>"$('#po_ref').val(row.purchase_order_number);
-                add_item_with_po();",
-                "dlgBeforeLookup"=>"vUrl=select_po_by_supplier(vUrl);",
+                
+                "dlgRetFunc"=>"
+                	$('#po_ref').val(row.purchase_order_number);
+                	add_item_with_po();",
+                	
+                "dlgBeforeLookup"=>"
+			    	if($('#purchase_order_number').val()=='AUTO'){
+			    		log_err('Simpan terlebih dahulu nomor ini');
+			    		return false;
+			    	}
+                	",
                 "dlgCols"=>array(array("fieldname"=>"purchase_order_number","caption"=>"Nomor PO","width"=>"100px"),
-                array("fieldname"=>"supplier_number","caption"=>"Supplier","width"=>"50px"),
-                array("fieldname"=>"supplier_name","caption"=>"Supplier Name","width"=>"280px"))));
+	                array("fieldname"=>"supplier_number","caption"=>"Supplier","width"=>"50px"),
+	                array("fieldname"=>"supplier_name","caption"=>"Supplier Name","width"=>"280px"))));
             
             $data['lookup_project']=$this->list_of_values->render(
                 array(
@@ -79,6 +87,7 @@ class Purchase_invoice extends CI_Controller {
                     )
                 )
             );
+            $data['lookup_terms']=$this->type_of_payment_model->lookup();
             
             return $data;
 	}
@@ -150,7 +159,7 @@ class Purchase_invoice extends CI_Controller {
 		$nomor=urldecode($nomor);
 		$sql="select p.item_number,i.description,p.quantity 
 		,p.unit,p.price,p.discount,p.total_price,p.line_number,
-		p.disc_2,p.disc_3
+		p.disc_2,p.disc_3,p.mu_qty,p.multi_unit,p.mu_harga
 		from purchase_order_lineitems p
 		left join inventory i on i.item_number=p.item_number
 		where purchase_order_number='$nomor'";
@@ -610,7 +619,7 @@ class Purchase_invoice extends CI_Controller {
 					$row['bayar']=form_input("bayar[]","","id='fkt$i' style='width:100px;color:black;text-align:right'");
 					$row['purchase_order_number']=$nomor.form_hidden("faktur[]",$nomor);
                     $row['ck']=form_checkbox("ck[]",$nomor,'',"onclick='cek_this($i,$saldo);return false;' 
-                    	style='width:50px;height:30px;color:black;'");
+                    	style='width:30px;height:20px;color:black;'");
 					$rows[$i++]=$row;
 				}
 			};
@@ -706,9 +715,15 @@ class Purchase_invoice extends CI_Controller {
             $data['purchase_order_number']=$invoice_number;
             $data['item_number']=$row->item_number;
             $data['description']=$row->description;
+            
             $data['price']=$price;
             $data['quantity']=$row->quantity;
             $data['unit']=$row->unit;
+			
+			$data['multi_unit']=$row->multi_unit;
+			$data['mu_qty']=$row->mu_qty;
+			$data['mu_harga']=$row->mu_harga;
+			
             $data['warehouse_code']=$row->warehouse_code;
             $data['from_line_number']=$from_line;
             $data['from_line_doc']=$po_ref;

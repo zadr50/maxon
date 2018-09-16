@@ -19,19 +19,25 @@ function check_parent_id($parent_id){
     if($parent_id==""){
         return "_00000";
     }
-    if($this->db->query("select count(1) as cnt from modules 
-        where module_id='$parent_id'")->row()->cnt==0){
-        return "_00000";
-    }
+	if($parent_id!="0"){
+		//cek punya parent???
+	    if($this->db->query("select count(1) as cnt from modules 
+	        where module_id='$parent_id'")->row()->cnt==0){
+	        return "_00000";
+	    }
+		
+	}
     return $parent_id;
 }
 function save($data){
-    $data["parentid"]=$this->check_parent_id($data["parent_id"]);
+    $data["parentid"]=$this->check_parent_id($data["parentid"]);
+	if($data['sequence']=='')$data['sequence']=99;
     return $this->db->insert($this->table_name,$data);
     //return $this->db->insert_id();
 }
 function update($id,$data){
     $data["parentid"]=$this->check_parent_id($data["parentid"]);
+	if($data['sequence']=='')$data['sequence']=99;
     $this->db->where($this->primary_key,$id);
     return $this->db->update($this->table_name,$data);
 }

@@ -374,7 +374,7 @@ $config['sess_cookie_name'] = 'ci_session';
 $config['sess_expiration'] = 7200;
 $config['sess_save_path'] = NULL;
 $config['sess_match_ip'] = FALSE;
-$config['sess_time_to_update'] = 300;
+$config['sess_time_to_update'] = 3000;
 $config['sess_regenerate_destroy'] = FALSE;
 
 /*
@@ -519,5 +519,8 @@ $config['multi_company']=true;
 $config['show_footer']=true;
 //$config['default_home']="courier\menu_dashboard.php";
 $config["show_header"]=true;
+$config["hide_menu_header"]=false;
 $config["show_sidebar"]=true;
+$config["tawk_visible"]=false;
+
 //$config['chatbox_visible']=true;

@@ -3,7 +3,7 @@
     data-options="
         iconCls: 'icon-edit',fitColumns: true, 
         singleSelect: true, toolbar: '#tbExpenses',
-        url: '<?=base_url()?>index.php/purchase_order/expenses/<?=$purchase_order_number?>/items'
+        url: ''
     ">
     <thead>
         <tr>
@@ -58,6 +58,11 @@ data-options="title:'Setting'"
 </div>
 
 <script type="text/javascript">
+
+    $().ready(function (){
+		refresh_expenses();
+    });	
+
     function add_expenses(){
         $('#dlgExpense').dialog({  
            title: 'Tambah/Edit Data', closed: false, 
@@ -159,9 +164,10 @@ data-options="title:'Setting'"
    function refresh_expenses(){
        var nomor=$("#purchase_order_number").val();
        if(nomor=="")nomor="0";
+       if(nomor=="AUTO")return false;
+       
        var _url='<?=base_url()?>index.php/purchase_order/expenses/'+nomor+'/items';
         $('#dgExpenses').datagrid({url:_url});
-       
    }
 
 

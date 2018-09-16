@@ -108,7 +108,7 @@ class Payment extends CI_Controller {
    		$this->load->model('customer_model');
 		$this->load->model('bank_accounts_model');
    		$data['no_bukti']=$this->nomor_bukti();
-		$data['date_paid']=date('Y-m-d');
+		$data['date_paid']=date('Y-m-d H:i:s');
 		$data['how_paid']='Cash';
 		$data['amount_paid']=0;
 		$data['mode']='add';
@@ -233,10 +233,13 @@ class Payment extends CI_Controller {
 		$datacw['account_id']=$coa_ar_invoice;
 		if($datacw['account_id']=="")$datacw['account_id']=$coa_ar;
 		
-		$coa=$this->chart_of_accounts_model->get_by_account_id($datacw['account_id'])->row();
 		
-		$datacw['account']=$coa->account;
-		$datacw['description']=$coa->account_description;
+		if($coa=$this->chart_of_accounts_model->get_by_account_id($datacw['account_id'])->row()){
+			$datacw['account']=$coa->account;
+			$datacw['description']=$coa->account_description;
+			
+		}
+		
 		
 		$datacw['amount']=$total_paid;
 		$datacw['invoice_number']=$invoice_no;
@@ -364,8 +367,10 @@ class Payment extends CI_Controller {
     function browse($offset=0,$limit=50,$order_column='no_bukti',$order_type='asc'){
         $data['caption']='DAFTAR PEMBAYARAN';
 		$data['controller']=$this->controller;		
-		$data['fields_caption']=array('Nama Customer','Tgl Bayar','Faktur','Voucher','Jumlah','Cara Bayar');
-		$data['fields']=array('company','date_paid','invoice_number','no_bukti','amount_paid','how_paid');
+		$data['fields_caption']=array('Nama Customer','Tgl Bayar','Faktur','Voucher','Jumlah',
+			'Cara Bayar','Giro','Giro Jth Tempo');
+		$data['fields']=array('company','date_paid','invoice_number','no_bukti','amount_paid',
+			'how_paid','credit_card_number','expiration_date');
 					
 		if(!$data=set_show_columns($data['controller'],$data)) return false;
 			
@@ -384,7 +389,7 @@ class Payment extends CI_Controller {
     }
     function browse_data($offset=0,$limit=10,$nama=''){
  		$sql="select p.date_paid,p.invoice_number,p.no_bukti,p.how_paid,
- 			p.amount_paid,i.sold_to_customer,c.company
+ 			p.amount_paid,i.sold_to_customer,c.company,p.credit_card_number
  	 		from payments p
  	 		left join invoice i on i.invoice_number=p.invoice_number 
  	 		left join customers c on c.customer_number=i.sold_to_customer 

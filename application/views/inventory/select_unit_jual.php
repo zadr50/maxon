@@ -30,10 +30,31 @@
 
 
 <script type="text/javascript">
+    $().ready(function (){
+        $('#dgItemSearchUnit').datagrid({
+            onDblClickRow:function(){
+                var row = $('#dgItemSearchUnit').datagrid('getSelected');
+                if (row){
+                    selectSearchUnit();
+                }       
+            }
+        });        
+    });
+
+
 		function selectSearchUnit()
 		{
 			var row = $('#dgItemSearchUnit').datagrid('getSelected');
 			if (row){
+				qty_conv=row.quantity_high;
+				if(qty_conv=="")qty_conv=1;
+				qty=$("#quantity").val();
+				if(qty=="")qty=0;
+				if(qty_conv==0)qty_conv=1;
+				qty=qty*qty_conv;
+				$("#multi_unit").val($("#unit").val());
+				$("#mu_harga").val($("#price").val());
+				$("#mu_qty").val(qty);
 				$('#unit').val(row.customer_pricing_code);
 				$('#price').val(row.retail);
 				$('#dlgSearchUnit').dialog('close');

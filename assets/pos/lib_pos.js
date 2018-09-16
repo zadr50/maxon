@@ -2,9 +2,10 @@ var next_row=0,tableData=null,selected_row=0,button_mode="btn_qty",xqty='';
 var xprice='',baris="", focus_text="cash",total = 0,sisa=0;
 var idx_cat_page=0,max_cat_page=4,arBarang = null;
 var arItem=[],row=0;
-var C_NO=0,C_CODE=1,C_NAME=2,C_QTY=3,C_PRICE=4,C_DISC_PRC=5,C_DISC_AMT=6,C_AMOUNT=7;
-var C_TENANT=8,C_REF=9,C_DISC_PRC_2=10, C_DISC_AMT_2=11,C_DISC_PRC_3=12;
-var C_DISC_AMT_3=13,C_DISC_AMT_EX=14,C_ID=15;
+var C_NO=0,C_CODE=1,C_NAME=2,C_QTY=3,C_UNIT=4,C_PRICE=5,C_DISC_PRC=6,C_DISC_AMT=7,C_AMOUNT=8;
+var C_TENANT=9,C_REF=10,C_DISC_PRC_2=11, C_DISC_AMT_2=12,C_DISC_PRC_3=13;
+var C_DISC_AMT_3=14,C_DISC_AMT_EX=15,C_ID=16,C_M_QTY=17,C_M_UNIT=18,C_M_PRICE=19;
+var C_MAX=20;
 
 $(document).ready(function(){
 	$("#barcode").focusout(function(){
@@ -38,8 +39,13 @@ $(document).ready(function(){
 		
 		clear_header_items();
 		clear_input();
+		clear_input_header();
 		
+		next_nota();
+		list_nota_open();
 		
+	}
+	function clear_input_header(){
 		$("#dlgPay_sisa").val(0);			
 		$("#dlgPay_tagih").val(0);
 		$("#cash").val(0);
@@ -62,10 +68,8 @@ $(document).ready(function(){
 		cvalf("#pay_debit",0);
 		$("#credit_card_number").val("");
 		$("#voucher_no").val("");
-		next_nota();
-		list_nota_open();
-		
 		$("#msg-box-wrap").html("Ready.");
+		
 	}
 	function next_nota(){
 		loading();
@@ -83,7 +87,6 @@ $(document).ready(function(){
 				return false;
 			}			
 		}); 		
-		
 	}
 	
 	function cat_prev(){
@@ -105,7 +108,6 @@ $(document).ready(function(){
 				if(msg==""){
 					$("#cat-content").hide();
 				}
-				
 			},
 			error: function(msg){
 				console.log(msg);}
@@ -168,13 +170,16 @@ $(document).ready(function(){
 	$(document).on('click', '.item-cell', function(){
 			next_row=next_row+1;
 			var kode=this.id;
+
 			var i = arBarang.inArray(kode, "item_number");
+
 			var sDesc=arBarang[i].description;
 			var sPrice=arBarang[i].retail;
 			var nAmount=parseInt(sPrice);
 			var qty=$("#qty").val();
 			var sDisc=arBarang[i].disc_prc_1;
 			var disc_amount_ex=arBarang[i].disc_amount_ex;
+			
 			$(".nota-content").append("  "
 			+"<tr class='line-order '  > "
 			+"<td colspan='2' style='display:none'>"+next_row+"</td>"
@@ -187,7 +192,9 @@ $(document).ready(function(){
 			+"<td><span id='dex_"+next_row+"'>"+formatNumber(disc_amount_ex)+"</span></td>"
 			+"<td><span class='t_amount' id='t_"+next_row+"'>"+formatNumber(nAmount)+"</span></td>"
 			+"</tr>");
+			
 			total_nota();
+			
 			$("#qty").val("1");
 			
 	});
@@ -201,10 +208,16 @@ $(document).ready(function(){
 		if(selected_row<1)selected_row=1;
 		xqty='';xprice='';
 		$(this).addClass("row-selected");
+		console.log(tableData);
+		
 	});
 	$(document).on('click','.del-button',function() {
 		del_row();
 	});
+	$(document).on('click','.edit-button',function() {
+		edit_row();
+	});
+	
 	function del_row(){
 		var caption=$(this).html();
 		
@@ -295,7 +308,6 @@ $(document).ready(function(){
 			tableData = $("#tbl_nota tr").eq(selected_row).children("td").map(function() {
 				return $(this).text();
 			}).get();
-//			return false;
 		}
 		baris=tableData[C_NO];
 		price=parseInt($("#p_"+baris).html());
@@ -364,6 +376,7 @@ $(document).ready(function(){
 			qty_total+=(+q);
 			qty_jenis++;
 			arItem.push(td);	
+			console.log(arItem);
 		});
 		sub_total=total;
 		$("#sub_total").val(formatNumber(sub_total));
@@ -469,13 +482,8 @@ $(document).ready(function(){
 		return header;
 	}
 	function save_nota() {
-		//console.log(arItem);//lihat controller/invoice/save_pos
-		
-		
 		void total_nota();
-		
 		var header=get_header_nota();
-		
 		var param={"header":header,"items": arItem}
 		var ok=false;
 		loading();
@@ -484,14 +492,9 @@ $(document).ready(function(){
 				loading_close();
 				var result = eval('('+result+')');
 				if(result.success){
-					arItem2=result.arItem;
-					clear_header_items();
-					add_row_data(arItem2);
-				    total_nota();
-					console.log(arItem2);
-					$("#nota").html(result.invoice_number);
-					$("#nota_tmp").html("");
+					edit_nota(result.invoice_number);
 					log_err("Nota berhasil disimpan.");
+					list_nota_open();					
 				}
 			},
 			error: function(result){
@@ -502,8 +505,6 @@ $(document).ready(function(){
 		}); 		
 	}
     function card_info(){
-    	
-    	
         $("#dlgCard").dialog("open").dialog('setTitle','Info Kartu');
     }
     function debit_info(){
@@ -522,7 +523,6 @@ $(document).ready(function(){
     		log_err("Pilih rekening !");
     		return false;
     	}
-    	//$("#pay_card").val(rek);
         $("#dlgCard").dialog("close");        
         
         var flag=$("#dlgCard_flag1").val();
@@ -533,14 +533,10 @@ $(document).ready(function(){
         if(flag=="9"){
         	dlgPaySplit_Card_Submit();
         }
-        
     }
 	
 	function submit_payment_ex() {
-		//console.log(arItem);//lihat controller/invoice/save_pos
 		void total_nota();
-		
-		
 		var total=$("#ttl_nota").html();
 		var sisa=$("#ttl_sisa").html();
 		var cash=$("#pay_cash").val();
@@ -763,9 +759,12 @@ function clear_input(){
 	$("#item_disc_amt_3").val("0");			$("#total_nota").val(0);
 	$("#item_total").val("0");				$("#disc_amount_ex").val(0);
 	$("#credit_card_type").val("");			$("#dlgCard_flag1").val("");
+	$("#line").val("");						$("#unit").val("");
+	$("#m_unit").val("");					$("#m_price").val(0);
+	$("#m_qty").val(1);
 }
 function add_row_sales(){
-    next_row=next_row+1;
+    next_row++;
     item_number=$("#barcode").val();
     if(item_number==''){
     	log_err("Isi atau scan barcode !");
@@ -776,144 +775,60 @@ function add_row_sales(){
     qty=$("#qty").val();							item_disc_amt_2=$("#item_disc_amt_2").val();
     retail=$("#item_price").val();					item_disc_prc_3=$("#item_disc_prc_3").val();
     item_disc_prc=$("#item_disc_prc").val();		item_disc_amt_3=$("#item_disc_amt_3").val();
-    item_disc_amt=$("#item_disc_amt").val();
-    item_total=$("#item_total").val();
-    disc_amount_ex=$("#disc_amount_ex").val();
+    item_disc_amt=$("#item_disc_amt").val();		unit=$("#unit").val();
+    item_total=$("#item_total").val();				m_unit=$("#m_unit").val();
+    disc_amount_ex=$("#disc_amount_ex").val();		m_price=$("#m_price").val();
+    m_qty=$("#m_qty").val();
     
     tenant=$("#tenant").val();
     ref=$("#ref").val();
-    add_row(next_row,item_number,description,qty,retail,item_disc_prc, 
+    add_row(next_row,item_number,description,qty,unit,retail,item_disc_prc, 
     	item_disc_amt,item_total,tenant,ref,item_disc_prc_2,item_disc_amt_2,
-    	item_disc_prc_3,item_disc_amt_3,0,disc_amount_ex);
+    	item_disc_prc_3,item_disc_amt_3,0,disc_amount_ex,m_qty,m_unit,m_price);
+    	
     total_nota();
     clear_input();
+    
 }
 function add_row_data(ar){
 	for(i=0;i<ar.length;i++){
 		a=ar[i];
-		add_row(a.no_urut,a.item_number,a.description,a.quantity,
+		add_row(a.no_urut,a.item_number,a.description,a.quantity,a.unit,
 			a.price,a.discount,a.discount_amount,a.amount,a.employee_id,
 			a.from_line_type,a.disc_2,a.disc_amount_2, 
-			a.disc_3,a.disc_amount_3,a.line_number,a.disc_amount_ex);
+			a.disc_3,a.disc_amount_3,a.line_number,a.disc_amount_ex,
+			a.mu_qty,a.multi_unit,a.mu_harga);
 	}
 }
 function clear_header_items(){
-	$("#divNota").html("<table id='tbl_nota' width='100%' " +
+	$("#divNota").html("<table id='tbl_nota' width='1200px' " +
 		" cellpadding='5' class='nota-content'> " +
-	    "  <tr><th>No</th><th>Kode</th><th>Nama Barang</th><th>Qty</th> " +
+	    "  <tr><th>No</th><th>Kode</th><th>Nama Barang</th><th>Qty</th><th>Unit</th> " +
 	    "  <th>Price</th><th>Disc%</th><th>DiscRp</th><th>Jumlah</th> " +
 	    "  <th>Tenant</th><th>Ref</th><th>Disc%2</th><th>DiscRp2</th> " +
 	    "  <th>Disc%3</th><th>DiscRp3</th><th>DiscRpEx</th><th>Line</th> " +
+	    "  <th>M Qty</th><th>M Unit</th><th>M Price</th> " +
 	    " </tr> " +                        
 	"</table>");
 }
 
-function add_row(next_row,item_number,description,qty,retail, 
-		item_disc_prc,item_disc_amt,item_total,tenant,
-		ref,item_disc_prc_2,item_disc_amt_2,
-		item_disc_prc_3,item_disc_amt_3,line,disc_amount_ex){
-			
-		var i=0;
-		var found=false;
-		if(disc_amount_ex==null)disc_amount_ex=0;
-		
-		//cari kalau ada item yg sama diupdate qty dan hitung lagi baris	
-		$(".line-order").each(function(){
-			td = $(this).children("td").map(function() {
-				return $(this).text();
-			}).get();
-			i++;
-			item_no=td[C_CODE];
-			q=td[C_QTY];
-			p=td[C_PRICE];p=p.toString().replace(/,/g , "");
-			d1=td[C_DISC_PRC];
-			d2=td[C_DISC_PRC_2];
-			d3=td[C_DISC_PRC_3];
-			dex=td[C_DISC_AMT_EX];
-			if(dex==null)dex=0;
-			
-			t=td[C_AMOUNT];	t=t.toString().replace(/,/g , "");
-			if(item_no==item_number && p==retail && d1==item_disc_prc && dex==disc_amount_ex){
-				found=true;
-				q2=parseFloat(q)+parseFloat(qty);
-				amt=q2*parseFloat(p);
-				d1amt=0;
-				d2amt=0;
-				d3amt=0;
-				if(d1>0){
-					d1amt=parseFloat(d1)*amt;
-					amt=amt-d1amt;
-				}
-				if(d2>0){
-					d2amt=parseFloat(d2)*amt;
-					amt=amt-d2amt;
-				}
-				if(d3>0){
-					d3amt=parseFloat(d3)*amt;
-					amt=amt-d3amt;
-				}
-				$(this).children("td:nth-child("+(C_QTY+1)+")").html(q2);
-				$(this).children("td:nth-child("+(C_DISC_AMT+1)+")").html(formatNumber(d1amt));
-				$(this).children("td:nth-child("+(C_DISC_AMT_2+1)+")").html(formatNumber(d2amt));
-				$(this).children("td:nth-child("+(C_DISC_AMT_3+1)+")").html(formatNumber(d3amt));
-				$(this).children("td:nth-child("+(C_DISC_AMT_EX+1)+")").html(formatNumber(dex));
-				$(this).children("td:nth-child("+(C_AMOUNT+1)+")").html(formatNumber(amt));
-			}
-		});
-			
-	if(!found){
-			
-	    $(".nota-content").append("  "
-	    +"<tr class='line-order'  > "
-	    +"<td>"+next_row+"</td>"
-	    +"<td>"+item_number+"</td>"
-	    +"<td>"+description+"</td>"
-	    +"<td align='right'><span id='q_"+next_row+"'>"+qty+"</span></td>"
-	    +"<td align='right'><span id='p_"+next_row+"'>"+formatNumber(retail)+"</span></td>"
-	    +"<td align='right'><span id='d_"+next_row+"'>"+item_disc_prc+"</span></td>"
-	    +"<td align='right'><span id='da_"+next_row+"'>"+item_disc_amt+"</span></td>"
-	    +"<td align='right'><span id='t_"+next_row+"' class='t_amount' >"+formatNumber(item_total)+"</span></td>"
-	    +"<td>"+tenant+"</td>"
-	    +"<td>"+ref+"</td><td>"+item_disc_prc_2+"</td><td>"+formatNumber(item_disc_amt_2)+"</td>"
-	    +"<td>"+item_disc_prc_3+"</td><td>"+formatNumber(item_disc_amt_3)+"</td>"
-	    +"<td>"+disc_amount_ex+"</td><td>"+line+"</td>"
-	    +"</tr>");
-    
-   }
-}
+
 function calc_input(){
+	
     qty=$("#qty").val(); if(qty=='')qty=1;
     
     item_price=$("#item_price").val(); if(item_price=='')item_price=0;
     item_price=item_price.replace(/,/g,"");
-    
+
+	calc_qty_unit();
+	    
     //item disc 1
     item_disc_prc_dec=0;
     item_disc_prc=$("#item_disc_prc").val();
     if(item_disc_prc=='')item_disc_prc=0;
-    if(item_disc_prc>1){
-    	item_disc_prc=item_disc_prc/100;
-    }
-    item_disc_amt=$("#item_disc_amt").val();
-    if(item_disc_amt=='')item_disc_amt=0;
-    item_disc_amt=item_disc_amt.replace(/,/g,"");
+    if(item_disc_prc>1)	item_disc_prc=item_disc_prc/100;
+    item_disc_amt=item_price*item_disc_prc;
     item_disc_amt=parseFloat(item_disc_amt).toFixed(2);
-    
-    
-    if(item_disc_prc==0 && item_disc_amt>0){	
-    	//diskon rupiah ?
-    	if(item_price>0){
-//	    	item_disc_prc = item_disc_amt/item_price;
-//    		item_disc_prc = parseFloat(item_disc_prc).toFixed(4);
-    	}
-    } else {
-	    item_disc_amt=item_disc_amt.replace(/,/g,"");
-	    item_disc_amt=item_price*item_disc_prc;
-    	
-    }
-    item_disc_amt=parseFloat(item_disc_amt).toFixed(2);
-    
-    
     
     item_price=item_price-item_disc_amt;
     
@@ -921,24 +836,24 @@ function calc_input(){
 	item_disc_prc_dec_2=0;
     item_disc_prc_2=$("#item_disc_prc_2").val();
     if(item_disc_prc_2=='')item_disc_prc_2=0;
-    if(item_disc_prc_2>1)item_disc_prc_dec_2=item_disc_prc_2/100;
-    item_disc_amt_2=$("#item_disc_amt_2").val();
-    if(item_disc_amt_2=='')item_disc_amt_2=0;
-    item_disc_amt_2=item_disc_amt_2.replace(/,/g,"");
-    item_disc_amt_2=item_price*item_disc_prc_dec_2;
+    if(item_disc_prc_2>1){
+    	item_disc_prc_2=item_disc_prc_2/100;
+    }
+    item_disc_amt_2=item_price*item_disc_prc_2;
     item_disc_amt_2=Math.round(item_disc_amt_2,2);
+
     item_price=item_price-item_disc_amt_2;
 
 	//item disc 3
 	item_disc_prc_dec_3=0;
     item_disc_prc_3=$("#item_disc_prc_3").val();
     if(item_disc_prc_3=='')item_disc_prc_3=0;
-    if(item_disc_prc_3>1)item_disc_prc_dec_3=item_disc_prc_3/100;
-    item_disc_amt_3=$("#item_disc_amt_3").val();
-    if(item_disc_amt_3=='')item_disc_amt_3=0;
-    item_disc_amt_3=item_disc_amt_3.replace(/,/g,"");
-    item_disc_amt_3=item_price*item_disc_prc_dec_3;
+    if(item_disc_prc_3>1){
+    	item_disc_prc_3=item_disc_prc_3/100;
+    }
+    item_disc_amt_3=item_price*item_disc_prc_3;
     item_disc_amt_3=Math.round(item_disc_amt_3,2);
+
     item_price=item_price-item_disc_amt_3;
 
     item_komisi_tour=$("#item_komisi_tour").val();
@@ -984,16 +899,8 @@ function calc_input(){
 				loading_close();
 				var result = eval('('+msg+')');
 				if(result.success){
-				    $("#barcode").val(result.item_number);
-				    $("#item_nama_barang").val(result.description);
-				    $("#qty").val("1");
-				    $("#item_price").val(formatNumber(result.retail));
-				    $("#item_disc_prc").val(result.disc_prc_1);
-				    $("#item_disc_prc_2").val(result.disc_prc_2);
-				    $("#item_disc_prc_3").val(result.disc_prc_3);
-				    
-				    calc_input();
-				    
+					result_set(result);
+				    calc_input();				    
 				    $("#qty").focus();
 				} else {
 					log_err("Barcode Not Found !");
@@ -1006,6 +913,29 @@ function calc_input(){
 		});					
 	    return false;
     }
+    function result_set(result){
+        //console.log(result);
+        $("#barcode").val(result.item_number);
+        $("#item_nama_barang").val(result.description);
+        $("#qty").val("1");
+        $("#item_price").val(formatNumber(result.retail));
+        $("#item_disc_prc").val(result.disc_prc_1);
+        $("#item_disc_prc_2").val(result.disc_prc_2);
+        $("#item_disc_prc_3").val(result.disc_prc_3);
+        $("#unit").val(result.unit_of_measure);
+        $("#m_unit").val(result.unit_of_measure);
+        $("#m_price").val(result.retail);
+        $("#m_qty").val(1);
+        
+        if(result.multiple_pricing=="1"){
+            $("#cmdLovUnit").show();
+            $("#divMultiUnit").show();
+        } else {
+            $("#cmdLovUnit").hide();
+            $("#divMultiUnit").hide();          
+        }
+    }
+
 	function find_barcode_top(){
 		var qty=$("#qty_top").val();
 		var barcode=$("#barcode_top").val();
@@ -1020,17 +950,9 @@ function calc_input(){
 				loading_close();
 				var result = eval('('+msg+')');
 				if(result.success){
-				    $("#barcode").val(result.item_number);
-				    $("#item_nama_barang").val(result.description);
-				    $("#qty").val(qty);
-				    $("#item_price").val(formatNumber(result.retail));
-				    $("#item_disc_prc").val(result.disc_prc_1);
-				    $("#item_disc_prc_2").val(result.disc_prc_2);
-				    $("#item_disc_prc_3").val(result.disc_prc_3);
-				    
+					result_set(result);
 				    calc_input();
 				    add_row_sales();	
-				    
 				} else {
 					log_err("Barcode Not Found !");
 				}
@@ -1052,7 +974,6 @@ function calc_input(){
 					arNota=result.list_nota;	
 					s="<table width='100%'>";
 					if(arNota){
-					
 						for(i=0;i<arNota.length;i++){
 							nota=arNota[i];
 							amt=nota.amount;
@@ -1061,20 +982,18 @@ function calc_input(){
 							s=s+"<tr><td><a href='#' onclick=\"edit_nota('"+nota.invoice_number+"');return false\">"+nota.invoice_number+"</a></td>"+
 							"<td align=right>"+formatNumber(amt)+"</td></tr>";
 						}	
-					
 					}
-					
 					s=s+"</table>";
 					$("#divNotaOpen").html(s);
 					$("#msg-box-wrap").html("Ready.");
 
+				} else {
+					log_err(result.msg);
 				}
-				
 			},
 			error: function(msg){
-				console.log(msg);}
+				log_err(msg);}
 		});			
-
     }
 	function edit_nota(nomor){
 		var s="";
@@ -1086,6 +1005,8 @@ function calc_input(){
 				var result = eval('('+result+')');
 				if(result.success){
 					edit_nota_data(result);
+				} else {
+					log_err(result.msg);
 				}
 			},
 			error: function(result){
@@ -1100,6 +1021,7 @@ function calc_input(){
 		var payments=result.payments;
 		clear_header_items();
 		$("#nota").html(invoice.invoice_number);
+		$("#nota_tmp").html("");
 		$("#tanggal").html(fmt_date(invoice.invoice_date));
 		$("#userid").html(invoice.salesman);
 		$("#cust").html(invoice.sold_to_customer);
@@ -1136,7 +1058,7 @@ function calc_input(){
 	
 	function pay_nota_bawah(){
 
-		void total_nota();
+		void total_nota();	//masuk ke arItem
 		
 		total=cval("#total_nota");
 		var sisa=$("#ttl_sisa").html();
@@ -1149,7 +1071,8 @@ function calc_input(){
 		rek=$("#credit_card_type").val();
 		voucher_no=$("#voucher_no").val();
 		if(voucher>0 && voucher_no==""){
-			log_err("Isi nomor voucher !");return false;
+			log_err("Isi nomor voucher !");
+			return false;
 		}
 		if(pay_total==0){
 			log_err("Belum ada pembayaran !");
@@ -1166,7 +1089,6 @@ function calc_input(){
 		
 		var header=get_header_nota();
 		
-
 		var payment={"cash":cash,"card":card,"debit":debit,"voucher":voucher,"kembali":kembali,
 			"credit_card_type":$("#credit_card_type").val(),"voucher_no":voucher_no,
 			"credit_card_number":$("#credit_card_number").val(),
@@ -1193,10 +1115,9 @@ function calc_input(){
 			}			
 		}); 		
 }
-function reports(){
-	window.open(base_url+'pos.php/reports','_blank');
-}
-    
+	function reports(){
+		window.open(base_url+'pos.php/reports','_blank');
+	}
     function submit_session(){
         _url=CI_BASE+'pos.php/user/session';        
         _data={shipping_location:$("#shipping_location").val()};
@@ -1224,10 +1145,9 @@ function reports(){
         $("#dlgPayCash_Bayar").val(0);
         $("#dlgPayCash_Bayar").focus();
         $("#dlgPayCash_Flag").val("");
-        
-        $("#dlgPayCash").dialog("open").dialog('setTitle','Dialog');         
-        
-        
+        $("#pay_card").val(0);
+        $("#card_amount").val(0);
+        $("#dlgPayCash").dialog({modal: true}).dialog("open").dialog('setTitle','Dialog');         
     }
     function pay_card_nota(){
         total_nota();
@@ -1239,13 +1159,11 @@ function reports(){
         $("#pay_card").val(formatNumber(ttl_nota));
         $("#card_amount").val(formatNumber(ttl_nota));
         $("#dlgCard_flag1").val("1");
-        $("#dlgCard").dialog("open").dialog('setTitle','Info Kartu');
-        
+        $("#dlgCard").dialog({modal: true}).dialog("open").dialog('setTitle','Info Kartu');
     }
     function dlgPayCash_Cancel(){
         $("#dlgPayCash").dialog("close");
     }
-    
     function dlgPayCash_Submit(){
         $("#dlgPayCash").dialog("close");
         var flag=$("#dlgPayCash_Flag").val();
@@ -1262,7 +1180,6 @@ function reports(){
         var sisa=cash-ttl_nota;
         $("#dlgPayCash_Kembali").val(formatNumber(sisa));
         total_nota();
-        
     }
     function pay_split_nota(){
         total_nota();
@@ -1271,8 +1188,116 @@ function reports(){
             log_err("Jumlah nota 0 mungkin tidak ada itemnya. !");
             return false;
         }
-    	
         var ttl_nota=cval("#total_nota");
         $("#dlgPaySplit_Tagih").val(formatNumber(ttl_nota));
-        $("#dlgPaySplit").dialog("open").dialog('setTitle','Split Payment');
+        $("#dlgPaySplit").dialog({modal: true}).dialog("open").dialog('setTitle','Split Payment');
     }
+	function edit_row(){
+		var caption=$(this).html();
+		
+		tableData = $("#tbl_nota tr").eq(selected_row).children("td").map(function() {
+			return $(this).text();
+		}).get();
+		
+		var id=tableData[C_ID];
+		
+		if(selected_row==0 ){
+			log_err("Invalid row !");return false;
+		}
+		$("#barcode").val(tableData[C_CODE]);		
+		$("#item_nama_barang").val(tableData[C_NAME]);		
+		$("#item_price").val(tableData[C_PRICE]);		
+		$("#item_disc_prc").val(tableData[C_DISC_PRC]);		
+		$("#item_disc_amt").val(tableData[C_DISC_AMT]);		
+		$("#item_disc_prc_2").val(tableData[C_DISC_PRC_2]);		
+		$("#item_disc_amt_2").val(tableData[C_DISC_AMT_2]);		
+		$("#item_disc_prc_3").val(tableData[C_DISC_PRC_3]);		
+		$("#item_disc_amt_3").val(tableData[C_DISC_AMT_3]);		
+		$("#dis_amount_ex").val(tableData[C_DISC_AMT_EX]);		
+		$("#item_total").val(tableData[C_AMOUNT]);		
+		//$("#item_komisi_tour").val(tableData[C_REF]);		
+		$("#tenant").val(tableData[C_TENANT]);		
+		$("#ref").val(tableData[C_REF]);		
+		$("#qty").val(tableData[C_QTY]);		
+		$("#line").val(tableData[C_ID]);
+		$("#unit").val(tableData[C_UNIT]);		
+		$("#m_qty").val(tableData[C_M_QTY]);		
+		$("#m_unit").val(tableData[C_M_UNIT]);		
+		$("#m_price").val(tableData[C_M_PRICE]);		
+		
+		log_msg("Silahkan ubah kemudian tekan [Add Item] lagi."); 
+	}
+function add_row(next_row,item_number,description,qty,unit,retail, 
+	item_disc_prc,item_disc_amt,item_total,tenant,
+	ref,item_disc_prc_2,item_disc_amt_2,
+	item_disc_prc_3,item_disc_amt_3,line,disc_amount_ex, 
+	m_qty,m_unit,m_price){
+			
+	var line_id=$("#line").val();
+	if(line_id!=""){
+		update_row(next_row,item_number,description,qty,unit,retail, 
+			item_disc_prc,item_disc_amt,item_total,tenant,
+			ref,item_disc_prc_2,item_disc_amt_2,
+			item_disc_prc_3,item_disc_amt_3,line,disc_amount_ex,
+			m_qty,m_unit,m_price);
+	} else {
+	    $(".nota-content").append("  "
+	    +"<tr class='line-order'> "
+	    +"<td>"+next_row+"</td>"
+	    +"<td>"+item_number+"</td>"
+	    +"<td>"+description+"</td>"
+	    +"<td align='right'><span id='q_"+next_row+"'>"+qty+"</span></td>"
+	    +"<td align='right'><span id='q_"+next_row+"'>"+unit+"</span></td>"
+	    +"<td align='right'><span id='p_"+next_row+"'>"+formatNumber(retail)+"</span></td>"
+	    +"<td align='right'><span id='d_"+next_row+"'>"+item_disc_prc+"</span></td>"
+	    +"<td align='right'><span id='da_"+next_row+"'>"+item_disc_amt+"</span></td>"
+	    +"<td align='right'><span id='t_"+next_row+"' class='t_amount' >"+formatNumber(item_total)+"</span></td>"
+	    +"<td>"+tenant+"</td>"
+	    +"<td>"+ref+"</td><td>"+item_disc_prc_2+"</td><td>"+formatNumber(item_disc_amt_2)+"</td>"
+	    +"<td>"+item_disc_prc_3+"</td><td>"+formatNumber(item_disc_amt_3)+"</td>"
+	    +"<td>"+disc_amount_ex+"</td><td>"+line+"</td>"
+		+"<td>"+m_qty+"</td>"	    
+		+"<td>"+m_unit+"</td>"
+	    +"<td>"+m_price+"</td>"
+	    +"</tr>");		
+	}			
+}    
+function update_row(next_row,item_number,description,qty,retail, 
+	item_disc_prc,item_disc_amt,item_total,tenant,
+	ref,item_disc_prc_2,item_disc_amt_2,
+	item_disc_prc_3,item_disc_amt_3,line,disc_amount_ex,
+	unit,m_unit,m_price,m_qty){
+	var i=0;
+	//cari kalau ada item yg sama diupdate qty dan hitung lagi baris	
+	$(".line-order").each(function(){
+		td = $(this).children("td").map(function() {
+			return $(this).text();
+		}).get();
+		
+		i++;
+		if (selected_row==i) { //edit line
+			$(this).children("td:nth-child("+(C_CODE+1)+")").html(item_number);
+			$(this).children("td:nth-child("+(C_NAME+1)+")").html(description);
+			$(this).children("td:nth-child("+(C_QTY+1)+")").html(qty);
+			$(this).children("td:nth-child("+(C_UNIT+1)+")").html(unit);
+			$(this).children("td:nth-child("+(C_DISC_PRC+1)+")").html(item_disc_prc);
+			$(this).children("td:nth-child("+(C_DISC_PRC_2+1)+")").html(item_disc_prc_2);
+			$(this).children("td:nth-child("+(C_DISC_PRC_3+1)+")").html(item_disc_prc_3);
+			$(this).children("td:nth-child("+(C_DISC_AMT+1)+")").html(formatNumber(item_disc_amt));
+			$(this).children("td:nth-child("+(C_DISC_AMT_2+1)+")").html(formatNumber(item_disc_amt_2));
+			$(this).children("td:nth-child("+(C_DISC_AMT_3+1)+")").html(formatNumber(item_disc_amt_3));
+			$(this).children("td:nth-child("+(C_DISC_AMT_EX+1)+")").html(formatNumber(disc_amount_ex));
+			$(this).children("td:nth-child("+(C_PRICE+1)+")").html(formatNumber(retail));
+			$(this).children("td:nth-child("+(C_AMOUNT+1)+")").html(formatNumber(item_total));
+			$(this).children("td:nth-child("+(C_TENANT+1)+")").html(tenant);
+			$(this).children("td:nth-child("+(C_REF+1)+")").html(ref);
+			$(this).children("td:nth-child("+(C_NO+1)+")").html(selected_row);
+			$(this).children("td:nth-child("+(C_M_UNIT+1)+")").html(m_unit);
+			$(this).children("td:nth-child("+(C_M_PRICE+1)+")").html(m_price);
+			$(this).children("td:nth-child("+(C_M_QTY+1)+")").html(m_qty);
+			
+			return true;
+		}
+	})
+}
+    

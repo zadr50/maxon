@@ -1,5 +1,5 @@
 	<div class='col-md-12'>
-		<? 
+		<?php 
 		$rst=$this->db->where("section_name","section-content")->get("articles");
 		foreach($rst->result() as $article)
 		{

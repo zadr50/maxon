@@ -1,4 +1,4 @@
-<?
+<?php
 //start creating tables
 $server="localhost";
 $user_id="root";

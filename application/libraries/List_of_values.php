@@ -19,6 +19,15 @@ class List_of_values
 		if(!isset($setting['dlgWidth'])) $setting['dlgWidth']="750";
 		if(!isset($setting['dlgHeight'])) $setting['dlgHeight']="450";
 		if(!isset($setting['dlgTool'])) $setting['dlgTool']="tb".$bind_id;
+		
+		$dlgColsData=null;if(isset($setting["dlgColsData"])){
+			$dlgColsData=$setting["dlgColsData"];
+			for($i=0;$i<count($dlgColsData);$i++){
+				$setting["dlgCols"][]=array("fieldname"=>$dlgColsData[$i],
+					"caption"=>ucfirst($dlgColsData[$i]),"width"=>"80px");
+								
+			}
+		} 
         $other_filter="";if(isset($setting['filter']))$other_filter=$filter;		
 		$dlgId=$setting['dlgId'];
         $is_sysvar_lookup=false;
@@ -57,6 +66,24 @@ class List_of_values
         }
          
         switch($what){
+			case "group_modules":
+				$sql="select module_id,module_name from modules where (parentid='0' or parentid is null)";
+				if($search!="")$sql=" and module_name like '%$search%'";
+				$sql.=" order by module_id";
+						
+				break;
+			case "sales_order_open":
+				$sql="select p.sales_order_number,p.sales_date,p.due_date,p.payment_terms,p.salesman,
+				 p.sold_to_customer,c.company
+				from sales_order  p
+				left join customers c on c.customer_number=p.sold_to_customer
+				where delivered=false ";
+                if($search!="")$sql.=" and (p.sales_order_number='$search' 
+                    or s.company like '$search%' or p.sold_to_customer like '$search%' )";
+                
+                $sql.=" order by p.sales_date desc";
+				
+				break;
             case "purchase_order":
                 $supplier=$this->CI->input->get("supplier_number");
                 $sql="select i.purchase_order_number,i.po_date,i.supplier_number,s.supplier_name,
@@ -99,8 +126,12 @@ class List_of_values
                 break;
             case "customers2":
             case "customers":
-                $sql="select company,customer_number,street,suite,city,country 
-                from customers";
+                $sql="select company,customer_number,street,suite,city,country,salesman,
+                	payment_terms,discount_percent 
+                from customers where 1=1 " ;
+                if($search!="")$sql.=" and (customer_number like '%$search%' 
+                	or company like '%$search%')";
+                $sql.=" order by company";
                 break;
                 
             case ("voucher_cash_out"):
@@ -196,11 +227,14 @@ class List_of_values
                 break;
             case('inventory'):
             case('inventory2'):
-                $sql="select description,item_number from inventory";
+                $sql="select description,item_number,quantity_in_stock,unit_of_measure,retail,
+                cost_from_mfg,category,supplier_number
+                from inventory";
                 if($search!="")$sql.=" where description like '%$search%'";
                 $sql.=" order by description";
                 //$sql.=" limit 100";
                 break;
+			case("warehouse2");	
             case("shipping_locations"):
             case("warehouse"):
                 $sql="select g.location_number, g.attention_name, 
@@ -235,8 +269,8 @@ class List_of_values
                 break;      
             case "person":
             case("employee"):
-                $sql="select nama,nip from employee";
-                if($search!="")$sql.=" nama like '%$search%'";
+                $sql="select nama,nip,dept,divisi from employee  ";
+                if($search!="")$sql.=" where nama like '%$search%'";
                 $sql.=" order by nama";
                 break;      
             case("company"):
@@ -248,7 +282,7 @@ class List_of_values
             case("bank_accounts"):
             case("bank_accounts2"):
                 $sql="select * from bank_accounts";
-                if($search!="")$sql.=" where bank_account_number like '%$search%'";
+                if($search!="")$sql.=" where (bank_account_number like '%$search%' or bank_name like '%$search%')";
                 $sql.=" order by bank_account_number";
                 break;
             case "bank_accounts_cash":
@@ -279,11 +313,13 @@ class List_of_values
                 where receipt_type='ETC_OUT' and doc_type='1'
                 order by date_received desc ";
                 break;
+			case "chart_of_accounts":
             case "cost_account":
             case "inventory_account":    
                 $sql="select account,account_description,id from chart_of_accounts";
                 if($search!="")$sql.=" where (account like '$search%' or account_description like '$search%')";
                 $sql.=" order by account";
+				
                 break;                                   
             default:
                $sql="select * from $what";    
@@ -303,5 +339,73 @@ class List_of_values
  
         return $sql;           
     }
+	function lookup_customers(){
+        $lookup = $this->render(array(
+        	"dlgBindId"=>"customers",
+        	"dlgRetFunc"=>"			
+				$('#sold_to_customer').val(row.customer_number);
+				$('#company').val(row.company);
+				$('#customer_info').html(row.company);
+        	",
+        	"dlgCols"=>array(
+                array("fieldname"=>"company","caption"=>"Company","width"=>"180px"),
+                array("fieldname"=>"customer_number","caption"=>"Kode","width"=>"80px"),
+                array("fieldname"=>"region","caption"=>"Region","width"=>"80px"),
+                array("fieldname"=>"city","caption"=>"City","width"=>"80px")        	        		
+        	)
+        ));
+		return $lookup;
+	}
+	function lookup_inventory(){
+        $lookup = $this->render(array(
+        	"dlgBindId"=>"inventory",
+        	"dlgRetFunc"=>"			
+				$('#item_number').val(row.item_number);
+				$('#description').val(row.description);
+				$('#retail').html(row.retail);
+				$('#price').html(row.cost_from_mfg);
+				$('#unit').html(row.unit_of_measure);
+				find();
+        	",
+        	"dlgCols"=>array(
+                array("fieldname"=>"item_number","caption"=>"Kode","width"=>"80px"),
+                array("fieldname"=>"description","caption"=>"Nama Barang","width"=>"180px"),
+                array("fieldname"=>"quantity_in_stock","caption"=>"Qty","width"=>"80px"),
+                array("fieldname"=>"unit_of_measure","caption"=>"Unit","width"=>"80px"),
+                array("fieldname"=>"retail","caption"=>"H Jual","width"=>"80px"),
+                array("fieldname"=>"cost_from_mfg","caption"=>"H Beli","width"=>"80px"),        	        		
+                array("fieldname"=>"category","caption"=>"Category","width"=>"80px"),
+                array("fieldname"=>"suppplier_number","caption"=>"Supplier","width"=>"80px")
+        	)
+        ));
+		return $lookup;
+	}
+	function lookup_gl_projects($optional_field=""){
+		$ret_func="$('#project_name').html(row.keterangan);";
+		if($optional_field!=""){
+			$ret_func.="		$('#$optional_field').val(row.kode);";
+       }
+        $lookup = $this->render(array(
+        	"dlgBindId"=>"gl_projects",
+        	"dlgRetFunc"=>$ret_func,
+        	"dlgColsData"=>array("kode","keterangan")
+        	)
+        );
+		return $lookup;
+	}
+    function lookup_employee(){
+        $ret_func="$('#nip').val(row.nip);
+        $('#nama').html(row.nama);
+        $('#dept').html(row.dept);
+        $('#divisi').html(row.divisi);";
+        $lookup = $this->render(array(
+            "dlgBindId"=>"employee",
+            "dlgRetFunc"=>$ret_func,
+            "dlgColsData"=>array("nip","nama","dept","divisi")
+            )
+        );
+        return $lookup;
+    }
+		
 }
 ?>

@@ -1,6 +1,6 @@
 <div><h4>FORMULIR PINJAMAN KARYAWAN</H4>
 <div class="thumbnail">
-	<?
+	<?php
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/pinjaman/add');		
@@ -47,7 +47,7 @@
 				</td>
 			</tr>	 
 			<tr>
-				<td>NIP</td><td><? echo form_input('nip',$nip,"id=nip"); echo link_button("","lookup_employee()","search")?></td>
+				<td>NIP</td><td><?php echo form_input('nip',$nip,"id=nip"); echo link_button("","lookup_employee()","search")?></td>
 			</tr>
 		   <tr>
 				<td>Tanggal Pinjam</td><td><?=form_input('date_loan',$date_loan,"class='easyui-datetimebox' style='width:150px'");?></td>
@@ -89,11 +89,11 @@
 	   </form>
 	</div>
 	 
-	<div title='Cicilan'><? include_once "cicilan.php" ?></div>
+	<div title='Cicilan'><?php include_once "cicilan.php" ?></div>
 
 </div>	
 	
-<? include_once "employee_lookup.php" ?>
+<?php include_once "employee_lookup.php" ?>
 <script type="text/javascript">
     function save_this(){
         if($('#nip').val()===''){alert('Isi dulu NIP Karyawan !');return false;};

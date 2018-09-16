@@ -62,6 +62,29 @@ class Stock_mutasi extends CI_Controller {
 			$data['doc_type']="MUTASI";
 			$data['status_list']=array("0"=>"Not Verified","1"=>"Verified","2"=>"Canceled");
 			$data['doc_type_list']=array("MUTASI"=>"MUTASI","ROLLING"=>"ROLLING");
+
+            $setwh['dlgBindId']="warehouse";
+            $setwh['dlgRetFunc']="$('#from_location').val(row.location_number);";
+            $setwh['dlgCols']=array( 
+                        array("fieldname"=>"location_number","caption"=>"Kode","width"=>"80px"),
+                        array("fieldname"=>"attention_name","caption"=>"Nama Toko","width"=>"180px"),
+                        array("fieldname"=>"company_name","caption"=>"Kode Pers","width"=>"50px"),
+                        array("fieldname"=>"company","caption"=>"Perusahaan","width"=>"200px")
+                    );          
+            $data['lookup_gudang']=$this->list_of_values->render($setwh);
+			
+			$data['lookup_gudang2']=$this->list_of_values->render(
+			array(
+				"dlgBindId"=>"warehouse2",
+				"dlgRetFunc"=>"$('#to_location').val(row.location_number);",
+				"dlgCols"=>array(
+                        array("fieldname"=>"location_number","caption"=>"Kode","width"=>"80px"),
+                        array("fieldname"=>"attention_name","caption"=>"Nama Toko","width"=>"180px"),
+                        array("fieldname"=>"company_name","caption"=>"Kode Pers","width"=>"50px"),
+                        array("fieldname"=>"company","caption"=>"Perusahaan","width"=>"200px")					
+				)
+			));
+			
             return $data;
 	}	
 	function get_posts(){
@@ -106,21 +129,16 @@ class Stock_mutasi extends CI_Controller {
 	}
 	function update()
 	{
-		 $data=$this->set_defaults(); 
        	 $data=$this->get_posts();
-		 $this->_set_rules();
- 		 $id=$this->input->post('transfer_id');
-             
-		 if ($this->form_validation->run()=== TRUE){
-			$this->inventory_moving_model->update($id,$data);
-		    $data['message']='update success';
+ 		 $id=$data['transfer_id'];
+		 $ok=$this->inventory_moving_model->update($id,$data);
+		 if($ok){		 	
+		    $msg='Update Success';
 			$this->syslog_model->add($id,"stock_mutasi","edit");
-
 		} else {
-			$data['message']='Error Update';
-		}
-	  
- 		$this->view($id);		
+			$msg='Error Update';
+		}	  
+ 		echo json_encode(array("success"=>$ok,"msg"=>$msg));
 	}
 	
 	function view($id,$message=null){
@@ -138,9 +156,11 @@ class Stock_mutasi extends CI_Controller {
 	{
 		$nomor=urldecode($nomor);
             $sql="select p.item_number,i.description,p.from_qty, 
-            p.unit,p.cost,p.id as line_number
+            p.unit,p.cost,p.id as line_number,p.multi_unit,p.mu_qty,p.cost_account,
+            concat(c.account,' - ',c.account_description) as account,p.total_amount
             from inventory_moving p
             left join inventory i on i.item_number=p.item_number
+            left join chart_of_accounts c on p.cost_account=c.id
             where transfer_id='$nomor'";
 			 
 			echo datasource($sql);
@@ -225,14 +245,16 @@ class Stock_mutasi extends CI_Controller {
             $data['item_number']=$item_no;
             $data['from_qty']=$this->input->post('quantity');
             $data['to_qty']=$this->input->post('quantity');
-            $item=$this->inventory_model->get_by_id($data['item_number'])->row();
-            if($item){
-            	$cost=$item->cost;
-            } else {
-            	$cost=0;
-            }
-            $data['cost']=$cost;
+			$data["cost"]=$this->input->post("cost");
+			$data['total_amount']=$this->input->post('total_amount');
             $data['unit']=$this->input->post('unit');
+			if($data['cost']==0 || $data["cost"]==""){
+	            $item=$this->inventory_model->get_by_id($data['item_number'])->row();
+	            if($item){
+	            	$data['cost']=$item->cost;
+				}				
+			}
+			$data['total_amount']=$data['cost']*$data['from_qty'];
             $data['transfer_id']=$id;
             $data['from_location']=$this->input->post('from_location');
 			if(!$data['from_location']){
@@ -242,10 +264,13 @@ class Stock_mutasi extends CI_Controller {
             $data['to_location']=$this->input->post('to_location');
 			$data['date_trans']=$this->input->post('date_trans');;
 			$data['comments']=$this->input->post('comments');
-			$data['total_amount']=$cost*$data['from_qty'];
 			$data['status']=$this->input->post('status');
 			$data['doc_type']=$this->input->post("doc_type");
-			$line=$this->input->post('line_number');
+			$data['multi_unit']=$this->input->post('multi_unit');
+			$data['mu_qty']=$this->input->post("mu_qty");
+			$data['cost_account']=account_id($this->input->post("cost_account"));
+			
+			$line=$this->input->post('id');
 			if($line==""){
 				$ok=$this->inventory_moving_model->save($data);
 			} else {
@@ -271,8 +296,8 @@ class Stock_mutasi extends CI_Controller {
 		$data['content']=load_view('inventory/rpt/print_mutasi',$data);
 		$this->load->view('pdf_print',$data);
     }
-    function del_item(){
-    	$id=$this->input->post('line_number');
+    function del_item($id){
+    	$id=urldecode($id);
         $ok=$this->inventory_moving_model->delete_item($id);
 		if ($ok){
 			echo json_encode(array('success'=>true));
@@ -294,6 +319,14 @@ class Stock_mutasi extends CI_Controller {
 		} else {
 			echo "Nomor ini tidak bisa diubah statusnya";
 		}
+	}
+	function posting($nomor){
+		$this->inventory_moving_model->posting($nomor);
+		redirect("stock_mutasi/view/$nomor");
+	}
+	function unposting($nomor){
+		$this->inventory_moving_model->unposting($nomor);
+		redirect("stock_mutasi/view/$nomor");		
 	}
 
 }

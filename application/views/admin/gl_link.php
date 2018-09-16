@@ -7,19 +7,26 @@ if($q=$this->company_model->get_by_id($company_code)){
     }
 }
 ?> 
-<div class='alert alert-info'>
-Dibawah ini adalah seting dan pengaturan link akun yang berfungsi untuk 
-mengintegrasikan kode akun standard/default untuk semua transaksi yang 
-ada dalam software ini. Silahkan isi atau pilih dengan akun yang bersesuaian.
-<br>Company: <?="<strong>$company_code - $company_name</strong>"?>
+
+<div class="thumbnail box-gradient">
+    <?php
+    echo link_button('Save', 'save_gl_link();return false;','save'); 
+    echo link_button('Copy From', 'dlgpreferences_show();return false','search'); 
+    echo "<div style='float:right'>";
+        echo link_button('Help', 'load_help(\'cash_out\')','help');     
+        ?>
+        <a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+        <div id="mmOptions" style="width:200px;">
+            <div onclick="load_help('gl_link')">Help</div>
+            <div onclick="show_syslog('gl_link','<?=$company_code?>')">Log Aktifitas</div>
+            <div>Update</div>
+            <div>MaxOn Forum</div>
+            <div>About</div>
+        </div>
+        <?=link_button('Close', 'remove_tab_parent()','cancel');?>
+    </div>
 </div>
  
-<ul class="nav nav-tabs">
-    <li class="active"><a href="#pur-tab" data-toggle="tab">Pembelian <i class="fa"></i></a></li>
-    <li><a href="#sal-tab" data-toggle="tab">Penjualan <i class="fa"></i></a></li>
-    <li><a href="#inv-tab" data-toggle="tab">Inventory <i class="fa"></i></a></li>
-    <li><a href="#fin-tab" data-toggle="tab">Finansial <i class="fa"></i></a></li>
-</ul>
 <?php
 function show_fields($fields){
 	for($i=0;$i<count($fields);$i++) {
@@ -43,10 +50,11 @@ function show_fields($fields){
     }
     
     echo base_url("index.php/company/gl_link$next_url")?>"
-    class="form-horizontal" style="margin-top:20px">
+    class="form-horizontal" style="margin-top:2px">
     <?=form_hidden("company_code",$company_code,"id='company_code'")?>
-	<div class="tab-content">
-        <div class="tab-pane active" id="pur-tab">
+    
+	<div class="easyui-tabs">
+        <div title="Pembelian" id="pur-tab">
 			<?php 
 			$fields=array(
 			array("caption"=>"Hutang (Account Payable)",
@@ -69,7 +77,7 @@ function show_fields($fields){
 			?>
 
 		</div>
-        <div class="tab-pane " id="sal-tab">
+        <div title="Penjualan" id="sal-tab">
 		<?php
 			$fields=array(
 			array("caption"=>"Piutang (Account Receivable)",
@@ -96,7 +104,7 @@ function show_fields($fields){
 			show_fields($fields); 			
 		?>		
 		</div>
-        <div class="tab-pane " id="inv-tab">
+        <div title="Persediaan" id="inv-tab">
 		<?php
 			$fields=array(
 			array("caption"=>"Penjualan Barang (Inventory Sales)",
@@ -118,7 +126,7 @@ function show_fields($fields){
 			show_fields($fields);
 		?>
 		</div>
-        <div class="tab-pane " id="fin-tab">
+        <div title="Financial" id="fin-tab">
 		<?php
 			$fields=array(
 			array("caption"=>"PPerkiraan Transaksi Kas",
@@ -139,10 +147,16 @@ function show_fields($fields){
 		?>
 		</div>
 	</div>	
-    <?=link_button('Copy GL Link From Other', 'dlgpreferences_show()','search'); ?>
-    <?=link_button('Save', 'save_gl_link()','save'); ?>
 </form>
  
+
+
+<div class='alert alert-info'>
+    Diatas ini adalah seting dan pengaturan link akun yang berfungsi untuk 
+    mengintegrasikan kode akun standard/default untuk semua transaksi yang 
+    ada dalam software ini. Silahkan isi atau pilih dengan akun yang bersesuaian.
+    <br>Company: <?="<strong>$company_code - $company_name</strong>"?>
+</div>
    
 <?=load_view('gl/select_coa_link')?>   	
 <?=$lookup_company?>
@@ -165,6 +179,8 @@ function show_fields($fields){
                 loading_close();
                 var result = eval('('+result+')');
                 if (result.success){
+                    log_msg('Success');
+                    loading_close();
                     $.messager.show({
                         title: 'Success',
                         msg: 'Success'
@@ -172,6 +188,7 @@ function show_fields($fields){
                     window.open(CI_ROOT+"company/view/"+company_code,"_self");
                     
                 } else {
+                    log_err(result.msg);
                     $.messager.show({
                         title: 'Error',
                         msg: result.msg
@@ -180,8 +197,8 @@ function show_fields($fields){
             },
             
             error: function(msg){
-                $.messager.alert('Info',"Tidak bisa copy data !");
                 loading_close();
+                log_err('Info',"Tidak bisa copy data !");
                 }
 
         });

@@ -7,14 +7,14 @@
 	</div>
 	<div class="row thumbnail" style='background-color:lightgray'>
 		<div class='col-md-12'>
-			<? $this->load->view("slider"); ?>
+			<?php $this->load->view("slider"); ?>
 		</div>	
 	</div>
 	<div class="row col-md-9" style="padding-left:10px;padding-right:10px">
 		 	   
 	</div>
 	<div class="col-md-3 thumbnail" style="margin-left:10px">
-		<? 
+		<?php 
 			$this->load->view('google_ads');
 		?>
 	</div>

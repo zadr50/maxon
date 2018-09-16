@@ -55,7 +55,7 @@ function select_list(){return $this->customer_list();}
 	}
 	function info($id){
 		$data=$this->get_by_id($id)->row();
-		if(count($data)){    
+		if($data){    
 			$ret='<strong>'.$id.' - '.$data->company.'</strong><br/>'
 					.$data->street.' - '.$data->city;
 		} else $ret='';

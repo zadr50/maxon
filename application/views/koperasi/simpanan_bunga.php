@@ -1,6 +1,6 @@
 <div><h4>PROSES PEMBERIAN JASA BUNGA</H4>
 <div class="thumbnail">
-	<?
+	<?php
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/pinjaman/add');		
@@ -47,7 +47,7 @@
 				</td>
 			</tr>	 
 			<tr>
-				<td>Tanggal</td><td><? echo form_input('nip',$nip,"id=nip"); echo link_button("","lookup_employee()","search")?></td>
+				<td>Tanggal</td><td><?php echo form_input('nip',$nip,"id=nip"); echo link_button("","lookup_employee()","search")?></td>
 			</tr>
 		   <tr>
 				<td>Tahun</td><td><?=form_input('date_loan',$date_loan,"class='easyui-datetimebox' style='width:150px'");?></td>
@@ -77,14 +77,14 @@
 	
 	command-hitung
 	
-	<div title='Tabel Output'><? include_once "cicilan.php" ?></div>
+	<div title='Tabel Output'><?php include_once "cicilan.php" ?></div>
 	
 	no simanan	- nama anggota - saldo terendah	- saldo rata - saldo minimun - jasa harian - jasas rata - jasa minimum
 	
 
 </div>	
 	
-<? include_once "employee_lookup.php" ?>
+<?php include_once "employee_lookup.php" ?>
 <script type="text/javascript">
     function save_this(){
         if($('#nip').val()===''){alert('Isi dulu NIP Karyawan !');return false;};

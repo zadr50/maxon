@@ -4068,6 +4068,7 @@ CREATE TABLE IF NOT EXISTS `modules` (
 
 -- Dumping data for table simak.modules: 606 rows
 /*!40000 ALTER TABLE `modules` DISABLE KEYS */;
+ 
 INSERT INTO `modules` VALUES ('frmCustomers.cmdSaveShipTo', 'frmCustomers.cmdSaveShipTo', 'Form', 'frmCustomers.cmdSaveShipTo', 'frmCustomers.cmdSaveShipTo', '_30010', '0', null, null, null);
 INSERT INTO `modules` VALUES ('frmMain.Addnew', 'frmMain.Addnew', 'Form', 'frmMain.Addnew', 'Please entry this', '_00000', '0', null, null, null);
 INSERT INTO `modules` VALUES ('frmRptCriteria', 'frmRptCriteria', 'Form', 'frmRptCriteria', 'Please entry this', '_90000', '0', null, null, null);
@@ -4681,8 +4682,7 @@ INSERT INTO `modules` VALUES ('retur_toko', 'retur_toko', 'Form', 'retur_toko', 
 INSERT INTO `modules` VALUES ('retur_toko_add', 'retur_toko_add', 'Form', 'retur_toko_add', 'Retur dari toko (tambah)', '_80000', '0', '0', '', '');
 INSERT INTO `modules` VALUES ('retur_toko_view', 'retur_toko_view', 'form', 'retur_toko_view', 'retur_toko_view', '_80000', '0', '1', '', '');
 INSERT INTO `modules` VALUES ('retur_toko_print', 'retur_toko_print', '', 'retur_toko_print', 'retur_toko_print', '_80000', '0', '0', '', '');
-
-/*!40000 ALTER TABLE `modules` ENABLE KEYS */;
+ 
 
 
 -- Dumping structure for table simak.modules_groups
@@ -6681,6 +6681,7 @@ CREATE TABLE IF NOT EXISTS `user_group_modules` (
 
 -- Dumping data for table simak.user_group_modules: 1,015 rows
 /*!40000 ALTER TABLE `user_group_modules` DISABLE KEYS */;
+
 INSERT INTO `user_group_modules` VALUES ('97', 'BYR', '_40110', '0', '1', null, null);
 INSERT INTO `user_group_modules` VALUES ('98', 'BYR', '_40120', '0', '1', null, null);
 INSERT INTO `user_group_modules` VALUES ('99', 'BYR', '_80010', '0', '1', null, null);
@@ -8364,6 +8365,7 @@ CREATE TABLE `qry_kartustock_union` (
 -- Dumping structure for view simak.qry_coa
 -- Removing temporary table and create final VIEW structure
 DROP TABLE IF EXISTS `qry_coa`;
+ 
 CREATE VIEW `qry_coa` AS select `coa`.`account` AS `account`,
 `coa`.`account_description` AS `account_description`,
 _utf8'D' AS `jenis`,`coa`.`db_or_cr` AS `db_or_cr`,
@@ -8374,6 +8376,7 @@ select `grg`.`group_type` AS `group_type`,`grg`.`group_name` AS `group_name`,
 _utf8'H' AS `jenis`,
 _utf8'' AS `Unknown`,NULL AS `0`,`grg`.`parent_group_type` AS `parent_group_type` 
 from `gl_report_groups` `grg` ;
+ 
 
 
 -- Dumping structure for view simak.qry_invoice

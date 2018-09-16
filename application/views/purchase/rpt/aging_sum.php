@@ -48,7 +48,7 @@
                 p.amount,p.due_date,s.supplier_name
                  from purchase_order p left join suppliers s on s.supplier_number=p.supplier_number
                   where p.potype='I' and p.po_date between '$date1' and '$date2'
-                  group by p.supplier_number,s.supplier_name";
+                  order by p.supplier_number,s.supplier_name";
                 $rst_so=$CI->db->query($sql);
                 $tbl="";
                 $z_amount=0;        $z_payment=0;

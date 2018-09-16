@@ -1,4 +1,4 @@
-<div class='col-md-3'>
+<div class='col-xs-6'>
 					<span>Report</span>
 					<ul>
 			<li><?=anchor('gl/rpt/cards','Laporan Kartu GL','class="info_link"')?></li>
@@ -8,7 +8,7 @@
 			<li><?=anchor('gl/rpt/neraca_saldo','Laporan Neraca Saldo','class="info_link"')?></li>
 					</ul>
 </div>
-<div class='col-md-3'>
+<div class='col-xs-6'>
 				 
 					<ul>
 			<li><?=anchor('gl/rpt/jurnal_not_balance','Jurnal tidak balance','class="info_link"')?></li>

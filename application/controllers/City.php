@@ -98,8 +98,23 @@ class City extends CI_Controller {
    function browse($offset=0,$limit=50,$order_column="",$order_type='asc'){
 		if($order_column=="")$order_column=$this->primary_key;
 		$data['controller']=$this->controller;
-		$data['fields']=$this->city_model->fields;
-					
+		$oFlds=$this->city_model->fields;
+		$fields=null;
+		$fields_caption=null;
+		if(is_array($oFlds)){
+			for($i=0;$i<count($oFlds);$i++){
+				$oFld=$oFlds[$i];
+				if(is_object($oFld)){
+					$fields[]=$oFld->name;
+				} else {
+					$fields[]=$oFld['name'];
+				}
+				
+			}
+		}
+		
+		$data['fields']=$fields;
+				
 		if(!$data=set_show_columns($data['controller'],$data)) return false;
 			
 		$data['field_key']=$this->primary_key;

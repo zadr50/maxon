@@ -29,7 +29,7 @@ class Menu extends CI_Controller {
             $data['phone_number']=$company->phone_number;
             $data['default_warehouse']=$this->session->userdata("default_warehouse");
             $url=$m.'/menu';
-            $table_model=APPPATH.'models/'. $m . '/table_model.php';
+            $table_model='models/'. $m . '/table_model.php';
             if ( file_exists($table_model)){
                 $this->load->model($m . '/table_model');
                 $this->table_model->check_tables();

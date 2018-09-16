@@ -1,4 +1,4 @@
-<? $cat_list=array_data_table("inventory_categories","kode","category"); 
+<?php $cat_list=array_data_table("inventory_categories","kode","category"); 
 if(!isset($readonly))$readonly='';
 ?>
 <form  enctype="multipart/form-data" class="form-horizontal" id='frmBarang' method='post' >

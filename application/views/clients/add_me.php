@@ -10,7 +10,7 @@
 		</div>
 	<?php } ?>
 	 <?php if($message!="") { ?>
-	<div class="alert alert-success"><? echo $message;?></div>
+	<div class="alert alert-success"><?php echo $message;?></div>
 	<? } ?>
 
 

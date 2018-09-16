@@ -225,7 +225,7 @@ abstract class BarcodeGenerator
      */
     protected function barcode_code39($code, $extended = false, $checksum = false)
     {
-        //$chr[] = '';
+        //$chr = [];
         $chr['0'] = '111331311';
         $chr['1'] = '311311113';
         $chr['2'] = '113311113';
@@ -540,7 +540,7 @@ abstract class BarcodeGenerator
      */
     protected function barcode_code93($code)
     {
-        $chr[] = '';
+        //$chr = [];
         $chr[48] = '131112'; // 0
         $chr[49] = '111213'; // 1
         $chr[50] = '111312'; // 2
@@ -2699,7 +2699,7 @@ abstract class BarcodeGenerator
             return '00';
         }
 
-        $hex = [];
+        //$hex = [];
 
         while ($number > 0) {
             array_push($hex, strtoupper(dechex(bcmod($number, '16'))));
@@ -2831,13 +2831,13 @@ abstract class BarcodeGenerator
 
     protected function convertBarcodeArrayToNewStyle($oldBarcodeArray)
     {
-        $newBarcodeArray = [];
+       // $newBarcodeArray = [];
         $newBarcodeArray['code'] = $oldBarcodeArray['code'];
         $newBarcodeArray['maxWidth'] = $oldBarcodeArray['maxw'];
         $newBarcodeArray['maxHeight'] = $oldBarcodeArray['maxh'];
-        $newBarcodeArray['bars'] = [];
+        //$newBarcodeArray['bars'] = [];
         foreach ($oldBarcodeArray['bcode'] as $oldbar) {
-            $newBar = [];
+            //$newBar = [];
             $newBar['width'] = $oldbar['w'];
             $newBar['height'] = $oldbar['h'];
             $newBar['positionVertical'] = $oldbar['p'];

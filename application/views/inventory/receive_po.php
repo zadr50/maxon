@@ -3,8 +3,13 @@
 	   $min_date=$this->session->userdata("min_date","");
 	
 	echo link_button('Save', 'simpan()','save');		
+	
 	echo "<div style='float:right'>";
+
+    echo link_button('Close','remove_tab_parent()','cancel');      
 	echo link_button('Help', "load_help('receive_po')",'help');		
+	
+	
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="plain:false, menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
@@ -20,7 +25,7 @@
 
 <div class="thumbnail">	
 <form id='myform' method='post' action='<?=base_url()?>index.php/receive_po/proses'>
-   <table class='table' width="100%">
+   <table class='table2' width="100%">
        <tr>
             <td>Supplier:</td><td><?            
             echo form_input('supplier_number',$supplier_number,'id=supplier_number');
@@ -42,10 +47,9 @@
                 "id=purchase_order_number");
 				echo link_button('','select_po()',"search"); 
 				if($purchase_order_number!=""){
-    				echo link_button('',"po_items('".$purchase_order_number."')",'reload');
-    				echo "<i>*bila item PO tidak tampil tekan tombol reload ini.</i>";
+    				echo link_button('',"po_items('".$purchase_order_number."')",'reload',"false",'',"*bila item PO tidak tampil tekan tombol reload ini.");
 				}
-                echo link_button('',"view_po();return false","edit");
+                echo link_button('View',"view_po();return false","edit", "false",'',"Lihat nomor PO");
             ?>
 				
             </td>            
@@ -84,17 +88,19 @@
 			<tr>
 				<th data-options="field:'item_number',width:100">Item</th>
 				<th data-options="field:'description',width:200">Description</th>
-				<th data-options="field:'quantity',width:80">Qty Order</th>
-				<th data-options="field:'unit',width:50">Unit</th>
-				<th data-options="field:'qty_recvd',width:50">Recvd</th>
 				<th data-options="field:'qty',width:80">Qty Recv</th>
+				<th data-options="field:'quantity',width:80">Qty Order</th>
+				<th data-options="field:'qty_recvd',width:50">Recvd</th>
+				<th data-options="field:'unit',width:50">Unit</th>
+				<th data-options="field:'mu_qty',width:80">M Qty</th>
+				<th data-options="field:'multi_unit',width:80">M Unit</th>
 				<th data-options="field:'line',width:50">Line</th>
 			</tr>
 		</thead>
 	</table>
    
  </form>
-	<div class='alert alert-info'>
+	<div class='alert alert-info' style="font-size:small">
 		<p>Silahkan ubah atau isi di kolom <strong>qty recvd</strong> yang akan terisi secara otomatis 
 		dengan saldo quantity yang belum diterima dari nomor PO ini.</p>
 		<p>Apabila anda memasukan qty recvd melebihi barang yang dipesan maka akan dipakai quantity yang 
@@ -162,6 +168,14 @@ echo load_view('purchase/select_open_po');
 	        return false;
 	    }
 	    add_tab_parent('view_po_'+po,url+'/'+po);
+	}
+	function calc_ratio(baris){
+		console.log(baris);
+		qty=$("#qty_"+baris).val();
+		ratio=$("#ratio_"+baris).val();
+		mu_qty=qty*ratio;
+		$("#mu_qty_"+baris).val(mu_qty);
+		
 	}
 </script>    
 

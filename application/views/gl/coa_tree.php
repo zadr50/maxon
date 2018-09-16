@@ -1,5 +1,5 @@
 <div class='thumbnail'>
-    <?
+    <?php
     echo link_button('Print','','print','false',base_url().'index.php/coa/print');      
     echo link_button('Import','','more','false',base_url().'index.php/coa/import');
     echo link_button('List','','more','false',base_url()."index.php/coa/browse");
@@ -21,6 +21,7 @@
         <div>MaxOn Forum</div>
         <div>About</div>
     </div>
+    <?=link_button("Close", "remove_tab_parent();return false","cancel")?>
     </div>
 </div>
     <div class="thumbnail">

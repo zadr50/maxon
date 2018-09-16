@@ -23,6 +23,7 @@
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
+		<?=link_button('Close', 'remove_tab_parent()','cancel')?>
 	</div>
 </div>
 <div class="thumbnail">
@@ -36,12 +37,11 @@
 <?php } ?>
  <?php if($message!="") { ?>
 <div class="alert alert-success"><? echo $message;?></div>
-<? } ?>
+<?php } ?>
 
 
  
-   <table class="table" width="100%">
-    <tr><td colspan=4'><strong>JURNAL TRANSAKSI</strong></td></tr>
+   <table class="table2" width="100%">
 	<tr>
 		<td>Kode Jurnal</td><td>
 		<?php echo form_input('gl_id',$gl_id,"id=gl_id"); ?>
@@ -59,8 +59,8 @@
 			
        </tr>
    </table>
-   <div id='divItem' >
-		<table class="table" width="100%">
+   <div id='divItem' class="box-gradient" >
+		<table class="table2" width="100%">
 			<tr>
 				<td>Kode Akun</td><td>Nama Akun</td><td>Debit</td><td>Credit</td><td>
 			</tr>
@@ -106,8 +106,9 @@
 	        Saldo: <?=form_input("sisa",number_format($sisa),"id='sisa'")?></p>
     </div>
 	<div id="tb" style="height:auto">
-		<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="false" onclick="editItem()">Edit</a>
-		<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="false" onclick="deleteItem()">Delete</a>	
+		<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="false" onclick="editItem();return false">Edit</a>
+		<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="false" onclick="deleteItem();return false">Delete</a>	
+		<a href="#" class="easyui-linkbutton" iconCls="icon-reload" plain="false" onclick="reloadItem();return false">Reload</a>	
 	</div>
 	
 </div></div>	
@@ -122,7 +123,7 @@
     function save_jurnal(){
         
         var sisa=getNum($("#sisa").val());
-        if(sisa!=0){alert("Masih ada sisa !");return false;}
+        if(sisa!=0){log_err("Masih ada sisa !");return false;}
         
         var items = [];
  
@@ -142,6 +143,8 @@
              });      
          }     
         url='<?=base_url()?>index.php/jurnal/save/';
+        
+        loading();
         
         $.ajax({url: url,data:{items:items}, type:'POST',
             error: 
@@ -167,10 +170,18 @@
         });     
     }
 	   function save_item(){
-	       var db=$("#debit").val();
+		   if (	$('#account').val()==""){log_err("Pilih perkiraan !");return false};
+		   if (	$('#description').val()==""){log_err("Pilih perkiraan !");return false};
+	       var db=c_($("#debit").val());
+	       var cr=c_($("#credit").val());
+
 	       if(db=="")db=0;
-	       var cr=$("#credit").val();
 	       if(cr=="")cr=0;
+	       
+	       if((db+cr)==0){
+		       	log_err("Isi jumlah debit atau kredit !");return false;
+	       }
+	       
 	       $('#dgItemJurnal').datagrid('appendRow',{
                 account: $("#account").val(),
                 account_description: $("#description").val(),
@@ -186,8 +197,10 @@
            var db=0,cr=0;
 	       var rows = $('#dgItemJurnal').datagrid('getRows');
             for(var i=0; i<rows.length; i++){
-              db=db+getNum(rows[i]['debit']);
-              cr=cr+getNum(rows[i]['credit']);
+            	if(rows[i]!=""){
+		              db=db+getNum(rows[i]['debit']);
+		              cr=cr+getNum(rows[i]['credit']);
+            	}
             }
             $("#db_tot").val(cf_(db));
             $("#cr_tot").val(cf_(cr));
@@ -203,9 +216,9 @@
         if(tanggal<min_date){
             valid_date=false;
         }
-        if(!valid_date){alert("Tanggal tidak benar ! Mungkin sudah closing !");return false;}
+        if(!valid_date){log_err("Tanggal tidak benar ! Mungkin sudah closing !");return false;}
 		    
-			if(closed){alert("Tidak bisa ubah jurnal ini karena sudah diclose!");return false;}
+			if(closed){log_err("Tidak bisa ubah jurnal ini karena sudah diclose!");return false;}
 			
 			url = '<?=base_url()?>index.php/jurnal/save_item';
 			$('#frmItem').form('submit',{
@@ -239,14 +252,18 @@
 			var row = $('#dgItemJurnal').datagrid('getSelected');
 			if (row){
 				$.messager.confirm('Confirm','Are you sure you want to remove this line?',function(r){
+					loading();
 					if (r){
 						url='<?=base_url()?>index.php/jurnal/delete_item/'+row.transaction_id;
 						$.post(url,function(result){
 							if (result.success){
 								$('#dgItemJurnal').datagrid('reload');	// reload the user data
 								calc_total();
-								
+								log_msg("Success");	
+								loading_close();							
 							} else {
+								loading_close();
+								log_err(result.msg);
 								$.messager.show({	// show error message
 									title: 'Error',
 									msg: result.msg
@@ -269,6 +286,9 @@
 				$('#credit').val(row.credit);
 				$('#transaction_id').val(row.transaction_id);
 			}
+		}
+		function reloadItem(){
+			$("#dgItemJurnal").datagrid("reload");
 		}
     
 </script>

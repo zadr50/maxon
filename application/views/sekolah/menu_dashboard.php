@@ -7,79 +7,78 @@
 
 	<div title="DASHBOARD" style="padding:10px">
 		<div class="col-md-12 thumbnail">
-		
-			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/travel/tour">
-				<div class='photo'><img src='<?=base_url()?>images/applets-screenshooter.png'/></div>
-				<div class='detail'>
-					<h4>Paket Tour</h4>
-					</br>Pemesanan paket tour dan seting data master paket.
-				</div>
-			</div>
+			<?php 
+				$keterangan="Pengelolaan data master siswa atau mahasiswa.";
+				$img=base_url("images/rocket.png");
+				echo info_link_box("sekolah/siswa", "Master siswa", $img, $keterangan);
+			?>
 
-			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/travel/pesawat">
+			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/sekolah/guru">
 				<div class='photo'><img src='<?=base_url()?>images/rocket.png'/></div>
 				<div class='detail'>
-					<h4>Tiket Pesawat</h4>
-					</br>Pembuatan invoice untuk tiket pesawat dan rute kota tujuan
+					<h4>Master Guru</h4>
+				</br>Pengelolaan data master guru
 				</div>
 			</div>
-			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/travel/kereta">
+			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/sekolah/jurusan">
 				<div class='photo'><img src='<?=base_url()?>images/tor-icon.png'/></div>
 				<div class='detail'>
-					<h4>Ticket Kereta</h4>
-					</br>Pembuatan invoice untuk pemesanan tiket kereta api
+					<h4>Master Jurusan</h4>
+				</br>Mengelola data master jurusan
 				</div>
 			</div>
-			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/travel/bus">
+			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/sekolah/kelas">
 				<div class='photo'><img src='<?=base_url()?>images/desktop.png'/></div>
 				<div class='detail'>
-					<h4>Ticket Bus</h4>
-					</br>Pembuatan invoice untuk pemesanan tiket bus atau kendaraan
+					<h4>Master Kelas</h4>
+				</br>Mengelola data master kelas
 				</div>
 			</div>
-			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/travel/hotel">
+			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/sekolah/mata_kuliah">
 				<div class='photo'><img src='<?=base_url()?>images/scribus.png'/></div>
 				<div class='detail'>
-					<h4>Voucher Hotel</h4>
-					</br>Pembuatan invoice untuk pemesanan hotel
+					<h4>Mata Kuliah</h4>
+				</br>Mengelola data master mata kuliah
 				</div>
 			</div>
-			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/travel/airline">
+			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/sekolah/jadwal_belajar">
 				<div class='photo'><img src='<?=base_url()?>images/rocket.png'/></div>
 				<div class='detail'>
-					<h4>Airlines</h4>
-					</br>Data master airline maskapai penerbangan
+					<h4>Jadwal Belajar</h4>
+				</br>Mengelola data jadwal belajar
 				</div>
 			</div>
-			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/city">
+			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/sekolah/setting">
 				<div class='photo'><img src='<?=base_url()?>images/ico_setting.png'/></div>
 				<div class='detail'>
-					<h4>Data Master Kota</h4>
-					</br>Data master kota keberangkatan atau kota tujuan
+					<h4>Setting</h4>
+				</br>Data setting dan pengaturan sekolah
 				</div>
 			</div>
-			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/customer">
+			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/sekolah/krs">
 				<div class='photo'><img src='<?=base_url()?>images/ico_setting.png'/></div>
 				<div class='detail'>
-					<h4>Data Master Pelanggan</h4>
-					</br>Data master pelanggan
+					<h4>Data Master KRS</h4>
+				</br>Mengelola data master KRS
 				</div>
 			</div>
-			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/country">
+			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/sekolah/khs">
 				<div class='photo'><img src='<?=base_url()?>images/ico_setting.png'/></div>
 				<div class='detail'>
-					<h4>Data Master Negara</h4>
-					</br>Data master negara
+					<h4>Data Master KHS</h4>
+				</br>Mengelola Data master KHS
 				</div>
 			</div>
+			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/sekolah/laporan">
+				<div class='photo'><img src='<?=base_url()?>images/ico_setting.png'/></div>
+				<div class='detail'>
+					<h4>Daftar Laporan</h4>
+				</br>Daftar Laporan
+				</div>
+			</div>
+			
+			
 		</div>
-			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/province">
-				<div class='photo'><img src='<?=base_url()?>images/ico_setting.png'/></div>
-				<div class='detail'>
-					<h4>Data Master Provinsi</h4>
-					</br>Data master province
-				</div>
-			</div>
 	</div>
 </div>
 

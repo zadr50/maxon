@@ -1,7 +1,4 @@
-<?
-//var_dump($_POST);
-?>
-<?
+<?php
      $CI =& get_instance();
      $CI->load->model('company_model');
      $model=$CI->company_model->get_by_id($CI->access->cid)->row();

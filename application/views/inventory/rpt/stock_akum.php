@@ -75,17 +75,6 @@
          
      </tr>
      <tr>
-     	<td colspan='2'><?=$model->street?></td><td></td>     	
-     </tr>
-     <tr>
-     	<td colspan='2'><?=$model->suite?></td>     	
-     </tr>
-     <tr>
-     	<td>
-     		<?=$model->city_state_zip_code?> - Phone: <?=$model->phone_number?>
-     	</td>
-     </tr>
-     <tr>
      	<td>
      		Criteria: Tahun: <?=$tahun?>, Bulan: <?=$bulan?> Kelompok <?=$category?>
             ,Supplier: <?=$supplier?>, Sistim: <?=$sistim?>, Outlet: <?=$outlet.'-'.$outlet_name?>

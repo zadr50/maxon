@@ -74,9 +74,15 @@ function welcome(){
         array("fieldname"=>"item_number","caption"=>"Kode","width"=>"150px"),
         array("fieldname"=>"description","caption"=>"Nama Barang","width"=>"200px"),
         array("fieldname"=>"category","caption"=>"Category","width"=>"100px"),
-        array("fieldname"=>"retail","caption"=>"Price","width"=>"100px")
+        array("fieldname"=>"retail","caption"=>"Price","width"=>"100px"),
+        array("fieldname"=>"quantity_in_stock","caption"=>"Qty","width"=>"80px"),
+        array("fieldname"=>"unit_of_measure","caption"=>"Unit","width"=>"80px")
             );
-    $set_item['dlgRetFunc']="$('#barcode').val(row.item_number);find_barcode();";
+    $set_item['dlgRetFunc']="$('#barcode').val(row.item_number);
+        $('#item_nama_barang').val(row.description);
+        $('#unit').val(row.unit_of_measure);
+        $('#item_price').val(row.retail);
+        find_barcode();";
     $data['lov_inventory']=$this->list_of_values->render($set_item);
     $data['pembulatan']=getvar("pembulatan",0);
     

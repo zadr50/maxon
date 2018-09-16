@@ -7,13 +7,6 @@
    		CI_ROOT = "<?=base_url()?>index.php/";
 		CI_BASE = "<?=base_url()?>"; 		
 </script>
-
-<?php 
-$multi_company=true;
-$multi_warehouse=true;
-
-?>
-
 <BODY style='background-image:url("<?=base_url()?>images/back2.jpg")'> 
 <div class="container " >
 	<div class="row ">		 
@@ -21,10 +14,14 @@ $multi_warehouse=true;
 				<div class="panel-heading">
 					<h3 class="panel-title   glyphicon glyphicon-bookmark"  style="padding:10px;color:white"> USER LOGIN</h3>
 				</div>
-				<div class="panel-body"  >
-						<p>Silahkan isi userid dan password yang benar dibawah ini :</p>
-						<form name="frmLogin" id="frmLogin" method="post" role="form" 
-						action="<?=base_url()?>index.php/login/verify">
+				<div class="panel-body">
+					<div class="col-sm-4">
+						<img src="<?=base_url("images/login_logo.png")?>" class="thumbnail" width=80 height=80>
+						Silahkan isi userid dan password yang benar.
+					</div>
+					<div class="col-sm-6">
+						
+						<form name="frmLogin" id="frmLogin" method="post" role="form"  >
 							<div class="form-group glyphicon glyphicon-user">
 								<label for="username">Username:</label>
 								<input  class="form-control" type="text" id="user_id" name="user_id" placeholder="Username">
@@ -34,7 +31,8 @@ $multi_warehouse=true;
 								<input class="form-control" type="password" id="password" name="password" placeholder="Password"/>
 								 
 							</div>
-							<?php 
+							<?php
+							 $multi_company=false; 
 							 if($multi_company){
 							     echo "<div class='form-group glyphicon glyphicon-phone-alt'>";
                                  
@@ -50,37 +48,35 @@ $multi_warehouse=true;
                                      }
                                  }
                                  echo "</select>";
-                                 
-                                 /*
-                                 echo "&nbsp<label for='company'>Pilih Perusahaan : </label>";
-                                 
-                                 echo "<select class='form-control' id='company' name='company'>";
-                                 if($q=$this->db->select("company_code,company_name")->get("preferences")){
-                                     foreach($q->result() as $row){
-                                         echo "<option value='$row->company_code'>$row->company_code - $row->company_name</option>";
-                                     }
-                                 }
-                                 echo "</select>";
-                                 
-                                 */
  							     echo "</div>";
 							 }
 							
 							?>
-                            <div>
-                                <i  class="small" >Untuk mencoba gunakan login user : admin, password: admin</i>
-                            </div>
 							<div class="form-group">
-                                <input class="btn btn-primary" type="submit" value="Login"  name='submit' style="height:30px">
-								<input class="btn btn-warning" type="submit" value="Change Password" name='submit' style="height:30px">
-                                <input class="btn btn-default" type="submit" value="Create User"  name='submit' style="height:30px">
-								<?php if ($message!="") { ?>
-								<div id="lblMessage" class="alert alert-danger" style="margin-top:10px">
-									<?php echo $message; ?>
-								</div>
-								<?php }; ?>
+                                <input class="btn btn-primary" type="button" value="Login"  
+                                onclick="login();return false" name='submit' style="height:30px">
 							</div>
 						</form>      	
+					</div>
+					<div class="col-sm-12">
+	                    <?=anchor("login/change_password","Change Password")?>
+	                    | <?=anchor("login/create_user","Create User")?>
+					</div>
+                    <div class="col-sm-12">
+                        <i  class="small">Untuk mencoba gunakan login user : <strong>admin</strong>, 
+                        		password: <strong>admin</strong></i>
+                    </div>                                
+					<?php if (validation_errors()) { ?>
+						<div class="col-sm-12 alert alert-danger">
+							<?=validation_errors()?>
+						</div>
+					<?php }; ?>
+							
+                    <div class="col-sm-12" style="display:none;margin-top:20px" id="divMessage">
+                        <p><span id="lblMessage" class="alert alert-danger col-sm-12"></span></p>		                    	
+                    </div>
+					
+					
 				</div>	 
 			</div>
 		 
@@ -103,15 +99,12 @@ $multi_warehouse=true;
 </BODY>
 <style>
 .container {
-	max-width: 430px;
-	padding-top: 5%;
+	max-width: 500px;
 	margin: auto auto;
+	padding-top:50px;
 }
 </style> 
-<?
-//echo $library_src;
-//echo $script_head;
-?>
+
 <script type="text/javascript" charset="utf-8" src="<?=base_url()?>/assets/jquery/jquery-1.11.3.min.js"></script>
 <script type="text/javascript" charset="utf-8" src="<?=base_url()?>/assets/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <link rel="stylesheet" type="text/css" href="<?=base_url()?>/assets/bootstrap-3.3.5/css/bootstrap.min.css">
@@ -120,26 +113,33 @@ $multi_warehouse=true;
 
 	if(top != self) top.location.replace(location);	//detect if run iframe
 
-    function loginx(){
-    	$("#lblMessage").html("Please wait...");
-//		loading();
-		url='<?=base_url()?>index.php/login/verify';
-			$('#frmLogin').form('submit',{
-				url: url,
-				onSubmit: function(){
-					return $(this).form('validate');
+    function login(){
+    	$("#divMessage").show();
+    	$("#lblMessage").html('<?=lang("wait")?>');
+		url='<?=base_url()?>index.php/login/verify_json';			
+		$.ajax({
+				url: url, type: "POST", data: {user_id:$("#user_id").val(),password:$("#password").val()},
+				error: function (xhr, ajaxOptions, thrownError) {
+			    	$("#lblMessage").html(xhr.responseText);
 				},
-				success: function(result){
-//					loading_close();
+				success: function(result)
+				{
 					var result = eval('('+result+')');
-					
-					if (result.success){
-						window.open("<?=base_url()?>index.php","_self");
+					if (result.success)
+					{
+				    	$("#lblMessage").html(result.message);
+				    	open_index();
 					} else {
-						$("#lblMessage").show();
-						$("#lblMessage").html(result.msg);
+				    	$("#lblMessage").html(result.message);
 					}
 				}
-			});
+		});									
     }
+    function open_index(){
+		var t=setTimeout(function(){
+			window.open("<?=base_url()?>","_self");
+		},3000);    	
+    }
+
+
 </script>

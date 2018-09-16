@@ -61,11 +61,11 @@
 			 
 			
 			
-			<? if(! $so_pay) { 	?>
+			<?php if(! $so_pay) { 	?>
 				<p> </p><p> </p><p> </p>
 				<p>Anda belum melakukan pembayaran untuk tagihan ini:</p>
 				<h3>Tagihan Rp. <?=number_format($total)?></h3>
-				<? include_once "banks.php" ?>
+				<?php include_once "banks.php" ?>
 				<a href='<?=base_url()?>index.php/eshop/cart/confirm' 
 					class='btn btn-primary'>Konfirmasi</a>
 				<p>
@@ -73,7 +73,7 @@
 				<i>Barang akan kami kirim dalam waktu kurang dari dua hari, 
 				setelah pembayaran anda masuk ke rekening kami.</i>
 				</p>
-			<? } else { 
+			<?php } else { 
 				echo "<h3>Data Pembayaran</h3>";
 				echo "<table class='table'><tr><td>Tanggal Bayar : </td><td>$so_pay->date_paid</td></tr>
 				<tr><td>Cara Bayar : </td><td>$so_pay->how_paid</td></tr>
@@ -92,7 +92,7 @@
 		<div role="tabpanel" class="tab-pane fade" id="tabDelivery">
 			 
 			
-			<?
+			<?php
 			echo "<h3>Pengiriman</h3>";
 			 
 			if( $so->shipped_via == "" ) {

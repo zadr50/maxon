@@ -25,7 +25,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 $servername=filter_input(INPUT_SERVER, 'SERVER_NAME');
 $port=filter_input(INPUT_SERVER, 'SERVER_PORT');
-$config['base_url']="http://$servername/talagasoft/simak/v7.maxon/install";
+$config['base_url']="http://$servername/maxon/install";
 
 
 /*
@@ -216,7 +216,9 @@ $config['directory_trigger'] = 'd';
 | your log files will fill up very fast.
 |
 */
+ 
 $config['log_threshold'] = 1;
+ 
 
 /*
 |--------------------------------------------------------------------------

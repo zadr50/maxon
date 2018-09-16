@@ -87,28 +87,28 @@
 					  <div role="tabpanel" class="tab-pane fade in active" id="tab1">
 							<div id='divSales'>
 								<div class="">
-									<? include_once "sales_form.php"; ?>
+									<?php include_once "sales_form.php"; ?>
 								</div>
 							</div>
 					  </div>
 					  <div role="tabpanel" class="tab-pane fade" id="tabItem">
 							<div id='divPurchase'>
-									<? include_once "sales_items.php"; ?> 
+									<?php include_once "sales_items.php"; ?> 
 							</div>
 					  </div>
 					  <div role="tabpanel" class="tab-pane fade" id="tabPayment">
 							<div id='divPurchase'>
-									<? include_once "sales_pays.php"; ?> 
+									<?php include_once "sales_pays.php"; ?> 
 							</div>
 					  </div>
 					  <div role="tabpanel" class="tab-pane fade" id="tab2">
 							<div id='divPurchase'>
-									<? include_once "sales_status.php"; ?> 
+									<?php include_once "sales_status.php"; ?> 
 							</div>
 					  </div>
 					  <div role="tabpanel" class="tab-pane fade" id="tab3">
 							<div id='divSalesValue'>
-									<? include_once "sales_delivery.php"; ?> 
+									<?php include_once "sales_delivery.php"; ?> 
 							</div>
 					  
 					  </div>
@@ -129,7 +129,7 @@
 
 		</script>
 	
-	<? } ?>
+	<?php } ?>
 </div>
 <link rel="stylesheet" type="text/css" href="<?=base_url()?>assets/eshop/eshop.css">
 

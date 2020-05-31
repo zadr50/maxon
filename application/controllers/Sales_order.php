@@ -339,6 +339,7 @@ class Sales_order extends CI_Controller {
 
 		if($cust_no=$this->input->get("sid_cust_no")){
 			$sql.=" and i.sold_to_customer='$cust_no'";
+			$sql.=" ";
 		}
 
 		if($order_by = $this->input->get("order_by")){

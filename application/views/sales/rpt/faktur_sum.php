@@ -25,7 +25,7 @@
      	<td colspan="8">
 	     		<table class='titem'>
 	     		<thead>
-	     			<tr><td>Tanggal</td><td>Nomor Faktur</td><td>Kode Pelanggan</td><td>Nama Pelanggan</td>
+	     			<tr><td>Nomor Faktur</td><td>Tanggal</td><td>Kode Pelanggan</td><td>Nama Pelanggan</td>
 	     				<td>Nomor SO</td><td>Termin</td><td>Salesman</td><td>Jumlah</td>
 						<td>Payment</td><td>Retur</td><td>Cr Memo</td><td>Dr Memo</td>
 						<td>Saldo</td><td>Outlet</td>
@@ -45,6 +45,7 @@
                 if($customer!=""){
                     $sql.=" and sold_to_customer='$customer'";
                 }
+                $sql.=" order by invoice_number";
 				//echo "</br>".$sql;
 				
      			$rst_so=$CI->db->query($sql);
@@ -62,8 +63,8 @@
                         } 
                     if($outlet==$warehouse_code || $outlet==""){
                         $tbl.="<tr>";
-                        $tbl.="<td>".$row->invoice_date."</td>";
                         $tbl.="<td>".$row->invoice_number."</td>";
+                        $tbl.="<td>".date("Y-m-d",strtotime($row->invoice_date))."</td>";
                         $tbl.="<td>".($row->sold_to_customer)."</td>";
                         $tbl.="<td>".$row->company."</td>";
                         $tbl.="<td>".$row->sales_order_number."</td>";
@@ -74,7 +75,7 @@
                         $tbl.="<td align='right'>".number_format($row->retur)."</td>";
                         $tbl.="<td align='right'>".number_format($row->cr_amount)."</td>";
                         $tbl.="<td align='right'>".number_format($row->db_amount)."</td>";
-    					$saldo=$row->amount-$row->payment-$row->cr_amount+$row->db_amount;
+    					$saldo=$row->amount-$row->payment-$row->retur-$row->cr_amount+$row->db_amount;
                         $tbl.="<td align='right'>".number_format($saldo)."</td>";
                         $tbl.="<td>$warehouse_code</td>";
                         $tbl.="</tr>";
@@ -87,13 +88,13 @@
 					}
                };
 			   
-			   $tbl.="<tr><td>TOTAL</td><td></td><td></td><td></td>
-	     				<td></td><td></td><td></td><td align='right'>".number_format($z_amount)."</td>
-						<td align='right'>".number_format($z_payment)."</td>
-						<td align='right'>".number_format($z_retur)."</td>
-						<td align='right'>".number_format($z_cr_amount)."</td>
-						<td align='right'>".number_format($z_db_amount)."</td>
-						<td align='right'>".number_format($z_saldo)."</td></tr>";
+			   $tbl.="<tr><td><b>TOTAL</b></td><td></td><td></td><td></td>
+	     				<td></td><td></td><td></td><td align='right'><b>".number_format($z_amount)."</b></td>
+						<td align='right'><b>".number_format($z_payment)."</b></td>
+						<td align='right'><b>".number_format($z_retur)."</b></td>
+						<td align='right'><b>".number_format($z_cr_amount)."</b></td>
+						<td align='right'><b>".number_format($z_db_amount)."</b></td>
+						<td align='right'><b>".number_format($z_saldo)."</b></td></tr>";
 			   echo $tbl;
 				   				   				   
 			?>	

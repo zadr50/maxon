@@ -5,9 +5,9 @@ class Receive extends CI_Controller {
     private $table_name='inventory_products';
     private $sql="select distinct shipment_id,
         concat(year(date_received),'-',month(date_received),'-',day(date_received)) as date_received,        
-        ip.warehouse_code,ip.supplier_number
+        ip.warehouse_code,ip.supplier_number,ip.doc_type,ip.doc_status,ip.receipt_by,ip.comments
                 from inventory_products ip 
-                where receipt_type='ETC_IN' 
+                where receipt_type in ('ETC_IN','ETC') 
                 ";
     private $file_view='inventory/receive';
     private $primary_key='shipment_id';
@@ -49,7 +49,7 @@ class Receive extends CI_Controller {
 	}
 	
 	function set_defaults($record=NULL){
-            $data=data_table($this->table_name,$record);
+			$data=data_table($this->table_name,$record);
 //            $data['item_number_list']=$this->inventory_model->item_list();
 			if($record==NULL){
 			    $data['shipment_id']="AUTO"; //$this->nomor_bukti();			
@@ -69,6 +69,7 @@ class Receive extends CI_Controller {
                         array("fieldname"=>"company","caption"=>"Perusahaan","width"=>"200px")
                     );          
             $data['lookup_gudang']=$this->list_of_values->render($setwh);
+			$data['lookup_inventory']=$this->list_of_values->lookup_inventory();
 
             
             
@@ -90,8 +91,7 @@ class Receive extends CI_Controller {
 		 $this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();
-            $data['receipt_typeX']='ETC_IN';
-            
+            $data['receipt_type']='ETC_IN';            
 			$data['shipment_id']=$this->nomor_bukti();
 			$id=$this->inventory_products_model->save($data);
 			$this->nomor_bukti(true);
@@ -130,7 +130,7 @@ class Receive extends CI_Controller {
 		if(!allow_mod2('_80060'))return false;   
 		$id=urldecode($id);
          $q=$this->inventory_products_model->get_by_id($id);
-	     foreach($q->result() as $row){
+	     if($row=$q->row()){
             $model=$row;
 	     }
          $data=$this->set_defaults($model);
@@ -173,9 +173,9 @@ class Receive extends CI_Controller {
         $data['caption']='DAFTAR PENERIMAAN BARANG NON PURCHASE ORDER';
 		$data['controller']=$this->controller;		
 		$data['fields_caption']=array('Nomor Bukti','Tanggal',
-		'Gudang','Sumber');
+		'Gudang','Sumber','Doc Type','Doc Status','Receipt By','Comments');
 		$data['fields']=array('shipment_id','date_received',
-		'warehouse_code','supplier_number');
+		'warehouse_code','supplier_number','doc_type','doc_status','receipt_by','comments');
 					
 		if(!$data=set_show_columns($data['controller'],$data)) return false;
 			
@@ -200,6 +200,9 @@ class Receive extends CI_Controller {
 		$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
 		$gudang=$this->input->get("sid_gudang");
 		$item_no=$this->input->get("sid_item");
+		if($this->input->get("tb_search")){
+			$no=$this->input->get("tb_search");
+		}
 		if($no!=''){
 			$sql.=" and shipment_id='".$no."'";
 		} else {
@@ -271,8 +274,14 @@ class Receive extends CI_Controller {
         $data['item_number']=$item_no;
         $data['quantity_received']=$this->input->post('quantity_received');
         $item=$this->inventory_model->get_by_id($data['item_number'])->row();
-       	$cost=item_cost($item_no);
+       	if($this->input->post("cost")){
+       		$cost=$this->input->post("cost");
+       	} else {
+	       	$cost=item_cost($item_no);
+       		
+       	}
         $data['cost']=$cost;
+		
         $data['unit']=$this->input->post('unit');
         $data['shipment_id']=$id;
         $data['warehouse_code']=$this->input->post('warehouse_code');
@@ -286,8 +295,14 @@ class Receive extends CI_Controller {
         $data['ref1']=$this->acc_id($this->input->post("ref1"));
         $data['receipt_by']=$this->input->post("receipt_by");;
         $data["other_doc_number"]=$this->input->post("other_doc_number");
+		$data["mu_qty"]=$this->input->post("mu_qty");
+	
+		$data['multi_unit']=$this->input->post("multi_unit");
+//		$data['total_amount']=$this->input->post("total_amount");
+		$data['mu_price']=$this->input->post("mu_price");
         
 		if($line>0){
+			$data['id']=$line;
 			$ok=$this->inventory_products_model->update($line,$data);			
 		} else {
 			$ok=$this->inventory_products_model->save($data);
@@ -332,7 +347,8 @@ class Receive extends CI_Controller {
 	{
 		$nomor=urldecode($nomor);
 		$sql="select p.item_number,i.description,p.quantity_received as quantity, 
-		p.unit,p.cost,p.id as line_number,p.mu_qty,p.multi_unit
+		p.unit,p.cost,p.id as line_number,p.mu_qty,p.multi_unit,p.cost,p.total_amount,p.mu_price,
+		p.warehouse_code,p.supplier_number
 		from inventory_products p
 		left join inventory i on i.item_number=p.item_number
 		where shipment_id='$nomor'";

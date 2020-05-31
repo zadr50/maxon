@@ -63,5 +63,29 @@ function __construct(){
 			}
 		}
 	}
-
+	function lookup($param=null){
+    	$extra_ret_func="";
+    	if(isset($param["dlgRetFunc"]))$extra_ret_func=$param["dlgRetFunc"];
+		
+        $lookup = $this->list_of_values->render(array(
+        	"dlgBindId"=>"work_order",
+        	"dlgUrlQuery"=>"manuf/workorder/select_wo_open",
+       		'show_checkbox'=>false,
+       		'show_check1'=>false,'check1_title'=>"Supplier",'check1_field'=>'supplier_number',
+        	"dlgRetFunc"=>"			
+				$('#wo_number').val(row.work_order_no);
+        	",
+        	"dlgCols"=>array(
+                array("fieldname"=>"work_order_no","caption"=>"Kode WO","width"=>"180px"),
+                array("fieldname"=>"start_date","caption"=>"Tanggal","width"=>"180px"),
+                array("fieldname"=>"expected_date","caption"=>"Expect","width"=>"180px"),
+                array("fieldname"=>"customer_number","caption"=>"Cust No","width"=>"80px"),
+                array("fieldname"=>"sales_order_number","caption"=>"Nomor SO","width"=>"180px"),
+                array("fieldname"=>"wo_status","caption"=>"Status","width"=>"80px"),
+                array("fieldname"=>"comments","caption"=>"Comments","width"=>"180px")
+        	)
+        ));
+		return $lookup;		
+	}
+	
 }

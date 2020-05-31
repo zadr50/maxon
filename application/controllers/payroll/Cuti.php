@@ -5,6 +5,7 @@ class Cuti extends CI_Controller {
     private $offset=0;
     private $table_name='hr_leaves';
 	private $sql="select * from hr_leaves";
+    private $nip="";
 
 	function __construct()
 	{
@@ -99,7 +100,7 @@ class Cuti extends CI_Controller {
 			$ok=$this->leaves_model->update($id,$data);				
 		}
 		if($ok){echo json_encode(array("success"=>true,"period"=>$id));} 
-		else {echo json_encode(array("msg"=>"Error ".mysql_error()));}
+		else {echo json_encode(array("success"=>false,"msg"=>"Error "));}
 	}
 	function view($id,$message=null){
 
@@ -128,11 +129,15 @@ class Cuti extends CI_Controller {
 	function browse($offset=0,$limit=10,$order_column='nip',$order_type='asc')	{
         $data['caption']='DAFTAR CUTI KARYAWAN';
 		$data['controller']='payroll/cuti';		
-		$data['fields_caption']=array('NIP','Nama Karyawan','Dari','Sampai',"Status","Hari","Type",'Alasan','Id');
-		$data['fields']=array('nip','nama','from_date','to_date','doc_status',"leave_day","doc_type",'reason','id');
+		$data['fields_caption']=array('Nama Karyawan','NIP','Dari','Sampai',"Status","Hari","Type",'Alasan','Id');
+		$data['fields']=array('nama','nip','from_date','to_date','doc_status',"leave_day","doc_type",'reason','id');
 		$data['field_key']='id';
-		
-		$faa[]=criteria("NIP","sid_nip");
+		if($nip=$this->input->get('nip')){
+		    $this->nip=$nip;
+	       $faa[]=criteria(array("id"=>"sid_nip","caption"=>"NIP","value"=>$nip));
+		} else {
+            $faa[]=criteria("NIP","sid_nip");
+		}
 		$faa[]=criteria("Nama","sid_nama");
 		$data['criteria']=$faa;
         $this->template->display_browse2($data);            
@@ -141,6 +146,9 @@ class Cuti extends CI_Controller {
         
         $user=$this->session->userdata('logged_in');
         $nip=$user['nip'];
+        if($this->input->get('sid_nip')){
+            $nip=$this->input->get('sid_nip');
+        }
         $flag1=$user['flag1'];
 		$sql="select o.nip,e.nama, o.from_date,o.to_date,o.reason,o.doc_status,o.id,
 		o.doc_type,o.leave_day 
@@ -151,7 +159,12 @@ class Cuti extends CI_Controller {
       
 	function delete($id){
 		$id=urldecode($id);
-	 	$this->leaves_model->delete($id);
-	 	$this->browse();
+	 	$ok=$this->leaves_model->delete($id);
+        echo json_encode(array("success"=>$ok,"msg"=>"Sukses"));
 	}
+    function recalc($nip=""){
+        if($nip=="")$nip=$this->input->get("nip");
+        echo json_encode(array("success"=>true,"sisa_cuti"=>$this->leaves_model->recalc($nip)));
+        
+    }
 }

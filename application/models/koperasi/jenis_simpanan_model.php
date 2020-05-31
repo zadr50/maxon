@@ -3,23 +3,22 @@ class Jenis_simpanan_model extends CI_Model {
 
 private $primary_key='nama';
 private $table_name='kop_jenis_simpanan';
+private $_nama="";
 
 	function __construct(){
 		parent::__construct();        
-        $multi_company=$this->config->item('multi_company');
-       if($multi_company){
-            $company_code=$this->session->userdata("company_code","");
-            if($company_code!=""){
-               $this->db = $this->load->database($company_code, TRUE);
-           }
-       }         
-        
-        
 	}
 	function get_by_id($id){
-		$this->db->where($this->primary_key,$id);
-		return $this->db->get($this->table_name);
+		$this->db->where("jenis",$id);
+		$retval = $this->db->get($this->table_name);
+		if($retval){
+			if($row=$retval->row()){
+				$this->_nama=$row->nama;
+			}
+		}
+		return $retval;
 	}
+	function get_nama(){return $this->_nama;}
 
 	function save($data){
 		 

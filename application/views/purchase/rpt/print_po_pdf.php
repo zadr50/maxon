@@ -2,20 +2,27 @@
 $CI =& get_instance();
 $CI->load->model('supplier_model');
 $sup=$CI->supplier_model->get_by_id($supplier)->row();
+     $CI->load->model('company_model');
+     $model=$CI->company_model->get_by_id($CI->access->cid)->row();
 
 ?>
 <table> 
 <tr><td colspan='5' align='center'><h1>PURCHASE ORDER</h1></td><td></td></tr>
-<tr><td>Nomor: </td><td><h3><?=$po_number?></h3></td><td></td></tr>      	
+<tr><td>Nomor</td><td><h3><?=$po_number?></h3></td>
+	<td rowspan="5">
+		<span>
+			<b>Kepada Yth,</b></br>
+			<?=$sup->supplier_name.' ('.$sup->supplier_number.')'?></br>
+			<?=$sup->street?></br>
+			<?=$sup->suite.' - '.$sup->city?></br> 
+			<?='Phone: '.$sup->phone.' - Fax: '.$sup->fax?></br>
+			<?='Up: '.$sup->first_name?></br> 
+		</span>
+	</td>
+</tr>      	
 <tr><td>Tanggal </td><td><?=$tanggal?></td><td></td></tr>
-<tr><td>Termin <?=$terms?></td><td></td></tr> 
-<tr><td></td><td></td></tr>
-<tr><td><h2>Kepada Yth,</h2></td><td></td></tr>
- <tr><td><?=$sup->supplier_name.' ('.$sup->supplier_number.')'?></td><td></td></tr> 
-<tr><td><?=$sup->street?></td><td></td></tr> 
-<tr><td><?=$sup->suite.' - '.$sup->city?></td><td></td></tr> 
-<tr><td><?='Phone: '.$sup->phone.' - Fax: '.$sup->fax?></td><td></td></tr> 
-<tr><td><?='Up: '.$sup->first_name?></td><td></td></tr> 
+<tr><td>Termin </td><td><?=$terms?></td><td></td></tr> 
+<tr><td>Company</td><td><b><?=$model->company_name?></b></td></tr> 
 <tr><td></td><td></td></tr>
 </table> 
 <table cellspacing="0" cellpadding="1" border="1" >
@@ -25,7 +32,7 @@ $sup=$CI->supplier_model->get_by_id($supplier)->row();
 			<th width="30">Disc%2</th><th width="30">Disc%3</th><th width="30">Disc%</th><th>Jumlah</th>
 		</tr>
  
-		<?
+		<?php
 	   $sql="select item_number,description,quantity,unit,discount,
 			price,total_price,disc_2,disc_3 
 				from purchase_order_lineitems i
@@ -37,7 +44,7 @@ $sup=$CI->supplier_model->get_by_id($supplier)->row();
 			$tbl.="<tr>";
 			$tbl.="<td>".$row->item_number."</td>";
 			$tbl.="<td width=\"200\">".$row->description."</td>";
-			$tbl.="<td width=\"30\" align=\"right\">".number_format($row->quantity)."</td>";
+			$tbl.="<td width=\"30\" align=\"right\">".number_format($row->quantity,2)."</td>";
 			$tbl.="<td width=\"30\">".$row->unit."</td>";
 			$tbl.="<td align=\"right\">".number_format($row->price)."</td>";
 			$tbl.="<td width=\"30\" align=\"right\">".($row->discount)."</td>";

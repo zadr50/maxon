@@ -1,4 +1,5 @@
 <?php
+$table="service_jobs";
 
 $sql="
 
@@ -23,6 +24,8 @@ CREATE TABLE IF NOT EXISTS `service_jobs` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="service_job_sparepart";
+
 $sql="
 
 CREATE TABLE IF NOT EXISTS `service_job_sparepart` (
@@ -40,6 +43,8 @@ CREATE TABLE IF NOT EXISTS `service_job_sparepart` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
+$table="service_order";
 
 $sql="
 

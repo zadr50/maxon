@@ -6,23 +6,13 @@ class Items extends CI_Controller {
 	private $sql="select item_number,description,category,sub_category,
 			retail,cost,item_picture,unit_of_measure,item_picture2,item_picture3,
 			item_picture4,special_features,sales_min,insr_name,weight,
-			delivery_by,manufacturer
+			delivery_by,manufacturer,active
 			from inventory";
 
 	function __construct()
 	{
 		parent::__construct();
  		$this->load->helper(array('url','form'));
-                
-        $multi_company=$this->config->item('multi_company');
-       if($multi_company){
-            $company_code=$this->session->userdata("company_code","");
-            if($company_code!=""){
-               $this->db = $this->load->database($company_code, TRUE);
-           }
-       }         
-        
-        
 		$this->load->library('template_eshop_admin');
 	}
 	function index() {	
@@ -77,7 +67,7 @@ class Items extends CI_Controller {
 		'item_picture3'=>'','item_picture4'=>'','category'=>'',
 		'sub_category'=>'','special_features'=>'','manufacturer'=>'',
 		'sales_min'=>'','insr_name'=>'','weight'=>'',
-		'delivery_by'=>''); 
+		'delivery_by'=>'','active'=>'1'); 
 		
 		$data['caption']='Addnew Item Master';
 		$data['mode']='add';
@@ -126,6 +116,9 @@ class Items extends CI_Controller {
 		$data['update_date']= date('Y-m-d H:i:s');
 		$data['update_by']=cust_id();
 		$data['create_by']=cust_id();
+		if(isset($data['sales_min'])){
+			if($data['sales_min']=='')$data['sales_min']=0;
+		}
 		if($mode=="add"){
 			$ok=$this->db->insert("inventory",$data);
 		} else {

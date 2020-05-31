@@ -1,7 +1,6 @@
-	<div class='col-md-12'>
-	<?
+	<?php
 		if($q=$this->db->select("item_number,description,category,
-			item_picture,retail")->limit(9)->order_by("sales_count desc")
+			item_picture,retail")->limit(10)->order_by("sales_count desc")
 			->get("inventory")){
 			foreach($q->result() as $item){
 				echo "<div onclick='view_item(\"$item->item_number\");return false;' 
@@ -15,12 +14,11 @@
 					<div class='item_no'><?=$item->item_number?></div>
 					<div class='price'>Rp. <?=number_format($item->retail)?></div>
 				</div>
-	<?
+	<?php
 				echo "</div>";
 			}
 		}
 	?>
-	</div>
  
 <link rel="stylesheet" type="text/css" href="<?=base_url()?>assets/eshop/eshop.css">
 <script language="javascript">

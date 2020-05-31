@@ -13,6 +13,8 @@ class Upgrade
  function process($display_output_var=false){
  		
  	$this->display_output=$display_output_var;
+		$db=current_database();
+		$this->message= "<p><b>Checking database struktur [$db]</b></p>";
 	
 	$key="Flag sysvar varsize";
  //   echo $key." - ".$this->CI->sysvar->getvar($key);
@@ -46,6 +48,7 @@ class Upgrade
 	$this->add_field("purchase_order","doc_status"); 
     $this->add_field("user", "supervisor");
 	$this->add_field("user","branch_code"); 
+	
 	$this->add_field("salesman","lock_report","INT NOT NULL DEFAULT '0' ");
 	$this->create_unit_of_measure();
 	$this->create_inventory_price_customers();
@@ -98,7 +101,7 @@ class Upgrade
 	$this->add_field("syslog","no_bukti","nvarchar(50)"); 
 	$this->add_field("syslog","id","INT NOT NULL AUTO_INCREMENT, ADD PRIMARY KEY (id)"); 
 	$this->add_field("syslog","jenis_cmd","nvarchar(50)"); 
-	
+            	   		
 	$this->add_field("shipping_locations","no_urut","int"); 
 	$this->add_field("user","flag1","int"); 
 	$this->add_field("user","flag2","int"); 
@@ -229,7 +232,9 @@ class Upgrade
     $this->add_field('crdb_memo','prc_value','double');
     $this->add_field('inventory_beginning_balance','id','int');
     $this->add_field('invoice_lineitems','disc_amount_ex','double');
-    
+    $this->add_field("promosi_disc","nilai2","double");
+    $this->add_field("promosi_disc","nilai3","double");
+	
     $this->create_stock_proses_arsip();
 
     
@@ -261,25 +266,298 @@ class Upgrade
 	
 	$this->create_salesman_target();
 	
-    $this->create_pph21();
+    $this->create_hr_pph21_form();
+    $this->create_employee_pph();
         
-        	
+    $this->add_field("inventory_categories","inventory_account","int");
+    $this->add_field("inventory_categories","cogs_account","int");
+
+    $this->create_table_hr_emp_loan_schedule();
+    $this->add_index("time_card_detail","id");
+    $this->add_index("time_card_detail","nip");
+    $this->add_index("time_card_detail","tanggal");
+    $this->add_index("time_card_detail","salary_no");
+    $this->add_index("overtime_detail","id");
+    $this->add_index("overtime_detail","nip");
+    $this->add_index("overtime_detail","tanggal");
+                	
+                    
+    $this->add_field("inventory_categories","sales_account","int");
+    $this->add_field("inventory_categories","tax_account","int");
+
+    $this->add_field("inventory_prices","id","INT NOT NULL AUTO_INCREMENT, ADD PRIMARY KEY (id)"); 
+    $this->add_field("inventory_prices","qty_last","double"); 
+    $this->add_field("inventory_prices","calc_date","datetime");
+    $this->add_field("inventory_prices","create_date","datetime");
+    $this->add_field("inventory_prices","create_by");
+    $this->add_field("inventory_prices","update_date","datetime");
+    $this->add_field("inventory_prices","update_by");
+    $this->add_field("inventory_prices","warehouse_code");
+    
+    $this->add_field("bill_header", "paid","int");
+    $this->add_field("bill_header","termin");
+    $this->add_field("bill_detail","saldo","double");
+    $this->add_field("bill_detail","create_by");
+    $this->add_field("bill_detail","create_date","datetime");
+    $this->add_field("bill_detail","update_by");
+    $this->add_field("bill_detail","update_date","datetime");
+                            
+	$this->create_view_qs_stock_unit();						
+	$this->create_bill_header_collector();
+	                          
+	$this->add_field("payments","doc_status","int");
+	$this->add_field("payables_payments","doc_status","int");
+	$this->add_field("purchase_order","branch_code");
+	$this->add_field("purchase_order","dept_code");
+	$this->add_field("purchase_order","project_code");
+	$this->add_field("system_variables","plus_minus");
+	$this->add_field("inventory_categories","sales_target","double");
+	$this->add_field("inventory_products","description","varchar(250)");
+	$this->add_field("shipping_locations", "default_gudang","int");
+	$this->add_field("employeemedical","amount","double");
+	
+	$this->add_field("inventory","closing_status","int");
+	$this->add_field("inventory_beg_bal_gudang","qty_awal_amt","double");			
+	$this->add_field("inventory_beg_bal_gudang","qty_akhir_amt","double");		
+	$this->add_field("inventory_beg_bal_gudang","qty_po_amt","double");		
+	$this->add_field("inventory_beg_bal_gudang","qty_beli_amt","double");		
+	$this->add_field("inventory_beg_bal_gudang","qty_retur_beli_amt","double");			
+	$this->add_field("inventory_beg_bal_gudang","qty_recv_po_amt","double");		
+	$this->add_field("inventory_beg_bal_gudang","qty_recv_etc_amt","double");		
+	$this->add_field("inventory_beg_bal_gudang","qty_so_amt","double");			
+	$this->add_field("inventory_beg_bal_gudang","qty_do_amt","double");			
+	$this->add_field("inventory_beg_bal_gudang","qty_jual_amt","double");			
+	$this->add_field("inventory_beg_bal_gudang","qty_retur_jual_amt","double");			
+	$this->add_field("inventory_beg_bal_gudang","qty_delivery_etc_amt","double");		
+	$this->add_field("inventory_beg_bal_gudang","qty_adjust_amt","double");		
+	$this->add_field("inventory_beg_bal_gudang","qty_mutasi_amt","double");			
+	$this->add_field("inventory_beg_bal_gudang","qty_work_order_amt","double");			
+	$this->add_field("inventory_beg_bal_gudang","qty_finish_good_amt","double");		
+	$this->add_field("inventory_beg_bal_gudang","qty_recv_material_amt","double");			
+	$this->add_field("inventory_beg_bal_gudang","qty_material_used_amt","double");		
+	$this->add_field("inventory_beg_bal_gudang","qty_recv_toko_amt","double");		
+	$this->add_field("inventory_beg_bal_gudang","qty_retur_toko_amt","double");		
+	$this->add_field("inventory_beg_bal_gudang","qty_roling_masuk_amt","double");			
+	$this->add_field("inventory_beg_bal_gudang","qty_roling_keluar_amt","double");		
+	$this->add_field("inventory_beg_bal_gudang","qty_adjust_hilang_amt","double");			
+
+	$this->create_item_need_update_arsip();
+	$this->add_field("crdb_memo","cust_supp");		                                                        
+	$this->add_field("payables_bill_detail","row_type");		                                                        
+	$this->add_field("bill_detail","row_type");			        
+	                                                
+
+	$this->create_zzz_customer_need_update();
+	$this->create_zzz_supplier_need_update();
+	$this->create_zzz_rekening_need_update();
+			                                                        
+	$this->add_field("suppliers","current_balance","double");															
+									
+	$this->add_field("hr_paycheck_sal_comp","manual","int");															
+																		
+	$s="insert into zzz_item_need_update(item_no) select i.item_number
+		from inventory i join (select item_number,sum(qty_masuk-qty_keluar) as qty_stock
+		from qry_kartustock_union group by item_number) as q  on q.item_number=i.item_number
+		where abs(q.qty_stock-i.quantity_in_stock)>0.5";
+		
+	$this->CI->db->query($s);
+											
+																
+	$this->create_zzz_jurnal_error();
+	
+	$this->create_ticket_sales();
+	$this->add_field("ticket_sales","bayar","double");
+	$this->add_field("ticket_sales","kembali","double");
+	$this->add_field("ticket_sales","posted","int");
+
+    $this->add_field("suppliers", "show_only_item","int");
+	$this->add_field("purchase_order","doc_type");
+	
+	$this->add_field("service_order", "masalah","varchar(500)");
+	$this->add_field("service_order","jenis_masalah");
+	$this->add_field("service_order","transportasi");
+	
+	$key="Flag [service_order] comments change";
+    
+    if(""==$this->CI->sysvar->getvar($key) ){       
+        $s="alter table service_order modify comments varchar(500)";
+        $this->CI->db->query($s);
+        $this->CI->sysvar->insert($key,"1","auto");
+    }
+	
+	$this->add_field("suppliers","jenis_partisipasi");
+		
+	$this->add_field("crdb_memo","doc_type");
+    $this->add_field("crdb_memo","outlet");
+    $this->add_field("inventory_moving","ref1","varchar(250)");
+    $this->add_field("inventory_moving","ref2","varchar(250)");
+    $this->add_field("inventory_moving","ref3","varchar(250)");
+    $this->add_field("inventory_products","trans_type");
+    $this->add_field("inventory","item_picture2","varchar(250)");
+    $this->add_field("inventory","item_picture3","varchar(250)");
+    $this->add_field("inventory","item_picture4","varchar(250)");
+    	
     if($this->display_output){
     	$this->message.="<br>FINISH";
     	return $this->message;
     }           
     
  }
-    function create_pph21(){
+	function create_ticket_sales(){
+		$fields[]="ticket_no nvarchar(50)";
+		$fields[]="user_id nvarchar(50)";
+        $fields[]="tanggal datetime";
+		$fields[]="qty_ticket int";
+		$fields[]="qty_card int";
+		$fields[]="price double";
+		$fields[]="disc_prc float";
+		$fields[]="disc_amt double";
+		$fields[]="netto double";
+		$fields[]="how_type nvarchar(50)";
+		$fields[]="cust_no nvarchar(50)";
+		$fields[]="cust_name nvarchar(250)";
+		$fields[]="com_prc float";
+		$fields[]="com_amt double";
+		$fields[]="edc nvarchar(250)";
+		$fields[]="how_paid nvarchar(50)";
+		$fields[]="ticket_type nvarchar(50)";		
+        $fields[]="keterangan nvarchar(250)";                
+        $this->create_table("ticket_sales",$fields);		
+	}
+	function create_zzz_jurnal_error(){
+        $fields[]="gl_id nvarchar(50)";
+        $fields[]="tanggal datetime";
+        $fields[]="error_message nvarchar(250)";                
+        $this->create_table("zzz_jurnal_error",$fields);		
+	}
+
+	function create_zzz_supplier_need_update(){
+        $fields[]="supp_no nvarchar(50)";
+        $fields[]="tanggal datetime";
+        $fields[]="gudang nvarchar(50)";                
+        $this->create_table("zzz_supplier_need_update",$fields);		
+	}
+ 	function create_zzz_rekening_need_update(){
+        $fields[]="rek_no nvarchar(50)";
+        $fields[]="tanggal datetime";
+        $fields[]="gudang nvarchar(50)";                
+        $this->create_table("zzz_rekening_need_update",$fields);		
+	}
+ 	function create_zzz_customer_need_update(){
+        $fields[]="cust_no nvarchar(50)";
+        $fields[]="tanggal datetime";
+        $fields[]="gudang nvarchar(50)";                
+        $this->create_table("zzz_customer_need_update",$fields);		
+	}
+ 	function create_item_need_update_arsip(){
+        $fields[]="item_no nvarchar(50)";
+        $fields[]="tanggal datetime";
+        $fields[]="gudang nvarchar(50)";                
+        $this->create_table("zzz_item_need_update_arsip",$fields);		
+	}
+ 
+function create_view_qs_stock_unit(){                            
+                            
+    $sql="create view qs_stock_unit as 
+    select `ip`.`item_number`,`ip`.`unit`,sum(`ip`.`quantity_received`) AS `qty`,
+    `ip`.`receipt_type` AS `tran_type` from (`inventory_products` `ip` 
+    left join `inventory` `s` on ( (`s`.`item_number` = `ip`.`item_number`))) 
+    where (`ip`.`unit` <> `s`.`unit_of_measure`) 
+    group by `ip`.`item_number`,`ip`.`unit`,`ip`.`receipt_type` 
+    union all 
+    select `il`.`item_number` AS `item_number`,`il`.`unit` AS `unit`,
+    sum((-(1) * `il`.`quantity`)) AS `qty`,`i`.`invoice_type` AS `invoice_type` 
+    from ((`invoice_lineitems` `il` left join `invoice` `i` 
+    on ((`i`.`invoice_number` = `il`.`invoice_number`))) 
+    left join `inventory` `s` on ((`s`.`item_number` = `il`.`item_number`))) 
+    where (`il`.`unit` <> `s`.`unit_of_measure`) 
+    group by `il`.`item_number`,`il`.`unit`,`i`.`invoice_type`";
+                            
+    $this->create_view("qs_stock_unit",$sql);
+ 	
+ 	
+}
+	function create_bill_header_collector(){
+        $fields[]="bill_id nvarchar(50)";
+        $fields[]="bill_date datetime";
+        $fields[]="amount double";
+        $fields[]="comments nvarchar(250)";
+        $fields[]="collector nvarchar(150)";        
+	 	$fields[]="create_by varchar(50)";
+	 	$fields[]="create_date datetime";
+	 	$fields[]="update_by varchar(50)";
+	 	$fields[]="update_date datetime";
+                
+        $this->create_table("bill_header_collector",$fields);
+        
+        $fields2[]="bill_id nvarchar(50)";
+        $fields2[]="invoice_number nvarchar(50)";
+        $fields2[]="invoice_date datetime";
+        $fields2[]="amount double";
+        $fields2[]="saldo double";
+        $fields2[]="comments nvarchar(250)";
+        $fields2[]="no_urut int";
+        $fields2[]="n_giro int";
+        $fields2[]="t_giro double";
+        $fields2[]="k_giro double";
+        $fields2[]="no_giro nvarchar(50)";
+        $fields2[]="jumlah_giro double";
+        $fields2[]="jumlah_cash double";
+	 	$fields2[]="create_by varchar(50)";
+	 	$fields2[]="create_date datetime";
+	 	$fields2[]="update_by varchar(50)";
+	 	$fields2[]="update_date datetime";
+                                
+        
+        $this->create_table("bill_detail_collector",$fields2);
+                
+	}
+    function create_view($view_name,$sql){
+        $key="Flag [$view_name] add view";
+		if($this->display_output){
+			$this->message.="<br>$key";
+		}
+        
+        if(""==$this->CI->sysvar->getvar($key) ){       
+            $this->CI->sysvar->insert($key,"1",$key);
+            $this->CI->db->query($sql);
+        }
+    }
+ 
+    function create_table_hr_emp_loan_schedule(){
+        $fields[]="loan_number nvarchar(50)";
+        $fields[]="no_urut int";
+        $fields[]="tanggal_jth_tempo datetime";
+        $fields[]="awal double";
+        $fields[]="pokok double";
+        $fields[]="bunga double";
+        $fields[]="angsuran double";
+        $fields[]="akhir double";
+        $fields[]="payment_no nvarchar(50)";
+        $fields[]="comments nvarchar(250)";
+        $fields[]="keterangan nvarchar(250)";
+        
+        $this->create_table("hr_emp_loan_schedule",$fields);
+    }
+
+
+    function create_hr_pph21_form(){
         $fields[]='kelompok varchar(50)';
         $fields[]='nomor int';
         $fields[]='keterangan varchar(500)';
         $fields[]='jumlah double';
+        $fields[]='header int';
         $fields[]='rumus varchar(250)';
+        $fields[]='template varchar(250)';
+        $this->create_table("hr_pph_form", $fields);        
+    }
+    function create_employee_pph(){
         $fields[]='nip varchar(50)';
+        $fields[]='nomor int';
+        $fields[]='jumlah double';
         $fields[]='tahun int';
         $fields[]='bulan int';
-        $this->create_table("pph21_form", $fields);        
+        $this->create_table("employee_pph", $fields);        
     }
 
 
@@ -477,7 +755,12 @@ function create_inventory_categories_sub(){
  }
  function create_table($table,$fields)
  {
+ 	
 	$key="Flag [$table] add table";
+	if($this->display_output){
+		$this->message.="<br>$key";
+	}
+		
 	if(""==$this->CI->sysvar->getvar($key) ){		
 		$this->CI->sysvar->insert($key,"1",$key);
 		$this->CI->load->dbforge();
@@ -547,5 +830,31 @@ function create_inventory_categories_sub(){
         $this->CI->sysvar->update($key,"1");            
     }
  }
-  
+ function add_index($table,$field)
+ {
+    $key="Flag [$table] add index [$field]";
+    if($this->display_output){
+        $this->message.="<br>$key";
+    }
+    if(""==$this->CI->sysvar->getvar($key) ){       
+        $this->CI->sysvar->insert($key,"1","auto");
+        $fields=$this->CI->db->query("DESCRIBE ".$table)->result();
+        $exist=false;
+        if($q=$this->CI->db->query("SHOW INDEX FROM $table WHERE Key_name = 'ix_$field'")){
+            if($q->num_rows())$exist=true;
+        }
+        
+        if(!$exist){
+            $s="ALTER TABLE `$table` ADD INDEX `ix_$field`(`$field`); "; 
+            if(@$this->CI->db->query($s)){
+                $this->CI->sysvar->update($key,"1");
+            }
+        } else {
+             
+            $this->CI->sysvar->update($key,"1");            
+        }
+    } else {
+         
+    }
+ }  
 }

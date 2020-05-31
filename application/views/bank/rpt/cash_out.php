@@ -1,11 +1,6 @@
-<?
-//var_dump($_POST);
-?>
-<?
+<?php
      $CI =& get_instance();
      
-     
-
     if(!$CI->input->post('cmdPrint')){
         
          $data['select_date']=true;        
@@ -20,7 +15,8 @@
          $data['fields1'][]=array("bank_name","180","Bank Name");
          $data['output1']="text1";
          $data['key1']="bank_account_number";
-
+        
+        
         $data['rpt_controller']=$controller;
         
         
@@ -39,7 +35,7 @@
 <link href="<?php echo base_url();?>/themes/standard/style_print.css" rel="stylesheet">
 <table cellspacing="0" cellpadding="1" border="0" width='800px'> 
      <tr>
-        <td colspan='2'><h2><?=$model->company_name?></h2></td><td colspan='2'><h2>TRANSAKSI REKENING</h2></td>      
+        <td colspan='2'><h2><?=$model->company_name?></h2></td><td colspan='2'><h2>TRANSAKSI PENGELUARAN</h2></td>      
      </tr>
      <tr>
         <td colspan='2'><?=$model->street?></td><td></td>       
@@ -81,14 +77,13 @@
                     echo "<tr><td colspan='10'></td></tr>";
                     echo "<tr><td colspan='5'><h1>Rekening: ".$r_bank->bank_account_number
                     ." - ".$r_bank->bank_name."</h1></td><td align='right'></td><td></td><td></td></tr>";
-
-
                     
                     $sql="select i.check_date,i.voucher,i.trans_type,
                     i.deposit_amount,i.payment_amount,i.supplier_number,i.payee,i.memo
                      from check_writer i 
                     where i.trans_type in ('cash out') and account_number='".$r_bank->bank_account_number."' 
-                    and i.check_date between '$date1' and '$date2'  ";
+                    and i.check_date between '$date1' and '$date2'  
+                    order by i.check_date,i.voucher";
                     $rst_so=$CI->db->query($sql);
                     $tbl="";
                      foreach($rst_so->result() as $row){
@@ -96,7 +91,7 @@
                         $tbl.="<td>".$row->check_date."</td>";
                         $tbl.="<td>".$row->voucher."</td>";
                         $tbl.="<td>".($row->trans_type)."</td>";
-                        $tbl.="<td align='right'>".number_format($row->deposit_amount,2)."</td>";
+                        $tbl.="<td align='right'>".number_format($row->payment_amount,2)."</td>";
                         $tbl.="<td>".$row->supplier_number." - ".$row->payee."</td>";
                         $tbl.="<td>".$row->memo."</td>";
                         $tbl.="</tr>";

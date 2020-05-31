@@ -4,6 +4,8 @@ class Customer_model extends CI_Model {
 private $primary_key='customer_number';
 private $table_name='customers';
 private $error_message="";
+private $message="";
+
 function __construct(){
 	parent::__construct();        
         
@@ -17,7 +19,9 @@ function error_message(){
 	return $message;
 
 }
- 
+function message_text(){
+	return $this->message;
+} 
 
 function customer_list(){
         $query=$this->db->query("select customer_number,company from customers");
@@ -50,6 +54,7 @@ function select_list(){return $this->customer_list();}
 		return $this->db->count_all($this->table_name);
 	}
 	function get_by_id($id){
+		customer_need_update($id);
 		$this->db->where($this->primary_key,$id);
 		return $this->db->get($this->table_name);
 	}
@@ -71,30 +76,56 @@ function select_list(){return $this->customer_list();}
 		}
 	}
 	function save($data){
+        	
+        $id=$data['customer_number'];
+			
         if(isset($data["customer_record_type"])){
             $type=explode(" - ",$data['customer_record_type']);
             if(count($type)>1)$data['customer_record_type']=$type[0];
         }
+        if(isset($data['current_balance'])){
+            $data['current_balance']=c_($data['current_balance']);
+        }
         if(isset($data["credit_limit"])){
-            if($data["credit_limit"]=="")$data["credit_limit"]=0;
+            $data["credit_limit"]=c_($data['credit_limit']);
+        }
+        if(isset($data["credit_balance"])){
+            $data["credit_balance"]=c_($data['credit_balance']);
         }
         
-		return $this->db->insert($this->table_name,$data);            
+        customer_need_update($id);
+		
+		$ok = $this->db->insert($this->table_name,$data);            
 		//return $this->db->insert_id();
+		return $ok;
 	}
 	function update($id,$data){
-	    
+	    $credit_limit=0;
+		if(isset($data['credit_limit']))$credit_limit=$data['credit_limit'];
+		if($q=$this->db->query("select credit_limit from customers where customer_number='$id' ")){
+			if($r=$q->row()){
+				$credit_limit=$r->credit_limit;
+			}
+		}
         if(isset($data["customer_record_type"])){
             $type=explode(" - ",$data['customer_record_type']);
             if(count($type)>1)$data['customer_record_type']=$type[0];
         }
-        if(isset($data["credit_limit"])){
-            if($data["credit_limit"]=="")$data["credit_limit"]=0;
+        if(isset($data['current_balance'])){
+            $data['current_balance']=$this->saldo_piutang($id);
         }
-        
+        if(isset($data["credit_limit"])){
+            $data["credit_limit"]=c_($data['credit_limit']);
+        }
+        if(isset($data["credit_balance"])){
+            $data["credit_balance"]=c_($credit_limit)-c_($data['current_balance']);
+        }
+        customer_need_update($id);
         
 		$this->db->where($this->primary_key,$id);
-		return  $this->db->update($this->table_name,$data);
+		$ok =$this->db->update($this->table_name,$data);
+		
+		return $ok;
 	}
 	function exist_customer_transaction($id){
 		$ret="";
@@ -112,6 +143,9 @@ function select_list(){return $this->customer_list();}
 	}
 	function delete($id){
 		$id=urldecode($id);
+		
+		customer_need_update($id);
+		
 		$ret=$this->exist_customer_transaction($id);
 		if($ret==""){
 			$this->db->where($this->primary_key,$id);
@@ -175,5 +209,70 @@ function select_list(){return $this->customer_list();}
 		}
 		return $ret;
 	}
-	
+    function lookup(){        
+        return $this->list_of_values->lookup_customers();
+        
+    }	
+    function saldo_piutang($customer_number){
+        $current_balance=0;
+        $sql="select sum(amount) as saldo from qry_kartu_piutang 
+            where customer_number='$customer_number'";
+        if($q=$this->db->query($sql)){
+            if($r=$q->row()){
+                $current_balance=$r->saldo;
+            }
+        }    
+        return $current_balance;
+    }
+    function recalc_piutang($customer_number){
+    	$this->message.=",recalc_piutang($customer_number)";
+        $credit_limit=0;
+        $credit_balance=0;
+        $current_balance=0;
+        if($q=$this->db->select("current_balance,credit_balance,credit_limit")
+            ->where("customer_number",$customer_number)->get("customers")){
+            if($r=$q->row()){
+                $current_balance=c_($r->current_balance);
+                $credit_limit=c_($r->credit_limit);
+                $credit_balance=c_($r->credit_balance);
+            }
+        }		
+        $current_balance=$this->saldo_piutang($customer_number);
+		$data['current_balance']=$current_balance;
+		$data['credit_balance']=$credit_limit-$current_balance;		
+        $this->update($customer_number,$data);
+    }
+    function update_saldo($customer_number,$amount,$amount_old=0,$add=true){
+        $credit_limit=0;
+        $credit_balance=0;
+        $current_balance=0;
+        if($q=$this->db->select("current_balance,credit_balance,credit_limit")
+            ->where("customer_number",$customer_number)->get("customers")){
+            if($r=$q->row()){
+                $current_balance=c_($r->current_balance);
+                $credit_limit=c_($r->credit_limit);
+                $credit_balance=c_($r->credit_balance);
+            }
+        }
+        if($credit_balance==0 && $credit_limit>0){
+            //$credit_balance=$credit_limit; //nanti dulu credit balance manual saja
+        }
+        if($add){
+            $current_balance+=$amount;
+            $credit_balance-=$amount;
+        } else {
+            $current_balance-=$amount_old;
+            $current_balance+=$amount;
+            $credit_balance+=$amount_old;
+            $credit_balance-=$amount;
+        }
+                
+        $data["current_balance"]=$current_balance;
+        $data["credit_balance"]=$credit_balance;
+        $this->db->where("customer_number",$customer_number);
+        return $this->db->update("customers",$data);
+    }    
+    function next_customer_recalc(){
+    	
+    }
 }

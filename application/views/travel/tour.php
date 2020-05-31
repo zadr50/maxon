@@ -99,6 +99,11 @@
 </div>
 
 <script language='javascript'>
+
+    $().ready(function(){
+        $.parser.parse();
+    });    
+
   	function save(){
   		if($('#tour_code').val()==''){alert('Isi kode tour !');return false;}
   		if($('#tour_name').val()==''){alert('Isi nama tour !');return false;}

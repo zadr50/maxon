@@ -1,5 +1,5 @@
 <?php
-$table='maxon_apps'; 
+$table='maxon_apps,maxon_chat,maxon_inbox,syslog,user_roles'; 
 $msg.="";
 $sql=" 
 CREATE TABLE IF NOT EXISTS `maxon_apps` (
@@ -15,8 +15,10 @@ CREATE TABLE IF NOT EXISTS `maxon_apps` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `app_id` varchar(50) NOT NULL,
   `app_controller` varchar(150) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
+  PRIMARY KEY (`id`),
+  KEY `x1` (`app_name`),
+  KEY `x2` (`app_type`)
+) ENGINE=MyISAM AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
@@ -69,8 +71,13 @@ CREATE TABLE IF NOT EXISTS `maxon_inbox` (
   `is_read` bit(1) DEFAULT NULL,
   `msg_date` datetime DEFAULT NULL,
   `id` int(9) NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8;
+  `reply_id` int(9) NOT NULL DEFAULT '0',
+  `is_archieve` tinyint(4) NOT NULL DEFAULT '0',
+  `is_trash` tinyint(4) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `x1` (`rcp_to`),
+  KEY `x2` (`msg_date`)
+) ENGINE=MyISAM AUTO_INCREMENT=113 DEFAULT CHARSET=utf8;
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
@@ -91,7 +98,10 @@ CREATE TABLE IF NOT EXISTS `syslog` (
   `logtext` varchar(250) CHARACTER SET utf8 DEFAULT NULL,
   `update_status` int(11) DEFAULT NULL,
   `tcp_ip` varchar(50) DEFAULT NULL,
-  `jenis` varchar(50) DEFAULT NULL
+  `jenis` varchar(50) DEFAULT NULL,
+  `jenis_cmd` varchar(50) DEFAULT NULL,  
+  `id` int(9) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);

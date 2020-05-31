@@ -1,4 +1,7 @@
 <?php
+//echo $library_src;
+//echo $script_head;
+
 if(!isset($target_window)){
 	$target_window=" target='_blank_$rpt_controller'";
 } else {
@@ -9,6 +12,9 @@ if(!isset($output2))$output2="text2";
 if(!isset($output3))$output3="text3";
 if(!isset($output4))$output4="text4";
 if(!isset($output5))$output5="text5";
+if(!isset($output6))$output6="text6";
+if(!isset($output7))$output7="text7";
+
 if(!isset($module))$module="";
 
 ?>
@@ -33,6 +39,10 @@ if(!isset($module))$module="";
 			if(!isset($criteria3))$criteria3=false;
 			if(!isset($criteria4))$criteria4=false;
 			if(!isset($criteria5))$criteria5=false;
+			if(!isset($criteria6))$criteria6=false;
+			if(!isset($criteria7))$criteria7=false;
+			
+			
 			if(!isset($module))$module="";
 			
 			if($select_date){
@@ -121,10 +131,26 @@ if(!isset($module))$module="";
 					echo "</p>";
 				}
 			}
+			if($criteria6){
+				if(isset($ctr6)){
+					echo "<strong>".$label6."</strong>";
+					if(is_array($ctr6)){
+						echo "<p>".form_dropdown('text6',$ctr6,$text6,"id='text6'");
+					} else {
+						echo "<p>".form_input('text6',$text6,"id='text6'");					
+						echo link_button("","lov6()","search"); 
+					}
+					echo "</p>";
+					
+				}  else {
+					echo "<strong>".$label5."</strong>";
+					echo "<p>".form_input('text5',$text5,"id='text5'");					
+					echo "</p>";
+				}
+			}
 			
 		?>
 </div>
-<p></p>	
 <div class="col-sm-12 box-gradient thumbnail" >
 		<?php	
 			if($module==""){
@@ -140,8 +166,106 @@ if(!isset($module))$module="";
 	
 	</form>
 
+<p></p>	
 
 <SCRIPT language="javascript">
+	function cmdPrint_Click(){
+    	<?php
+    		$req1="";
+    		if(isset($ctr1)){
+    			if(isset($required1)){
+    				$req1=$required1;
+    			}
+    		}
+			if($req1=="")$req1="false";
+			echo "req1=".$req1.";\n";
+    		$req2="";
+    		if(isset($ctr2)){
+    			if(isset($required2)){
+    				$req2=$required2;
+    			}
+    		}
+			if($req2=="")$req2="false";
+			echo "req2=".$req2.";\n";
+    		
+    		$req3="";
+    		if(isset($ctr3)){
+    			if(isset($required3)){
+    				$req1=$required3;
+    			}
+    		}
+			if($req3=="")$req3="false";
+			echo "req3=".$req3.";\n";
+    		$req4="";
+    		if(isset($ctr4)){
+    			if(isset($required4)){
+    				$req1=$required4;
+    			}
+    		}    		
+			if($req4=="")$req4="false";
+			echo "req4=".$req4.";\n";
+    		$req5="";
+    		if(isset($ctr5)){
+    			if(isset($required5)){
+    				$req5=$required5;
+    			}
+    		}
+			if($req5=="")$req5="false";
+			echo "req5=".$req5.";\n";
+
+			if($req5=="")$req5="false";
+			echo "req5=".$req5.";\n";
+    		$req6="";
+    		if(isset($ctr6)){
+    			if(isset($required6)){
+    				$req5=$required6;
+    			}
+    		}
+			if($req6=="")$req6="false";
+			echo "req6=".$req6.";\n";
+						    	
+    	?>
+    	if(req1){
+    		log_err("Isi criteria pilihan 1");return false;
+    	}
+    	if(req2){
+    		log_err("Isi criteria pilihan 2");return false;
+    	}
+    	if(req3){
+    		log_err("Isi criteria pilihan 3");return false;
+    	}
+    	if(req4){
+    		log_err("Isi criteria pilihan 4");return false;
+    	}
+    	if(req5){
+    		log_err("Isi criteria pilihan 5");return false;
+    	}
+    	if(req6){
+    		log_err("Isi criteria pilihan 6");return false;
+    	}
+		
+			$('#frmPrint').form('submit',{
+				url: url,
+				onSubmit: function(){
+					return $(this).form('validate');
+				},
+				success: function(result){
+					var result = eval('('+result+')');
+					if (result.success){
+						$('#divItem').show('slow');
+						$('#purchase_order_number').val(result.purchase_order_number);
+						var nomor=$('#purchase_order_number').val();
+						$('#mode').val('view');
+						$('#dg').datagrid({url:'<?=base_url()?>index.php/purchase_order/items/'+nomor+'/json'});
+						//$('#dg').datagrid('reload');
+						log_msg('Data sudah tersimpan. Silahkan pilih nama barang.');
+					} else {
+						log_err(result.msg);
+					}
+				}
+			});
+		
+	}
     function cmdOK_Click(){
         $("#dialog_print").dialog("close");
         url='<?=base_url()?>index.php/<?=$rpt_controller?>';
@@ -162,7 +286,7 @@ if(!isset($module))$module="";
 </SCRIPT>
 <!-- PILIHAN LOV 1 --> 
 
-<? if(isset($ctr1)){ ?>
+<?php if(isset($ctr1)){ ?>
 
 <div id='dlg1'class="easyui-dialog" style="width:600px;height:500px;padding:5px 5px;left:100px;top:20px"
      closed="true" toolbar="#btn1">
@@ -180,6 +304,7 @@ if(!isset($module))$module="";
 	>
 	<?=link_button("Cari","lov1()","search")?>
 	<?=link_button("Pilih","lov1_ok()","ok")?>
+	<?=link_button("Close","lov1_close()","cancel")?>
 </div>
 <SCRIPT language="javascript">
     $('#dg1').datagrid({
@@ -212,9 +337,15 @@ if(!isset($module))$module="";
 	function lov1_ok(){
 		var row = $('#dg1').datagrid('getSelected');
 		if (row){
-			$('#<?=$output1?>').val(row.<?=$key1?>); $('#dlg1').dialog('close');
-		} else { alert("Pilih salah satu !"); }
+			$('#<?=$output1?>').val(row.<?=$key1?>); 
+			$('#dlg1').dialog('close');
+		} else { 
+		    alert("Pilih salah satu !"); 
+		}
 	}	
+	function lov1_close(){
+	    $('#dlg1').dialog('close');
+	}
 </SCRIPT>
 
 <? } ?>
@@ -222,7 +353,7 @@ if(!isset($module))$module="";
 <!-- END LOV1 -->
 
 <!-- PILIHAN LOV 2 --> 
-<? if(isset($ctr2)){ ?>
+<?php if(isset($ctr2)){ ?>
 
 <div id='dlg2'class="easyui-dialog" style="width:600px;height:500px;padding:5px 5px;left:100px;top:20px"
      closed="true" toolbar="#btn2">
@@ -239,6 +370,7 @@ if(!isset($module))$module="";
          onchange='lov2_search();return false;'>
 	<?=link_button("Cari","lov2()","search")?>
 	<?=link_button("Pilih","lov2_ok()","ok")?>
+	<?=link_button("Close", "lov2_close()","cancel")?>
 </div>
 <SCRIPT language="javascript">
 
@@ -259,14 +391,18 @@ if(!isset($module))$module="";
 	function lov2_ok(){
 		var row = $('#dg2').datagrid('getSelected');
 		if (row){
-			$('#<?=$output2?>').val(row.<?=$key2?>); $('#dlg2').dialog('close');
+			$('#<?=$output2?>').val(row.<?=$key2?>); 
+			$('#dlg2').dialog('close');
 		} else { alert("Pilih salah satu !"); }
 	}	
     function lov2_search(){
         var search=$('#search2').val(); 
         $('#dg2').datagrid({url:'<?=base_url()?>index.php/<?=$ctr2?>/'+search});
-        $('#dg2').datagrid('reload');       
+       ///$('#dlg2').dialog('close');       
         
+    }
+    function lov2_close(){
+        $('#dlg2').dialog('close');          
     }
 	
 </SCRIPT>
@@ -275,7 +411,7 @@ if(!isset($module))$module="";
 <!-- END LOV2 -->
 
 <!-- PILIHAN LOV 3 --> 
-<? if(isset($ctr3)){ ?>
+<?php if(isset($ctr3)){ ?>
 
 <div id='dlg3'class="easyui-dialog" style="width:600px;height:450px;padding:5px 5px;left:100px;top:20px"
      closed="true" toolbar="#btn3">
@@ -290,6 +426,7 @@ if(!isset($module))$module="";
 	<input  id="search3" style='width:100' name="search3" placeholder='Search'   onchange='lov3_search();return false;'>
 	<?=link_button("Cari","lov3()","search")?>
 	<?=link_button("Pilih","lov3_ok()","ok")?>
+	<?=link_button("Close", "lov3_close()","cancel")?>
 </div>
 <SCRIPT language="javascript">
     $('#dg3').datagrid({
@@ -317,6 +454,9 @@ if(!isset($module))$module="";
         $('#dg3').datagrid('reload');       
         
     }
+    function lov3_close(){
+        $('#dlg3').dialog('close');        
+    }
 
 </SCRIPT>
 
@@ -326,11 +466,12 @@ if(!isset($module))$module="";
 
 
 <!-- PILIHAN LOV 4 --> 
-<? if(isset($ctr4)){ ?>
+<?php if(isset($ctr4)){ ?>
 
 <div id='dlg4'class="easyui-dialog" style="width:600px;height:500px;padding:5px 5px;left:100px;top:20px"
      closed="true" buttons="#btn4">
-		<table id="dg4" class="easyui-datagrid" data-options="singleSelect: true">
+		<table id="dg4" class="easyui-datagrid" data-options="singleSelect: true, fitColumns: true,
+            pagination:true">
 			<thead>	<tr> <? for($i=0;$i<count($fields4);$i++){ $field=$fields4[$i];
 				echo "<th data-options=\"field:'".$field[0]."',width:'".$field[1]."'\">".$field[2]."</th>";
 			}?>	</tr></thead>
@@ -340,6 +481,7 @@ if(!isset($module))$module="";
 	<input  id="search4" style='width:100' name="search4"   onchange='lov4_search();return false;' placeholder='Search'>
 	<?=link_button("Cari","lov4()","search")?>
 	<?=link_button("Pilih","lov4_ok()","ok")?>
+	<?=link_button("Close", "lov4_close()","cancel")?>
 </div>
 <SCRIPT language="javascript">
     $('#dg4').datagrid({
@@ -369,6 +511,9 @@ if(!isset($module))$module="";
         $('#dg4').datagrid('reload');       
         
     }
+    function lov4_close(){
+        $('#dlg4').dialog('close');
+    }
 	
 </SCRIPT>
 
@@ -377,11 +522,12 @@ if(!isset($module))$module="";
 
 
 <!-- PILIHAN LOV 5 --> 
-<? if(isset($ctr5)){ ?>
+<?php if(isset($ctr5)){ ?>
 
 <div id='dlg5'class="easyui-dialog" style="width:600px;height:380px;padding:5px 5px;left:100px;top:20px"
      closed="true" buttons="#btn5">
-		<table id="dg5" class="easyui-datagrid" data-options="singleSelect: true">
+		<table id="dg5" class="easyui-datagrid" data-options="singleSelect: true, fitColumns: true,
+            pagination:true">
 			<thead>	<tr> <? for($i=0;$i<count($fields5);$i++){ $field=$fields5[$i];
 				echo "<th data-options=\"field:'".$field[0]."',width:'".$field[1]."'\">".$field[2]."</th>";
 			}?>	</tr></thead>
@@ -391,10 +537,9 @@ if(!isset($module))$module="";
 	<input  id="search5" style='width:100' name="search5"   onchange='lov5_search();return false;' placeholder='Search'>
 	<?=link_button("Cari","lov5()","search")?>
 	<?=link_button("Pilih","lov5_ok()","ok")?>
+	<?=link_button("Close", "lov5_close()","cancel")?>
 </div>
 <SCRIPT language="javascript">
-
-
 
     $('#dg5').datagrid({
         onDblClickRow:function(){
@@ -422,8 +567,68 @@ if(!isset($module))$module="";
         $('#dg5').datagrid('reload');       
         
     }
+    function lov5_close(){
+        $('#dlg5').dialog('close');
+    }
 	
 </SCRIPT>
 
 <? } ?>
 <!-- END LOV5 -->
+
+
+
+<!-- PILIHAN LOV 6 --> 
+<?php if(isset($ctr6)){ ?>
+
+<div id='dlg6'class="easyui-dialog" style="width:600px;height:380px;padding:5px 5px;left:100px;top:20px"
+     closed="true" buttons="#btn6">
+		<table id="dg6" class="easyui-datagrid" data-options="singleSelect: true">
+			<thead>	<tr> <? for($i=0;$i<count($fields6);$i++){ $field=$fields6[$i];
+				echo "<th data-options=\"field:'".$field[0]."',width:'".$field[1]."'\">".$field[2]."</th>";
+			}?>	</tr></thead>
+		</table>
+</div>
+<div id="btn6" name="btn6" style="height:auto">
+	<input  id="search6" style='width:100' name="search6"   onchange='lov6_search();return false;' placeholder='Search'>
+	<?=link_button("Cari","lov6()","search")?>
+	<?=link_button("Pilih","lov6_ok()","ok")?>
+	<?=link_button("Close", "lov6_close()","cancel")?>
+</div>
+<SCRIPT language="javascript">
+
+    $('#dg6').datagrid({
+        onDblClickRow:function(){
+            var row = $('#dg6').datagrid('getSelected');
+            if (row){
+            	lov6_ok();
+            }       
+        }
+    });  
+
+	function lov6(){
+		search=$('#search6').val(); $('#dlg6').dialog('open').dialog('setTitle','Pilihan');
+		$('#dg6').datagrid({url:'<?=base_url()?>index.php/<?=$ctr6?>/'+search});
+		$('#dg6').datagrid('reload');
+	};	
+	function lov6_ok(){
+		var row = $('#dg6').datagrid('getSelected');
+		if (row){
+			$('#<?=$output6?>').val(row.<?=$key6?>); $('#dlg6').dialog('close');
+		} else { alert("Pilih salah satu !"); }
+	}	
+   function lov6_search(){
+        var search=$('#search6').val(); 
+        $('#dg6').datagrid({url:'<?=base_url()?>index.php/<?=$ctr6?>/'+search});
+        $('#dg6').datagrid('reload');       
+        
+    }
+    function lov6_close(){
+        $('#dlg6').dialog('close');
+    }
+	
+</SCRIPT>
+
+<? } ?>
+
+

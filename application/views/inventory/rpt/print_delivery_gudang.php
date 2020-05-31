@@ -39,23 +39,27 @@
      	<td colspan="8">
      	<table cellpadding="3" border="1" width='100%'>
      		<thead>
-     			<tr><th>Kode Barang</th><th>Nama Barang</th><th>Qty</th>
+     			<tr><th>No</th><th>Kode Barang</th><th>Nama Barang</th><th>Qty</th>
      			    <th>Unit</td><th>Harga Jual</th><th>Total</th><th>No.PMB</th>
      			</tr>
      		</thead>
      		<tbody>
-     			<?
+     			<?php
 		       $sql="select i.item_number,s.description,i.quantity_received,i.unit,
-		          ref1,s.retail 
+		          ref1,s.retail,i.description as nama_barang 
 		                from inventory_products i left join inventory s on s.item_number=i.item_number
 		                where i.shipment_id='".$shipment_id."'";
 		        $query=$CI->db->query($sql);
 
      			$tbl="";    $qty=0;     $amt=0;
+				$no=0;
                  foreach($query->result() as $row){
-                    $tbl.="<tr>";
+                 	$no++;	
+                 	$barang=$row->description;					 
+					if($barang=="")$barang=$row->nama_barang;
+                    $tbl.="<tr><td>$no</td>";
                     $tbl.="<td>".$row->item_number."</td>";
-                    $tbl.="<td>".$row->description."</td>";
+                    $tbl.="<td>$barang</td>";
                     $tbl.="<td align='right'>".number_format($row->quantity_received)."</td>";
                     $tbl.="<td>".$row->unit."</td>";
                     $tbl.="<td align='right'>".number_format($row->retail)."</td>";
@@ -65,7 +69,7 @@
                     $qty+=$row->quantity_received;
                     $amt+=$row->retail*$row->quantity_received;
                 };
-                $tbl.="<tr><td><strong>Total</strong></td><td></td>
+                $tbl.="<tr><td></td><td><strong>Total</strong></td><td></td>
                     <td align='right'><strong>".number_format($qty)."</strong></td>
                     <td></td><td></td><td align='right'><strong>".number_format($amt)."</strong></td>
                     <td></td></tr>";

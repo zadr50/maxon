@@ -31,6 +31,7 @@ class Generate extends CI_Controller {
 	function proses(){
 		$this->load->model('payroll/periode_model');
 		$pay_period=$this->input->get('pay_period');
+		$nip_cari=$this->input->get("nip_cari");
 		if($pr=$this->periode_model->get_by_id($pay_period)->row()){
 			$from_date=$pr->from_date;
 			$to_date=$pr->to_date;
@@ -38,23 +39,45 @@ class Generate extends CI_Controller {
 			$from_date=Date('Y-m-d');
 			$to_date=$from_date;
 		}
-		if($rec=$this->employee_model->loadlist()){
+		$s="select nip,nama,emptype from employee where 1=1 ";
+		if($nip_cari!=""){
+			$s.=" and nip='$nip_cari'";
+		}
+		if($rec=$this->db->query($s)){
 			foreach($rec->result() as $emp){
-				$pay_no=$this->nomor_bukti();
-				$data['employee_id']=$emp->nip;
-				$data['pay_period']=$pay_period;
-				$data['pay_date']=Date('Y-m-d');
-				$data['pay_no']=$pay_no;
-				$data['from_date']=$from_date;
-				$data['to_date']=$to_date;
-				$data['emp_level']=$emp->emptype;
-				//simpan kalau belum ada saja
-				if (!$pay_no_x=$this->paycheck_model->get_pay_no($emp->nip,$pay_period)){
+				$pay_no="";
+				$new=true;
+				$nip=$emp->nip;
+				if($q=$this->db->query("select pay_no from hr_paycheck where employee_id='$emp->nip' and pay_period='$pay_period'")){
+					if($r=$q->row()){
+						$new=false;
+						$pay_no=$r->pay_no;
+					}
+				}
+				if($pay_no==""){
+					$pay_no=$this->nomor_bukti();
+					
+				}
+								
+				
+				if($nip!=""){
+					$data['employee_id']=$nip;
+					$data['pay_period']=$pay_period;
+					$data['pay_date']=Date('Y-m-d');
+					$data['pay_no']=$pay_no;
+					$data['from_date']=$from_date;
+					$data['to_date']=$to_date;
+					$data['emp_level']=$emp->emptype;
+					//simpan kalau belum ada saja
+					if ($new){
+						$this->nomor_bukti(true);
+						echo "<br>Success: Nip: ".$emp->nip." SlipNo: ".$pay_no;
+					} else {
+						echo "<br>Exist: Nip: ".$emp->nip." SlipNo: ".$pay_no;
+					}
 					$ok=$this->paycheck_model->save($data);
-					$this->nomor_bukti(true);
-					echo "<br>Success: Nip: ".$emp->nip." SlipNo: ".$pay_no;
-				} else {
-					echo "<br>Exist: Nip: ".$emp->nip." SlipNo: ".$pay_no_x;
+						
+					
 				}
 				
 			}

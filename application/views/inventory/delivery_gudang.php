@@ -34,9 +34,8 @@
         </td>
 		<td>Dari Lokasi / Gudang</td><td>
 		    <?php 
-                echo form_dropdown('warehouse_code',
-                    $warehouse_list,$warehouse_code,'id=warehouse_code');
-                
+				echo form_input('warehouse_code',$warehouse_code,"id='warehouse_code'");
+               echo link_button("", "dlgwarehouse_show();return false;","search");                
             ?>
         </td>
 	</tr>	 
@@ -46,8 +45,10 @@
 			data-options="formatter:format_date,parser:parse_date"');?>
             </td>
             <td>Tujuan Lokasi</td><td>
-                <?php echo form_dropdown('supplier_number',$warehouse_list,
-                $supplier_number,'id=supplier_number');?></td>
+                <?php 
+				echo form_input('supplier_number',$supplier_number,"id='supplier_number'");
+                echo link_button("", "dlggudang_show();return false;","search");                
+                ?></td>
        </tr>
        <tr>
             <td>Keterangan</td><td colspan='4'><?php echo form_input('comments',$comments,'id=comments style="width:400px"');?></td>
@@ -98,9 +99,11 @@
     echo $lookup_recv_po;
     echo load_view('inventory/input_qty'); 
     echo load_view("inventory/select_unit");
-    echo load_view("inventory/inventory_select_checkbox");
-    echo load_view("inventory/inventory_select");
-    
+//    echo load_view("inventory/inventory_select_checkbox");
+//    echo load_view("inventory/inventory_select");
+	echo $lookup_gudang1;
+	echo $lookup_gudang2;
+  	echo $lookup_inventory;  
 ?>
 
 
@@ -109,7 +112,8 @@
  	var _grid = "dg";
 	var _url  =  CI_ROOT+'delivery_gudang';
 	
-  $().ready(function (){
+    $().ready(function (){
+    	console.log(_url);
         load_items();
     });
     function simpan(){

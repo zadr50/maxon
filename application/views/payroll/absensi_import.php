@@ -6,7 +6,7 @@ sesuaikan kolomnya dengan file TXT yang dipilih.</p>
 <p>Tekan tombol <strong>Choose File</strong> untuk memilih file TXT kemudian tekan tombol 
 <strong>Submit</strong> untuk mulai di proses</p>
 <p>Contoh file template file TXT silahkan download disini 
- <?=anchor(base_url()."import/karyawan.rar","karyawan.rar")?> </p>
+ <?=anchor(base_url()."import/absensi.xls","absensi.xls")?> </p>
 <div style='color:red'><?=validation_errors()?></div>
 
 <?php 
@@ -17,9 +17,10 @@ sesuaikan kolomnya dengan file TXT yang dipilih.</p>
     for($i=0;$i<count($cols);$i++){
         $c=chr(65+$i);
         $name=str_replace(" ","_",$cols[$i]);
-        echo "<div class='col-sm-5'>"
+        echo "<div class='col-sm-3'>"
         .form_input($name,$c,"style='width:30px'").ucfirst($cols[$i])."</div>";
     }
+	echo "<div class='col-sm-8'>".form_input("nip_cari")." Import hanya satu NIP *optional</div>";
     echo "</div>";
 ?>
 

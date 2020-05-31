@@ -238,6 +238,7 @@ class Company extends CI_Controller {
 
 			$this->sysvar->save('COA Uang Muka Pembelian',$this->acc_id($this->input->post('txtUangMukaBeli')));
 			$this->sysvar->save('COA Retur Penjualan',$this->acc_id($this->input->post('txtReturJual')));
+            $this->sysvar->save('COA Retur Pembelian',$this->acc_id($this->input->post('txtReturBeli')));
 			$this->sysvar->save('COA Item Out Others',$this->acc_id($this->input->post('txtCoaItemOut')));
 			$this->sysvar->save('COA Item In Others',$this->acc_id($this->input->post('txtCoaItemIn')));
 			$this->sysvar->save('COA Item Adjustment',$this->acc_id($this->input->post('txtCoaItemAdj')));
@@ -245,6 +246,10 @@ class Company extends CI_Controller {
 			$this->sysvar->save('CoaChargeCreditCard',$this->acc_id($this->input->post('txtChargeCC')));
 			$this->sysvar->save('CoaPromo',$this->acc_id($this->input->post('txtPromo')));
 			$this->sysvar->save('CoaGift',$this->acc_id($this->input->post('txtGift')));
+			if($this->input->post('txtHutangKomisi')!=""){
+				$this->sysvar->getvar("COA Hutang Komisi",$this->input->post('txtHutangKomisi'));
+			}
+			$this->sysvar->save('COA Hutang Komisi',$this->acc_id($this->input->post('txtHutangKomisi')));
 
 		}	
 		if($next_url=$this->input->get("next_url")){
@@ -355,7 +360,7 @@ class Company extends CI_Controller {
    function department_delete($kode){
    		$kode=htmlspecialchars_decode($kode);
 		$this->load->model('department_model');
-		$ok=$this->department_model->delete($kode);
+        $ok=$this->department_model->delete($kode);        
 		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
    }
 	function division(){
@@ -604,7 +609,7 @@ class Company extends CI_Controller {
        
         if($this->access->is_login()){
             
-            $this->upgrade->process();
+            //$this->upgrade->process(); //dipinahkn ke seting checkdb
             
             $user_id=user_id();
             $session_id=$this->session->userdata("__ci_last_regenerate");        
@@ -659,7 +664,7 @@ class Company extends CI_Controller {
        $warehouse_code=$this->input->post("warehouse_code");       
        
        $result = $this->user->login($user_id, $password);
-       
+	   
        if($result)  {
                 
             my_log("LOGIN","",$user_id);           
@@ -693,16 +698,17 @@ class Company extends CI_Controller {
                    
                }
            }
-           
-            $sess_array = array();
+		   
+         $sess_array = array();
          
-         
-         foreach($result as $row) {
+         foreach($result->result() as $row) {
            $sess_array = (array)$row;
+			 
            unset($sess_array['password']);
            
-             $sess_array['cid']=$company_code;
+           $sess_array['cid']=$company_code;
            $this->session->set_userdata('logged_in', $sess_array);
+		   
             // check if this user as admin for backend application ?
             $user_admin=$this->user_jobs_model->is_job("ADM",$user_id);
             $this->session->set_userdata("user_admin",$user_admin);
@@ -756,12 +762,12 @@ class Company extends CI_Controller {
            $this->session->set_userdata("default_warehouse",$warehouse_code);
            
            if($warehouse_code!=""){
-               if($qgdg=$this->db->query("select company_name from shipping_locations where location_number='$warehouse_code'")){
-                   if($rgdg=$qgdg->row()){
-                       $company_code=$rgdg->company_name;
-                       $default_warehouse=$warehouse_code;
-                       $this->session->set_userdata("default_warehouse",$default_warehouse);
-                       
+               if($qgdg=$this->db->query("select company_name from shipping_locations 
+               		where location_number='$warehouse_code'")){
+                   	if($rgdg=$qgdg->row()){
+                       		if($rgdg->company_name)$company_code=$rgdg->company_name;
+                       		$default_warehouse=$warehouse_code;
+                       		$this->session->set_userdata("default_warehouse",$default_warehouse);
                    }
                }
            
@@ -770,8 +776,8 @@ class Company extends CI_Controller {
            
            $this->session->set_userdata("company_code",$company_code);
            $this->session->set_userdata("session_company_code",$company_code);
-            
-                        
+           
+				
          }
 
 

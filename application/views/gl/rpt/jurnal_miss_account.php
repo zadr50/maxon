@@ -1,12 +1,21 @@
-<?
-//var_dump($_POST);
-?>
-<?
+<?php
      $CI =& get_instance();
      $CI->load->model('company_model');
+     $CI->load->model('periode_model');
      $model=$CI->company_model->get_by_id($CI->access->cid)->row();
-	$date1= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateFrom')));
-	$date2= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateTo')));
+     $data=$CI->input->post();
+     $periode=$data['text1'];
+     $date1="";
+     if($qprd=$CI->periode_model->get_by_id($periode)){
+         if($prd=$qprd->row()){
+            $date1= date('Y-m-d H:i:s', strtotime($prd->startdate));
+            $date2= date('Y-m-d H:i:s', strtotime($prd->enddate));
+         }
+     }
+     if($date1==""){
+         echo "<h1>Periode [$period] belum disettting !";
+         exit;
+     }
     $CI->load->model('chart_of_accounts_model');
 ?>
 <link href="<?php echo base_url();?>/themes/standard/style_print.css" rel="stylesheet">
@@ -34,8 +43,9 @@
 	     		<tbody>
      			<?
      			$sql="select distinct gl_id
-					from gl_transactions
-					where account_id not in (select id from chart_of_accounts)";
+					from gl_transactions g
+					where g.date between '$date1' and '$date2' 
+					and account_id not in (select id from chart_of_accounts)";
      			$rst_gl=$CI->db->query($sql);
 				foreach ($rst_gl->result() as $row_gl) {
 	 		       $sql="select g.date,g.gl_id,g.source,g.operation,

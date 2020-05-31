@@ -1,4 +1,4 @@
-<?
+<?php
 $title="DAFTAR KOTA";
 $help="city";
 $form_controller="city";

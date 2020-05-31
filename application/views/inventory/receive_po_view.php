@@ -40,9 +40,11 @@
                     data-options="formatter:format_date,parser:parse_date"
                     ');?>
             </td>
-            <td>Gudang:</td><td><?php echo form_dropdown('warehouse_code',
-                    $warehouse_list,$warehouse_code,'id=warehouse_code');?>
+            <td>Gudang:</td><td><?php echo form_input('warehouse_code',
+                    $warehouse_code,"id='warehouse_code'");?>
+               <?=link_button("", "dlgwarehouse_show();return false;","search")?>
             </td>
+            
            <td>Surat Jalan#:</td>
            <td><?=form_input('ref1',$ref1,'id=ref1');?></td>
 			
@@ -53,9 +55,8 @@
        </tr>
        <tr>
             <td>Keterangan</td>
-            <td colspan=4><?=form_input('comments',$comments,'id=comments style="width:300px"');?>
+            <td colspan=4><?=form_input('comments',$comments,'id=comments style="width:90%"');?>
             </td>
-			
        </tr>
        <tr>
             <td>Selected by Invoice? <?=$selected?></td>       	
@@ -65,7 +66,9 @@
    
    </form>
    
-	<table id="dgItems" class="easyui-datagrid table"  
+<div class="easyui-tabs" style="height:auto;width:100%">
+	<div title="Items" style="padding:10px">
+	<table id="dgItems" class="easyui-datagrid table"  rownumbers="true" pagination="true"
 		data-options="
 			toolbar: '#toolbar-search-faktur',
 			singleSelect: true,fitColumns: true,
@@ -77,17 +80,27 @@
 				<th data-options="field:'description',width:180">Description</th>
 				<th data-options="field:'quantity_received',width:80">Qty</th>
 				<th data-options="field:'unit',width:50">Unit</th>
-				<th data-options="field:'cost',width:50">Cost</th>
-				<th data-options="field:'total_amount',width:50">Total</th>
+				<th data-options="<?=col_number('cost',2)?>">Cost</th>
+				<th data-options="<?=col_number('total_amount',2)?>">Total</th>
 				<th data-options="field:'mu_qty',width:80">M Qty</th>
 				<th data-options="field:'multi_unit',width:50">M Unit</th>
-				<th data-options="field:'mu_price',width:50">M Price</th>
+				<th data-options="<?=col_number('mu_price',2)?>">M Price</th>
                 <th data-options="field:'manufacturer',width:80">Merk</th>				
 				<th data-options="field:'id',width:50">Id</th>
+				<th data-options="field:'no_urut',width:80">No</th>
 			</tr>
 		</thead>
 	</table>
+	</div>
+	<div title="Biaya" style="padding:10px">
+		<p>Total Expenses: 0</p>
+		<?php include_once("receive_expenses.php"); ?>
+	
+	</div>
 </div>		
+
+<?=$lookup_gudang?>
+
 <script language='javascript'>
 
     function simpan(){
@@ -116,31 +129,33 @@
 	}
 	function delete_receive2()
 	{
+        var nomor="<?=$shipment_id?>";
 
         $.messager.confirm('Confirm','Are you sure you want to remove this ?',
         function(r){
-            if(!r)return false;
+            if(r){ 
+				$.ajax({
+						type: "GET",
+						url: CI_ROOT+"receive_po/delete_by_shipment/"+nomor,
+						data: "",
+						success: function(result){
+							var result = eval('('+result+')');
+							if(result.success){
+								$.messager.show({
+									title:'Success',msg:result.msg
+								});	
+								remove_tab_parent();
+							} else {
+								$.messager.show({
+									title:'Error',msg:result.msg
+								});							
+							};
+						},
+						error: function(msg){alert(msg);}
+				}); 		            	
+            }
         });
-        var nomor="<?=$shipment_id?>";
-		$.ajax({
-				type: "GET",
-				url: CI_ROOT+"receive_po/delete_by_shipment/"+nomor,
-				data: "",
-				success: function(result){
-					var result = eval('('+result+')');
-					if(result.success){
-						$.messager.show({
-							title:'Success',msg:result.msg
-						});	
-						remove_tab_parent();
-					} else {
-						$.messager.show({
-							title:'Error',msg:result.msg
-						});							
-					};
-				},
-				error: function(msg){alert(msg);}
-		}); 				
+		
 	}
 	function doc_status_verify(){
             $.ajax({

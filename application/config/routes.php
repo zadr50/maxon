@@ -57,7 +57,8 @@ if($this->config->item("multi_company")){
 }
 //$route['default_controller'] = 'frontend_eshop';
 //$route['default_controller'] = 'apps/sekolah';
-
+//$route['default_controller']='apps/resto';
+//$route['default_controller']='api';
 
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

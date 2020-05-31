@@ -19,10 +19,11 @@ echo $script_head;
 	<?php include_once 'box_crumb.php' ?>
 	</div>
 	<div class='row' style='padding:10px'>
-		<div class="col-md-3">
+		<div class="col-md-3" style="margin-bottom:-10px;min-height:1000px;
+		margin-top:-10px;margin-left:-10px;background:cornflowerblue;padding-top:10px">
 			<?php include_once "left_menu.php"; ?>
 		</div>
-		<div class="col-md-8" style='margin-left:10px'>
+		<div class="col-md-9" style='margin-left:1px;padding:20px'>
 		<?php	
 		$this->load->view($file_content);
 		?>

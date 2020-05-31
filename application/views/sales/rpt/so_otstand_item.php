@@ -44,7 +44,8 @@
 				 left join sales_order_lineitems si on si.sales_order_number=s.sales_order_number
 				 left join inventory i on i.item_number=si.item_number
 	            where (s.delivered=false or s.delivered is null) 
-				and s.sales_date between '$date1' and '$date2'  ";
+				and s.sales_date between '$date1' and '$date2' 
+				and si.quantity<>si.ship_qty ";
 				if($customer!=""){
 					$sql.=" and s.sold_to_customer='$customer'";
 				}

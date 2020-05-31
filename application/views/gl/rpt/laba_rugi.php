@@ -38,14 +38,14 @@
             Periode : <?=$period?>
      	</td>
      </tr>
-     <tr><td colspan=4 style='border-bottom: black solid 1px'></td></tr>
+     <tr><td colspan=4 style='border-bottom: black solid 2px'></td></tr>
      <tr>
      	<td colspan="8">
 	     		<table class='titem'>
 	     		<thead>
 	     			<tr><td>Kode Akun</td><td>Nama Akun</td>
-	     				<td >This Period</td>
-	     				<td >Year To Date</td>
+	     				<td align=right>This Period</td>
+	     				<td  align=right>Year To Date</td>
 	     			</tr>
 	     		</thead>
 	     		<tbody>
@@ -91,10 +91,14 @@
                         $amt_mtd_grd+=$amt_mtd;
                         $amt_ytd_grd+=$amt_ytd;
                         
+                        $amt_mtd_text=$amt_mtd*-1;
+                        $amt_ytd_text=$amt_ytd*-1;
+                        $amt_mtd_tot_text=$amt_mtd_tot*-1;
+                        $amt_ytd_tot_text=$amt_ytd_tot*-1;
                         if($amt_mtd!=0 || $amt_ytd!=0 || $type=="T"){
                             echo "<tr><td>$coa</td><td>$coa_name</td>
-                                <td align='right'>".number_format(($amt_mtd),2)."</td>
-                                <td align='right'>".number_format(($amt_ytd),2)."</td></tr>";
+                                <td align='right'>".number_format(($amt_mtd_text),2)."</td>
+                                <td align='right'>".number_format(($amt_ytd_text),2)."</td></tr>";
                             
                         }
                         
@@ -102,9 +106,9 @@
                         if($i+1<count($qcoa)){
                             if($qcoa[$i+1]["row_type"]=="T"){
                                 
-                                echo "<tr><td>$coa_old</td><td>TOTAL: $coa_name_old</td>
-                                    <td align='right'>".number_format(($amt_mtd_tot),2)."</td>
-                                    <td align='right'>".number_format(($amt_ytd_tot),2)."</td></tr>";
+                                echo "<tr><td>$coa_old</td><td><b>TOTAL: $coa_name_old</b></td>
+                                    <td align='right'><b>".number_format(($amt_mtd_tot_text),2)."</b></td>
+                                    <td align='right'><b>".number_format(($amt_ytd_tot_text),2)."</b></td></tr>";
                                     
                                 echo "<tr><td colspan=5>&nbsp</td></tr>";
                                     
@@ -115,13 +119,13 @@
                             
      			    }
      			}
-                echo "<tr><td>$coa_old</td><td>TOTAL: $coa_name_old</td>
-                        <td align='right'>".number_format($amt_mtd_tot,2)."</td>
-                        <td align='right'>".number_format($amt_ytd_tot,2)."</td></tr>";
+                echo "<tr><td>$coa_old</td><td><b>TOTAL: $coa_name_old</b></td>
+                        <td align='right'><b>".number_format($amt_mtd_tot_text,2)."</b></td>
+                        <td align='right'><b>".number_format($amt_ytd_tot_text,2)."</b></td></tr>";
      			
-                echo "<tr><td></td><td>GRAND TOTAL</td>
-                        <td align='right'>".number_format($amt_mtd_grd,2)."</td>
-                        <td align='right'>".number_format($amt_ytd_grd,2)."</td></tr>";
+                echo "<tr><td></td><td><b>GRAND TOTAL</b></td>
+                        <td align='right'><b>".number_format($amt_mtd_grd,2)."</b></td>
+                        <td align='right'><b>".number_format($amt_ytd_grd,2)."</b></td></tr>";
      			
      			
 			?>	

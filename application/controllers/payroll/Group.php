@@ -98,6 +98,15 @@ class Group extends CI_Controller {
 		} else {
 			$s=$this->input->get('sid_nama');if($s!='')$sql.=" and t.keterangan like '$s%'";
 		}			
+		$sql.=" order by t.kode";
+		
+        if($this->input->get("page"))$offset=$this->input->get("page");
+        if($this->input->get("rows"))$limit=$this->input->get("rows");
+        
+        if($offset>0)$offset--;
+        $offset=$limit*$offset;
+        $sql.=" limit $offset,$limit";
+
         echo datasource($sql);		
     }
       

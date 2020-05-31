@@ -4,7 +4,7 @@ class Shipping_locations extends CI_Controller {
     private $limit=10;
     private $table_name='shipping_locations';
     private $sql="select location_number,address_type,street,city,
-		attention_name, company_name,no_urut,parent_loc
+		attention_name, company_name,no_urut,parent_loc,default_gudang
         from shipping_locations";
     private $file_view='inventory/shipping_locations';
 
@@ -57,6 +57,7 @@ class Shipping_locations extends CI_Controller {
 			$data['no_urut']='';
             $data['company_name']='';
             $data['parent_loc']='';
+            $data['default_gudang']='';
 		} else {
 			$data['location_number']=$record->location_number;
 			$data['address_type']=$record->address_type;
@@ -66,7 +67,8 @@ class Shipping_locations extends CI_Controller {
 			$data['no_urut']=$record->no_urut;
             $data['company_name']=$record->company_name;
             $data['parent_loc']=$record->parent_loc;
-		}
+            $data['default_gudang']=$record->default_gudang;
+            		}
 		return $data;
 	}
 	function index()
@@ -83,6 +85,7 @@ class Shipping_locations extends CI_Controller {
 		$data['no_urut']=$this->input->post('no_urut');
         $data['company_name']=$this->input->post('company_name');
         $data['parent_loc']=$this->input->post('parent_loc');
+		$data['default_gudang']=$this->input->post("default_gudang");
 		return $data;
 	}
 	function add()
@@ -96,7 +99,7 @@ class Shipping_locations extends CI_Controller {
 			$data['message']='update success';
 			$data['mode']='view';
 			$this->syslog_model->add($id,"shipping_locations","add");
-            msgbox("Data sudah tersimpan.");
+            echo json_encode(array("success"=>true,"msg"=>"Success"));
 		} else {
 			$data['mode']='add';
 			$this->template->display_form_input($this->file_view,$data,'');
@@ -114,10 +117,10 @@ class Shipping_locations extends CI_Controller {
 			$this->shipping_locations_model->update($id,$data);
 			$message='Update Success';
 			$this->syslog_model->add($id,"shipping_locations","edit");
-            msgbox("Data sudah tersimpan.");
+            echo json_encode(array("success"=>true,"msg"=>"Data sudah tersimpan."));
 		} else {
 			$message='Error Update';
-         	$this->view($id,$message);		
+            echo json_encode(array("success"=>false,"msg"=>$message));
 		}	  		
 	}
 	
@@ -152,8 +155,10 @@ class Shipping_locations extends CI_Controller {
 	{
         $data['caption']='DAFTAR GUDANG';
 		$data['controller']='shipping_locations';		
-		$data['fields_caption']=array('Kode Gudang','Jenis Gudang','Alamat','Kota','Kontak Person','Company','Parent','No Urut');
-		$data['fields']=array('location_number','address_type','street','city','attention_name','company_name','parent_loc','no_urut');
+		$data['fields_caption']=array('Kode Gudang','Jenis Gudang','Alamat','Kota','Kontak Person',
+			'Company','Parent','No Urut','Default');
+		$data['fields']=array('location_number','address_type','street','city','attention_name',
+			'company_name','parent_loc','no_urut','default_gudang');
 					
 		if(!$data=set_show_columns($data['controller'],$data)) return false;
 			
@@ -168,6 +173,7 @@ class Shipping_locations extends CI_Controller {
 		$sql=$this->sql." where 1=1";
         
 		if($this->input->get('sid_nama')!='')$sql.=" and location_number like '".$this->input->get('sid_nama')."%'";
+
         if($this->input->get("page"))$offset=$this->input->get("page");
         if($this->input->get("rows"))$limit=$this->input->get("rows");
         

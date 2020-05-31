@@ -3,11 +3,12 @@ class Periode_model extends CI_Model {
 
 private $primary_key='period';
 private $table_name='financial_periods';
+private $start_date="";
+private $end_date="";
 
 function __construct(){
 	parent::__construct();        
-      
-    
+        
 	$this->check_this_year();
 }
 function check_this_year(){
@@ -39,8 +40,16 @@ function exist($id){
 function save($data){
 	if(isset($data['startdate']))$data['startdate']= date('Y-m-d H:i:s', strtotime($data['startdate']));
 	if(isset($data['enddate']))$data['enddate']= date('Y-m-d H:i:s', strtotime($data['enddate']));
-	$this->db->insert($this->table_name,$data);
-	return $this->db->insert_id();
+    $id=$data[$this->primary_key];
+    if($q=$this->get_by_id($id)){
+        if($q->num_rows()){
+            unset($data[$this->primary_key]);
+            $this->db->where($this->primary_key,$id)->update($this->table_name,$data);
+        } else {
+            $this->db->insert($this->table_name,$data);
+            return $this->db->insert_id();            
+        }
+    }
 }
 function update($id,$data){
 	if(isset($data['startdate']))$data['startdate']= date('Y-m-d H:i:s', strtotime($data['startdate']));
@@ -51,6 +60,11 @@ function update($id,$data){
 function delete($id){
 	$this->db->where($this->primary_key,$id);
 	$this->db->delete($this->table_name);
+    $yr=substr($id,0,4);
+    $mn=substr($id,6,2);
+    $s="delete from gl_beginning_balance_archive where year(`year`)='$yr' and month(`year`)='$mn'";    
+    $this->db->query($s);
+    
 }
 function dropdown(){
         $query=$this->db->query("select period from ".$this->table_name);
@@ -61,15 +75,25 @@ function dropdown(){
         }		 
         return $ret;
 }
+function start_date(){
+    return $this->start_date;
+}
+function end_date(){
+    return $this->end_date;
+}
 function current_periode(){
 	$this->db->where("closed=0");
 	$this->db->order_by("period","desc");
 	$q=$this->db->get($this->table_name);
+    $ret_period="";
 	if($q){
-		return $q->row()->period;
-	} else {
-		return '';
+	    if($row=$q->row()){
+	        $this->start_date=$row->startdate;
+            $this->end_date=$row->enddate;
+	        $ret_period=$row->period;
+	    }
 	}
+    return $ret_period;
 }
 	function closed($date_trans)
 	{
@@ -88,7 +112,7 @@ function current_periode(){
 		$this->db->order_by("period");
 		if($q=$this->db->get($this->table_name)){
 			foreach($q->result() as $r) {
-				$rows[]=$r;
+				$rows[$r->period]=$r->period;
 			}
 		}
 		return $rows;

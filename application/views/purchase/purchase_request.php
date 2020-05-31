@@ -36,9 +36,10 @@
                </tr>	 
                <tr>
                     <td>Nama Pegawai yang mengajukan</td>
-                    <td><?php echo form_input('ordered_by',$ordered_by,"id='ordered_by'           
-                    ");?>
-                    <?=link_button('','dlgemployee_show()',"search","false"); ?>  
+					<td><?php 
+						echo form_input('ordered_by',$ordered_by,"id='ordered_by'");
+						echo link_button('','dlgemployee_show()',"search","false");						
+						?>                    
                     </td>
         			
         			<td rowspan='2' colspan='5' >
@@ -54,8 +55,17 @@
         			
                </tr>
                <tr>
-                    <td>Status pengajuan</td><td><?php echo form_dropdown('doc_status',$status_po_request_list,$doc_status,
-        			"id=doc_status ");?></td>
+                    <td>Status pengajuan</td>
+					<td><?php 
+//						if($mode=="add" || !$allow_ch_status_poreq){
+							echo form_input('doc_status',$doc_status,"id='doc_status' readonly");
+							if($doc_status=="OPEN" || $doc_status==""){
+								echo link_button('Approve','approve();return false','save');
+							}
+//						} else {
+//							echo form_dropdown('doc_status',$status_po_request_list,$doc_status,"id=doc_status ");
+//						}
+					?></td>
                     <td>Untuk dipakai di Proyek</td><td><?php 
                     echo form_input('project_code',$project_code,"id=project_code ");
         			//if($mode=="add") 
@@ -124,7 +134,17 @@
 <script type="text/javascript">
 	var url;	
 	var has_receive='<?=$has_receive?>';
-	
+	var allow_ch_status_poreq=<?=$allow_ch_status_poreq?>;
+	function approve(){
+		if(!allow_ch_status_poreq){
+			log_err("Anda tidak diijinkan untuk approve ! ");
+			return false;
+		}
+		var nomor=$("#purchase_order_number").val();
+		var url=CI_ROOT+"purchase_request/approve/"+nomor;
+		window.open(url,"_self");
+
+	}
 	function refresh_aed(){
 		var nomor=$("#purchase_order_number").val();
 		var url=CI_ROOT+"purchase_request/view/"+nomor;
@@ -140,8 +160,8 @@
         }
         //if(!valid_date){alert("Tanggal tidak benar ! Mungkin sudah closing !");return false;}
         
-        if($('#purchase_order_number').val()==''){alert('Isi nomor purchase order !');return false;}
-        if($('#ordered_by').val()==''){alert('Pilih kode pegawai yang mengajukan !');return false;}
+        if($('#purchase_order_number').val()==''){log_err('Isi nomor purchase order !');return false;}
+        if($('#ordered_by').val()==''){log_err('Pilih atau ketikan kode pegawai yang mengajukan !');return false;}
 		url='<?=base_url()?>index.php/purchase_request/save';
 		
 		loading();

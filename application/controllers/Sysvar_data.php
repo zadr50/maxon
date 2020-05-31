@@ -138,9 +138,28 @@ class Sysvar_data extends CI_Controller {
 		$id=urldecode($varname);        
 		$data['recordset']=null;
 		$data['varname']=$varname;
+		$data['varvalue']="";
+		$data['keterangan']="";
+		$data['category']="";
+		$data['section']="";
+		$data['vartype']="";
+		$data['varlist']="";
+		$data['id']="";
+		$data['varlen']="";
+		
 		if($query=$this->db->where('varname',$varname)->get($this->table_name)){
 			$data['recordset']=$query;
 			$message="Dibawah ini adalah data pilihana untuk varname [$varname]";
+			if($r=$query->row()){
+				$data['varvalue']=$r->varvalue;
+				$data['keterangan']=$r->keterangan;
+				$data['category']=$r->category;
+				$data['section']=$r->section;
+				$data['vartype']=$r->vartype;
+				$data['varlist']=$r->varlist;
+				$data['id']=$r->id;
+				$data['varlen']=$r->varlen;				
+			}
 		} else {
 			$message="No data found !";
 		}

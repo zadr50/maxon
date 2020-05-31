@@ -118,7 +118,7 @@ if ( ! function_exists('browse_select'))
                     }
                 }
                 if(!$lhide){
-                    if($type[$i]=='real'){
+                    if($type[$i]=='real' || $type[$i]=='double'){
                         $newrow[$i]= '<div align="right">'.number_format($row[$fld]).'</div>';
                     } else {
                         $newrow[$i]=$row[$fld];

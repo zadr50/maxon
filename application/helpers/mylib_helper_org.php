@@ -134,8 +134,8 @@ if(!function_exists("my_input")){
 				if ( $key == "clear_line" ) $clear_line=$value;
 			}
 		}
-		if($caption_class=="")$caption_class="col-xs-3";
-		if($text_class=="")$text_class="col-xs-4";
+		//if($caption_class=="")$caption_class="col-xs-3";
+		//if($text_class=="")$text_class="col-xs-4";
 		echo "<div class='form-group'>
 		<label $align class='control-label $caption_class ' for='$field_name'>$caption</label>
 		<div class='$text_class'>"
@@ -313,7 +313,7 @@ if(!function_exists("array_data_table")){
 if(!function_exists("my_checkbox")){
 	function my_checkbox($caption,$field_name,$field_value,$array_list,$class_cap="col-sm-4",$class_text="col-sm-2"){
 		if(is_array($array_list)){
-		echo "<div class='form-group' >
+		echo "<div class='form-check' >
 		<label class='control-label ".$class_cap."' for='".$field_name."'>".$caption."</label>
 		<div class='col-md-6'>";
 		$field_value_array=explode(",",$field_value);
@@ -339,7 +339,7 @@ if(!function_exists("my_checkbox")){
 		<div class='clearfix'></div>";
 		} else {
 			$checked=$field_value=="1"?true:false;
-			echo "<div class='form-group'>
+			echo "<div class='form-check'>
 			<label class='control-label ".$class_cap."' for='".$field_name."'>".$caption."</label>
 			<div class='".$class_text."'>".form_checkbox($field_name,$field_value,$checked,
 			"id='".$field_name."' class='form-control input-sm'")."</div></div>";	

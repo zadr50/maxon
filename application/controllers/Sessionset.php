@@ -35,6 +35,13 @@ class Sessionset extends CI_Controller {
 		echo "<script>window.history.back();</script>";
         
 	}
+	function mini_sidebar(){
+		$old=$this->session->userdata("mini_sidebar");
+		if(!$old)$old=false;
+		$this->session->set_userdata("mini_sidebar",!$old);
+		$url=base_url();
+		echo "<script>window.history.back();</script>";
+	}
 	
 }
 ?>

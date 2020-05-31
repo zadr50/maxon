@@ -12,7 +12,8 @@ class User extends CI_Controller {
 	{
 		parent::__construct();        
         
-		if(!$this->access->is_login())redirect(base_url());
+		///if(!$this->access->is_login())redirect(base_url());
+
  		$this->load->helper(array('url','form','mylib_helper'));
 		$this->load->library('template');
 		$this->load->library('form_validation');
@@ -25,7 +26,12 @@ class User extends CI_Controller {
         $this->load->model('payroll/employee_model');
 	}
 	function set_defaults($record=NULL){
-            $data=data_table($this->table_name,$record);
+			$data=data_table($this->table_name,$record);
+			if(isset($data['log_status'])){
+				if($data['log_status']=='' || $data['log_status']=='null' || $data['log_status']==null){
+					$data['log_status']=0;
+				}
+			}
             $id=$data['user_id'];
             $data['mode']='';
             $data['message']='';
@@ -247,19 +253,34 @@ class User extends CI_Controller {
 		
 		$this->template->display_form_input('admin/info_list',$data);	
 	}	
+	function save_json(){
+		$data=$this->input->post();
+		
+		$id=$data['user_id'];
+		$mode=$data['mode'];
+		unset($data['mode']);
+		if(isset($data['success']))unset($data['success']);
+		if($mode=="view"){
+			$ok=$this->user_model->update($id,$data);
+			$data['msg']='Success';
+		} else {
+			$ok=$this->user_model->save($data);
+			$data['msg']="Ada kesalahan input !";
+		}
+		$data['success']=$ok;
+		echo json_encode($data);
+	}
 	function save()
 	{   
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
  		 $id=$this->input->post('user_id');
 		 if ($this->form_validation->run()=== TRUE){
-			$data=$this->get_posts();
-			//if($id=="admin")$data["password"]="admin";
 			$mode=$this->input->post("mode");
 			unset($data["mode"]);
 			unset($data['path_image']);
 			if($mode=="view"){
-      	if($id=="admin")$data["password"]="admin";
+		      	//if($id=="admin")$data["password"]="admin";
 				$ok=$this->user_model->update($id,$data);			
 			} else {
 				$ok=$this->user_model->save($data);
@@ -323,7 +344,7 @@ class User extends CI_Controller {
 	function preference(){
 	    $set=array('last_running_visible',
 	    'donate_visible','google_ads_visible','chatbox_visible','header_visible',
-        'dont_validate_journal');
+        'dont_validate_journal','stop_background_process');
         $set_opt=array("sidebar_position");
         //$set=array('dont_validate_journal');
         $data=$this->input->post();
@@ -426,7 +447,7 @@ class User extends CI_Controller {
 			}
 			
 		}
-		$sql.=" order by tgljam desc limit 1000";
+		$sql.=" order by tgljam desc limit 100";
 		$data["user"]=$user;
 		$data["nomor"]=$nomor;
 		$data["jenis"]=$jenis;
@@ -527,6 +548,38 @@ class User extends CI_Controller {
         $sql.=" limit $offset,$limit";        
         
         echo datasource($sql);
-    }
+	}
+	function login($username, $password)
+	{
+	 	$auth = $this->config->item('auth');
+		$this->load->model('user_model');
+		$result = $this->user_model->get_login_info($username);
+		$success=false;
+		if ($result) {
+			// Result Found	
+   			// $password = md5($password);
+			if ($password === $result->password)
+			{
+				// Start session
+				$this->session->set_userdata('user_id',$result->user_id);
+				$success=true;
+			}
+		}
+		$data['success']=$success;
+		$data['rows']=$result;
+		echo json_encode($data);
+	}
+	function info($username){
+		$success=false;
+		$this->load->model('user_model');
+		$result = $this->user_model->get_login_info($username);
+		if ($result) {
+			$data=(array)$result;
+			if($data)$success=true;
+		}
+		$data['success']=$success;
+		echo json_encode($data);
+	}
+   
 }
 ?>

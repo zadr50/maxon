@@ -84,6 +84,7 @@ class Stock_mutasi extends CI_Controller {
                         array("fieldname"=>"company","caption"=>"Perusahaan","width"=>"200px")					
 				)
 			));
+			$data['lookup_inventory']=$this->list_of_values->lookup_inventory();
 			
             return $data;
 	}	

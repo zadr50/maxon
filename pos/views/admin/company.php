@@ -17,11 +17,12 @@
 		<td>Kode</td><td>
 		<?php
 		if($mode=='view'){
-			echo $company_code;
-			echo form_hidden('company_code',$company_code);
-		} else { 
-			echo form_input('company_code',$company_code);
+		    $readonly=" readonly";
+		} else {
+		    $readonly=""; 
 		}		
+        echo form_input('company_code',$company_code," $readonly");
+        
 		?></td>
 		
 	</tr>	 

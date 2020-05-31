@@ -300,7 +300,7 @@ class Payables_payments extends CI_Controller {
 		if(!allow_mod2('_40073'))return false;   
    		$this->payables_payments_model->delete_line($line_number);
    }
-   function delete_no_bukti($no_bukti='')
+   function delete_no_bukti($no_bukti='',$line_number='')
    {
        if($no_bukti==""){
            $this->db->query("delete from payables_payments where no_bukti=''");
@@ -309,6 +309,10 @@ class Payables_payments extends CI_Controller {
             return false;
        }
 		$no_bukti=urldecode($no_bukti);
+		$line_number=urldecode($line_number);
+		if(  $line_number!=""){
+			$this->db->query("delete from payables_payments where line_number='$line_number'");
+		}
         
 		$this->load->model("periode_model");
 		$this->load->model("check_writer_model");

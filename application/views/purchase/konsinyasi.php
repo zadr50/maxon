@@ -41,6 +41,13 @@ $supplier_number='';
         </td>
         
     </tr>    
+    <tr>
+    	<td colspan=3>
+        Total Amount Jual: <b><span id='jual_amt'>0</span></b>
+        Total Cost: <b><span id='cost_amt'>0</span></b>
+        Margin Percent: <b><span id='margin_prc'>0</span></b>   		
+    	</td>
+    </tr>
     </table>
 </div>
     
@@ -83,12 +90,32 @@ $supplier_number='';
         }); 
     }
     function on_load(){
+    	
+        hitung_total()
+    	
         var d1=$("#date_from").val();
         var d2=$("#date_to").val();
         var sup=$("#supplier_number").val();
         var vUrl='<?=base_url()?>index.php/po/konsinyasi/item_sales/'+d1+'/'+d2+'/'+sup;
         $('#dgItems').datagrid({url:vUrl});     
         $('#dgItems').datagrid('reload');
+    }
+    function hitung_total(){
+        var d1=$("#date_from").val();
+        var d2=$("#date_to").val();
+        var sup=$("#supplier_number").val();
+        var vUrl='<?=base_url()?>index.php/po/konsinyasi/item_sales_total/'+d1+'/'+d2+'/'+sup;
+        $.ajax({type: "GET",url: vUrl,
+            success: function(msg){
+            var result = eval('('+msg+')');
+            if(result.success){
+            	$("#jual_amt").html(result.jual_amt);
+            	$("#cost_amt").html(result.cost_amt);
+            	$("#margin_prc").html(result.margin_prc);
+            }
+        }
+        }); 
+    	
     }
     
 </script>    

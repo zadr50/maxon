@@ -10,7 +10,7 @@ class Customer extends CI_Controller {
 	{
 		parent::__construct();        
         
-		if(!$this->access->is_login())header("location:".base_url());
+		//if(!$this->access->is_login())header("location:".base_url());
  		$this->load->helper(array('url','form','browse_select','mylib_helper'));
 		$this->load->library('template');
 		$this->load->library('form_validation');
@@ -166,8 +166,8 @@ class Customer extends CI_Controller {
         $data['caption']='DAFTAR MASTER PELANGGAN';
         
 		$data['controller']='customer';		
-		$data['fields_caption']=array('Kode','Nama Pelanggan','Wilayah','Kota','Telp','Fax','Salesman','Kelompok');
-		$data['fields']=array('customer_number','company','region','city','phone','fax','salesman','customer_record_type');
+		$data['fields_caption']=array('Nama Pelanggan','Kode','Salesman','Telp','Termin','Wilayah','Kota','Fax','Kelompok');
+		$data['fields']=array('company','customer_number','salesman','phone','payment_terms','region','city','fax','customer_record_type');
 					
 		if(!$data=set_show_columns($data['controller'],$data)) return false;
 			
@@ -199,7 +199,8 @@ class Customer extends CI_Controller {
         if($this->input->get("tb_search")){
             $search=$this->input->get("tb_search");
         }
-        
+		$sql.=" order by company";
+		
         if($this->input->get("page"))$offset=$this->input->get("page");
         if($this->input->get("rows"))$limit=$this->input->get("rows");
         if($offset>0)$offset--;
@@ -321,7 +322,7 @@ class Customer extends CI_Controller {
 		$date_to= $this->input->get('d2');
 		$date_to = date('Y-m-d H:i:s', strtotime($date_to));
 		
-		$sql="select sum(jumlah) as saldo from qry_kartu_piutang 
+		$sql="select sum(amount) as saldo from qry_kartu_piutang 
 			where customer_number='$customer_number' 
 			and tanggal<'$date_from'";
 
@@ -330,7 +331,7 @@ class Customer extends CI_Controller {
 		$rows[0]=array("no_bukti"=>"SALDO","tanggal"=>"SALDO","jenis"=>"SALDO","jumlah"=>0,
 			"saldo"=>number_format($awal));
 
-		$sql="select no_bukti,tanggal,jenis,jumlah
+		$sql="select no_bukti,tanggal,jenis,amount as jumlah
 			from qry_kartu_piutang
 			where customer_number='$customer_number' 
 			and tanggal between '$date_from' and '$date_to' order by tanggal";
@@ -405,6 +406,7 @@ class Customer extends CI_Controller {
         $c_tgl_tagih=$this->input_col('tgl_tagih');
         $c_credit_limit=$this->input_col('credit_limit');
         $c_payment_terms=$this->input_col('payment_terms');
+        $c_saldo=$this->input_col('saldo');
         
 		$filename=$_FILES["file_excel"]["tmp_name"];
 		if($_FILES["file_excel"]["size"] > 0)
@@ -414,7 +416,7 @@ class Customer extends CI_Controller {
 			$ok=false;
 			$this->db->trans_begin();
             $emapData = fgetcsv($file, 10000, chr(9));
-            
+            $total_piutang=0;
 			while (($emapData = fgetcsv($file, 10000, chr(9))) !== FALSE)
 			{
 				//print_r($emapData[$c_kode]);
@@ -438,8 +440,12 @@ class Customer extends CI_Controller {
 					if($c_kontak>0)$data["first_name"]=$emapData[$c_kontak];
 					if($c_email>0)$data["email"]=$emapData[$c_email];
                     if($c_tgl_tagih>0)$data["tgl_tagih"]=$emapData[$c_tgl_tagih];
-                    if($c_credit_limit>0)$data["credit_limit"]=$emapData[$c_credit_limit];
+                    if($c_credit_limit>0)$data["credit_limit"]=c_($emapData[$c_credit_limit]);
                     if($c_payment_terms>0)$data["payment_terms"]=$emapData[$c_payment_terms];
+                    if($c_saldo>0){
+                        $data['credit_balance']=c_($emapData[$c_saldo]);
+                        $total_piutang+=c_($emapData[$c_saldo]);                        
+                    }
                     
 					$data["create_by"]=user_id();
 					$data['active']="1";
@@ -451,6 +457,10 @@ class Customer extends CI_Controller {
 						$ok=$this->customer_model->save($data)==1;
 						echo "Insert: ".$kode."</br>";
 					}
+                    if($c_saldo>0){
+                        $this->create_saldo_awal($kode,c_($emapData[$c_saldo]));
+                    }
+                    
 				}
 			}
 			if ($this->db->trans_status() === FALSE)
@@ -464,8 +474,67 @@ class Customer extends CI_Controller {
 			fclose($file);
 			if ($ok){echo json_encode(array("success"=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
 		}
+        if($this->input->post("chkUpdateCoaPiutang")){
+            $this->update_saldo_coa($total_piutang);
+        }
+
 		echo "<div class='alert alert-success'>FINISH.</div>";
 	}
+
+    function create_saldo_awal($customer_number,$saldo){
+        $this->load->model("invoice_model");
+        $coa_piutang=0;
+        if($qpref=$this->db->select("accounts_receivable    ")->get("preferences")){
+            if($rpref=$qpref->row()){
+                $coa_piutang=$rpref->accounts_receivable;
+            }
+        }
+        if($qcust=$this->db->select("finance_charge_acct")->where("customer_number",$customer_number)->get("customers")){
+            if($rcust=$qcust->row()){
+                if($rcust->finance_charge_acct>0){
+                    $coa_piutang=$rcust->finance_charge_acct;
+                }
+            }
+        }
+        $nomor_bukti="SALDO-$customer_number";
+        $data['invoice_date']=date("Y-m-1");
+        $data['invoice_number']=$nomor_bukti;
+        $data['invoice_type']='I';        
+        $data['sold_to_customer']=$customer_number;
+        $data['payment_terms']="KREDIT";
+        $data['due_date']=$data['invoice_date'];
+        $data['comments']="SALDO AWAL";
+        $data['salesman']='OFFICE';
+        $data['account_id']=$coa_piutang;
+        $data['amount']=$saldo;
+        $data['saldo_invoice']=$saldo;
+        $data['inv_amount']=$saldo;
+        $data['warehouse_code']=current_gudang();
+        $data['type_of_invoice']='Simple';
+        
+        $this->invoice_model->save($data);
+        
+        $detail['invoice_number']=$nomor_bukti;
+        $detail['item_number']="SALDO";
+        $detail['description']="SALDO";
+        $detail['quantity']=1;
+        $detail["price"]=$saldo;
+        $detail['amount']=$saldo;
+        $detail['warehouse_code']=current_gudang();
+        
+        $this->invoice_model->save_item($detail);
+    }
+    function update_saldo_coa($amount){
+        $coa_piutang=0;
+        if($qpref=$this->db->select("accounts_receivable")->get("preferences")){
+            if($rpref=$qpref->row()){
+                $coa_piutang=$rpref->accounts_receivable;
+            }
+        }
+        $s="update chart_of_accounts set beginning_balance='$amount' where id='$coa_piutang'";
+        $this->db->query($s);
+    }
+	
 	function info($cust_no){
 		$s="";
 		if($row=$this->db->select("customer_number,company,street,suite,
@@ -478,5 +547,31 @@ class Customer extends CI_Controller {
 		}
 		echo $s;
 	}
+    function rpt($id="",$d1="",$d2="",$rek=""){
+		 $data['date_from']=date('Y-m-d 00:00:00');
+         if($d1!="")$data["date_from"]=$d1;
+		 $data['date_to']=date('Y-m-d 23:59:59');
+         if($d2!="")$data["date_to"]=$d2;
+		 $data['select_date']=true;
+    	 switch ($id) {
+			 case 'mutasi':
+				 $data['criteria1']=true;
+				 $data['label1']='Rekening';
+				 $data['text1']='';
+				 break;			 
+			 default:
+				 break;
+		 }
+		 $rpt='customer/rpt/'.$id;
+		 $data['rpt_controller']=$rpt;
+		 
+		if(!$this->input->post('cmdPrint')){
+			$this->template->display_form_input('criteria',$data,'');
+		} else {
+			$this->load->view('sales/rpt/'.$id);
+		}
+   }	
+   
+   	
 	
 }

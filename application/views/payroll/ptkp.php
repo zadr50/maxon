@@ -1,27 +1,27 @@
-<legend>STATUS PERKAWINAN</legend>
 <div class="thumbnail box-gradient">
-	<?
+	<?php
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','true',base_url().'index.php/payroll/ptkp/add');		
-	echo link_button('Search','','search','true',base_url().'index.php/payroll/ptkp');		
-	echo link_button('Help', 'load_help(\'ptkp\')','help');		
-	
 	?>
-	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
-	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
-		<div>Update</div>
-		<div>MaxOn Forum</div>
-		<div>About</div>
-	</div>
+	<div style="float:right">
+	   <?=link_button('Help', 'load_help(\'ptkp\')','help')?>		
+    	<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+    	<div id="mmOptions" style="width:200px;">
+    		<div onclick="load_help()">Help</div>
+    		<div>Update</div>
+    		<div>MaxOn Forum</div>
+    		<div>About</div>
+    	</div>
+        <?=link_button('Close', 'remove_tab_parent()','cancel')?>       
+    </div>
 	
 </div>
+<legend>STATUS PERKAWINAN</legend>
 <div class="thumbnail">	
 <form id="frmEmployee"  method="post">
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 	<?php echo validation_errors(); ?>
-   <table class='table2' width='100%'>
+   <table class='table' width='100%'>
 	<tr>
 		<td>Kode</td>
 		<td><?php

@@ -11,15 +11,6 @@ class Petugas extends CI_Controller {
 		parent::__construct();
 		if(!$this->access->is_login())header("location:".base_url());
  		$this->load->helper(array('url','form','browse_select','mylib_helper'));
-                
-        $multi_company=$this->config->item('multi_company');
-       if($multi_company){
-            $company_code=$this->session->userdata("company_code","");
-            if($company_code!=""){
-               $this->db = $this->load->database($company_code, TRUE);
-           }
-       }         
-        
         
         $this->load->library('javascript');
         $this->load->library('template');

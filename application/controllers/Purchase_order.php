@@ -1,25 +1,22 @@
 <?php if(!defined('BASEPATH')) exit('No direct script access allowd');
 
 class Purchase_order extends CI_Controller {
-        private $limit=10;
-        private $sql="select purchase_order_number,po_date,
-				c.supplier_name,i.received,i.terms,i.amount,i.doc_status,i.due_date,
-				i.bill_to_contact,i.warehouse_code,i.type_of_invoice,i.supplier_number
-                from purchase_order i
-                left join suppliers c on c.supplier_number=i.supplier_number
-                where i.potype='O'";
-        private $controller='purchase_order';
-        private $primary_key='purchase_order_number';
-        private $file_view='purchase/purchase_order';
-        private $table_name='purchase_order';
+	private $limit=10;
+	private $sql="select purchase_order_number,po_date,
+			c.supplier_name,i.received,i.terms,i.amount,i.doc_status,i.due_date,
+			i.bill_to_contact,i.warehouse_code,i.type_of_invoice,i.supplier_number
+			from purchase_order i
+			left join suppliers c on c.supplier_number=i.supplier_number
+			where i.potype in ('P','O')";
+	private $controller='purchase_order';
+	private $primary_key='purchase_order_number';
+	private $file_view='purchase/purchase_order';
+	private $table_name='purchase_order';
 	function __construct()
 	{
 		parent::__construct();
 		
-		if(!$this->access->is_login())redirect(base_url());
-        
-         
-		
+		//if(!$this->access->is_login())redirect(base_url());
  		$this->load->helper(array('url','form','browse_select','mylib_helper'));
         $this->load->library('sysvar');
         $this->load->library('javascript');
@@ -34,10 +31,12 @@ class Purchase_order extends CI_Controller {
 		$this->load->library("list_of_values");
         $this->load->model('purchase_order_lineitems_model');
         $this->load->model('chart_of_accounts_model');
+        $this->load->model('sysvar_model');
 						 
 	}
 	function set_defaults($record=NULL){
             $data=data_table($this->table_name,$record);
+			$data['data_table']=$data;
 			 
             $data['mode']='';
             $data['message']='';
@@ -63,7 +62,6 @@ class Purchase_order extends CI_Controller {
 			$setting['dlgBindId']="doc_status";
 			$setting['sysvar_lookup']='po_status';
 			$data['lookup_po_status']=$this->list_of_values->render($setting);
-            
 	
 			
             
@@ -73,15 +71,20 @@ class Purchase_order extends CI_Controller {
                 array("fieldname"=>"po_date","caption"=>"Tanggal","width"=>"200px"),
                 array("fieldname"=>"due_date","caption"=>"Tanggal Req","width"=>"200px"),
                 array("fieldname"=>"dept_code","caption"=>"Dept","width"=>"80px"),
-                array("fieldname"=>"ordered_by","caption"=>"By","width"=>"200px")
+                array("fieldname"=>"ordered_by","caption"=>"By","width"=>"100px"),
+                array("fieldname"=>"doc_status","caption"=>"Status","width"=>"100px"),
+                array("fieldname"=>"update_date","caption"=>"Update Date","width"=>"100px"),
+                array("fieldname"=>"update_by","caption"=>"Update By","width"=>"100px"),
+                array("fieldname"=>"comments","caption"=>"Comments","width"=>"200px")
             );
             unset($setting['sysvar_lookup']);
-            $setting['dlgRetFunc']="$('#req_no').val(row.req_no);";
+            $setting['dlgRetFunc']="$('#req_no').val(row.req_no); 
+					$('#comments').val(row.comments); ";
             $setting['show_date_range']=true;
             $data['lookup_req_no']=$this->list_of_values->render($setting);
             
             $setcom['dlgBindId']="preferences";
-            $setcom['dlgRetFunc']="$('#bill_to_contact').val(row.company_code);";
+			$setcom['dlgRetFunc']="$('#bill_to_contact').val(row.company_code); ";
             $setcom['dlgCols']=array( 
                         array("fieldname"=>"company_code","caption"=>"Kode","width"=>"80px"),
                         array("fieldname"=>"company_name","caption"=>"Perusahaan","width"=>"200px")
@@ -101,9 +104,10 @@ class Purchase_order extends CI_Controller {
                     );          
             $setwh['show_date_range']=false;
             $data['lookup_gudang']=$this->list_of_values->render($setwh);
-            if($data['warehouse_code']=='') $data['warehouse_code']=$this->session->userdata('session_outlet','');          
+            
+            if($data['warehouse_code']=='') $data['warehouse_code']=$this->session->userdata('session_outlet','');
+            if($data['warehouse_code']=='') $data['warehouse_code']=current_gudang();          
                         
-            $data['lookup_suppliers']=$this->supplier_model->lookup();
             
             $data['allow_addnew_item']=$this->sysvar->getvar("allow_addnew_item","false");
             
@@ -116,6 +120,13 @@ class Purchase_order extends CI_Controller {
                     array("fieldname"=>"account_description","caption"=>"Account Description","width"=>"300px")                    
                 ))
             );
+            $data['lookup_inventory']=$this->list_of_values->lookup_inventory();
+            $data['lookup_suppliers']=$this->supplier_model->lookup();
+			
+			$data['lookup_doc_type']=$this->sysvar_model->lookup(array(
+				"dlgBindId"=>"doc_type","dlgId"=>"doc_type_po"
+			));
+			
             return $data;
 	}
 	function index()
@@ -125,8 +136,8 @@ class Purchase_order extends CI_Controller {
            
 	}
 	function get_posts(){
-            $data=data_table_post($this->table_name);
-            return $data;
+		$data=data_table_post($this->table_name);
+		return $data;
 	}
 	function add()
 	{
@@ -141,8 +152,12 @@ class Purchase_order extends CI_Controller {
         $data['term_list']=$this->type_of_payment_model->select_list();
 		$data['gdg']=$this->warehouse_model->loadlist();
         $data["expire_day"]=30;
-        $data["po_expire_date"]=add_date($data["po_date"],$data["expire_day"]);
-		$this->template->display_form_input($this->file_view,$data,'');			
+		$data["po_expire_date"]=add_date($data["po_date"],$data["expire_day"]);
+		//if(!is_ajax()){
+			$this->template->display_form_input($this->file_view,$data,'');			
+		//} else {
+		//	echo json_encode($data);
+		//}
 	}
 	function nomor_bukti($add=false)
 	{
@@ -167,21 +182,28 @@ class Purchase_order extends CI_Controller {
         $data['purchase_order_number']=$id;
 		unset($data['has_receive']);
 		if($data['supplier_number']=="") $data['supplier_number']=$this->session->userdata('supplier_number');
-			
+		if(!$this->supplier_model->exist($data['supplier_number'])){
+			echo json_encode(array("success"=>false,"msg"=>"Supplier not found !"));
+			return false;
+		}	
+		$potype=getvar("PoType","O");
 		if($mode=="add"){
-            $data['potype']='O';
+            $data['potype']=$potype;
 			$ok=$this->purchase_order_model->save($data);
-			if($data['req_no']!=""){
-				$this->purchase_order_model->add_item_with_rfq($data['req_no'],$id);
+			if(isset($data['req_no'])){
+				if($data['req_no']!=""){
+					$this->purchase_order_model->add_item_with_rfq($data['req_no'],$id);
+				}	
 			}
             if($ok)$this->nomor_bukti(true);
 			$this->syslog_model->add($id,"purchase_order","add");
 		} else {
 		    unset($data['purchase_order_number']);
-            $data['potype']='O';
+            $data['potype']=$potype;
 			$ok=$this->purchase_order_model->update($id,$data);			
 			$this->syslog_model->add($id,"purchase_order","edit");
 		}
+		if(isset($data['po_date']))$data['po_date']=date_sql($data['po_date']);
 
 		if ($ok){
 			echo json_encode(array('success'=>true,'purchase_order_number'=>$id));
@@ -192,13 +214,14 @@ class Purchase_order extends CI_Controller {
 	function items($nomor,$type='')
 	{
 		$nomor=urldecode($nomor);
-		$sql="select p.item_number,i.description,p.quantity,p.qty_recvd 
+		$sql="select p.item_number,p.description,p.quantity,p.qty_recvd 
 		,p.unit,p.price,p.discount,p.total_price,
 		p.line_number,p.from_line_doc,p.disc_2,p.disc_3,p.retail,p.margin,
-		p.line_type,p.line_status,p.comment,p.multi_unit,p.mu_qty,p.mu_harga
+		p.line_type,p.line_status,p.comment,p.multi_unit,p.mu_qty,p.mu_harga,p.no_urut
 		from purchase_order_lineitems p
 		left join inventory i on i.item_number=p.item_number
-		where purchase_order_number='$nomor'";
+		where p.purchase_order_number='$nomor' 
+		order by p.no_urut";
 		 
 		echo datasource($sql);
 	}
@@ -246,8 +269,15 @@ class Purchase_order extends CI_Controller {
 
          $this->session->set_userdata('purchase_order_number',$id);
          $this->session->set_userdata('supplier_number',$data['supplier_number']);
-		 
-		 $this->template->display_form_input($this->file_view,$data,'');			
+		 $ajax=false;
+		 if($this->input->get('json')!=""){
+			 $ajax=true;
+		 }
+		 if($ajax){
+			echo json_encode($data);
+		 } else {
+			$this->template->display_form_input($this->file_view,$data,'');		
+		 }
 		
 	}
    
@@ -291,23 +321,33 @@ class Purchase_order extends CI_Controller {
         $faa[]=criteria("System","sid_sistim");
         $faa[]=criteria("Outlet","sid_outlet");
 		$data['criteria']=$faa;
-        $this->template->display_browse2($data);            
+		$this->template->display_browse2($data);            
+		
     }
     function browse_data($offset=0,$limit=10,$nama=''){
+		$date_from=date("Y-m-1");
+		$date_to=date("Y-m-d 23:59:59");
+		if($this->input->get("sid_date_from")){
+			$date_from=$this->input->get("sid_date_from");
+		}
+		if($this->input->get("sid_date_to")){
+			$date_to=$this->input->get("sid_date_to");
+		}
+
     	if($this->input->get('sid_po_number')){
     		$sql=$this->sql." and purchase_order_number like '%".$this->input->get('sid_po_number')."%'";
 		} else {
-			$d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));
-			$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
+			$d1= date( 'Y-m-d H:i:s', strtotime($date_from));
+			$d2= date( 'Y-m-d H:i:s', strtotime($date_to));
 			$sql=$this->sql." and po_date between '".$d1."' and '".$d2."'";
             $supplier=$this->input->get('sid_supplier');
 			if($supplier!="")$sql.=" and (supplier_name like '$supplier%' or i.supplier_number='$supplier')";
             $sistim=$this->input->get("sid_sistim");
             if($sistim!="")$sql.=" and i.type_of_invoice='$sistim'";
             $outlet=$this->input->get("sid_outlet");
-            if(!$outlet)$outlet=$this->session->userdata('session_outlet','');
+            //if(!$outlet)$outlet=$this->session->userdata('session_outlet','');
             
-            if($outlet!="")$sql.=" and i.warehouse_code='$outlet'";
+            //if($outlet!="")$sql.=" and i.warehouse_code='$outlet'";
 		}
         if($this->input->get("tb_search")){
             $tb_search=$this->input->get("tb_search");
@@ -321,6 +361,10 @@ class Purchase_order extends CI_Controller {
         } else {
             $sql.=" order by purchase_order_number";
         }
+		
+		//echo $sql;
+		
+		
         if($this->input->get("page"))$offset=$this->input->get("page");
         if($this->input->get("rows"))$limit=$this->input->get("rows");
         if($offset==1)$offset=0;
@@ -344,11 +388,13 @@ class Purchase_order extends CI_Controller {
 
 	}
 	function detail(){
+	    $potype=getvar("PoType","O");
+
 		$data['purchase_order_number']=isset($_GET['purchase_order_number'])?$_GET['purchase_order_number']:'';
 		$data['po_date']=isset($_GET['po_date'])?$_GET['po_date']:'';
 		$data['supplier_number']=isset($_GET['supplier_number'])?$_GET['supplier_number']:'';
 		$data['comments']=isset($_GET['comments'])?$_GET['comments']:'';
-		$data['potype']='O';
+		$data['potype']=$potype;
 		$this->purchase_order_model->save($data);
 		$this->sysvar->autonumber_inc("Purchase Order Numbering");
 
@@ -454,11 +500,30 @@ class Purchase_order extends CI_Controller {
             ,p.supplier_number,p.doc_status,p.bill_to_contact,s.supplier_name 
             from purchase_order  p
             left join suppliers s on s.supplier_number=p.supplier_number
-            where p.potype='O'  and ifnull(received,false)=false";
+            where p.potype in ('O','P')  and ifnull(received,false)=false";
+			
+			$from="";
+			$to="";
+			
+			if($data=$this->input->get()){
+				$from=$data['from'];
+				$to=$data['to'];
+				$supplier=$data['q1'];
+			}
+			
             if($supplier!="")$sql.=" and p.supplier_number='$supplier' ";
-            if($search=$this->input->get('s')){
+			
+			if($from!="" && $to!=""){
+				$sql.=" and p.po_date between '$from' and '$to' ";
+			}
+			$search=$this->input->get('s');
+			if($search==""){
+				$search=$this->input->get('tb_search');
+			}
+            if($search!=""){
                 $sql.=" and (p.purchase_order_number like '%$search%' or p.supplier_number like '%$search%')";
             }
+			
 			$sql.=" limit 30 ";
 			echo datasource($sql);
 		}
@@ -474,9 +539,10 @@ class Purchase_order extends CI_Controller {
 			if($nomor){
 
 				$sql="select item_number,description,quantity,unit,qty_recvd,line_number,
-				mu_qty,multi_unit,mu_harga 
+				mu_qty,multi_unit,mu_harga,no_urut 
 				from purchase_order_lineitems 
-				where purchase_order_number='$nomor' and ifnull(received,false)=false ";				 
+				where purchase_order_number='$nomor' and ifnull(received,false)=false 
+				order by no_urut";				 
 				 
 				$query=$this->db->query($sql);
 				$i=0;
@@ -491,13 +557,18 @@ class Purchase_order extends CI_Controller {
 						}
 						$mu_qty=$ratio*$qty_sisa;
 						//qty_receive input
-						$row['qty']=form_input("qty[]",$qty_sisa,"id='qty_$i' style='width:50px' onchange='calc_ratio($i);return false;'");
-						$row['line']=$row['line_number'].
-							form_input("line[]",$row['line_number'],"readonly style='width:10px'").
-							form_input("ratio[]",$ratio,"readonly style='width:10px' id='ratio_$i'");
-						$row['mu_qty']=form_input("mu_qty[]",$mu_qty,"readonly id='mu_qty_$i' style='width:50px'");
-						
-						$rows[$i++]=$row;
+						if($qty_sisa>0){
+							$row['qty']=form_input("qty[]",$qty_sisa,"id='qty_$i' style='width:50px' onchange='calc_ratio($i);calc_qty_recv($i);return false;'");
+							$row['line']=$row['line_number'].
+								form_input("line[]",$row['line_number'],"readonly style='width:10px'").
+								form_input("ratio[]",$ratio,"readonly style='width:10px' id='ratio_$i'").
+								form_input("qty_sisa[]",$qty_sisa,"readonly style='width:10px' id='qty_sisa_$i'").
+								form_input("urut[]",$row['no_urut'],"readonly style='width:10px' id='urut_$i'")
+								;
+							$row['mu_qty']=form_input("mu_qty[]",$mu_qty,"readonly id='mu_qty_$i' style='width:50px'");
+							$rows[$i++]=$row;
+							
+						}
 					};
 				}
 				$data['total']=$i;
@@ -651,16 +722,30 @@ class Purchase_order extends CI_Controller {
 		return $cnt>0;
 	}
     function save_item_one(){
-        $data=$this->input->post();
-		$line_number=$data['line_number'];
+		$data=$this->input->post();
+		if(isset($data['line_number'])){
+			$line_number=$data['line_number'];
+		} else {
+			$line_number=0;
+		}
 		$item_no=$data['item_number'];
-        $po=$data['po_number_item'];
-        unset($data['po_number_item']);
+		if(isset($data['purchase_order_number'])){
+			$po=$data['purchase_order_number'];
+		} else {
+			$po=$data['po_number_item'];
+			unset($data['po_number_item']);
+	
+		}
 		
+		$msg_item_exist="";
 		if($line_number==0 || $line_number==""){
-			if($this->exist_item_no($po,$item_no)){
-				echo json_encode(array("success"=>false,"item_exist"=>true,"msg"=>"Item [$item_no] sudah ada !"));
-				return false;
+			if(!$this->sysvar->getvar("AllowSameItemOnTran")){
+				if($line_id=$this->exist_item_no($po,$item_no) ){
+				    $msg_item_exist="Item [$item_no] sudah ada !";
+	                //bolehkan dahulu !! 2018-10
+					echo json_encode(array("success"=>false,"item_exist"=>true,"msg"=>$msg_item_exist));
+					return false;					
+				}  
 			}
 		}
 		
@@ -678,9 +763,14 @@ class Purchase_order extends CI_Controller {
 //      if(isset($data['jual']))unset($data['jual']);
 //      if(isset($data['profit']))unset($data['profit']);
 		
-        $data['purchase_order_number']=$po;
-        $data['warehouse_code']=$data['gudang_item'];
-        unset($data['gudang_item']);
+		$data['purchase_order_number']=$po;
+		if(isset($data['gudang_item'])){
+			$data['warehouse_code']=$data['gudang_item'];
+			unset($data['gudang_item']);
+		} else {
+			$data['warehouse_code']=current_gudang();	
+				
+		}
         $ok=$this->purchase_order_lineitems_model->save($data);
         $this->purchase_order_model->recalc($po);
          
@@ -690,7 +780,7 @@ class Purchase_order extends CI_Controller {
             $data_qty['line_number_alloc']=$from_line;
             $data_qty['gdg']=$gdg;
             $this->purchase_order_lineitems_model->save_alloc($data_qty);
-            echo json_encode(array('success'=>true));
+            echo json_encode(array('success'=>true,'msg'=>'Success. '.$msg_item_exist));
         } else {
             echo json_encode(array('success'=>false,'msg'=>'Some errors occured.'));
         }
@@ -863,6 +953,5 @@ class Purchase_order extends CI_Controller {
             echo datasource($sql);
             
         }
-    }
-
+	}
 }

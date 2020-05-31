@@ -5491,7 +5491,7 @@ CREATE TABLE IF NOT EXISTS `qry_kartu_piutang` (
   `ref` varchar(50) DEFAULT NULL,
   `no_bukti` varchar(50) DEFAULT NULL,
   `tanggal` datetime DEFAULT NULL,
-  `jumlah` double DEFAULT NULL,
+  `amount` double DEFAULT NULL,
   `customer_number` varchar(50) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
@@ -8382,7 +8382,18 @@ from `gl_report_groups` `grg` ;
 -- Dumping structure for view simak.qry_invoice
 -- Removing temporary table and create final VIEW structure
 DROP TABLE IF EXISTS `qry_invoice`;
-CREATE VIEW `qry_invoice` AS select `i`.`invoice_date` AS `invoice_date`,`i`.`invoice_number` AS `invoice_number`,`i`.`sold_to_customer` AS `sold_to_customer`,`c`.`company` AS `company`,`i`.`due_date` AS `due_date`,`i`.`payment_terms` AS `payment_terms`,`i`.`salesman` AS `salesman`,`i`.`amount` AS `amount`,`i`.`sales_order_number` AS `sales_order_number`,`p`.`payment` AS `payment`,`r`.`retur` AS `retur`,`cr`.`cr_amount` AS `cr_amount`,`d`.`db_amount` AS `db_amount` from (((((`invoice` `i` left join `customers` `c` on((`c`.`customer_number` = `i`.`sold_to_customer`))) left join `qry_invoice_payment` `p` on((convert(`p`.`invoice_number` using utf8) = `i`.`invoice_number`))) left join `qry_invoice_retur` `r` on((convert(`r`.`your_order__` using utf8) = `i`.`invoice_number`))) left join `qry_invoice_credit` `cr` on((convert(`cr`.`docnumber` using utf8) = `i`.`invoice_number`))) left join `qry_invoice_debit` `d` on((convert(`d`.`docnumber` using utf8) = `i`.`invoice_number`))) where (`i`.`invoice_type` = _utf8'I') ;
+CREATE VIEW `qry_invoice` AS select `i`.`invoice_date` AS `invoice_date`,`i`.`invoice_number` AS `invoice_number`,`i`.`sold_to_customer` AS `sold_to_customer`,
+`c`.`company` AS `company`,`i`.`due_date` AS `due_date`,`i`.`payment_terms` AS `payment_terms`,
+`i`.`salesman` AS `salesman`,`i`.`amount` AS `amount`,`i`.`sales_order_number` AS `sales_order_number`,`p`.`payment` AS `payment`,
+`r`.`retur` AS `retur`,`cr`.`cr_amount` AS `cr_amount`,`d`.`db_amount` AS `db_amount` 
+from (((((`invoice` `i` left join `customers` `c` 
+on((`c`.`customer_number` = `i`.`sold_to_customer`))) 
+left join `qry_invoice_payment` `p` 
+on((convert(`p`.`invoice_number` using utf8) = `i`.`invoice_number`))) 
+left join `qry_invoice_retur` `r` on((convert(`r`.`your_order__` using utf8) = `i`.`invoice_number`))) 
+left join `qry_invoice_credit` `cr` on((convert(`cr`.`docnumber` using utf8) = `i`.`invoice_number`))) 
+left join `qry_invoice_debit` `d` on((convert(`d`.`docnumber` using utf8) = `i`.`invoice_number`))) 
+where (`i`.`invoice_type` = _utf8'I') ;
 
 
 -- Dumping structure for view simak.qry_invoice_credit
@@ -8418,7 +8429,9 @@ CREATE VIEW `qry_invoice_payment` AS select `payments`.`invoice_number` AS `invo
 -- Dumping structure for view simak.qry_invoice_retur
 -- Removing temporary table and create final VIEW structure
 DROP TABLE IF EXISTS `qry_invoice_retur`;
-CREATE VIEW `qry_invoice_retur` AS select `invoice`.`your_order__` AS `your_order__`,sum(`invoice`.`amount`) AS `retur` from `invoice` where (`invoice`.`invoice_type` = _utf8'R') group by `invoice`.`invoice_number` ;
+CREATE VIEW `qry_invoice_retur` AS 
+select `your_order__`,sum(`amount`) AS `retur` from `invoice` where (`invoice_type` = 'R') 
+group by `your_order__`;
 
 
 -- Dumping structure for view simak.qry_kartustock_adj
@@ -8789,6 +8802,16 @@ CREATE TABLE `qry_kartustock_union` (
 	`comments` VARCHAR(250) NULL COLLATE 'utf8_general_ci'
 ) ENGINE=MyISAM;
 
+CREATE TABLE `hr_paycheck_sal_comp` (
+  `pay_no` varchar(50) DEFAULT NULL,
+  `salary_com_code` varchar(50) DEFAULT NULL,
+  `salary_com_name` varchar(150) DEFAULT NULL,
+  `org_value` double DEFAULT NULL,
+  `calc_value` double DEFAULT NULL,
+  `unit` varchar(50) DEFAULT NULL,
+  `id` int(9) NOT NULL,
+  `manual` int(11) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- Dumping structure for view simak.qry_coa
 -- Removing temporary table and create final VIEW structure

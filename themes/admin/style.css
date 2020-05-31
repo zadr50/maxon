@@ -7,25 +7,25 @@ a.l-btn span.l-btn-left {
   height: 24px;
 }
 body {
-    font-family: "Verdana",Helvetica,Arial,sans-serif;	
-    padding: 0px;
-    margin:0 auto;
+    --font-family: "Verdana",Helvetica,Arial,sans-serif;	
+    --padding: 0px;
+    --margin:0 auto;
 	--width: auto; 
 	--background-color: #E9E7E7;
 }
 .bg1 {
 	--background: black;
-	font-family:Verdana;
+	--font-family:Verdana;
 }
 .bg2 {
 	--background: url(../../images/p1.png);
 }
  
 input,select {
-	padding:1px;
-	margin:2px;
-    border: solid 1px #ccc;
-    border-radius: 2px; 
+	--padding:1px;
+	--margin:2px;
+    --border: solid 1px #ccc;
+    --border-radius: 2px; 
 }
 input[type="radio"], input[type="checkbox"] {
     line-height: normal;
@@ -45,11 +45,12 @@ input[type="radio"], input[type="checkbox"] {
     border-bottom: 1px solid #777;
 }
 .sidebar {
-	background: #e0ecff;
+	background: #000000;
 	padding-top:10px;
 	margin-top:-10px;
-	height:auto;
+	--height:auto;
 	padding:0px;
+	overflow-y:scroll;
 	
 }
 .sidebar .panel .panel-body {
@@ -595,7 +596,7 @@ background: url(../../images/welcome_bg.png) no-repeat center top;
 	margin-top: auto;
 	margin-bottom: auto;
 }
-.footer {
+.footerx {
 	background-color:  #e0ecff;
 	padding: 10px;
 	min-height:350px;
@@ -634,10 +635,16 @@ padding-left: 5px;
 	color: gray;
 }
 .info {
-	width:200px;height:100px;float:left;font-size:9px;margin:5px;
+	--width:200px;
+	--height:100px;
+	--float:left;font-size:9px;
+	--margin:5px;
 }
 .info .photo img {
-	width:50px;height:50px;float:left;margin:5px;
+	--width:50px;
+	--height:50px;
+	--float:left;
+	--margin:5px;
 }
 .info:hover {
 	cursor:pointer;
@@ -658,9 +665,7 @@ padding-left: 5px;
 }
 
 .mxmod:hover, .hover-effect {
-	-webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.2);
-	-o-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.2);
-	box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.2);
+	background-color:rgb(222, 243, 171);
 }
 .mxicon {
 	margin: 5px;
@@ -679,12 +684,11 @@ padding-left: 5px;
 }
 .mxmod {
 	margin: 10px;
-	--width: 300px;
-	--height: 120px;
+	width: 300px;
+	height: 120px;
 	float: left;
-	-- border:1px solid #cdc;
-	display: block;
-	--background-color: #cdc;
+	display: block;	
+	background-color:white;
 	cursor: pointer;
 	padding:5px;
 }
@@ -760,7 +764,6 @@ padding-left: 5px;
 	background: linear-gradient(to top,#EFF5FF 0,#E0ECFF 100%);
 	color: black;
 	padding: 3px;
-    border-bottom: #444488 1px solid;
     margin-bottom: 3px;	
 }	
 .box-badge{

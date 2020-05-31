@@ -21,7 +21,7 @@ function __construct(){
 					array("fieldname"=>"kode","caption"=>"Kode","width"=>"80px"),
 					array("fieldname"=>"category","caption"=>"Kelompok","width"=>"200px")
 				);			
-		$setting['dlgUrlQuery']=base_url()."index.php/category/browse_data/";
+		$setting['dlgUrlQuery']="category/browse_data";
 		return $this->list_of_values->render($setting);
 	}
 	
@@ -48,10 +48,21 @@ function __construct(){
 		return $this->db->get($this->table_name);
 	}
 	function save($data){
-		$this->db->insert($this->table_name,$data);
-		return $this->db->insert_id();
+        if(isset($data["inventory_account"]))$data["inventory_account"]=account_id($data["inventory_account"]);
+        if(isset($data["cogs_account"]))$data["cogs_account"]=account_id($data["cogs_account"]);
+        if(isset($data["sales_account"]))$data["sales_account"]=account_id($data["sales_account"]);
+        if(isset($data["tax_account"]))$data["tax_account"]=account_id($data["tax_account"]);
+	    
+	    
+		return $this->db->insert($this->table_name,$data);
+//		return $this->db->insert_id();
 	}
 	function update($id,$data){
+        if(isset($data["inventory_account"]))$data["inventory_account"]=account_id($data["inventory_account"]);
+        if(isset($data["cogs_account"]))$data["cogs_account"]=account_id($data["cogs_account"]);
+        if(isset($data["sales_account"]))$data["sales_account"]=account_id($data["sales_account"]);
+        if(isset($data["tax_account"]))$data["tax_account"]=account_id($data["tax_account"]);
+	    
 		$this->db->where($this->primary_key,$id);
 		return $this->db->update($this->table_name,$data);
 	}
@@ -114,4 +125,30 @@ function __construct(){
 	function discount_delete($rowid){
 		return $this->db->where("id",$rowid)->delete("inventory_price_customers");	
 	}
+	function lookup(){
+		$this->load->library("list_of_values");
+		$lookup = $this->list_of_values->render(array(
+			"dlgBindId"=>"inventory_categories","modules"=>"category",
+			"dlgRetFunc"=>"			
+				$('#category').val(row.kode);
+			",
+			"dlgCols"=>array(
+				array("fieldname"=>"category","caption"=>"Category","width"=>"180px"),
+				array("fieldname"=>"kode","caption"=>"Kode","width"=>"80px")        	        		
+			)
+		));
+		return $lookup;
+	
+	}
+	function get_category($code){
+		$ret="";
+		if($q=$this->get_by_id($code)){
+			if($r=$q->row()){
+				$ret=$r->category;
+			}
+		}
+		return $ret;
+	}
+
+
 }

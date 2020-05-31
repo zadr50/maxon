@@ -46,13 +46,13 @@ CREATE TABLE IF NOT EXISTS `employee` (
   `tempat_lahir` varchar(50) default NULL,
   `pendidikan` varchar(50) default NULL,
   `gol_darah` varchar(50) default NULL,
-  PRIMARY KEY  (`nip`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1
-
+  PRIMARY KEY (`nip`),
+  KEY `x1` (`nama`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$table="employeeeducations";
+$table.=", employeeeducations";
 
 $sql="
 
@@ -69,13 +69,14 @@ CREATE TABLE IF NOT EXISTS `employeeeducations` (
   `graduate` bit(1) default NULL,
   `sourceautonumber` varchar(50) character set utf8 default NULL,
   `sourcefile` varchar(255) character set utf8 default NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `x1` (`employeeid`)  
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$table="employeeexperience";
+$table.=", employeeexperience";
 
 $sql="
 
@@ -95,14 +96,15 @@ CREATE TABLE IF NOT EXISTS `employeeexperience` (
   `reasontoleave` varchar(255) character set utf8 default NULL,
   `sourceautonumber` varchar(50) character set utf8 default NULL,
   `sourcefile` varchar(255) character set utf8 default NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `x1` (`employeeid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
 
-$table="employeefamily";
+$table.=", employeefamily";
 
 $sql="
 
@@ -117,14 +119,15 @@ CREATE TABLE IF NOT EXISTS `employeefamily` (
   `mariagestatus` varchar(255) character set utf8 default NULL,
   `sourceautonumber` varchar(50) character set utf8 default NULL,
   `sourcefile` varchar(255) character set utf8 default NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `x1` (`employeeid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
 
-$table="employeelicense";
+$table.=", employeelicense";
 
 $sql="
 
@@ -137,13 +140,14 @@ CREATE TABLE IF NOT EXISTS `employeelicense` (
   `finishdate` datetime default NULL,
   `sourceautonumber` varchar(50) character set utf8 default NULL,
   `sourcefile` varchar(255) character set utf8 default NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `x1` (`employeeid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$table="employeemedical";
+$table.=", employeemedical";
 
 $sql="
 
@@ -154,13 +158,14 @@ CREATE TABLE IF NOT EXISTS `employeemedical` (
   `description` varchar(255) character set utf8 default NULL,
   `sourceautonumber` varchar(50) character set utf8 default NULL,
   `sourcefile` varchar(255) character set utf8 default NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `x1` (`employeeid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$table="employeerewardpunish";
+$table.=", employeerewardpunish";
 
 $sql="
 
@@ -173,13 +178,14 @@ CREATE TABLE IF NOT EXISTS `employeerewardpunish` (
   `typerp` varchar(255) character set utf8 default NULL,
   `sourceautonumber` varchar(50) character set utf8 default NULL,
   `sourcefile` varchar(255) character set utf8 default NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `x1` (`employeeid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$table="employeeskill";
+$table.=", employeeskill";
 
 $sql="
 
@@ -190,13 +196,14 @@ CREATE TABLE IF NOT EXISTS `employeeskill` (
   `skilllevel` varchar(255) character set utf8 default NULL,
   `sourceautonumber` varchar(50) character set utf8 default NULL,
   `sourcefile` varchar(255) character set utf8 default NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `x1` (`employeeid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$table="employeetraining";
+$table.=", employeetraining";
 
 $sql="
 
@@ -210,13 +217,14 @@ CREATE TABLE IF NOT EXISTS `employeetraining` (
   `certificate` varchar(255) character set utf8 default NULL,
   `sourceautonumber` varchar(50) character set utf8 default NULL,
   `sourcefile` varchar(255) character set utf8 default NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `x1` (`employeeid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$table="employee_level";
+$table.=", employee_level";
 
 $sql="
 
@@ -232,7 +240,7 @@ CREATE TABLE IF NOT EXISTS `employee_level` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$table="employee_type";
+$table.=", employee_type";
 
 $sql="
 
@@ -246,7 +254,7 @@ CREATE TABLE IF NOT EXISTS `employee_type` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$table="exchange_rate";
+$table.=", exchange_rate";
 
 $sql="
 
@@ -263,7 +271,7 @@ CREATE TABLE IF NOT EXISTS `exchange_rate` (
 
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 	
-$table="hr_leaves";
+$table.=", hr_leaves";
 
 $sql="
 CREATE TABLE IF NOT EXISTS `hr_leaves` (

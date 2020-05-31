@@ -4,14 +4,14 @@
 	<thead>
 		<tr>
 			<th data-options="field:'tanggal_jth_tempo', width:'80'">Tanggal</th>
-			<th data-options="field:'awal', width:'80'">Awal</th>
-			<th data-options="field:'pokok', width:'80'">Pokok</th>
-			<th data-options="field:'bunga', width:'80'">Bunga</th>
-			<th data-options="field:'angsuran', width:'80'">Angsuran</th>
-			<th data-options="field:'akhir', width:'80'">Akhir</th>
-			<th data-options="field:'payment_no', width:'80'">Nomor Bayar</th>
-			<th data-options="field:'comments', width:'80'">Catatan</th>
-			<th data-options="field:'loan_number', width:'80'">Nomor Pinjaman</th>
+			<th data-options="<?=col_number('awal',2)?>">Awal</th>			
+			<th data-options="<?=col_number('pokok',2)?>">Pokok</th>
+			<th data-options="<?=col_number('bunga',2)?>">Bunga</th>
+			<th data-options="<?=col_number('angsuran',2)?>">Angsuran</th>
+			<th data-options="<?=col_number('akhir',2)?>">Akhir</th>
+			<th data-options="<?=col_number('payment_no',2)?>">Nomor Bayar</th>
+			<th data-options="<?=col_number('comments',2)?>">Catatan</th>
+			<th data-options="field:'loan_number',width:'80'">Nomor Pinjaman</th>
 			<th data-options="field:'id', width:'80'">Id</th>
 		</tr>
 	</thead>
@@ -123,7 +123,7 @@ padding:10px 20px;left:100px;top:20px"
 		var row = $('#dgCicil').datagrid('getSelected');
 	 
 		if (row){
-			url='<?=base_url()?>index.php/payroll/pinjaman/delete/'+row.id;
+			url='<?=base_url()?>index.php/payroll/pinjaman/delete_by_id/'+row.id;
 			$.ajax({
 				type: "GET", url: url,
 				success: function(msg){

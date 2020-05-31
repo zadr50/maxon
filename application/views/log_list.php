@@ -6,8 +6,10 @@
 		<input type='submit' value='Filter'>
 	</form>
 </div>
+<div class="col-md-12">
+    
 <?php
-		echo "<table class='table' width='100%'>
+		echo "<table class='table2' width='100%;height:400px'>
 		<thead><th>TglJam</th><th>UserId</th><th>Jenis</th><th>Run</th>
 		<th>Nomor Bukti</th></thead><tbody>";
 		if($syslog){
@@ -23,3 +25,5 @@
 
 
 ?>
+
+</div>

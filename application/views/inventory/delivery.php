@@ -123,6 +123,8 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
 					<th data-options="field:'multi_unit',width:50,align:'left',editor:'text'">M Unit</th>
                     <th data-options="<?=col_number('cost',2)?>">Cost</th>
                     <th data-options="<?=col_number('total_amount',2)?>">Total</th>
+					<th data-options="field:'warehouse_code',width:80">Asal</th>
+					<th data-options="field:'supplier_number',width:80">Tujuan</th>
 					<th data-options="field:'line_number',width:30,align:'right'">Line</th>
 				</tr>
 			</thead>
@@ -139,7 +141,7 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
     echo $lookup_gudang;
     echo $lookup_doc_type;
     echo $lookup_cost_account;
-    echo load_view('inventory/inventory_select'); 
+	echo $lookup_inventory;
     echo load_view('inventory/input_qty'); 
     echo load_view("inventory/select_unit");
     echo load_view("inventory/inventory_select_checkbox");

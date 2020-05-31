@@ -68,6 +68,7 @@ padding:10px 20px;left:10px;top:20px"
 		var nomor=$('#docnumber').val();
 		if(nomor=="")return false;
 		xurl=CI_ROOT+'purchase_invoice/find/'+nomor;
+		loading();
 		$.ajax({
 					type: "GET",
 					url: xurl,
@@ -76,6 +77,7 @@ padding:10px 20px;left:10px;top:20px"
 						var obj=jQuery.parseJSON(msg);
 						$('#faktur_info').html('Tanggal: '+obj.po_date+', Jumlah: '+obj.amount+', Saldo: '+obj.saldo);
 						saldo_faktur=c_(obj.saldo);
+						loading_close();
 					},
 					error: function(msg){alert(msg);}
 		});

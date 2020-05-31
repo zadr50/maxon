@@ -11,16 +11,6 @@ class Anggota extends CI_Controller {
 		parent::__construct();
 		if(!$this->access->is_login())header("location:".base_url());
  		$this->load->helper(array('url','form','browse_select','mylib_helper'));
-                
-        $multi_company=$this->config->item('multi_company');
-       if($multi_company){
-            $company_code=$this->session->userdata("company_code","");
-            if($company_code!=""){
-               $this->db = $this->load->database($company_code, TRUE);
-           }
-       }         
-        
-        
         $this->load->library('javascript');
         $this->load->library('template');
 		$this->load->library('form_validation');
@@ -52,10 +42,10 @@ class Anggota extends CI_Controller {
 		$data=data_table($this->table_name,$record);
         $data['mode']='';
         $data['message']='';
-		$data['join_date']= date("Y-m-d H:i:s");
-		$data['date_birth']=$data['join_date'];
-		$data['list_kelompok']=$this->kelompok_model->item_list();
-		if($record==NULL)$data['no_anggota']=$this->nomor_bukti();
+		if($record==NULL){
+			$data['no_anggota']=$this->nomor_bukti();
+			$data['join_date']= date("Y-m-d H:i:s");
+		} 
         return $data;
 	}
 	function index(){$this->browse();}

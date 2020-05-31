@@ -1,5 +1,5 @@
 <div class='clear'></div>
-<div class='col-md-12 navbar-maxon box-footer bg-head-foot' style='border-top:1px solid lightgray;margin-top:10px;padding:10px'>
+<div class='col-md-12 navbar-maxon box-footer bg-head-footx well well-sm'>
 <img src='<?=base_url()?>images/logo_maxon.png' style='float:left;margin:5px'>
 <p>Copyright &copy;2000-2015 Talagasoft Indonesia 
 - Developed & Design by www.talagasoft.com</p>

@@ -74,7 +74,11 @@ class Delivery extends CI_Controller {
             $setting['dlgBindId']="doc_type";
             $setting['sysvar_lookup']='doc_type_delivery';
             $data['lookup_doc_type']=$this->list_of_values->render($setting);
-            $data["ref1"]=account($data["ref1"]);
+            
+            
+            $data["cost_account"]=account($data["cost_account"]);
+			
+			
             $setwh['dlgBindId']="warehouse";
             $setwh['dlgRetFunc']="$('#warehouse_code').val(row.location_number);";
             $setwh['dlgCols']=array( 
@@ -104,6 +108,8 @@ class Delivery extends CI_Controller {
                     )    
                 )
             );
+			$data['lookup_inventory']=$this->list_of_values->lookup_inventory();
+			
             return $data;
 	}
 	function index()
@@ -214,13 +220,15 @@ class Delivery extends CI_Controller {
     function browse_data($offset=0,$limit=10,$nama=''){
 		$sql=$this->sql;
         
+		$no=$this->input->get('sid_nomor');
+
         $search="";
         if($this->input->get("tb_search")){
             $search=$this->input->get("tb_search");
+			if($search!="")$no=$search;
         }
         
     	$nama=$this->input->get('sid_supplier');
-		$no=$this->input->get('sid_nomor');
         
         
 		$d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));
@@ -297,7 +305,7 @@ class Delivery extends CI_Controller {
         if($nomor!="AUTO"){
             $this->inventory_products_model->update_header($nomor,$data);
         }
-        echo json_encode(array("success"=>true,"msg"=>"Finish"));
+        echo json_encode(array("success"=>true,"msg"=>"Data sudah diupdate silahkan refresh."));
     }
     function save_item(){
         $item_no=$this->input->post('item_number');
@@ -372,8 +380,9 @@ class Delivery extends CI_Controller {
 	function items($nomor,$type='')
 	{
 		$nomor=urldecode($nomor);
-		$sql="select p.item_number,i.description,p.quantity_received as quantity, 
-		p.unit,p.cost,p.id as line_number,p.total_amount,p.multi_unit,p.mu_qty,p.mu_price
+		$sql="select p.item_number,p.description,p.quantity_received as quantity, 
+		p.unit,p.cost,p.id as line_number,p.total_amount,p.multi_unit,p.mu_qty,p.mu_price,
+		p.warehouse_code,p.supplier_number
 		from inventory_products p
 		left join inventory i on i.item_number=p.item_number
 		where shipment_id='$nomor'";
@@ -382,7 +391,9 @@ class Delivery extends CI_Controller {
 	}
 	function posting($nomor){
 		$this->inventory_products_model->posting($nomor);
-		redirect("delivery/view/$nomor");
+		$this->view($nomor);
+//		redirect("delivery/view/$nomor");
+		
 	}
 	function unposting($nomor){
 		$this->inventory_products_model->unposting($nomor);

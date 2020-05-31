@@ -1,5 +1,5 @@
 <div class="thumbnail box-gradient">
-	<?
+	<?php
 	echo link_button('Save', 'save()','save');		
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','false',base_url().'index.php/supplier/add');		
@@ -75,6 +75,13 @@
               <td>Telpon 2</td>
               <td><?php echo form_input('nomor_hp',$nomor_hp);?></td>
             </tr>
+            <tr>
+              <td>Filter Item</td><td colspan="4">
+              	<?=form_checkbox("show_only_item",1,$show_only_item,"style='width:20px'")?>
+              	<i>Tampil hanya item supplier ini ketika membuat transaksi (ex: PO/Faktur)</i>
+              	</td>
+
+            </tr>
             
             <tr><td colspan=5><h3>Accounting</h3></td></tr>
             
@@ -114,7 +121,7 @@
             <tr>
               <td>Saldo Hutang</td>
               <td><strong>Rp. <?=number_format($saldo);?></strong></td>
-              <td colspan=2>Aktif<?=form_radio('active',1,$active=='1'?TRUE:FALSE," style='width:30px' ");?>
+              <td colspan="2">Aktif<?=form_radio('active',1,$active=='1'?TRUE:FALSE," style='width:30px' ");?>
                 Yes <?php echo form_radio('active',0,$active=='0'?TRUE:FALSE," style='width:30px' ");?> No </td>
                 <td></td>
           </tr>  
@@ -154,8 +161,10 @@
             </tr>
             <tr>
               <td>Biaya Admin</td><td><?php echo form_input('biaya_admin',$biaya_admin);?></td>
-              <td>Partisipasi</td><td><?php echo form_input('partisipasi',$partisipasi);?></td>
-                
+              <td>Partisipasi (%)</td><td><?php echo form_input('partisipasi',$partisipasi);?></td>
+              <td>Jenis Partisipasi</td><td><?=form_input("jenis_partisipasi",$jenis_partisipasi,"id='jenis_partisipasi'")
+			  	.link_button("", "dlgjenis_partisipasi_show()","search")
+			  	.link_button('',"dlgjenis_partisipasi_list('jenis_partisipasi');return false;",'add','false');?></td>  
             </tr>
             
         </table>
@@ -198,9 +207,13 @@
 			<form method="post">
 			<table width="100%">
 			<tr><td>Date From</td>
-			<td><?=form_input('d1',date("Y-m-d"),'id=d1 class="easyui-datetimebox" ');?></td>
+			<td><?=form_input('d1',date("Y-m-1"),'id=d1 class="easyui-datetimebox" 
+			 data-options="formatter:format_date,parser:parse_date"
+                 style="width:200px" ');?></td>
 			<td>Date To</td>
-			<td><?=form_input('d2',date("Y-m-d"),'id=d2  class="easyui-datetimebox" ');?></td>
+			<td><?=form_input('d2',date("Y-m-d h:i:s"),'id=d2  class="easyui-datetimebox" 
+			 data-options="formatter:format_date,parser:parse_date"
+                 style="width:200px" ');?></td>
 			<td><?=link_button('Search','search_cards()','search');?></td>
 			</tr>
 			</table>
@@ -229,9 +242,13 @@
 			<form method="post">
 			<table width="100%">
 			<tr><td>Date From</td>
-			<td><?=form_input('date_from_po',date("Y-m-d"),'id=date_from_po class="easyui-datetimebox" ');?></td>
+			<td><?=form_input('date_from_po',date("Y-m-1"),'id=date_from_po 
+			     class="easyui-datetimebox" data-options="formatter:format_date,parser:parse_date"
+			     style="width:200px" ');?></td>
 			<td>Date To</td>
-			<td><?=form_input('date_to_po',date("Y-m-d"),'id=date_to_po  class="easyui-datetimebox" ');?></td>
+			<td><?=form_input('date_to_po',date("Y-m-d h:i:s"),'id=date_to_po  
+			     class="easyui-datetimebox" data-options="formatter:format_date,parser:parse_date"
+			     style="width:200px" ');?></td>
 			<td><?=link_button('Search','search_po()','search');?></td>
 			</tr>
 			</table>
@@ -260,9 +277,13 @@
 			<form method="post">
 			<table width="100%">
 			<tr><td>Date From</td>
-			<td><?=form_input('date_from_inv',date("Y-m-d"),'id=date_from_inv class="easyui-datetimebox" ');?></td>
+			<td><?=form_input('date_from_inv',date("Y-m-1"),'id=date_from_inv class="easyui-datetimebox" 
+             data-options="formatter:format_date,parser:parse_date"
+                 style="width:200px"');?></td>
 			<td>Date To</td>
-			<td><?=form_input('date_to_inv',date("Y-m-d"),'id=date_to_inv  class="easyui-datetimebox" ');?></td>
+			<td><?=form_input('date_to_inv',date("Y-m-d h:i:s"),'id=date_to_inv  class="easyui-datetimebox" 
+             data-options="formatter:format_date,parser:parse_date"
+                 style="width:200px"');?></td>
 			<td><?=link_button('Search','search_invoice()','search');?></td>
 			</tr>
 			</table>
@@ -304,7 +325,8 @@
 	<?=link_button('View', 'view_invoice()','edit');?>		
 </div>
    
-<script>
+<script language="JavaScript">
+
   	function save(){  		 
   		if($('#supplier_number').val()==''){alert('Isi kode supplier !');return false;}
   		if($('#supplier_name').val()==''){alert('Isi nama supplier !');return false;}
@@ -429,4 +451,6 @@
 <?=$lookup_type_of_vendor?>   
 <?=load_view('gl/select_coa_link')?> 
 <?=$lookup_po_type?>
+<?=$lookup_jenis_partisipasi?>
+
       

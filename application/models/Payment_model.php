@@ -12,12 +12,39 @@ private $table_name='payments';
 		$this->load->model('check_writer_model');
 	}       
     function total_amount($faktur){
-        $this->db->select("sum(amount_paid) as total_amount");
-        $this->db->where("invoice_number",$faktur);
-        $this->db->from("payments");
-        $row=$this->db->get();
-        $r=$row->row();
-        return $r->total_amount;
+        $s="select sum(p.amount_paid) as total_amount from payments p 
+        where p.invoice_number='$faktur' and p.how_paid not in ('1','GIRO')";
+        $total=0;
+        if($q=$this->db->query($s)){
+            if($r=$q->row()){
+                $total=$r->total_amount;                
+            }            
+        }
+        return $total;
+    }
+    function total_amount_giro_cair($faktur){
+        $s="select sum(p.amount_paid) as total_amount from payments p 
+        left join check_writer cw on cw.voucher=p.no_bukti
+        where p.invoice_number='$faktur' and p.how_paid in ('1','GIRO') and cw.cleared=1";
+        $total=0;
+        if($q=$this->db->query($s)){
+            if($r=$q->row()){
+                $total=$r->total_amount;                
+            }            
+        }
+        return $total;
+    }
+    function total_amount_giro_belum_cair($faktur){
+        $s="select sum(p.amount_paid) as total_amount from payments p 
+        left join check_writer cw on cw.voucher=p.no_bukti
+        where p.invoice_number='$faktur' and p.how_paid in ('1','GIRO') and cw.cleared=0";
+        $total=0;
+        if($q=$this->db->query($s)){
+            if($r=$q->row()){
+                $total=$r->total_amount;                
+            }            
+        }
+        return $total;
     }
 	
 	function count_all(){
@@ -33,6 +60,15 @@ private $table_name='payments';
 		$this->db->insert($this->table_name,$data);
 		$id=$this->db->insert_id();
 		if($recalc)$this->invoice_model->recalc($faktur);
+		
+        	$s="select p.sold_to_customer from payments pp join invoice p on p.invoice_number=pp.invoice_number 
+        	where pp.invoice_number='$faktur' ";
+        	if($q=$this->db->query($s)){
+        		if($r=$q->row()){
+		        	customer_need_update($r->sold_to_customer);        			
+        		}
+        	}
+		
 		return $id;
 	}
 	function save_pos($data){
@@ -98,22 +134,55 @@ private $table_name='payments';
 	}
 	function update($id,$data){
 		$this->db->where($this->primary_key,$id);
-		return $this->db->update($this->table_name,$data);
+		$ok = $this->db->update($this->table_name,$data);
+
+		if(isset($data['invoice_number'])){
+			$faktur=$data['invoice_number'];
+        	$s="select p.sold_to_customer from payments pp join invoice p on p.invoice_number=pp.invoice_number 
+        	where pp.invoice_number='$faktur' ";
+        	if($q=$this->db->query($s)){
+        		if($r=$q->row()){
+		        	customer_need_update($r->sold_to_customer);        			
+        		}
+        	}
+			
+		}
+		
+		return $ok;
 	}
 	function update_id($id,$data){
-		$this->db->where("line_number",$id);
-		return $this->db->update($this->table_name,$data);
+		return $this->db->where("line_number",$id)->update($this->table_name,$data);
 	}
 	function delete($id){
 		$this->db->query("update invoice set paid=false 
 			where invoice_number in (select invoice_number from payments 
 				where no_bukti='$id')");
-		$this->db->where($this->primary_key,$id);
-		return $this->db->delete($this->table_name);
+		$this->db->where($this->primary_key,$id);		
+		$ok = $this->db->delete($this->table_name);
+		
+        	$s="select p.sold_to_customer from payments pp join invoice p on p.invoice_number=pp.invoice_number 
+        	where pp.line_number='$id' ";
+        	if($q=$this->db->query($s)){
+        		if($r=$q->row()){
+		        	customer_need_update($r->sold_to_customer);        			
+        		}
+        	}
+		
+		return $ok;
 	}
 	function delete_id($id){
 		$this->db->where("line_number",$id);
-		return $this->db->delete($this->table_name);
+		$ok = $this->db->delete($this->table_name);
+		
+        	$s="select p.sold_to_customer from payments pp join invoice p on p.invoice_number=pp.invoice_number 
+        	where pp.line_number='$id' ";
+        	if($q=$this->db->query($s)){
+        		if($r=$q->row()){
+		        	customer_need_update($r->sold_to_customer);        			
+        		}
+        	}
+		
+		return $ok;
 	}
 	function nomor_bukti($add=false){
 		if($add){

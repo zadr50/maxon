@@ -2,8 +2,9 @@
 
 class Invoice extends CI_Controller {
     private $limit=10;
-    private $sql="select i.invoice_number,i.invoice_date,i.amount, 
-            c.company,i.salesman,i.warehouse_code
+    private $sql="select i.invoice_number,i.invoice_date,i.amount,i.saldo_invoice, 
+			c.company,i.salesman,i.warehouse_code,i.payment_terms,i.sold_to_customer,
+			i.sales_order_number
             from invoice i
             left join customers c on c.customer_number=i.sold_to_customer
             where  invoice_type='i' ";
@@ -59,7 +60,7 @@ class Invoice extends CI_Controller {
 		      $data['invoice_date']= date("Y-m-d");
 		      $data['invoice_number']="AUTO";  //$this->nomor_bukti();
               $data['invoice_type']='I';
-              $data['warehouse_code']=cid();
+              $data['warehouse_code']=current_gudang();
 		}
 		$data['summary_info']='';
 		$data['customer_info']='';
@@ -114,6 +115,8 @@ class Invoice extends CI_Controller {
 			)
 		);
                 
+        $data['lookup_inventory']=$this->list_of_values->lookup_inventory();
+		
 		return $data;
 	}
 	function index()
@@ -184,7 +187,7 @@ class Invoice extends CI_Controller {
 		$this->invoice_model->recalc($id);
 		if ($ok){
 			if($mode=="add")$this->nomor_bukti(true);
-			echo json_encode(array('success'=>true,'invoice_number'=>$id));
+			echo json_encode(array('success'=>true,'invoice_number'=>$id,'data'=>$data));
 		} else {
 			echo json_encode(array('msg'=>'Some errors occured.'));
 		}
@@ -261,13 +264,30 @@ class Invoice extends CI_Controller {
 		} else {
 			echo json_encode(array('msg'=>'Some errors occured.'));
 		}
-    }        
+	}        
+	function doc_ref_line($id){
+		$ret="";
+		$s="select from_line_doc from invoice_lineitems where invoice_number='$id' and from_line_doc<>''";
+		if($q=$this->db->query($s)){
+			if($r=$q->row()){
+				$ret=$r->from_line_doc;
+			}
+		}
+		return $ret;
+	}
 	function view($id,$message=null){
 		$id=urldecode($id);
 		 $data['id']=$id;
 		 $this->invoice_model->recalc($id);
 		 $model=$this->invoice_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
+		 if($data['sales_order_number']==''){
+			 $data['sales_order_number']=$this->doc_ref_line($id);
+			 if($data['sales_order_number']!=''){
+				 $this->db->query("update invoice set sales_order_number='".$data['sales_order_number']."' 
+				 	where invoice_number='$id'");
+			 }
+		 }
 		 $data['mode']='view';
          $data['message']=$message;
          $data['customer_list']=$this->customer_model->select_list();  
@@ -318,16 +338,17 @@ class Invoice extends CI_Controller {
 
 	
 		$data['controller']=$this->controller;
-		$data['fields_caption']=array('Nomor Faktur','Tanggal','Jumlah','Nama Customer',
-			'Salesman','Gudang');
-		$data['fields']=array('invoice_number','invoice_date','amount', 
-            'company','salesman','warehouse_code');
+		$data['fields_caption']=array('Nomor Faktur','Tanggal','Termin','Jumlah','Customer','Nama Customer',
+			'Salesman','Gudang','Ref');
+		$data['fields']=array('invoice_number','invoice_date','payment_terms','amount', 
+            'sold_to_customer','company','salesman','warehouse_code','sales_order_number');
 					
 		if(!$data=set_show_columns($data['controller'],$data)) return false;
 			
 		$data['field_key']='invoice_number';
 		$data['caption']='DAFTAR FAKTUR PENJUALAN';
 		$data['posting_visible']=true;
+		$data['import_visible']=true;
         $data['fields_format_numeric']=array("amount");
 
 		$this->load->library('search_criteria');
@@ -367,6 +388,9 @@ class Invoice extends CI_Controller {
 			}
 		}
 		if(lock_report_salesman())$sql.=" and i.salesman='".current_salesman()."'";
+        
+        $sql.=" order by i.invoice_number";
+        
         if($this->input->get("page"))$offset=$this->input->get("page");
         if($this->input->get("rows"))$limit=$this->input->get("rows");
         if($offset>0)$offset--;
@@ -624,6 +648,8 @@ class Invoice extends CI_Controller {
 		$this->invoice_model->recalc($faktur);
 		return "<table class='table'><tr><td>Invoice Amount: </td><td>".number_format($this->invoice_model->amount)."</td></tr>"
 			."<tr><td>Payment Amount: </td><td>".number_format($this->invoice_model->amount_paid)."</td></tr>"
+            ."<tr><td>Payment Amount (Giro Blm Cair): </td><td>".number_format($this->invoice_model->amount_paid_giro_belum_cair)."</td></tr>"
+			."<tr><td>Payment Amount (Giro Cair): </td><td>".number_format($this->invoice_model->amount_paid_giro_cair)."</td></tr>"
 			."<tr><td>Retur Amount: </td><td>".number_format($this->invoice_model->retur_amount)."</td></tr>"
 			."<tr><td>CrDb Amount: </td><td>".number_format($this->invoice_model->crdb_amount)."</td></tr>"
 			."<tr><td>Balance Amount: </td><td>".number_format($this->invoice_model->saldo)."</td></tr></table>"; 
@@ -685,7 +711,7 @@ class Invoice extends CI_Controller {
 		from invoice i left join customers c on c.customer_number=i.sold_to_customer
 		where invoice_type='I' and due_date>=".date('Y-m-d')."  
 		order by invoice_date   		
-		limit 5
+		limit 13
 		";
 		echo datasource($sql);
 	}
@@ -731,7 +757,8 @@ class Invoice extends CI_Controller {
 		$nomor=urldecode($nomor);
 		$sql="select p.item_number,p.description,p.quantity,
 		p.unit,p.price,p.discount,p.amount,p.line_number,p.revenue_acct_id,coa.account,
-		coa.account_description,p.disc_2,p.disc_3,p.cost,p.multi_unit,p.mu_qty,p.mu_harga 
+		coa.account_description,p.disc_2,p.disc_3,p.cost,p.multi_unit,p.mu_qty,p.mu_harga,
+		p.no_urut,p.from_line_type,p.from_line_doc 
 		from invoice_lineitems p
 		left join inventory i on i.item_number=p.item_number
 		left join chart_of_accounts coa on coa.id=p.revenue_acct_id
@@ -797,7 +824,10 @@ class Invoice extends CI_Controller {
 		echo datasource($s);
 	}
 	function unposting($nomor) {
-		if (!allow_mod2('_30165'))  exit;
+		if (!allow_mod2('_30165'))  {
+			echo "Access denied module: _130165 !!";
+			exit;
+		}
 		$nomor=urldecode($nomor);
 		$message=$this->invoice_model->unposting($nomor);		
 		$this->view($nomor);
@@ -1332,6 +1362,7 @@ echo "<p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><t
 		from invoice i left join invoice_lineitems il on il.invoice_number=i.invoice_number
 		where invoice_type='I' and invoice_date between '".date('Y-m-d')."' 
 		and '".date("Y-m-d")." 23:59:50' 
+		limit 5
 		 
 		union all 
 		
@@ -1342,6 +1373,7 @@ echo "<p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><t
 		where sales_date between '".date('Y-m-d')."' 
 		and '".date("Y-m-d")." 23:59:50' 
 		 
+        limit 5
 		
 		";
 		echo datasource($sql);
@@ -1367,7 +1399,68 @@ echo "<p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><t
         $data['list_nota']=$list_nota;
         echo json_encode($data);
 	}
-	
+	function import_invoice(){
+		$data['caption']="IMPORT DATA MASTER";
+		$this->template->display("sales/import_sales",$data);
+	}
+	function import_invoice_process(){
+		$filename=$_FILES["file_txt"]["tmp_name"];
+		if($_FILES["file_txt"]["size"]== 0){
+			echo json_encode(array("success"=>false,"msg"=>"File kosong!"));
+			return false;
+		}
+		$this->load->model("sales/import_model");
+		$file = fopen($filename, "r");
+		while (($row = fgetcsv($file, 10000, chr(9))) !== FALSE)
+		{
+			$this->import_model->process_row($row);
+			//var_dump($row);
+		}
+		fclose($file);
+		echo json_encode(array('success'=>true,'msg'=>'Finish'));		
+	}
+	function copy_to(){
+			
+		$this->load->model("replicate_model");
 		
+		$source_db=$this->input->get("db_src");
+		$target_db=$this->input->get("db_tgt");
+		$date_from=$this->input->get("date1");
+		$date_to=$this->input->get("date2");
+		$outlet=$this->input->get("outlet");
+		$invoice_type=$this->input->get("type");
+		if($target_db=="" || $date_from=="" || $date_to=="" || $outlet=="" || $invoice_type==""){
+			echo "</br>Invalid parameter for target_db or date or outlet !";
+			return false;
+		}
+		if(!strtotime($date_from) || !strtotime($date_to)){
+			echo "</br>Invalid parameter for date format !";
+			return false;
+		}
+		$date_to.=" 23:59:59";
+		
+		$src_db="";
+		if($source_db!=""){
+			$src_db=$source_db.".";
+			$this->replicate_model->source_db=$source_db;
+		}
+		
+		$s="select invoice_number,invoice_date from ".$src_db."invoice i
+		where warehouse_code='$outlet' and invoice_type='$invoice_type' 
+		and invoice_date between '$date_from' and '$date_to' 
+		order by invoice_number";
+		echo "</br><b>Loading..</b>";
+		
+		
+		if($q=$this->db->query($s)){
+			foreach($q->result() as $rinv){
+				echo "</br>$rinv->invoice_number, $rinv->invoice_date";
+				$this->replicate_model->invoice_header($rinv->invoice_number,$target_db);
+				$this->replicate_model->invoice_lineitems($rinv->invoice_number,$target_db);
+				$this->replicate_model->invoice_payments($rinv->invoice_number,$target_db);
+			}
+		}
+		echo "</br><b>Finish</b>";
+	}
 	
 }

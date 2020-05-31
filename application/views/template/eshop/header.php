@@ -24,28 +24,28 @@
 				<? } ?>
 				</select>
 			</div>
-			<button type="submit" class="btn btn-default glyphicon glyphicon-search"> Cari</button>
+			<button type="submit" class="btn btn-default glyphicon glyphicon-search">Cari</button>
 		  </form>
 		</ul>
 		  <div class="nav navbar-nav navbar-right" style='margin-right:10px;' >	
-			<a href="<?=base_url()?>index.php/eshop/cart" 
-			class="btn btn-default glyphicon glyphicon-shopping-cart"> Troly</a>
+			&nbsp;<a href="<?=base_url()?>index.php/eshop/cart" 
+			class="btn btn-default glyphicon glyphicon-shopping-cart">Troly</a>
 			<?
 			$is_login=$this->session->userdata('cust_login');
 			if($is_login){
 			?>
-				<a href="<?=base_url()?>index.php/eshop/setting" 
+				&nbsp;<a href="<?=base_url()?>index.php/eshop/setting" 
 					class="btn btn-default glyphicon glyphicon-user glyphicon "> Account</a>
-				<a href="<?=base_url()?>index.php/eshop/login/logout" 
-					class="btn btn-warning glyphicon glyphicon-off"> Logout</a>
+				&nbsp;<a href="<?=base_url()?>index.php/eshop/login/logout" 
+					class="btn btn-warning glyphicon glyphicon-off">Logout</a>
 			<? } else { ?>
-				<a href="<?=base_url()?>index.php/eshop/member/add" 
-					class="btn btn-default glyphicon glyphicon-plus"> Daftar</a>
-				<a href="<?=base_url()?>index.php/eshop/login" 
-					class="btn btn-default glyphicon glyphicon-off"> Login</a>
+				&nbsp;<a href="<?=base_url()?>index.php/eshop/member/add" 
+					class="btn btn-default glyphicon glyphicon-plus">Daftar</a>
+				&nbsp;<a href="<?=base_url()?>index.php/eshop/login" 
+					class="btn btn-default glyphicon glyphicon-off">Login</a>
 			<? } ?>
-			<a href="<?=base_url()?>index.php/eshop/help" 
-				class="btn btn-default glyphicon glyphicon-search"> Bantuan</a>
+			&nbsp;<a href="<?=base_url()?>index.php/eshop/help" 
+				class="btn btn-default glyphicon glyphicon-search">Bantuan</a>
 			
 		  </div>
 		</div>    

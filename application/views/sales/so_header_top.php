@@ -1,6 +1,6 @@
 <table class='table2' width="100%">
 	<tr>
-		<td>Nomor Bukti SO</td>
+		<td><label>Nomor Bukti SO</label></td>
 			<td>
 				<?php echo form_input('sales_order_number',
                         $sales_order_number,"id=sales_order_number"); ?>

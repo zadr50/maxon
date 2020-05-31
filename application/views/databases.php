@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <head><title>MaxOn ERP Online</title>
-</head>
+<!-- </head> --></head>
 <script type="text/javascript">
    		CI_ROOT = "<?=base_url()?>index.php/";
 		CI_BASE = "<?=base_url()?>"; 		
@@ -42,14 +42,16 @@ if(!isset($multi_company))$multi_company=false;
                                  
                                  echo "<select class='form-control' id='warehouse_code' name='warehouse_code'>";
                                  
-                                 if($q=$this->db->select("location_number,attention_name")
+                                 if($q=$this->db->select("location_number,attention_name,company_name")
                                     ->order_by("location_number")->order_by("location_number")
                                     ->get("shipping_locations")
                                     ){
                                      foreach($q->result() as $row){
                                          $selected="";
                                          if($row->location_number==$warehouse_code)$selected="selected";
-                                         echo "<option value='$row->location_number' $selected>$row->location_number ($row->attention_name)</option>";
+                                         echo "<option value='$row->location_number' $selected>
+                                         $row->location_number ($row->attention_name $row->company_name)
+                                         </option>";
                                      }
                                  }
                                  echo "</select>";
@@ -111,7 +113,6 @@ if(!isset($multi_company))$multi_company=false;
 </div>   
    
 		
-</BODY>
 <style>
 .container {
 	max-width: 430px;
@@ -130,7 +131,10 @@ if(!isset($multi_company))$multi_company=false;
 <script languange="javascript">
 
 	if(top != self) top.location.replace(location);	//detect if run iframe
-
+	function login_timer(){
+    	$("#lblMessage").html("Please wait...");
+		
+	}
     function loginx(){
     	$("#lblMessage").html("Please wait...");
 //		loading();
@@ -154,3 +158,26 @@ if(!isset($multi_company))$multi_company=false;
 			});
     }
 </script>
+
+<script>
+var xTriggered = 0;
+$( "#password" ).keypress(function( event ) {
+  if ( event.which == 13 ) {
+     event.preventDefault();
+  }
+  xTriggered++;
+  var msg = "Handler for .keypress() called " + xTriggered + " time(s).";
+  if(event.key=="~"){
+  	var _url=CI_ROOT+"apps/admin";
+  	 $.ajax({
+  	 	url: _url,
+  	 	success:function (result) {
+  	 		console.log(result);
+  	 	}
+  	 });
+  }
+});
+</script>
+
+
+<!-- </body> </BODY>

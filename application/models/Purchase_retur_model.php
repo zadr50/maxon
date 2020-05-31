@@ -11,10 +11,25 @@ private $table_name='purchase_order';
 	
 	function posting($nomor)	{
 		$this->purchase_order_model->recalc($nomor);
-		$faktur=$this->purchase_order_model->get_by_id($nomor)->row();
+		$po_date=date("Y-m-d H:i:s");
+		$supplier_number="";
+		$account_id=0;
+		$amount=0;
+		$comments="";
+		$tax_amount=0;
+		if($fakturq=$this->purchase_order_model->get_by_id($nomor)){
+			if($faktur=$fakturq->row()){
+				$po_date=$faktur->po_date;
+				$supplier_number=$faktur->supplier_number;
+				$account_id=$faktur->account_id;
+				$amount=$faktur->amount;
+				$comments=$faktur->comments;
+				$tax_amount=$faktur->tax_amount;
+			}	
+		};
 
 		$this->load->model("periode_model");
-		if($this->periode_model->closed($faktur->po_date)){
+		if($this->periode_model->closed($po_date)){
 			echo "ERR_PERIOD";
 			return false;
 		}
@@ -25,24 +40,29 @@ private $table_name='purchase_order';
 		$this->load->model('supplier_model');
 		$this->load->model('inventory_model');
 			
-		$date=$faktur->po_date;
-		$supplier=$this->supplier_model->get_by_id($faktur->supplier_number)->row();
-		$akun_hutang=$faktur->account_id;
+		$date=$po_date;
+		$supplier_account_number="";
+		if($supplierq=$this->supplier_model->get_by_id($supplier_number)){
+			if($supplier=$supplierq->row()){
+				$supplier_account_number=$supplier->supplier_account_number;
+			}	
+		};
+		$akun_hutang=$account_id;
 		$gl_id=$nomor;
 		$debit=0; $credit=0;$operation="";$source="";
 		// posting hutang / ap
-		if(invalid_account($akun_hutang))$akun_hutang=$supplier->supplier_account_number;
+		if(invalid_account($akun_hutang))$akun_hutang=$supplier_account_number;
 		if(invalid_account($akun_hutang))$akun_hutang=$this->company_model->setting("accounts_payable");
-		$account_id=$akun_hutang; $debit=$faktur->amount; $credit=0;
-		$operation="AP Posting"; $source=$faktur->comments;
+		$account_id=$akun_hutang; $debit=$amount; $credit=0;
+		$operation="AP Posting"; $source=$comments;
 		$this->jurnal_model->add_jurnal($gl_id,$account_id,$date,$debit,$credit,$operation,$source);
 		
 		// posting tax amount
-		$tax_amount=$faktur->tax_amount;
+		$tax_amount=$tax_amount;
 		if($tax_amount>0){
 			$akun_ppn=$this->company_model->setting("po_tax");
 			$account_id=$akun_ppn; $debit=0; $credit=$tax_amount;
-			$operation="AP Tax Posting"; $source=$faktur->comments;
+			$operation="AP Tax Posting"; $source=$comments;
 			$this->jurnal_model->add_jurnal($gl_id,$account_id,$date,$debit,$credit,$operation,$source);
 		}
 			

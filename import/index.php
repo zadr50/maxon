@@ -6,10 +6,16 @@ include "koneksi.php";
 $cmd="";
 if(isset($_POST['cmd']))$cmd=$_POST['cmd'];
 $data['cmd']=$cmd;
-
+if($cmd==""){
+    echo "Error: Unknown cmd: $cmd";
+    exit;
+}
 $table="";
 if(isset($_POST['table_name']))$table=strtolower($_POST['table_name']);
 $data['table_name']=$table;
+if($table=="purchase_order_lineitems"){
+    $s="";
+}
 
 $field="";
 if(isset($_POST['field_name']))$field=$_POST['field_name'];
@@ -53,6 +59,11 @@ if($gid==""){
 	$key_value=$gid;
 }
 $record=$data['record'];
+if(isset($record['gid'])){
+    if($record['gid']==''){
+        $record['gid']=$gid;
+    }
+}
 $return=""; $cnt=0; $ret="";
 if($key_field!=""){
     $cnt = mx_sql_rows($table, $key_field, $key_value);
@@ -69,6 +80,7 @@ if($table=="invoice"){
  } 
 
 if($ret==""){
+	$return = "OK";
     if($key_field!="") $return = "OK : ".$table." - ".$key_value;
 } else {
     $return = "ERR : ".$ret;

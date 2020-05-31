@@ -3,10 +3,10 @@
 	   $min_date=$this->session->userdata("min_date","");
 	
 	echo link_button('Save', 'save_this()','save');		
-	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','false',base_url().'index.php/manuf/workorder/add');		
-	echo link_button('Refresh','','reload','false',base_url().'index.php/manuf/workorder/view/'.$work_order_no);		
-	echo link_button('Search','','search','false',base_url().'index.php/manuf/workorder');		
+	echo link_button('Print', 'on_print()','print');		
+	//echo link_button('Add','','add','false',base_url().'index.php/manuf/workorder/add');		
+	//echo link_button('Refresh','','reload','false',base_url().'index.php/manuf/workorder/view/'.$work_order_no);		
+	//echo link_button('Search','','search','false',base_url().'index.php/manuf/workorder');		
 	echo "<div style='float:right'>";		
 	
 	?>
@@ -14,7 +14,6 @@
 	<div id="mmOptions" style="width:200px;">
 		<div onclick="load_help('work_order')">Help</div>
 		<div onclick="show_syslog('work_order','<?=$work_order_no?>')">Log Aktifitas</div>
-
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
@@ -45,7 +44,7 @@
 				<td><?=form_input("work_order_no",$work_order_no,"id='work_order_no'")?></td>
 				<td>Customer</td>
 				<td><?=form_input("customer_number",$customer_number,"id='customer_number'")?>
-				<?=link_button('','select_customer()','search');?>
+				<?=link_button('','dlgcustomers_show()','search');?>
 				
 				</td>								
 			</tr>
@@ -67,7 +66,10 @@
 			data-options='formatter:format_date,parser:parse_date'
 			style='width:150px'")?></td></tr>
 			<tr><td>SO Number</td><td><?=form_input("sales_order_number",$sales_order_number,"id='sales_order_number'")?>
-				<?=link_button('','lookup_sales_order()','search');?>
+				<?php 
+					if($mode=="add" || $mode=="") echo link_button('','dlgsales_order_show()','search');
+					echo link_button('View SO','view_so()','edit');
+				?>
 			</td></tr>
 			<tr><td>Status</td><td>
 				<?php 
@@ -77,15 +79,15 @@
 			</td></tr>
 			<tr><td>Special Order</td>
 			<td>
-			<?=form_radio('special_order',1,$special_order=='1'?TRUE:FALSE);?>Yes 
-			<?php echo form_radio('special_order',0,$special_order=='0'?TRUE:FALSE);?>No
+			<?=form_radio('special_order',1,$special_order=='1'?TRUE:FALSE,"style='width:30px'");?>Yes 
+			<?php echo form_radio('special_order',0,$special_order=='0'?TRUE:FALSE,"style='width:30px'");?>No
 			</td></tr>
 		</tbody>
 	</table>
 </form> 
 
 <!-- ITEM TO PROCESS -->
-<div id='divItem'>
+<div id='divItem'  class='thumbnail box-gradient'>
 	<div id='dgItem'>
 		<table class='table2' width='100%'>
 			<thead>
@@ -93,10 +95,10 @@
 			</thead>
 			<tbody>
 				<tr>
-					<form id="frmItem" method='post' >
+					<form id="frmItem" method='post'>
 						 <td><input id="item_number" style='width:80px' 
 							name="item_number"   class="easyui-validatebox" required="true">
-							<?=link_button('','searchItem()','search');?>
+							<?=link_button('','dlginventory_show()','search');?>
 						 </td>
 						 <td><input id="description" name="description" style='width:200px'></td>
 						 <td><input id="quantity"  style='width:50px'  name="quantity"></td>
@@ -137,9 +139,9 @@
 <!-- END ITEMS -->
 
 </div>
-<div id="tb" style="height:auto">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem();return false;">Edit</a>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem();return false;">Delete</a>	
+<div id="tb" style="height:auto" >
+	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="false" onclick="editItem();return false;">Edit</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="false" onclick="deleteItem();return false;">Delete</a>	
 </div>
  
 <div id='dlgSo'class="easyui-dialog" style="width:500px;height:380px;
@@ -158,18 +160,30 @@ padding:10px 20px;left:100px;top:20px"
 		</table>
 </div>
 <div id="btnSo">
-	<? echo link_button("Select","select_sales_order();return false;","ok","false");
+	<?php  
+	echo link_button("Select","select_sales_order();return false;","ok","false");
 	echo link_button("Close","dlgSo_Close();return false;","cancel","false");
 	?>
 	
 </div>	   
 
-<?
-	echo load_view('sales/customer_select');
-	echo load_view('inventory/inventory_select');
+<?php 
+	echo $customer_lookup;
+	echo $so_lookup;
+	echo $inventory_lookup;
+
 ?>
 
 <script type="text/javascript">
+
+	function view_so(){
+		var so=$("#sales_order_number").val();
+		if (so==""){
+			log_msg("Isi nomor sales order");
+			return false;
+		}
+		add_tab_parent('View '+so,CI_BASE+"/sales_order/view/"+so);
+	}
     function save_this(){
         var valid_date=true;
         var min_date='<?=$min_date?>';
@@ -211,8 +225,6 @@ padding:10px 20px;left:100px;top:20px"
 				}
 			});
     }
-</script>  
-<script language="JavaScript">
 		function save_item(){
 			var no=$("#work_order_no").val();
 			if($('#item_number').val()==''){alert('Pilih kode barang !');return false;}
@@ -285,44 +297,42 @@ padding:10px 20px;left:100px;top:20px"
 				$('#work_order_no_item').val(row.work_order_no);
 			}
 		}
-		function find(){
+		function dlginventory_find(){
 		    xurl=CI_ROOT+'inventory/find/'+$('#item_number').val();
-		    console.log(xurl);
 		    $.ajax({
-		                type: "GET",
-		                url: xurl,
-		                data:'item_no='+$('#item_number').val(),
-		                success: function(msg){
-		                    var obj=jQuery.parseJSON(msg);
-		                    $('#item_number').val(obj.item_number);
-		                    $('#unit').val(obj.unit_of_measure);
-		                    $('#description').val(obj.description);
-		                },
-		                error: function(msg){alert(msg);}
+				type: "GET",
+				url: xurl,
+				data:'item_no='+$('#item_number').val(),
+				success: function(msg){
+					var obj=jQuery.parseJSON(msg);
+					$('#item_number').val(obj.item_number);
+					$('#unit').val(obj.unit_of_measure);
+					$('#description').val(obj.description);
+				},
+				error: function(msg){alert(msg);}
 		    });
 		};
 	 
-		function lookup_sales_order()
-		{
-			var customer=$("#customer_number").val();
-			if(customer==""){alert("Pilih kode customer dulu !");return false;};
-			$('#dlgSo').dialog('open').dialog('setTitle','Cari nomor sales order pelanggan');
-			$('#dgSo').datagrid({url:'<?=base_url()?>index.php/sales_order/select_so_open/'+customer});
-			$('#dgSo').datagrid('reload');
+		 
+		function find_sales_order(){
+
 		}
-		function select_sales_order()
-		{
-			var row = $('#dgSo').datagrid('getSelected');
-			if (row){
-				$('#sales_order_number').val(row.sales_order_number);
-				$('#dlgSo').dialog('close');
+		function dlgsales_order_find(){
+
+		}
+		function dlgcustomers_find(){
+
+		}
+		function on_print(){
+			var no=$("#work_order_no").val(); 
+			if(no=="" || no=="AUTO"){
+				log_msg("Pilih nomor work order");
+				return false;
 			}
-			
+	        window.open(CI_BASE+"index.php/manuf/workorder/print_bukti/"+no,"new");  		
+
+
 		}
-		function dlgSo_Close() {
-			$("#dlgSo").dialog("close");		
-		}
-		
 </script>
 
  

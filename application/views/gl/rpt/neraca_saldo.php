@@ -8,7 +8,7 @@
      $startdate="";
      $enddate="";
      $closed=0;
-     $with_header=false;        
+     $with_header=true;        
      $period=$this->input->post("text1");
      $CI->load->model("periode_model");
      
@@ -51,22 +51,22 @@
      	</td>
      </tr>
 <?php } ?>     
-     <tr><td colspan=4 style='border-bottom: black solid 1px'></td></tr>
+     <tr><td colspan=4 style='border-bottom: black solid 2px'></td></tr>
      <tr>
      	<td colspan="8">
 	     		<table class='titem'>
 	     		<thead>
 	     			<tr><td>Kode Akun</td><td>Nama Akun</td>
-	     				<td colspan='2'>Saldo Awal</td>
-	     				<td colspan='2'>Mutasi</td>
-	     				<td colspan='2'>Saldo Akhir</td>
+	     				<td colspan='2' align=center>Saldo Awal</td>
+	     				<td colspan='2' align=center>Mutasi</td>
+	     				<td colspan='2' align=center>Saldo Akhir</td>
 	     				<td>DbCr</td>
 	     				<td>Type</td>
 	     			</tr>
 	     			<tr><td></td><td></td>
-	     				<td>Debit</td><td>Kredit</td>
-	     				<td>Debit</td><td>Kredit</td>
-	     				<td>Debit</td><td>Kredit</td>
+	     				<td align=right>Debit</td><td align=right>Kredit</td>
+	     				<td align=right>Debit</td><td align=right>Kredit</td>
+	     				<td align=right>Debit</td><td align=right>Kredit</td>
 	     				<td></td>
 	     			</tr>
 	     		</thead>
@@ -94,21 +94,27 @@
 						$mut_cr=$query->credit_base;
                         $akhir=$query->ending_balance;
 					}
-                    if($row_coa->db_or_cr==0){
-                        $sld_db=abs($awal);
+                    if($row_coa->account_type<5){
+                        $sld_db=$awal;
                         $sld_cr=0;
-                        $akhir_db=abs($akhir);
+                        $akhir_db=$akhir;
                         $akhir_cr=0;
-                    }  else {
-                        $sld_db=0;
-                        $sld_cr=abs($awal);
-                        $akhir_db=0;
-                        $akhir_cr=abs($akhir);
-                        if($row_coa->account_type>3){
-                            if($akhir>0){
-                                $akhir_db=abs($akhir);
-                                $akhir_cr=0;
-                            }
+                        if($akhir<0){
+                            $sld_db=0;
+                            $sld_cr=-1*$awal;
+                            $akhir_db=0;
+                            $akhir_cr=-1*$akhir;
+                        }
+                    } else {
+                        $sld_db=$awal;
+                        $sld_cr=0;
+                        $akhir_db=$akhir;
+                        $akhir_cr=0;
+                        if($akhir<0){
+                            $sld_db=-1*$awal;
+                            $sld_cr=0;
+                            $akhir_db=-1*$akhir;
+                            $akhir_cr=0;
                         }
                     }
                     if($coa_rl_berjalan==$row_coa->id){
@@ -147,16 +153,16 @@
 					
 				};
 				$tbl="<tr>";
-				$tbl.="<td>TOTAL</td>";
+				$tbl.="<td><b>TOTAL</b></td>";
 				$tbl.="<td></td>";
-				$tbl.="<td align='right'>".number_format($total_awal_db)."</td>";
-				$tbl.="<td align='right'>".number_format($total_awal_cr)."</td>";
+				$tbl.="<td align='right'><b>".number_format($total_awal_db)."</b></td>";
+				$tbl.="<td align='right'><b>".number_format($total_awal_cr)."</b></td>";
 
-				$tbl.="<td align='right'>".number_format($total_db)."</td>";
-				$tbl.="<td align='right'>".number_format($total_cr)."</td>";
+				$tbl.="<td align='right'><b>".number_format($total_db)."</b></td>";
+				$tbl.="<td align='right'><b>".number_format($total_cr)."</b></td>";
 
-				$tbl.="<td align='right'>".number_format($total_akhir_db)."</td>";
-				$tbl.="<td align='right'>".number_format($total_akhir_cr)."</td>";
+				$tbl.="<td align='right'><b>".number_format($total_akhir_db)."</b></td>";
+				$tbl.="<td align='right'><b>".number_format($total_akhir_cr)."</b></td>";
 
 				$tbl.="<td></td><td></td></tr>";
 				

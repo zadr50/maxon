@@ -1,7 +1,4 @@
-<?
-//var_dump($_POST);
-?>
-<?
+<?php
      $CI =& get_instance();
      $CI->load->model('company_model');
      $CI->load->model("shipping_locations_model");
@@ -64,11 +61,12 @@
 	     		<table class='titem'>
 	     		<thead>
 	     			<tr><td>Nomor Faktur</td><td>Tanggal</td><td>Jumlah</td>
-	     			<td>Paid</td>    	     			</tr>
+	     			<td>Paid</td><td>Pelanggan</td>    	     			</tr>
 	     		</thead>
 	     		<tbody>
      			<?
-     			$sql="select * from invoice where invoice_type='I' 
+     			$sql="select i.*,c.customer_number,c.company from invoice i left join customers c on c.customer_number=i.sold_to_customer 
+     			where invoice_type='I' 
      			and invoice_date between '$date1' and '$date2'  ";
                 
 				$logged_in=$this->session->userdata('logged_in');
@@ -91,6 +89,7 @@
                         $tbl.="<td>".$row->invoice_date."</td>";
                         $tbl.="<td align='right'>".number_format($row->amount)."</td>";
                         $tbl.="<td>".$row->paid."</td>";
+                        $tbl.="<td>".$row->company." - $row->customer_number</td>";
                         $tbl.="</tr>";
     					$z_amount=$z_amount+$row->amount;
 					}

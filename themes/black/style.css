@@ -6,12 +6,9 @@
 a.l-btn span.l-btn-left {
   height: 24px;
 }
-body {
+.body-maxon {
     font-family: tahoma,helvetica,verdana,sans-serif;
-    padding:5px;
-    margin:0 auto;
-	--width: auto; 
-	background-color: #454545;
+	background-color: #434343;
 }
  
 input,select {
@@ -19,10 +16,7 @@ input,select {
 	margin:2px;
     border: solid 1px #E6E6F5;
     border-radius: 3px; 
-<<<<<<< HEAD
-        color: black;
-=======
->>>>>>> 8f07a81... Update Versi 7
+	color: black;
 }
 input[type="radio"], input[type="checkbox"] {
     line-height: normal;
@@ -36,14 +30,10 @@ input[type="radio"], input[type="checkbox"] {
 }
  
 .navbar-maxon {
-	background-color: #D9E5F0;
+	background-color: #3d3d3d;
 	color:#fff;
-<<<<<<< HEAD
 	border:1px solid transparent;
     border-bottom: 1px solid #bfcee6;
-=======
-	border:1px solid black;
->>>>>>> 8f07a81... Update Versi 7
 }
  
 .clear				{ clear: both; }
@@ -558,21 +548,11 @@ background: url(../../images/welcome_bg.png) no-repeat center top;
 	margin-bottom: auto;
 }
 .footer {
-<<<<<<< HEAD
     background: linear-gradient(to top,#454545 0,#666666 100%);
     padding: 10px;
     height: 150px;
     margin-top: 10px;
     border-top: rgb(62, 62, 62) 2px solid;
-    --border-radius: 4px;
-=======
-	background: linear-gradient(to top,#EFF5FF 0,#E0ECFF 100%);
-	padding: 10px;
-	height:150px;
-	margin-top:10px;
-	border-top: rgb(78, 101, 175) 2px solid;	
-	--border-radius: 4px;
->>>>>>> 8f07a81... Update Versi 7
 }
 .btn {
 	padding: 2px 12px;
@@ -593,13 +573,13 @@ padding-left: 5px;
 	border: 1px solid transparent;
 	border-radius: 4px;
 }
-.info {
+.info-maxon {
 	width:200px;height:100px;float:left;font-size:9px;margin:5px;
 }
-.info .photo img {
+.info-maxon .photo img {
 	width:50px;height:50px;float:left;margin:5px;
 }
-.info:hover {
+.info-maxon:hover {
 	cursor:pointer;
 	border: 1px solid #aaa;
 	-webkit-border-radius: 5px;
@@ -678,12 +658,7 @@ padding-left: 5px;
   border-collapse: collapse; 
 }
 .table2 tr:nth-of-type(odd) { 
-<<<<<<< HEAD
     background: #868686;
-    
-=======
-  background: #eee; 
->>>>>>> 8f07a81... Update Versi 7
 }
 .table2 th { 
 	background: linear-gradient(to bottom,#E0F5FF 0,#E0ECFF 100%);
@@ -720,15 +695,9 @@ padding-left: 5px;
 	font-weight: 1;
 }
 .box-gradient {
-<<<<<<< HEAD
     background: #1b1b1b;
     color: white;
  }	
-=======
-	background: whitesmoke;
-	color: black;
-}	
->>>>>>> 8f07a81... Update Versi 7
 .box-badge{
 	color: red;
 	font-weight:900;
@@ -739,13 +708,8 @@ padding-left: 5px;
 
 .sb_panel {
 	position: fixed;
-<<<<<<< HEAD
     background: linear-gradient(to top,#454545 0,#E0ECFF 100%);    
     bottom: 0px;
-=======
-	background: linear-gradient(to top,#EFF5FF 0,#E0ECFF 100%);
-	bottom: 0px;
->>>>>>> 8f07a81... Update Versi 7
 	left: 0px;
 	width: 100%;
 	height: 40px;
@@ -763,7 +727,6 @@ padding-left: 5px;
 }
 .msg-inbox {
 	pointer:cursor;
-<<<<<<< HEAD
 }
 
 
@@ -803,8 +766,3 @@ td, th {
     padding: 0;
     color: #8BC34A;
 }
-
-
-=======
-}
->>>>>>> 8f07a81... Update Versi 7

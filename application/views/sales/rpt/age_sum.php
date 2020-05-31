@@ -12,7 +12,8 @@
 <link href="<?php echo base_url();?>/themes/standard/style_print.css" rel="stylesheet">
 <table cellspacing="0" cellpadding="1" border="0" width='800px'> 
      <tr>
-     	<td colspan='2'><h2><?=$model->company_name?></h2></td><td colspan='2'><h2>LAPORAN UMUR PIUTANG</h2></td>     	
+     	<td><h2><?=$model->company_name?></h2></td><td width=400>
+     	    <h2>LAPORAN UMUR PIUTANG - BY INVOICE DATE</h2></td>     	
      </tr>
      <tr>
      	<td>
@@ -34,7 +35,7 @@
 	     			</tr>
 	     		</thead>
 	     		<tbody>
-     			<?
+     			<?php
      			$sql="select * from qry_invoice i where invoice_date between '$date1' and '$date2'";
 				if($cust!="")$sql.=" and i.sold_to_customer='$cust'";
 				if($salesman!="")$sql.=" and i.salesman='$salesman'";
@@ -65,13 +66,19 @@
 					$z_retur=$z_retur+$row->retur;
 					$z_cr_amount=$z_cr_amount+$row->cr_amount;
 					$z_db_amount=$z_db_amount+$row->db_amount;
-					$saldo=$row->amount-$row->payment+$row->cr_amount+$row->db_amount-$row->retur;
+					
+					$saldo=$row->amount
+						-$row->payment_non_giro-$row->payment_giro_cleared
+						+$row->cr_amount+$row->db_amount-$row->retur;
+										
 					$z_saldo=$z_saldo+$saldo;
 					
 						$tgl_faktur=strtotime($row->invoice_date);
-						$tgl_now=strtotime(date('Y-m-d H:i'));
-						$hari=round(($tgl_now-$tgl_faktur)/3600/24);
+						$tgl_now=(date('Y-m-d H:i'));
 	
+						$due_date=due_date($row->invoice_date, $row->payment_terms);
+						$hari=round((strtotime($tgl_now)-$tgl_faktur)/3600/24);
+
 						$a0=0;$a7=0;$a14=0;$a30=0;$a60=0;$aover=0;
 	
 						if($hari>90){
@@ -151,15 +158,15 @@
                }
 
 					
-				   $tbl.="<tr><td>TOTAL</td><td></td>  
+				   $tbl.="<tr><td><b>TOTAL</b></td><td></td>  
 		     				 
-						<td align='right'>".number_format($z_amount_g)."</td>
-						<td align='right'>".number_format($z_saldo_g)."</td>";
+						<td align='right'><b>".number_format($z_amount_g)."</b></td>
+						<td align='right'><b>".number_format($z_saldo_g)."</b></td>";
 							
-					$tbl.="<td align='right'>".number_format($a0_totg)."</td>";
-					$tbl.="<td align='right'>".number_format($a30_totg)."</td>";
-					$tbl.="<td align='right'>".number_format($a60_totg)."</td>";
-					$tbl.="<td align='right'>".number_format($aover_totg)."</td>";
+					$tbl.="<td align='right'><b>".number_format($a0_totg)."</b></td>";
+					$tbl.="<td align='right'><b>".number_format($a30_totg)."</b></td>";
+					$tbl.="<td align='right'><b>".number_format($a60_totg)."</b></td>";
+					$tbl.="<td align='right'><b>".number_format($aover_totg)."</b></td>";
 					$tbl.="</tr>";	
 						
 			   echo $tbl;

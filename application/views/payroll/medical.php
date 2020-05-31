@@ -1,6 +1,8 @@
 <div class="thumbnail box-gradient">
 	<?php
 	echo link_button('Save', 'simpan()','save');		
+    echo link_button('Delete', 'on_delete()','remove');        
+    echo link_button('Refresh', 'on_refresh()','reload');        
 	?>
 	<div style='float:right'>
 	<?php echo link_button('Help', 'load_help(\'medical\')','help');	?>	
@@ -18,6 +20,8 @@
 
 <?php echo validation_errors(); ?>
 
+<div class='thumbnail'>
+    
 <form id="frmMedical"  method="post">
 
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
@@ -38,11 +42,18 @@
 				<td>&nbsp</td>
 		   </tr>
 			<tr>
+				<td>Nilai Medical Rp</td>
+				<td><?=form_input('amount',$amount,"id='amount' ");?></td>
+				<td>&nbsp</td>
+			</tr>
+			<tr>
 				<td>Keterangan</td>
 				<td colspan=2><?=form_input('description',$description,"id=description style='width:80%'");?></td>
 			</tr>
 	</table>	   
 </form>
+
+</div>
 
 <?php 
  echo $lookup_employee;
@@ -74,6 +85,26 @@
     }
 	function load_help() {
 			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/medical");
+	}
+	function on_delete(){
+	    var id=$("#id").val();
+        $.messager.confirm('Confirm','Are you sure you want to remove this line?',function(r){
+                if(!r)return false;
+        	    $.ajax({
+        	        url: CI_ROOT+"payroll/medical/delete/"+id,
+        	        success: function(result){
+        	            log_msg("Success");
+        	            remove_tab_parent();
+        	        },
+        	        error:function(result){
+        	            log_msg("Error !");
+        	        }
+        	    })
+    	    })
+	}
+	function on_refresh(){
+	    var id=$("#id").val();
+	    window.open(CI_ROOT+"payroll/medical/view/"+id,"_self");
 	}
 
 </script>  

@@ -14,16 +14,19 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 				 <tr><td >Kode Barang</td><td colspan='3'><input onblur='find()' id="item_number" style='width:180px' 
 					name="item_number"   class="easyui-validatebox" required="true">
 					<a href="#" class="easyui-linkbutton" iconCls="icon-search" data-options="plain:false" 
-					onclick="searchItem();return false;"></a>
+					onclick="dlginventory_show();return false;"></a>
 				 </td>
 				 
 				 </tr>
 				 <tr><td>Nama Barang</td><td colspan='3'><input id="description" name="description" style='width:300px'></td></tr>
 				 <tr><td>Qty</td><td><input id="quantity"  style='width:60px'  name="quantity" onblur="hitung()">
 				 Unit <input id="unit" name="unit"  style='width:60px' >
-				<a href="#" class="easyui-linkbutton" iconCls="icon-search" data-options="plain:false" 
+					<a href="#" class="easyui-linkbutton" iconCls="icon-search" data-options="plain:false" 
 					onclick="searchUnit();return false;" 
 					style='display:none' id='cmdLovUnit'></a> 
+				 
+				 Harga <input id="price" name="price"  style='width:80px'   onblur="hitung();return false;" class="easyui-validatebox" validType="numeric">
+				 
 				 </td></tr>
 				<tr>
 					<td colspan=3>
@@ -35,9 +38,10 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 					</td>
 				</tr>
 				 
-				 <tr><td>Harga</td><td colspan='3'>
-					<input id="price" name="price"  style='width:80px'   onblur="hitung();return false;" class="easyui-validatebox" validType="numeric">
-				 </td></tr>
+				 <tr><td></td><td colspan='3'>
+					</td></tr>
+					
+					
 				 <tr><td>Disc%1</td><td><input id="discount" name="discount"  style='width:50px'   onblur="hitung();return false;" class="easyui-validatebox" validType="numeric">
 				 Disc%2 <input id="disc_2" name="disc_2"  style='width:50px'   onblur="hitung();return false;" class="easyui-validatebox" validType="numeric">
 				 Disc%3 <input id="disc_3" name="disc_3"  style='width:50px'   onblur="hitung();return false;" class="easyui-validatebox" validType="numeric"></td></tr>
@@ -57,14 +61,14 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 		onclick='save_item();return false;' title='Save Item'>Submit</a>
 </div>
 <div id="tb" style="height:auto">
-<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="false" onclick="addItem()" data-options="plain:false">Add</a>
-<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="false" onclick="editItem()" data-options="plain:false">Edit</a>
-<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="false" onclick="deleteItem()" data-options="plain:false">Delete</a>
-<a href="#" class="easyui-linkbutton" iconCls="icon-reload" plain="false" onclick="reloadItem()" data-options="plain:false">Refresh</a>	
+<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="false" onclick="addItem();return false" data-options="plain:false">Add</a>
+<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="false" onclick="editItem();return false" data-options="plain:false">Edit</a>
+<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="false" onclick="deleteItem();return false" data-options="plain:false">Delete</a>
+<a href="#" class="easyui-linkbutton" iconCls="icon-reload" plain="false" onclick="reloadItem();return false" data-options="plain:false">Refresh</a>	
 </div>
  
 <?php 
-	echo load_view("inventory/inventory_select");
+	echo $lookup_inventory;
 	echo load_view("inventory/select_unit");
 	
 ?>
@@ -80,6 +84,7 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 			return false;
 		}
 		qty_conv=0;
+		clear_input();
 		//$('#dgItemForm').window({left:100,top:window.event.clientY+20});
 		$("#dgItemForm").dialog("open").dialog('setTitle','Input barang');
 	}
@@ -97,11 +102,10 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 					success: function(msg){
 						var obj=jQuery.parseJSON(msg);
 						$('#item_number').val(obj.item_number);
+						$('#price').val(obj.cost);
 						if(obj.cost==0){
 							$('#price').val(obj.cost_from_mfg);
-						} else {
-							$('#price').val(obj.cost);
-						}
+						}  
 						$('#cost').val(obj.cost);
 						$('#unit').val(obj.unit_of_measure);
 						$('#description').val(obj.description);

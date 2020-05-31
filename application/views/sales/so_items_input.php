@@ -22,13 +22,15 @@
             
                 <a href="#" class="easyui-linkbutton" iconCls="icon-search" data-options="plain:false" 
                 onclick="searchUnit();return false;" 
-                style='display:none' id='cmdLovUnit'>
+                style='display:none' id='cmdLovUnit'></a>
                              
-             
+             Harga <input id="price" name="price"  onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>
+        
              </td>
         </tr>
 			<tr>
-				<td colspan=3>
+				<td></td>
+				<td colspan=2>
 				<span id='divMultiUnit' style='display:none'>
 					M_Qty <?=form_input("mu_qty","","id='mu_qty' style='width:60px'")?>
 					M_Unit <?=form_input("multi_unit","","id='multi_unit' style='width:60px' ")?>
@@ -37,11 +39,6 @@
 				</td>
 			</tr>
 
-
-        <tr>
-            <td>Harga</td>
-            <td><input id="price" name="price"  style='width:180px'   onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>
-        </tr>
         <tr>
             <td>Disc%1</td>
             <td><input id="discount" name="discount"  style='width:80px'   onblur="hitung()" class="easyui-validatebox" validType="numeric">
@@ -50,7 +47,7 @@
             </td>
         </tr>
         <tr>
-            <td>Jumlah</td><td><input id="amount" name="amount"  style='width:80px'  class="easyui-validatebox" validType="numeric"></td>
+            <td><b>Jumlah</b></td><td><input id="amount" name="amount"  style='width:80px'  class="easyui-validatebox" validType="numeric"></td>
         </tr>
         <input type='hidden' id='so_number' name='so_number'>
         <input type='hidden' id='line_number' name='line_number'>
@@ -61,6 +58,7 @@
 <div id='btnItem'>
     <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  
        plain='false'    onclick='save_item();return false'>Simpan</a>
+    <?=link_button("Cancel", "close_item();return false;","cancel")?>
 </div>
 <?php 
 if(!isset($show_tool))$show_tool=true; 
@@ -118,6 +116,8 @@ function save_item(){
 	}
 	url = '<?=base_url()?>index.php/sales_order/save_item';
 	$('#so_number').val($('#sales_order_number').val());
+	$("#btnItem").hide();
+	
 	loading();
 	$('#frmItemInv').form('submit',{
 		url: url,
@@ -132,6 +132,7 @@ function save_item(){
 				hitung();
 				$("#dgItem").dialog("close");
 				log_msg("Success");
+				$("#btnItem").show();
 			} else {
 				loading_close();
 				log_err(result.msg);

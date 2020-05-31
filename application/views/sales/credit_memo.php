@@ -4,26 +4,25 @@
 	
 	echo link_button('Save', 'save_db_memo()','save');		
 	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','false',base_url().'index.php/sales_crmemo/add');		
-	echo link_button('Search','','search','false',base_url().'index.php/sales_crmemo');		
 	echo link_button('Delete','delete_memo()','cut');		
 	if($posted) {
 		echo link_button('UnPosting','','cut','false',base_url().'index.php/sales_crmemo/unposting/'.$kodecrdb);		
 	} else {
 		echo link_button('Posting','','ok','false',base_url().'index.php/sales_crmemo/posting/'.$kodecrdb);		
 	}
-	echo link_button('Refresh','','reload','false',base_url().'index.php/sales_crmemo/view/'.$kodecrdb);		
-    echo "<div style='float:right'";
-	echo link_button('Help', 'load_help(\'sales_crmemo\')','help');		
-	?>
-	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
-	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help('sales_crmemo')">Help</div>
-		<div onclick="show_syslog('crdb','<?=$kodecrdb?>')">Log Aktifitas</div>
-		<div>Update</div>
-		<div>MaxOn Forum</div>
-		<div>About</div>
-	</div>
+    echo "<div style='float:right'>";
+		echo link_button('Help', 'load_help(\'sales_crmemo\')','help');		
+		?>
+		<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+		<div id="mmOptions" style="width:200px;">
+			<div onclick="load_help('sales_crmemo')">Help</div>
+			<div onclick="show_syslog('crdb','<?=$kodecrdb?>')">Log Aktifitas</div>
+			<div>Update</div>
+			<div>MaxOn Forum</div>
+			<div>About</div>
+		</div>
+		<?=link_button('Close', 'remove_tab_parent()','cancel')?>		
+		
 	</div>
 </div> 
 <div class="thumbnail">		
@@ -53,7 +52,7 @@
        <tr>
             <td>Pelanggan</td>
             <td><?=form_input('customer_number',$customer_number,'id="customer_number"');?>
-            	<?=link_button("",'select_customer()','search','false')?>
+            	<?=link_button("",'dlgcustomers_show();return false;','search','false')?>
             </td>
 			<td rowspan="3">
 				<div id='faktur_info' name='faktur_info' class='thumbnail' style='height:50px;width:300px'>
@@ -160,9 +159,14 @@
 	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem()">Delete</a>	
 </div>
 
-<?=load_view('gl/select_coa')?>
-<? include_once 'faktur_select_crdb.php' ?>
-<? include_once 'customer_select.php' ?>
+<?php 
+	echo load_view('gl/select_coa');
+?>
+<?php 
+include_once 'faktur_select_crdb.php'; 
+echo $lookup_customer;
+
+?>
 
 
 <script type="text/javascript">

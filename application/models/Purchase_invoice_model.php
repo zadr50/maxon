@@ -23,6 +23,9 @@ class Purchase_invoice_model extends CI_Model {
         $this->load->model('supplier_model');
         $this->load->model('inventory_model');
         $this->load->model('crdb_model');
+        $this->load->model('payables_model');
+        $this->load->model("periode_model");
+        $this->load->model("bank_accounts_model");
         
         
 	}
@@ -129,7 +132,6 @@ class Purchase_invoice_model extends CI_Model {
 	
 	function add_payables($nomor)
 	{
-		$this->load->model('payables_model');
 		$faktur=$this->get_by_id($nomor)->row();
 		$bill_id=$this->payables_model->get_bill_id($nomor);
 		$data['purchase_order']=1;
@@ -185,8 +187,22 @@ class Purchase_invoice_model extends CI_Model {
 	function save($data){
 		if($data['po_date'])$data['po_date']= date('Y-m-d H:i:s', strtotime($data['po_date']));
 		if(isset($data['due_date']))$data['due_date']= date('Y-m-d H:i:s', strtotime($data['due_date']));
-		return $this->db->insert($this->table_name,$data);
+		
+        if(strtoupper($data['terms'])=="CASH" || $data['terms']==''){
+            $this->save_payment_cash($data['purchase_order_number']);
+        }
+		
+		if(isset($data['terms'])){
+	        $data['due_date']=due_date($data['po_date'],$data['terms']);	
+		}		
+		$ok = $this->db->insert($this->table_name,$data);
 //		return $this->db->insert_id();
+		if(isset($data['supplier_number'])){
+			$id=$data['supplier_number'];
+			supplier_need_update($id);
+		}
+
+		return $ok;
 	}
     function save_item($data){
         $ok=$this->purchase_order_lineitems_model->save($data);
@@ -202,9 +218,62 @@ class Purchase_invoice_model extends CI_Model {
 					where purchase_order_number='$id'");
 			}
 		}
+		if(isset($data['terms'])){
+	        $data['due_date']=due_date($data['po_date'],$data['terms']);	
+	        if(strtoupper($data['terms'])=="CASH" || $data['terms']==''){
+	            $this->save_payment_cash($data['purchase_order_number']);
+	        }			
+			
+		}
 		$this->db->where($this->primary_key,$id);
-		return $this->db->update($this->table_name,$data);
+		$ok = $this->db->update($this->table_name,$data);
+		
+		if(isset($data['supplier_number'])){
+			$id=$data['supplier_number'];
+			supplier_need_update($id);
+		}
+		return $ok;
+				
 	}
+    function save_payment_cash($faktur){
+        $this->load->model("bank_accounts_model");
+        $faktur_q=$this->purchase_invoice_model->get_by_id($faktur);
+        if(!$faktur_q){
+            //nomor faktur tidak ada !
+            return false;
+        }
+        if(!$faktur_data=$faktur_q->row()){
+            //nomor faktur tidak adad !
+            return false;
+        }
+        $coa_rek="";
+        if($bank=$this->bank_accounts_model->get_by_id($faktur_data->rekening)){
+            if($bank_rec=$bank->row()){
+                $coa_rek=$bank_rec->account_id;
+            }
+        }
+        if($qpay=$this->db->where("purchase_order_number",$faktur)->get("payables_payments")){
+            if($rpay=$qpay->row()){
+                //exist??
+                $no_bukti=$rpay->no_bukti;
+                $data['amount_paid']=$faktur_data->amount;
+                $data['bill_id']=$this->payables_model->get_bill_id($faktur);
+                $this->payables_payments_model->update($no_bukti,$data);
+                                
+            } else {
+                $data['no_bukti']=$faktur;
+                $data['date_paid']=$faktur_data->po_date;
+                $data['how_paid']="0";
+                $data['how_paid_account_id']=$coa_rek;
+                $data['amount_paid']=$faktur_data->amount;
+                $data['purchase_order_number']=$faktur_data->purchase_order_number;
+                $data['paid_by']=user_id();
+                $data['bill_id']=$this->payables_model->get_bill_id($faktur);
+                $this->payables_payments_model->save($data);
+                
+            }
+        }
+    }
 	function validate_delete_po($po_number)
 	{
 		// check receive from po
@@ -220,7 +289,16 @@ class Purchase_invoice_model extends CI_Model {
 		$this->db->delete('purchase_order_lineitems'); 
        
 		$this->db->where($this->primary_key,$id);
-		return $this->db->delete($this->table_name);
+		$ok = $this->db->delete($this->table_name);
+		
+		$s="select p.supplier_number from purchase_order p where purchase_order_number='$id' ";
+		if($q=$this->db->query($s)){
+			if($r=$q->row()){
+				supplier_need_update($r->supplier_number);
+			}
+		}
+		
+		return $ok;
 	}
      function add_item($id,$item,$qty){
         $sql="select description,retail,cost,unit_of_measure
@@ -260,7 +338,6 @@ class Purchase_invoice_model extends CI_Model {
         
         $faktur=$this->get_by_id($nomor)->row();
 
-        $this->load->model("periode_model");
         if($this->periode_model->closed($faktur->po_date)){
             echo "ERR_PERIOD";
             return false;
@@ -268,19 +345,20 @@ class Purchase_invoice_model extends CI_Model {
         // validate jurnal
         $this->load->model('jurnal_model');
         if($this->jurnal_model->del_jurnal($nomor)) {
-            $data['posted']=false;
-        } else {
-            $data['posted']=true;
+			$this->db->query("update purchase_order set posted=false where purchase_order_number='$nomor'");
         }
-        $this->update($nomor,$data);
-        
+		
+		$faktur=$this->purchase_order_model->get_by_id($nomor)->row();
+        if($faktur){
+			if(strtoupper($faktur->terms)=="CASH" || $faktur->terms==""){
+				$this->db->query("update check_writer set posted=0 where voucher='$nomor' "); 
+			} 
+		}        
         return true;
     }
 		
 	function posting($nomor)
 	{
-		$this->load->model('purchase_order_model');
-        $this->load->model("periode_model");
         $nomor=urldecode($nomor);
 		$this->recalc($nomor);
 		$faktur=$this->purchase_order_model->get_by_id($nomor)->row();
@@ -293,17 +371,38 @@ class Purchase_invoice_model extends CI_Model {
 			echo "ERR_PERIOD";
 			return false;
 		}
+		$terms=$faktur->terms;
 		$date=$faktur->po_date;
 		$supplier=$this->supplier_model->get_by_id($faktur->supplier_number)->row();
 		$akun_hutang=$faktur->account_id;
 		$gl_id=$nomor;
 		$debit=0; $credit=0;$operation="";$source="";
+		
 		// posting hutang / ap
 		if(invalid_account($akun_hutang))$akun_hutang=$supplier->supplier_account_number;
-		if(invalid_account($akun_hutang))$akun_hutang=$this->company_model->setting("accounts_payable");
-        
-		$account_id=$akun_hutang; $debit=0; $credit=$faktur->amount;
-		$operation="AP Posting"; $source=$faktur->comments;
+		if(invalid_account($akun_hutang))$akun_hutang=$this->company_model->setting("accounts_payable");        
+		$account_id=$akun_hutang; 
+		$operation="AP Posting"; 
+			
+		if(strtoupper($terms)=="CASH" || $terms==""){
+			// posting cash
+			$this->load->model("bank_accounts_model");
+			$rek_faktur=$faktur->rekening;
+			$coa_rek="";
+			if($rek_faktur!=""){
+				$coa_rek=$this->bank_accounts_model->get_account_id($rek_faktur);
+			}
+			if($coa_rek!="" && $coa_rek!="0"){
+				$account_id=$coa_rek;
+				$operation="Purchase Cash Posting";
+				$this->db->query("update check_writer set posted=1 where voucher='$nomor' "); 
+			}
+			
+		} 
+		
+		
+		$debit=0; $credit=$faktur->amount;
+		$source=$faktur->comments;
 		
 		$this->jurnal_model->add_jurnal($gl_id,$account_id,$date,$debit,$credit,$operation,$source);
 		// posting tax amount
@@ -357,15 +456,31 @@ class Purchase_invoice_model extends CI_Model {
         $account_cogs=0;
 		foreach($items->result() as $row) {
 		    $sistim=0;
-			if($item_q=$this->inventory_model->get_by_id($row->item_number)){
+		    $sql="select i.sales_account, i.inventory_account, 
+				i.cogs_account, i.cost, i.type_of_invoice,
+				i.cost_from_mfg,c.inventory_account as inventory_account_cat,
+				c.cogs_account as cogs_account_cat,c.sales_account as sales_account_cat 
+				from inventory i 
+				left join inventory_categories c on c.kode=i.category
+				where i.item_number='".$row->item_number."'";
+				
+			if($item_q=$this->db->query($sql)){
 			    if($item_stock=$item_q->row()){
-                    $account_id=$item_stock->inventory_account; 
-                    $account_cogs=$item_stock->cogs_account;
+                    $account_id=c_($item_stock->inventory_account); 
+					if(c_($account_id)==0){
+						$account_id=c_($item_stock->inventory_account_cat);
+					}
+                    $account_cogs=c_($item_stock->cogs_account);
+					if(c_($account_cogs)==0){
+						$account_cogs=c_($item_stock->cogs_account_cat);
+					}
                     $sistim=$item_stock->type_of_invoice;
 			        
 			    }
 			}
-			if(!$account_id)$account_id=$this->company_model->setting('inventory');
+			if(c_($account_id)==0){
+				$account_id=$this->company_model->setting('inventory');
+			}
             if($sistim!=""){
                 $s="select * from system_variables where varname='lookup.po_type' and varvalue='$sistim'";
                 if($qsis=$this->db->query($s)){
@@ -389,12 +504,9 @@ class Purchase_invoice_model extends CI_Model {
 		// validate jurnal
 		
 		if($this->jurnal_model->validate($nomor)) {
-			$data['posted']=true;
-		} else {
-			$data['posted']=false;
-		}
-		
-		$this->purchase_order_model->update($nomor,$data);
+			$this->db->query("update purchase_order set posted=true where purchase_order_number='$nomor'");
+		};
+		///$this->purchase_order_model->update($nomor,$data);
 	}	
 
 	function posting_range_date($date_from,$date_to){
@@ -576,7 +688,7 @@ class Purchase_invoice_model extends CI_Model {
 			$data['mu_qty']=$row->mu_qty;
 			$data['multi_unit']=$row->multi_unit;
 			$data['mu_harga']=$row->mu_price;
-			
+			$data['no_urut']=$row->no_urut;
             $ok=$this->purchase_order_lineitems_model->save($data);
         }
 
@@ -603,6 +715,14 @@ class Purchase_invoice_model extends CI_Model {
                $retval['amount']=$row->amount;
            }
        }
+ 	   $s="select sum(amount) as amt from crdb_memo where tanggal between '$date1' and '$date2' 
+	   and  cust_supp='$supplier' and outlet='$outlet' 
+	   and transtype='PO-DEBIT MEMO' and doc_type='Label'";
+	   if($q=$this->db->query($s)){
+	   	if($row=$q->row()){
+	   		$retval['amount']=$retval['amount']+$row->amt;
+	   	}
+	   }
        
        return $retval;
   }
@@ -623,6 +743,14 @@ class Purchase_invoice_model extends CI_Model {
            }
        }
        
+	   $s="select sum(amount) as amt from crdb_memo where tanggal between '$date1' and '$date2' 
+	   and  cust_supp='$supplier' and outlet='$outlet' 
+	   and transtype='PO-DEBIT MEMO' and doc_type='Admin'";
+	   if($q=$this->db->query($s)){
+	   	if($row=$q->row()){
+	   		$retval['amount']=$retval['amount']+$row->amt;
+	   	}
+	   }
        return $retval;
   }
    function biaya_htag1_amount($date1,$date2,$supplier="",$outlet="",$category="",$sistim=""){
@@ -641,9 +769,45 @@ class Purchase_invoice_model extends CI_Model {
                $retval['amount']=$row->amount;
            }
        }
+	   $s="select sum(amount) as amt from crdb_memo where tanggal between '$date1' and '$date2' 
+	   and  cust_supp='$supplier' and outlet='$outlet' 
+	   and transtype='PO-DEBIT MEMO' and doc_type='htag1'";
+	   if($q=$this->db->query($s)){
+	   	if($row=$q->row()){
+	   		$retval['amount']=$retval['amount']+$row->amt;
+	   	}
+	   }
        
        return $retval;
   }
+   function biaya_pajak_amount($date1,$date2,$supplier="",$outlet="",$category="",$sistim=""){
+       $retval['qty']=0;
+       $retval['amount']=0;
+       $s="select sum(qty) as qty,
+       sum(poe.amount) as amount 
+       from purchase_order_expenses poe
+       left join purchase_order po on po.purchase_order_number=poe.purchase_order_number
+       where po.po_date between '$date1' and '$date2' 
+       and po.potype='I' and item_no='PAJAK'";
+       if($supplier!="")$s.=" and po.supplier_number='$supplier'";
+       if($q=$this->db->query($s)){
+           if($row=$q->row()){
+               $retval['qty']=$row->qty;
+               $retval['amount']=$row->amount;
+           }
+       }
+	   $s="select sum(amount) as amt from crdb_memo where tanggal between '$date1' and '$date2' 
+	   and  cust_supp='$supplier' and outlet='$outlet' 
+	   and transtype='PO-DEBIT MEMO' and doc_type='Pajak'";
+	   if($q=$this->db->query($s)){
+	   	if($row=$q->row()){
+	   		$retval['amount']=$retval['amount']+$row->amt;
+	   	}
+	   }
+       
+       return $retval;
+  }
+  
    function biaya_htag2_amount($date1,$date2,$supplier="",$outlet="",$category="",$sistim=""){
        $retval['qty']=0;
        $retval['amount']=0;
@@ -660,7 +824,15 @@ class Purchase_invoice_model extends CI_Model {
                $retval['amount']=$row->amount;
            }
        }
-       
+	   $s="select sum(amount) as amt from crdb_memo where tanggal between '$date1' and '$date2' 
+	   and  cust_supp='$supplier' and outlet='$outlet' 
+	   and transtype='PO-DEBIT MEMO' and doc_type='htag2'";
+	   if($q=$this->db->query($s)){
+	   	if($row=$q->row()){
+	   		$retval['amount']=$retval['amount']+$row->amt;
+	   	}
+	   }
+              
        return $retval;
   }
    function biaya_transfer_amount($date1,$date2,$supplier="",$outlet="",$category="",$sistim=""){
@@ -679,7 +851,15 @@ class Purchase_invoice_model extends CI_Model {
                $retval['amount']=$row->amount;
            }
        }
-       
+	   $s="select sum(amount) as amt from crdb_memo where tanggal between '$date1' and '$date2' 
+	   and  cust_supp='$supplier' and outlet='$outlet' 
+	   and transtype='PO-DEBIT MEMO' and doc_type='transfer'";
+	   if($q=$this->db->query($s)){
+	   	if($row=$q->row()){
+	   		$retval['amount']=$retval['amount']+$row->amt;
+	   	}
+	   }
+              
        return $retval;
   }
    function biaya_paket_amount($date1,$date2,$supplier="",$outlet="",$category="",$sistim=""){
@@ -698,6 +878,14 @@ class Purchase_invoice_model extends CI_Model {
                $retval['amount']=$row->amount;
            }
        }
+	   $s="select sum(amount) as amt from crdb_memo where tanggal between '$date1' and '$date2' 
+	   and  cust_supp='$supplier' and outlet='$outlet' 
+	   and transtype='PO-DEBIT MEMO' and doc_type='paket'";
+	   if($q=$this->db->query($s)){
+	   	if($row=$q->row()){
+	   		$retval['amount']=$retval['amount']+$row->amt;
+	   	}
+	   }
        
        return $retval;
   }
@@ -717,7 +905,15 @@ class Purchase_invoice_model extends CI_Model {
                $retval['amount']=$row->amount;
            }
        }
-       
+	   $s="select sum(amount) as amt from crdb_memo where tanggal between '$date1' and '$date2' 
+	   and  cust_supp='$supplier' and outlet='$outlet' 
+	   and transtype='PO-DEBIT MEMO' and doc_type='lain'";
+	   if($q=$this->db->query($s)){
+	   	if($row=$q->row()){
+	   		$retval['amount']=$retval['amount']+$row->amt;
+	   	}
+	   }
+              
        return $retval;
   }
     function lookup($supplier_number="",$bind_id="purchase_order_number",$dlgRetFunc=""){

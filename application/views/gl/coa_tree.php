@@ -1,6 +1,6 @@
 <div class='thumbnail'>
     <?php
-    echo link_button('Print','','print','false',base_url().'index.php/coa/print');      
+    echo link_button('Print','','print','false',base_url().'index.php/gl/rpt/coa');      
     echo link_button('Import','','more','false',base_url().'index.php/coa/import');
     echo link_button('List','','more','false',base_url()."index.php/coa/browse");
     $arJenis=array("1"=>"1. Aktiva","2"=>"2. Pasiva","3"=>"3. Modal","4"=>"4. Penjualan",

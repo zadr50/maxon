@@ -33,6 +33,10 @@ function __construct(){
 	function count_all(){
 		return $this->db->count_all($this->table_name);
 	}
+	function get_by_trans_id($trans_id){
+		$this->db->where("trans_id",$trans_id);
+		return $this->db->get($this->table_name);		
+	}
 	function get_by_id($id){
 		$this->db->where($this->primary_key,$id);
 		return $this->db->get($this->table_name);
@@ -45,10 +49,6 @@ function __construct(){
 	}
 	
 	function save($data){
-		if($data['payment_amount']==0 and $data['deposit_amount']==0){
-			//echo "Isi jumlah bayar !";
-			return false;
-		};
 		if(isset($data['check_date']))$data['check_date']= date('Y-m-d H:i:s', strtotime($data['check_date'])); 
 		if(isset($data['cleared_date']))$data['cleared_date']= date('Y-m-d H:i:s', strtotime($data['cleared_date'])); 
         if($data['voucher']=='')$data['voucher']="CW".date("YmdHis");
@@ -67,16 +67,29 @@ function __construct(){
         } else {
             $data['bill_payment']=0;
         }
-        
-		$this->db->insert($this->table_name,$data);
-		$ok=$this->db->insert_id();
+        if(isset($data['account_number'])){
+        	rekening_need_update($data['account_number']);
+        }
+		if($rcw=$this->db->query("select trans_id from check_writer 
+			where voucher='".$data['voucher']."'"))
+			if($rc=$rcw->row()){
+			if($rc->trans_id){
+				$this->db->where("trans_id",$rc->trans_id)->update($this->table_name,$data);
+				$ok=$rc->trans_id;
+			}
+			
+		} else {
+			$this->db->insert($this->table_name,$data);
+			$ok=$this->db->insert_id();
+			
+		}
 		if(!$ok){
 			echo "ERR";
 		}
 		return $ok;
 	}
     function update_payment_sales($no_bukti){
-        $s="select check_date,account_number,trans_type,deposit_amount 
+        $s="select check_date,account_number,trans_type,deposit_amount,cleared 
         from check_writer where voucher='$no_bukti' ";
         if($q=$this->db->query($s)){
             if($rpay=$q->row()){
@@ -84,12 +97,35 @@ function __construct(){
                 $data["how_paid_acct_id"]=$this->bank_accounts_model->get_account_id($rpay->account_number);
                 $data["amount_paid"]=$rpay->deposit_amount;
                 $data["account_number"]=$rpay->account_number;
+				if($rpay->trans_type=="cheque in" && $rpay->cleared=="1") {
+					$data["doc_status"]="1";
+				} else {
+					$data['doc_status']='0';	
+				}
                 $this->db->where("no_bukti",$no_bukti)->update("payments",$data);
                 
             }
         }
     }
     function update_payment_purchase($no_bukti){
+        $s="select check_date,account_number,trans_type,payment_amount,cleared 
+        from check_writer where voucher='$no_bukti' ";
+        if($q=$this->db->query($s)){
+            if($rpay=$q->row()){
+                $data["date_paid"]=$rpay->check_date;
+                $data["how_paid_account_id"]=$this->bank_accounts_model->get_account_id($rpay->account_number);
+                $data["amount_paid"]=$rpay->payment_amount;
+                //$data["account_number"]=$rpay->account_number;
+				if(($rpay->trans_type=="cheque out" || $rpay->trans_type=="cheque") && $rpay->cleared=="1") {
+					$data["doc_status"]="1";
+				} else {
+					$data['doc_status']=0;
+				}
+                $this->db->where("no_bukti",$no_bukti)->update("payables_payments",$data);
+                
+            }
+        }
+    	
         
     }
 	function update($id,$data){
@@ -113,9 +149,6 @@ function __construct(){
         } else {
             $data['bill_payment']=0;
         }
-        
-        
-                
 		$this->db->where($this->primary_key,$id);
 		if(!$ok = $this->db->update($this->table_name,$data)){
 			echo "ERR";
@@ -128,6 +161,11 @@ function __construct(){
                 $this->update_payment_purchase($data['voucher']);
             }
         }
+		
+        if(isset($data['account_number'])){
+        	rekening_need_update($data['account_number']);
+        }
+		
 		return $ok;
 	}
 	function update_trx($id,$data){
@@ -229,7 +267,9 @@ function __construct(){
 					
 					if($qi=$this->check_writer_items_model->get_by_trans_id($rec->trans_id)) {
 						foreach($qi->result() as $cwi) {
-							$operation=$rec->trans_type." Posting"; $source=$cwi->invoice_number;
+							$operation=$rec->trans_type." Posting"; 
+							$source2=$cwi->comments;
+							if($source2=="")$source2=$cwi->invoice_number;
 							$debit=$cwi->amount; $credit=0;
 							$default_account=$default_account_hutang;
 							switch ($how_paid) {
@@ -249,7 +289,7 @@ function __construct(){
 							}
 							if($account_id!=""){
 								$this->jurnal_model->add_jurnal($gl_id,$account_id,$date,$debit,$credit
-									,$operation,$source,'',$custsuppbank);
+									,$operation,$source2,'',$custsuppbank);
 							}
 						}
 					}
@@ -260,8 +300,10 @@ function __construct(){
 		    echo "Voucher not found $voucher";
 		}
 		// validate jurnal
-		if($this->jurnal_model->validate($voucher)) {$data['posted']=true;	} else {$data['posted']=false;};
-		$this->update($voucher,$data);
+		if($this->jurnal_model->validate($voucher)) {
+			$data['posted']=true;	
+			$this->db->query("update check_writer set posted=true where voucher='$voucher'");
+		};
 	}
 	function unposting($voucher) {
 		$rec=$this->get_by_id($voucher)->row();
@@ -271,12 +313,8 @@ function __construct(){
 		}
 		// validate jurnal
 		if($this->jurnal_model->del_jurnal($voucher)) {
-			$data['posted']=false;
-		} else {
-			$data['posted']=true;
-		}
-		$this->update($voucher,$data);
-		
+			$this->db->query("update check_writer set posted=false where voucher='$voucher'");
+		} 		
 	}
 	function posting_range_date($date_from,$date_to,$type=0){
         

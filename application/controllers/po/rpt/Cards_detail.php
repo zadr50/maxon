@@ -17,6 +17,7 @@ class Cards_detail extends CI_Controller {
 		 $data['date_from']=date('Y-m-d 00:00:00');
 		 $data['date_to']=date('Y-m-d 23:59:59');
 		 $data['select_date']=true;
+
 		 $data['criteria1']=true;
 		 $data['label1']='Supplier';
 		 $data['text1']='';				 
@@ -26,6 +27,9 @@ class Cards_detail extends CI_Controller {
          $data['fields1'][]=array("supplier_name","180","Nama");
          $data['ctr1']='supplier/select';
 	 
+	 	$data['criteria2']=true;
+		$data['label2']='Sistim';
+		$data['text2']='';
 		 
 		$data['rpt_controller']=$this->rpt;
 		$this->template->display_form_input('criteria',$data,'');	

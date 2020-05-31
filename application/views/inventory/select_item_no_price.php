@@ -42,7 +42,7 @@
 	function deleteItem(){
 		var row = $('#'+grid_output).datagrid('getSelected');
 		if (row){
-			$.messager.confirm('Confirm','Are you sure you want to remove this line?',function(r){
+			$.messager.confirm('Confirm','Are you sure you want to remove this line? '+row.line_number,function(r){
 				if (r){
 					$.post(url_del_item,{line_number:row.line_number},function(result){
 						if (result.success){
@@ -106,6 +106,7 @@
 	
 	function find(){
 		xurl=CI_ROOT+'inventory/find/'+$('#item_number').val();
+		console.log("find():"+xurl);
 		$.ajax({
 					type: "GET",
 					url: xurl,

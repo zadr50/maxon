@@ -37,6 +37,10 @@
     $data['fields5'][]=array("location_number","80","Kode");
     $data['fields5'][]=array("attention_nme","180","Gudang");
     $data['ctr5']='lookup/query/warehouse';
+
+	$data['criteria6']=true;
+	$data['label6']='Item No';
+	$data['text6']='';
     
 	$data['rpt_controller']="inventory/rpt/$id";
 	$CI->template->display_form_input('criteria',$data,'');
@@ -51,6 +55,7 @@
 	$sistim = $CI->input->post('text3');
     $supplier = $CI->input->post('text4');
     $outlet = $CI->input->post('text5');
+	$item_no = $CI->input->post('text6');
     $category="";
     
      $outlet_name="";
@@ -107,12 +112,13 @@
      			$sql="select b.*, i.item_number,i.description,i.category,i.supplier_number,
      			i.retail as retail_stock,i.cost_from_mfg,i.margin,i.cost as cost_stock,
      			i.type_of_invoice as sistim
-     			from inventory_beg_bal_gudang b left join inventory i on i.item_number=b.item_number
+     			from inventory_beg_bal_gudang b join inventory i on i.item_number=b.item_number
      			 where year(b.tanggal)='$tahun' and month(b.tanggal)='$bulan' ";
                     
                 if($sistim!="")$sql.=" and i.type_of_invoice='$sistim'";    
                 if($supplier!="")$sql.=" and i.supplier_number='$supplier'";
                 if($outlet!="")$sql.=" and b.gudang='$outlet'";
+				if($item_no!="")$sql.=" and i.item_number = '$item_no' ";
 
                 $sql.="order by i.item_number";
                // $sql.=" limit 10";

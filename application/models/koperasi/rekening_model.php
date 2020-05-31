@@ -1,20 +1,11 @@
 <?php
 class Rekening_model extends CI_Model {
 
-private $primary_key='no_simpanan';
-private $table_name='kop_tabungan';
+private $primary_key='nomor';
+private $table_name='kop_simpanan';
 
 	function __construct(){
 		parent::__construct();        
-        $multi_company=$this->config->item('multi_company');
-       if($multi_company){
-            $company_code=$this->session->userdata("company_code","");
-            if($company_code!=""){
-               $this->db = $this->load->database($company_code, TRUE);
-           }
-       }         
-        
-        
 	}
 	function get_by_id($id){
 		$this->db->where($this->primary_key,$id);
@@ -22,12 +13,12 @@ private $table_name='kop_tabungan';
 	}
 
 	function save($data){
-		if($data['tanggal'])$data['tanggal']= date('Y-m-d H:i:s', strtotime($data['tanggal']));		
+		if(isset($data['tanggal_daftar']))$data['tanggal_daftar']= date('Y-m-d H:i:s', strtotime($data['tanggal_daftar']));		
 		$id=$this->db->insert($this->table_name,$data);
 		return $id;
 	}
 	function update($id,$data){
-		if($data['tanggal'])$data['tanggal']= date('Y-m-d H:i:s', strtotime($data['tanggal']));		
+		if(isset($data['tanggal_daftar']))$data['tanggal_daftar']= date('Y-m-d H:i:s', strtotime($data['tanggal_daftar']));		
 		$this->db->where($this->primary_key,$id);
 		$id=$this->db->update($this->table_name,$data);
 		return $id;

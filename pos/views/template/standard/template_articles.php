@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <script type="text/javascript">
-   		CI_ROOT = "<?=base_url()?>index.php/";
+   		CI_ROOT = "<?=base_url()?>pos.php/";
 		CI_BASE = "<?=base_url()?>"; 		
 </script>
 

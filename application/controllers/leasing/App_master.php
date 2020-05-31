@@ -15,16 +15,6 @@ class App_master extends CI_Controller {
 		parent::__construct();
 		if(!$this->access->is_login())redirect(base_url());
 		$this->load->helper(array('url','form','mylib_helper'));
-                
-        $multi_company=$this->config->item('multi_company');
-       if($multi_company){
-            $company_code=$this->session->userdata("company_code","");
-            if($company_code!=""){
-               $this->db = $this->load->database($company_code, TRUE);
-           }
-       }         
-        
-        
 		$this->load->library(array('sysvar','template','form_validation'));
 		if($this->controller=="")$this->controller=$this->file_view;
 		if($this->sql=="")$this->sql="select am.*,c.cust_name,am.status from ls_app_master am 

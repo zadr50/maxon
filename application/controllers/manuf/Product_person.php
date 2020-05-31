@@ -5,7 +5,7 @@ class Product_person extends CI_Controller {
 private $limit=10;
     private $file_view='manuf/product_person';
     private $table_name='employee';
-    private $sql="select nip,nama,dept,divisi from employee";
+    private $sql="select * from employee";
     private $primary_key='nip';
     private $controller='manuf/product_person';
 
@@ -43,6 +43,7 @@ private $limit=10;
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();
 			$this->employee_model->save($data);
+			echo json_encode(array("succes"=>true,"msg"=>"Success"));
 		} else {
 			$data['mode']='add';
 			$data['message']='';
@@ -63,10 +64,9 @@ private $limit=10;
 			} else {
 				$ok=$this->employee_model->update($id,$data);			
 			}
-			$this->browse();
+			echo json_encode(array("success"=>true,"msg"=>"Success"));
 		} else {
-			$data['message']='Error Update';
-       		$this->view($data['dept_code'],$data);		
+            echo json_encode(array("success"=>false,"msg"=>"Error"));
 		}	  
 	}
 	function view($id=null,$data=null){
@@ -86,8 +86,8 @@ private $limit=10;
 	}
     function browse($offset=0,$limit=50,$order_column='nip',$order_type='asc'){
 		$data['controller']=$this->controller;
-		$data['fields_caption']=array('NIP','Nama Karyawan');
-		$data['fields']=array( 'nip','nama');
+		$data['fields_caption']=array('NIP','Nama Karyawan','Dept','Divisi');
+		$data['fields']=array( 'nip','nama','dept','divisi');
 		$data['field_key']='nip';
 		$data['caption']='DAFTAR KODE KARYAWAN PRODUKSI';
 
@@ -100,7 +100,15 @@ private $limit=10;
     function browse_data($offset=0,$limit=100,$nama=''){
     	$sql=$this->sql." where 1=1";
 		if($this->input->get('sid_no')!='')$sql.=" and nip='".$this->input->get('sid_no')."'";	
+        
+        if($this->input->get("page"))$offset=$this->input->get("page");
+        if($this->input->get("rows"))$limit=$this->input->get("rows");
+        
+        
+        if($offset>0)$offset--;
+        $offset=$limit*$offset;
         $sql.=" limit $offset,$limit";
+        
         echo datasource($sql);
     }	 
 	function delete($id){

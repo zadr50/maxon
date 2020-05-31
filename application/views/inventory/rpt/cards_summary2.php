@@ -1,4 +1,4 @@
-<?
+<?php
  $CI =& get_instance();
  if(!$CI->input->post('cmdPrint')){
 	 $data['date_from']=date('Y-m-d 00:00:00');
@@ -61,7 +61,7 @@
  			</tr>
  		</thead>
  		<tbody>
-     			<?
+     			<?php
      			$sql="select item_number,description,category 
 				from inventory where 1=1";
 				if($kel!="")$sql.=" and category='$kel'";

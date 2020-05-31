@@ -1,5 +1,6 @@
 <?php
-
+$msg="";
+$table="salesman";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `salesman` (
@@ -31,6 +32,7 @@ CREATE TABLE IF NOT EXISTS `salesman_group` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="salesman_group_komisi";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `salesman_group_komisi` (
@@ -51,6 +53,7 @@ CREATE TABLE IF NOT EXISTS `salesman_group_komisi` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="salesman_komisi";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `salesman_komisi` (

@@ -1,8 +1,9 @@
-<div id='dgItemForm' class="easyui-dialog" style="width:800px;height:400px;left:10px;top:10px;padding:5px 5px"
+<div id='dgItemForm' class="easyui-dialog" style="width:700px;height:400px;left:10px;top:10px;padding:5px 5px"
     closed="true" buttons="#tbItemForm" > 
 	    <form id="frmItem" method='post' >
 			<div id='divPilihFaktur'>
 			</div>
+			<?=form_input("row_type","","id='row_type' style='display:none	' ")?>
 		 </form>
  
 	</div>
@@ -16,17 +17,18 @@
 		onclick='save_item();return false;' title='Save Item'>Submit</a>
 </div>
 <div id="tb" style="height:auto">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="false" onclick="addItem()" data-options="plain:false">Add Faktur</a>
-    <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="false" onclick="addItemRecv()" data-options="plain:false">Add Receive</a>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="false" onclick="deleteItem()" data-options="plain:false">Delete</a>
-    <a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" onclick="viewItem()" data-options="plain:false">View</a>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-reload" plain="false" onclick="reloadItem()" data-options="plain:false">Refresh</a>	
+	<?=link_button("Add Faktur","addItem();return false;","add")?>
+	<?=link_button("Add Retur","add_retur();return false;","add")?>
+	<?=link_button("Add Memo","add_memo();return false;","add")?>
+	<?=link_button("Add Receive","addItemRecv();return false;","add")?>
+	<?=link_button("Delete","deleteItem();return false;","remove")?>
+	<?=link_button("Refresh","reloadItem();return false;","reload")?>
 </div>
 
 <script language="JavaScript">
     function addItemRecv(){
         var nomor=$('#nomor').val();
-        if(nomor=='' || nomor=="AUTO"){alert('Isi nomor kontra bon, atau disimpan dulu !');return false;}
+        if(nomor=='' || nomor=="AUTO"){log_err('Isi nomor kontra bon, atau disimpan dulu !');return false;}
         
         dlgrecv_po_show();
     }
@@ -43,24 +45,73 @@
                     
                 }
             },
-            error: function(msg){$.messager.alert('Info',msg);}
+            error: function(msg){$.messager.show('Info',msg);}
         });
           
     }
 	function addItem(){
 		var mode=$('#mode').val();
 		if(mode=="add"){
-			alert("Simpan dulu sebelum tambah item barang !");
+			log_err("Simpan dulu !");
 			return false;
 		}
 		var supplier=$("#supplier_number").val();
 		if(supplier==""){
-			alert("Supplier belum diisi !");
+			log_err("Supplier belum diisi !");
 			return false;
 		}
+		$("#row_type").val("faktur");
+		
 		//$('#dgItemForm').window({left:100,top:window.event.clientY+20});
 		$("#dgItemForm").dialog("open").dialog('setTitle','Pilih nomor faktur');
 		var url='<?=base_url()?>index.php/po/kontra_bon/select_faktur/'+supplier;
+		$.ajax({
+			type: "GET",url: url,param: '',
+			success: function(result){
+				var result = eval('('+result+')');
+				if (result.success)	{
+					var fakturs=result.faktur;
+					console.log(fakturs);
+					var html="<table class='table'><thead><th width=10>X</th><th>Faktur</th><th>Tanggal</th><th>Termin</th><th>Jth Tempo</th>" +
+						"<th>Jumlah</th><th>Saldo</th><th>Recv No</th></thead><tbody>";
+					for(i=0;i<fakturs.length;i++){
+					    fkt=fakturs[i].purchase_order_number;
+					    if(fkt){
+							html=html+"<tr>";
+							html=html+"<td width=10><input type='checkbox' name='faktur[]' id='faktur"+i+"'  value='"+fakturs[i].purchase_order_number+"' style='width:30px' '></td>";
+							html=html+"<td>"+fkt+"</td><td>"+fakturs[i].po_date+"</td>";
+							html=html+"<td>"+fakturs[i].terms+"</td><td>"+fakturs[i].due_date+"</td><td>"+fakturs[i].amount+"</td>";
+							html=html+"<td>"+fakturs[i].saldo+"</td>";
+	                        html=html+"<td>"+fakturs[i].recv_no+"</td>";
+							html=html+"</tr>";
+					    	
+					    }
+					}
+					html=html+"</tbody></table>";
+					$("#divPilihFaktur").html(html);								
+				} else {
+					$("#divPilihFaktur").html("Tidak ada data  !");
+				}
+			},
+			error: function(msg){$.messager.show('Info',msg);}
+		});				
+	}
+	function add_retur(){
+		var mode=$('#mode').val();
+		if(mode=="add"){
+			log_err("Simpan dulu !");
+			return false;
+		}
+		var supplier=$("#supplier_number").val();
+		if(supplier==""){
+			log_err("Supplier belum diisi !");
+			return false;
+		}
+		$("#row_type").val("retur");
+			
+		//$('#dgItemForm').window({left:100,top:window.event.clientY+20});
+		$("#dgItemForm").dialog("open").dialog('setTitle','Pilih nomor faktur');
+		var url='<?=base_url()?>index.php/po/kontra_bon/select_retur/'+supplier;
 		$.ajax({
 			type: "GET",url: url,param: '',
 			success: function(result){
@@ -71,22 +122,71 @@
 						"<th>Jumlah</th><th>Saldo</th><th>Recv No</th></thead><tbody>";
 					for(i=0;i<fakturs.length;i++){
 					    fkt=fakturs[i].purchase_order_number;
-					    
-						html=html+"<tr>";
-						html=html+"<td width=10><input type='checkbox' name='faktur[]' id='faktur"+i+"'  value='"+fakturs[i].purchase_order_number+"' style='width:30px' '></td>";
-						html=html+"<td>"+fkt+"</td><td>"+fakturs[i].po_date+"</td>";
-						html=html+"<td>"+fakturs[i].terms+"</td><td>"+fakturs[i].due_date+"</td><td>"+fakturs[i].amount+"</td>";
-						html=html+"<td>"+fakturs[i].saldo+"</td>";
-                        html=html+"<td>"+fakturs[i].recv_no+"</td>";
-						html=html+"</tr>";
+					    if(fkt){
+							html=html+"<tr>";
+							html=html+"<td width=10><input type='checkbox' name='faktur[]' id='faktur"+i+"'  value='"+fakturs[i].purchase_order_number+"' style='width:30px' '></td>";
+							html=html+"<td>"+fkt+"</td><td>"+fakturs[i].po_date+"</td>";
+							html=html+"<td>"+fakturs[i].terms+"</td><td>"+fakturs[i].due_date+"</td><td>"+fakturs[i].amount+"</td>";
+							html=html+"<td>"+fakturs[i].saldo+"</td>";
+	                        html=html+"<td>"+fakturs[i].recv_no+"</td>";
+							html=html+"</tr>";
+					    }
 					}
 					html=html+"</tbody></table>";
 					$("#divPilihFaktur").html(html);								
+				} else {
+					$("#divPilihFaktur").html("Tidak ada data  !");
 				}
 			},
-			error: function(msg){$.messager.alert('Info',msg);}
+			error: function(msg){$.messager.show('Info',msg);}
 		});				
 	}
+	function add_memo(){
+		var mode=$('#mode').val();
+		if(mode=="add"){
+			log_err("Simpan dulu !");
+			return false;
+		}
+		var supplier=$("#supplier_number").val();
+		if(supplier==""){
+			log_err("Supplier belum diisi !");
+			return false;
+		}
+		$("#row_type").val("memo");
+			
+		//$('#dgItemForm').window({left:100,top:window.event.clientY+20});
+		$("#dgItemForm").dialog("open").dialog('setTitle','Pilih nomor debit/credit memo');
+		var url='<?=base_url()?>index.php/po/kontra_bon/select_memo/'+supplier;
+		$.ajax({
+			type: "GET",url: url,param: '',
+			success: function(result){
+				var result = eval('('+result+')');
+				if (result.success)	{
+					var fakturs=result.faktur;
+					var html="<table class='table'><thead><th width=10>X</th><th>Faktur</th><th>Tanggal</th><th>Termin</th><th>Jth Tempo</th>" +
+						"<th>Jumlah</th><th>Saldo</th><th>Recv No</th></thead><tbody>";
+					for(i=0;i<fakturs.length;i++){
+					    fkt=fakturs[i].kodecrdb;					    
+					    if(fkt){
+							html=html+"<tr>";
+							html=html+"<td width=10><input type='checkbox' name='faktur[]' id='faktur"+i+"'  value='"+fakturs[i].kodecrdb+"' style='width:30px' '></td>";
+							html=html+"<td>"+fkt+"</td><td>"+fakturs[i].tanggal+"</td>";
+							html=html+"<td></td><td></td><td>"+fakturs[i].amount+"</td>";
+							html=html+"<td>0</td>";
+	                        html=html+"<td></td>";
+							html=html+"</tr>";
+					    }
+					}
+					html=html+"</tbody></table>";
+					$("#divPilihFaktur").html(html);								
+				} else {
+					$("#divPilihFaktur").html("Tidak ada data  !");
+				}
+			},
+			error: function(msg){$.messager.show('Info',msg);}
+		});				
+	}
+		
 	function close_item(){
 		clear_input();
 		$("#dgItemForm").dialog("close");	
@@ -94,7 +194,7 @@
 	function save_item(){
 		var url = '<?=base_url()?>index.php/po/kontra_bon/save_item';
 		var nomor =$('#nomor').val();
-		if($("#mode").val()=="add"){alert("Simpan dulu nomor ini.");return false;};
+		if($("#mode").val()=="add"){log_err("Simpan dulu !");return false;};
 		$('#nomor').val(nomor);
 		$('#frmItem').form('submit',{
 			url: url,
@@ -162,7 +262,7 @@
 							    
 							}
 						},
-						error: function(msg){$.messager.alert('Info',msg);}
+						error: function(msg){$.messager.show('Info',msg);}
 					});
 				}
 			})

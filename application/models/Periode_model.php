@@ -40,8 +40,16 @@ function exist($id){
 function save($data){
 	if(isset($data['startdate']))$data['startdate']= date('Y-m-d H:i:s', strtotime($data['startdate']));
 	if(isset($data['enddate']))$data['enddate']= date('Y-m-d H:i:s', strtotime($data['enddate']));
-	$this->db->insert($this->table_name,$data);
-	return $this->db->insert_id();
+    $id=$data[$this->primary_key];
+    if($q=$this->get_by_id($id)){
+        if($q->num_rows()){
+            unset($data[$this->primary_key]);
+            $this->db->where($this->primary_key,$id)->update($this->table_name,$data);
+        } else {
+            $this->db->insert($this->table_name,$data);
+            return $this->db->insert_id();            
+        }
+    }
 }
 function update($id,$data){
 	if(isset($data['startdate']))$data['startdate']= date('Y-m-d H:i:s', strtotime($data['startdate']));

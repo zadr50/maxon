@@ -59,6 +59,7 @@
            <tr>
                 <td>Rekening Penerima </td><td><?php echo form_input('account_number',$account_number,"id='account_number' style='width:90px'");?>
                 <?=link_button("","dlgbank_accounts_show();return false","search");?>
+                <?=link_button("","dlgbank_accounts_list_master();return false","add");?>
                 </td>
                 <td>Voucher Kas Masuk</td><td>
     			<?php
@@ -74,6 +75,7 @@
             <tr>
                 <td>Kelompok Voucher </td><td><?php echo form_input('doc_type',$doc_type,"id='doc_type' style='width:90px'");?>
                     <?=link_button('','dlgdoc_type_show();return false;','search','false');?>      
+                    <?=link_button('',"dlgdoc_type_list('doc_type_cash_in');return false;",'add','false');?>      
                 </td>
                 <td>Voucher Ref#</td><td><?php echo form_input('ref1',$ref1,"id='ref1'");?>
                     <?=link_button('','dlgvoucher_cash_out_show();return false;','search','false');?>      
@@ -99,7 +101,8 @@
            </tr>
     		<tr>
                 <td>Penerima </td><td><?php echo form_input('supplier_number',$supplier_number,"id='sold_to_customer' style='width:90px'");?>
-                <?=link_button("","select_customer();return false","search");?>
+                <?=link_button("","dlgcustomers_show();return false","search");?>
+                <?=link_button("","dlgcustomers_list_master();return false","add");?>
                 </td>
     			<td>Tanggal Jth Tempo</td><td><?php echo form_input('cleared_date',$cleared_date,'id=cleared_date 
                  class="easyui-datetimebox"   style="width:150px;height:30px" 
@@ -116,8 +119,10 @@
            <tr>
                 <td>Project#</td><td><?php echo form_input('ref2',$ref2,"id='ref2' style='width:90px'");
                 	echo link_button("", "dlggl_projects_show();return false","search");
+                    echo link_button("", "dlggl_projects_list_master();return false","add");
                 	?></td>
-                <td></td><td></td>
+				<td>Outlet</td><td><?=form_input("ref3",$ref3,"id='ref3'")
+					.link_button('',"dlgoutlet_show()","search")?></td>
            </tr>
            <tr>
                 <td>Keterangan</td><td colspan='6'><?php echo form_input('memo',$memo,"style='width:100%'");?></td>
@@ -142,27 +147,31 @@
 
 
 <?=load_view('gl/select_coa')?>
-<?=load_view('sales/customer_select')?>
+<?=$lookup_customers?>
 <?=$lookup_doc_type?>
 <?=$lookup_ref1?>
 <?=$lookup_rekening?>
 <?=$lookup_department?>
 <?=$lookup_gl_projects?>
+<?=$lookup_outlet?>
 
 <script type="text/javascript">
     function save_this(){
         var valid_date=true;
         var min_date='<?=$min_date?>';
         var tanggal=$('#check_date').datetimebox('getValue'); 
+        var amt=$('#deposit_amount').val();
+        if(amt=='')amt='0';
+        
+        
         if(tanggal<min_date){
             valid_date=false;
         }
         if(!valid_date){log_err("Tanggal tidak benar ! Mungkin sudah closing !");return false;}
 
         if($('#account_number').val()===''){log_err('Isi kode rekening !');return false;};
-        if($('#deposit_amount').val()===''){log_err('Isi jumlah  !');return false;};
-        if($('#deposit_amount').val()==='0'){log_err('Isi jumlah  !');return false;};
-
+        if(amt=='0'){log_err('Jumlah akan diinput dari item pilihan kode perkiraan');};
+        
         if($('#voucher').val()===''){log_err('Isi kode voucher !');return false;};
         if($('#trans_type').val()===''){log_err('Isi jenis penerimaan !');return false;};
        $('#myform').submit();
@@ -200,6 +209,7 @@
 				loading_close();
 				
 				if (result.success){
+					$('#deposit_amount').val(result.deposit_amount);
 					load_item();
                     $('#dlgItem').dialog('close');				   
                     clear_item();
@@ -222,6 +232,9 @@
 							loading_close();
 							$("#dlgItem").dialog("close");
 							if (result.success){
+								
+								
+								$('#deposit_amount').val(result.deposit_amount);
 								load_item();
 								log_msg(result.msg);
 							} else {

@@ -221,6 +221,18 @@ private $id=0;
     function arsip_saldo($enddate,$coa_id){
         
     }
+	function lookup($dlgId){
+        return $this->list_of_values->render(
+	        array('dlgBindId'=>$dlgId,"dlgId"=>$dlgId,"dlgUrlQuery"=>"coa/browse_data",
+	        'dlgRetFunc'=>"$('#$dlgId').val(row.account+' - '+row.account_description);",
+	        'dlgCols'=>array( 
+	                        array("fieldname"=>"account","caption"=>"Kode Akun","width"=>"80px"),
+	                        array("fieldname"=>"account_description","caption"=>"Nama Perkiraan","width"=>"200px")
+	                    )
+			)
+		);          
+		
+	}
 
 
 }

@@ -1,41 +1,30 @@
- 
- 	<div class='col-sm-8 col-md-8'>
-		<div class=" ">
-		<img class='thumbnail'   src="<?=base_url()?>images/profle.png">
-		<div class='col-lg-10'>
-			<h2>REGISTER</h2>
-			<p><strong>Register New Account</strong></p>
-			<p>Dengan mendaftar menjadi member anda bisa berbelanja dengan cepat, 
-			mendapatkan update status produk yang diinginkan, 
-			dan melihat status order belanja anda.</p>
-			<p>Silahkan buat akun baru anda apabila belum menjadi member toko kami</p>
-			<a href="<?=base_url()?>index.php/eshop/member/add" class="btn btn-primary">Continue</a>
+<div class=" col-md-6">
+	<div class="well">
+		<img align='left' src="<?=base_url()?>images/ico_payroll.png">
+		<h2> LOGIN</h2>
+		<p>Untuk melihat data transaksi atau status order anda atau pengaturan lainnya 
+		yang bisa dilakukan oleh user, silahkan masukkan username dan password yang 
+		telah anda buat dikotak sebelah ini dengan benar.</p>
+	  <form class="form" id='frmLogin' method='post'>
+		<div class="form-group">
+		  <label>Username</label>
+		  <input name='cust_id' id='cust_id' type="text" class="form-control" placeholder="Enter your username">
 		</div>
+		<div class="form-group">
+		  <label>Password</label>
+		  <input name='cust_pass' id='cust_pass' type="password" class="form-control" placeholder="Enter your password">
 		</div>
-	</div>
-	<div class="col-sm-6 col-md-4">
-		<div class="well">
-			<img align='left' src="<?=base_url()?>images/ico_payroll.png">
-			<h2> LOGIN</h2>
-			<p>Untuk melihat data transaksi atau status order anda atau pengaturan lainnya 
-			yang bisa dilakukan oleh user, silahkan masukkan username dan password yang 
-			telah anda buat dikotak sebelah ini dengan benar.</p>
-		  <form class="form" id='frmLogin' method='post'>
-			<div class="form-group">
-			  <label>Username</label>
-			  <input name='cust_id' id='cust_id' type="text" class="form-control" placeholder="Enter your username">
-			</div>
-			<div class="form-group">
-			  <label>Password</label>
-			  <input name='cust_pass' id='cust_pass' type="password" class="form-control" placeholder="Enter your password">
-			</div>
-			<button type='submit' class='btn btn-primary'>LOGIN</button>
-		  </form>
-		<div id='message'></div>
-		</div>
-	</div>
- 
 
+		<button type='submit' class='btn btn-primary pull-center'>Login</button>
+		<p>
+			Belum punya akun? 
+			<a href="<?=base_url()?>index.php/eshop/member/add">Create New</a>
+			
+		</p>			
+	  </form>
+	<div id='message'></div>
+	</div>
+</div>
 
 <script language='javascript'>
 $(document).ready(function() {

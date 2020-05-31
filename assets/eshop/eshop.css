@@ -1,11 +1,10 @@
 body {
 	font-family: 'Open Sans', sans-serif;
 	font-weight: 400;
-	color: #666;
+	color:black;
 	font-size: 12px;
 	line-height: 20px;
-	background-color: gray;
-	padding:10px;
+	background: #f5f5f5;
 }
 a:hover {
   text-decoration: none;
@@ -20,7 +19,11 @@ a:visited {
 }
 .box_item:hover{
 	cursor: pointer;
-	border: 2px solid blue;
+	border: 1px solid gray;
+	--padding-top: 5px;
+	--background: lightgray;
+	--border-radius:5px;
+	
 }	 
 .logo-maxon {
 	background: url('../../images/logo_maxon.png') no-repeat;
@@ -30,34 +33,58 @@ a:visited {
 	height: 50px;
 	width: 200px;
 }
-.box_item {
-	--background-color: whitesmoke;
-	--margin:5px;
-	height:280px;
-	--webkit-box-shadow: 0 1px 1px 1px #222;
-    --moz-box-shadow: 0 1px 1px 1px #222;
-    --box-shadow: box-shadow: 0 1px 1px 0px #222;
-	overflow: both;
-    border: 1px solid #B7B1B1;
-    margin: 5px;
+.box-cat2 {
+	padding: 10px;
+	padding-left:20px;
+	border-bottom: 5px solid #2c4e7e;
+    background: #ecf6fb;
 }
-.box_item .foto {
-	padding: 1px;
+.box-cat2 img {
+	width:50px;
+	height:50px;
+	float:left;
+	margin-right:20px;
 }
-.box_item .foto img {
-	width: 100%;
-	height: 150px;
+.box-cat2 .title {
+	font-weight: bold;
+	font-size: large;
 }
-.box_item .content {
-	font-family: sans-serif;
-	min-height: 60px;
-    border: 1px solid #B7B1B1;
+.box-cat2 legend {
+	color: #eee;
+	border: none;
+}
+.box-cat2 .thumbnail {
+	border: none;
 }
 .top-nav {
 	background-color:  rgb(153, 107, 179);
 }
 
- 
+
+.box_item {
+	text-align:center;
+	height:320px;
+	overflow: both;
+	margin: 5px;
+	border-radius: 5px;
+    border: solid 1px lightgray;
+    background: white;
+    padding: 5px;
+}
+.box_item .content {
+	font-family: sans-serif;
+	height: 15%;
+	margin: auto;
+    font-weight: 900;	
+}
+.box_item .foto {
+	height:200px;
+	width:200px;
+}
+.foto img {
+	height:200px;
+	width:200px;
+} 
  
 .box-cat h4 {
 	background-color: rgb(99, 65, 118);
@@ -73,8 +100,8 @@ a:visited {
 	margin-bottom: 20px;
 }
 .item-detail .foto {
-	width: 550px;
-	height: 300px;
+	--width: 550px;
+	height: 500px;
 	padding: 10px;
 	border: 1px solid white;
 	background-color:whitesmoke;
@@ -124,26 +151,30 @@ ol.breadcrumb  a:visited {
 	color: black;
 }
 .box-footer {
-	padding:10px;
-	padding-top:20px;
-	padding-bottom:50px;
+	padding: 10px;
+    padding-top: 20px;
+    padding-bottom: 50px;
+    background: cornflowerblue;
+    color: black;
+}
+.box-footer li {
+	color:black;
 }
 .item-footer {
-	--background-color:  rgb(231, 229, 231);
-	overflow:none;
+	font-weight: bold;
+	font-family: sans-serif;
+    border-top: 1px solid #ddd;
+    height: 24%;
+    padding: 5px;	
 }
 .item-footer .item_no {
-	font-family: monospace;
-	font-weight: 800;
-	--margin-right: 10px;
-	--margin-left: 10px;
-	margin-top: 5px;
 	color: green;
 }
 .item-footer .price {
-	font-weight: 700;
 	color: red;
-	margin-bottom: 3px;
+}
+.item-stat-q {
+    font-weight: 100;
 }
 .rating- {
 	background: url('../../images/1stars.png') no-repeat;
@@ -206,8 +237,6 @@ ol.breadcrumb  a:visited {
 }
 .breadcrumb {
 	margin-bottom:0px;
-	border-radius:0px;
-	border: 1px solid #ddd;
 }
 .breadcrumb2 {
 	margin: 0 0 20px 0;
@@ -265,19 +294,19 @@ ol.breadcrumb  a:visited {
 	margin:10px;
 }
 .bg-all {
-	background-color: #F0FCF0;
-	--padding-top:10px;
-	--border:1px solid rgb(121, 142, 121);
-    --box-shadow: 0 6px 6px 5px white;
 }
 .bg-head-foot {
-	background-color: rgb(121, 142, 121);
+	background-color: #d9edf7;
 	padding:5px;
 	margin-top:20px;
 }
 .bg-head {
-	background-color: rgb(121, 142, 121);
-	padding-top:10px;
+	--background-color: rgb(233, 231, 231);
+	padding-top:2px;
+}
+#section-header {
+    font-size: 14px;
+	background: #add3fc;
 }
 
 .bg-banner {
@@ -305,13 +334,13 @@ ol.breadcrumb  a:visited {
   margin-bottom: 20px;
   }
 #section-content {
-  margin-top: 20px;
+  height: 400px;
+  background-color: #add3fc;
+  padding-top: 10px;  
 }
 
 #nv-header {
     background-color: #28311A;
-    text-color: white;
-    text-color: auto;
     color: white;
     padding: 10px;
     align-content: center;
@@ -327,6 +356,39 @@ ol.breadcrumb  a:visited {
     font-weight: 500;
 	margin-left:5px;
 }
-
+.cat-list li {
+	margin-top:5px;
+	color:black;	
+	padding:5px;
+	cursor: pointer;
+	margin-right:20px;
+}
+.cat-list li:hover {
+	background-color:#428bca;
+}
+.cat-icon {
+    float: left;
+    padding: 5px;
+    font-weight: 500;
+    width: 80px;
+    height: 80px;
+	text-align: center;
+	cursor:pointer;
+	margin: 5px;
+}
+.cat-icon .title {
+    font-family: sans-serif;
+    font-weight: 600;
+}
+.cat-icon img {
+	height:40px;
+	width:50px;
+}
+.cat-box {
+	text-align:center;
+}
+.cat-box {
+    color: white;
+}
 
   

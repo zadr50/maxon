@@ -1,7 +1,4 @@
-<?
-//var_dump($_POST);
-?>
-<?
+<?php
      $CI =& get_instance();
      $CI->load->model('company_model');
      $CI->load->model("shipping_locations_model");

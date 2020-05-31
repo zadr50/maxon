@@ -1,6 +1,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<?
+<?php
 	echo $library_src;
 	echo $script_head;
 	if(!isset($_left_menu_caption))$_left_menu_caption='Left Menu';

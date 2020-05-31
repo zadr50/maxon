@@ -2,6 +2,8 @@
 	<?php
 	echo link_button('Save', 'save_this();return false;','save');		
 	echo link_button('Print', 'print();return false;','print');		
+    echo link_button('Delete', 'on_delete()','remove');        
+    echo link_button('Refresh', 'on_refresh()','reload');            
 	echo link_button('Help', 'load_help(\'pinjaman\')','help');			
 	?>
 	<div style="float:right">
@@ -28,12 +30,9 @@
 			<tr><td>Nomor Pinjaman</td>
 				<td>
 					<?php
-					if($mode=='view'){
-						echo "<span class='thumbnail'><strong>$loan_number</strong></span>";
-						echo "<input type='hidden' id='nip' value='$loan_number'>";
-					} else { 
-						echo form_input('loan_number',$loan_number,"id=loan_number");
-					}		
+					$readonly="";
+					if($mode=='view')$readonly=" readonly";
+					echo form_input('loan_number',$loan_number,"id='loan_number' $readonly");
 					?>
 				</td>
 				<td rowspan='4' colspan='4'>
@@ -112,6 +111,7 @@
 						$('#loan_number').val(result.loan_number);
 						$('#mode').val('view');
 						log_msg('Data sudah tersimpan.');
+						on_refresh();
 					} else {
 						log_err(result.msg);
 					}
@@ -121,5 +121,28 @@
 	function load_help() {
 			window.parent.$("#help").load("<?=base_url()?>index.php/payroll/help/load/pinjaman");
 	}
+    function on_delete(){
+        var id=$("#loan_number").val();
+
+        $.messager.confirm('Confirm','Are you sure you want to remove this line?',function(r){
+            if(!r)return false;
+        
+            $.ajax({
+                url: CI_ROOT+"payroll/pinjaman/delete/"+id,
+                success: function(result){
+                    log_msg("Success");
+                    remove_tab_parent();
+                },
+                error:function(result){
+                    log_msg("Error !");
+                }
+            })
+        })
+    }
+    function on_refresh(){
+        var id=$("#loan_number").val();
+        window.open(CI_ROOT+"payroll/pinjaman/view/"+id,"_self");
+    }
+	
 		
 </script>  

@@ -8,17 +8,6 @@ class Categories extends CI_Controller {
 	{
 		parent::__construct();
  		$this->load->helper(array('url','form'));
-        
-        
-        $multi_company=$this->config->item('multi_company');
-       if($multi_company){
-            $company_code=$this->session->userdata("company_code","");
-            if($company_code!=""){
-               $this->db = $this->load->database($company_code, TRUE);
-           }
-       }         
-        
-        
 		$this->load->library('template_eshop');
 	}
 	function index() {	
@@ -71,7 +60,7 @@ class Categories extends CI_Controller {
 				$this->db->where("category",$cat_id);
 			}
 			//$this->db->where("retail between $price_from and $price_to ","",FALSE);
-			$this->db->select('item_number,description,item_picture,retail');
+			$this->db->select('item_number,description,item_picture,retail,active');
 			if($sales_stat_type==0){	//item baru
 				$this->db->order_by("view_count");
 			}
@@ -88,8 +77,8 @@ class Categories extends CI_Controller {
 			$data['search_items']=$search_items;
 			$data['search_category']=$cat_id;		
 			$data['cat_id']=$cat_id;
-			$data['sidebar']='category_list';
-			$this->template_eshop->display('category',$data);
+			$data['sidebar']='eshop/items/category_list';
+			$this->template_eshop->display('items/category',$data);
 		 
 	}
 	function view_price_range($price_range_type=0)

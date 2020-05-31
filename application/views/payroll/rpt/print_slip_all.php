@@ -11,6 +11,7 @@
     $dept=$this->input->post('text1');
     $divisi=$this->input->post('text2');
     $period=$this->input->post('text3');
+	$emptype=$this->input->post('text4');
     $sql="select pay_no,pay_period,employee_id,e.nama,p.dept,p.divisi, 
     p.total_pendapatan,p.total_potongan,pay_date,from_date,to_date
      from hr_paycheck p 
@@ -18,6 +19,7 @@
     if($dept!="")$sql.=" and p.dept='$dept'";
     if($divisi!="")$sql.=" and p.divisi='$divisi'";
     if($period!="")$sql.=" and pay_period='$period'";
+	if($emptype!="")$sql.=" and e.emptype='$emptype'";
     
     if($query=$CI->db->query($sql)) {
         foreach($query->result() as $pay) {
@@ -29,7 +31,7 @@
             $pendapatan=$CI->paycheck_sal_com_model->tunjangan_list();
             $potongan=$CI->paycheck_sal_com_model->potongan_list();
         
-            include_once "print_slip.php";   
+            include "print_slip.php";   
         }
         
     }

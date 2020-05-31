@@ -13,7 +13,8 @@ class Receive_toko extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();        
-       
+        
+        
 		if(!$this->access->is_login())redirect(base_url());
  		$this->load->helper(array('url','form','mylib_helper','browse_select'));
         $this->load->library('sysvar');
@@ -25,11 +26,10 @@ class Receive_toko extends CI_Controller {
 		$this->load->model('syslog_model');
         $this->load->library("list_of_values");      
         $this->sql="select distinct shipment_id,
-                format(date_received,'%Y-%m-%d) as date_received,
+                concat(year(date_received),'-',month(date_received),'-',day(date_received)) as date_received,
                 ip.warehouse_code,
-                ip.supplier_number, ip.doc_type,ip.ref1
-                from inventory_products ip left join inventory i
-                on ip.item_number=i.item_number
+                ip.supplier_number, ip.doc_type
+                from inventory_products ip 
                 where receipt_type='$this->receipt_type' and doc_type='$this->doc_type'
         ";
         
@@ -60,7 +60,7 @@ class Receive_toko extends CI_Controller {
             $data=data_table($this->table_name,$record);
             $data['mode']='';
             $data['message']='';
-            $data['warehouse_list']=$this->shipping_locations_model->select_list();
+
 			if($record==NULL){
 				$data['date_received']=date("Y-m-d H:i:s");
 				$data['shipment_id']="AUTO";
@@ -75,13 +75,25 @@ class Receive_toko extends CI_Controller {
                 array("fieldname"=>"shipment_id","caption"=>"Kode","width"=>"250px"),
                 array("fieldname"=>"date_received","caption"=>"Tanggal","width"=>"200px"),
                 array("fieldname"=>"warehouse_code","caption"=>"Sumber","width"=>"200px"),
-                array("fieldname"=>"supplier_number","caption"=>"Tujuan","width"=>"200px")
             );
-            $setting['show_date_range']=true;
             $setting['dlgRetFunc']="add_sj_item(row.shipment_id);";
-			
             $data['lookup_do_gudang']=$this->list_of_values->render($setting);
-            
+            $data['lookup_gudang1']=$this->list_of_values->lookup_gudang();
+            $data['lookup_gudang2']=$this->list_of_values->render(array(
+				'dlgBindId'=>"gudang",
+				"dlgRetFunc"=>"$('#supplier_number').val(row.location_number); ",
+				'dlgCols'=>
+				array( 
+                        array("fieldname"=>"location_number","caption"=>"Kode","width"=>"80px"),
+                        array("fieldname"=>"attention_name","caption"=>"Nama Toko","width"=>"180px"),
+                        array("fieldname"=>"company_name","caption"=>"Kode Pers","width"=>"50px"),
+                        array("fieldname"=>"company","caption"=>"Perusahaan","width"=>"200px")
+                   ),
+                'show_date_range'=>false
+			));            
+			$data['lookup_inventory']=$this->list_of_values->lookup_inventory();
+	
+	        
             return $data;
 	}
 	function index()
@@ -164,10 +176,13 @@ class Receive_toko extends CI_Controller {
         $data['caption']='DAFTAR PENERIMAAN BARANG DARI GUDANG';
 		$data['controller']=$this->controller;		
 		$data['fields_caption']=array('Nomor Bukti','Tanggal',
-		'Gudang','Asal','Doc Type','Ref');
-		$data['fields']=array('shipment_id'
-        ,'date_received','warehouse_code',
-        'supplier_number','doc_type','ref1');
+		'Gudang','Asal','Doc Type');
+		$data['fields']=array('shipment_id','date_received',
+		'warehouse_code',
+        'supplier_number','doc_type');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='shipment_id';
 		$this->load->library('search_criteria');
 		
@@ -214,10 +229,13 @@ class Receive_toko extends CI_Controller {
 	function delete($id){
 		if(!allow_mod2('_80063'))return false;   
 		$id=urldecode($id);
-	 	$this->inventory_products_model->delete($id);
+	 	$ok = $this->inventory_products_model->delete($id);
 		$this->syslog_model->add($id,"receive_toko","delete");
-
-	 	$this->browse();
+		if ($ok){
+			echo json_encode(array('success'=>true));
+		} else {
+			echo json_encode(array('msg'=>'Some errors occured.'));
+		}
 	}
     
 	function detail(){
@@ -272,24 +290,41 @@ class Receive_toko extends CI_Controller {
         $supplier_number=urldecode($supplier_number);
         $ok=false;
         $msg="";
+    	$company="";
+    	$from="";
+    	$to="";
+		
         if($to_id=="AUTO"){
             $to_id=$this->nomor_bukti();
             $this->nomor_bukti(true);            
         }
         if($q=$this->db->where("shipment_id",$from_id)->get("inventory_products")){
+        	$this->db->query("update ".$company."inventory_products set selected=1
+        		where shipment_id='$from_id' ");
             foreach($q->result_array() as $data){
                 $data2["shipment_id"]=$to_id;
                 $data2['date_received']= date( 'Y-m-d H:i:s');
                 $data2['from_line_number']=$data["id"];
                 $data2["receipt_type"]=$this->receipt_type;
                 $data2['doc_type']=$this->doc_type;
+
                 $multi_unit="";
                 $price=0;
+				$description="";
+				if(isset($data2['description'])){
+					$description=$data2['description'];
+				}
                 if($qitem=$this->inventory_model->get_by_id($data['item_number'])){
-                     $item=$qitem->row();
-                    $multi_unit=$item->unit_of_measure;
-                    $price=$item->cost;   
+                    if($item=$qitem->row()) {
+                        $multi_unit=$item->unit_of_measure;
+                        $price=$item->cost;                           
+						if($description==""){
+							$description=$item->description;
+						}
+                    }
                 }
+                $data2['description']=$description;
+                
                 $data2['multi_unit']=$multi_unit;
                 $data2['mu_price']=$price;
                 $data2['mu_qty']=$data['mu_qty'];
@@ -339,7 +374,14 @@ class Receive_toko extends CI_Controller {
         }
 		$line=$data['id'];
         $item=$this->inventory_model->get_by_id($data['item_number'])->row();
-       	$cost=item_cost($data['item_number']);
+		$cost=0;
+		if($data['cost']>0){
+			$cost=$data['cost'];
+		}
+		if($cost==0){
+	       	$cost=item_cost($data['item_number']);
+			
+		}
         $data['cost']=$cost;
         $data['shipment_id']=$id;
         $data['total_amount']=$data['quantity_received']*$data['cost'];
@@ -418,6 +460,38 @@ class Receive_toko extends CI_Controller {
 
         }
     }    
-    
+    function sj_from_gudang($gudang,$to_gudang,$search=""){
+    	$company="";
+    	$from="";
+    	$to="";
+    	/*
+    	if($q=$this->db->query("select company_name from shipping_locations 
+    		where location_number='$gudang'"))	{
+    		if($r=$q->row())$company="kagum_$r->company_name.";
+    	}	
+		if($this->input->get("search")){
+			$search2=$this->input->get("search");
+			if($search2!="")$search=$search2;
+		}
+		 * 
+		 */
+		
+    		
+        $sql="select distinct shipment_id,
+        concat(year(date_received),'-',month(date_received),'-',day(date_received)) as date_received,
+        warehouse_code,supplier_number  
+        from inventory_products where receipt_type='ETC_OUT' and doc_type='1'";
+		$sql.=" and warehouse_code='$gudang' and supplier_number='$to_gudang'";
+	    $sql.=" and (selected is null or selected=0)";
+	    
+	    if($search!="")$sql.=" and (shipment_id like '%$search%' or supplier_number like '%$search%')";
+	    if($from!=""){
+	        $sql.=" and date_received between '$from' and '$to'";                    
+	    }
+	    $sql.=" order by shipment_id desc";
+	  					
+						
+		echo datasource($sql);
+    }
     
 }

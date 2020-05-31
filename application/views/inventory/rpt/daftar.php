@@ -23,15 +23,17 @@
 	} else {
 		$data['caption']="DAFTAR MASTER BARANG";
 		$sql="select i.item_number,i.description,i.quantity_in_stock as qty,
-		i.unit_of_measure as unit,i.retail as h_jual,i.cost,
+		i.unit_of_measure as unit,
+		ip.qty_last as m_qty,ip.customer_pricing_code as m_unit,		
+		i.retail as h_jual,i.cost,
 		i.cost*i.quantity_in_stock as total_cost,
-		i.category,c.category as cat_name,i.supplier_number,
-		s.supplier_name,i.model,i.manufacturer,i.cost_from_mfg
+		c.category as cat_name,i.cost_from_mfg
 			FROM inventory i 
 			left join suppliers s on s.supplier_number=i.supplier_number 
 			left join inventory_categories c on c.kode=i.category
-			where 1=1";
-		
+            left join inventory_prices ip on ip.item_number=i.item_number
+						where 1=1";
+		//i.category,i.supplier_number,		s.supplier_name,i.model,i.manufacturer,
 		$kel=""; if($CI->input->post("text1"))$kel=$CI->input->post("text1");
 		if($kel!="")$sql.=" and i.category='".$kel."'";
 		
@@ -44,6 +46,10 @@
 				$supp_name=$rsupp->supplier_name;
 			}	
 		}	
+		$sql.=" order by i.item_number";
+		
+		//echo $sql;
+		
 		$data['content']=browse_select(	array('sql'=>$sql,'show_action'=>false)
 		);
 		 $data['header']=company_header();

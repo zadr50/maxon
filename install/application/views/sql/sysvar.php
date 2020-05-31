@@ -62,8 +62,11 @@ CREATE TABLE IF NOT EXISTS `system_variables` (
   `category` varchar(50) character set utf8 default NULL,
   `vartype` varchar(50) character set utf8 default NULL,
   `varlist` varchar(250) character set utf8 default NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=568 ;
+  PRIMARY KEY (`id`),
+  KEY `x1` (`varname`),
+  KEY `x2` (`keterangan`),
+  KEY `x3` (`category`)
+) ENGINE=MyISAM AUTO_INCREMENT=55426 DEFAULT CHARSET=latin1;
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 

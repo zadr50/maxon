@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <head><title>MaxOn ERP Online Demo</title></head>
 <script type="text/javascript">
-    CI_ROOT = "<?=base_url()?>index.php/";
+    CI_ROOT = "<?=base_url()?>pos.php/";
     CI_BASE = "<?=base_url()?>"; 		
 </script>
 

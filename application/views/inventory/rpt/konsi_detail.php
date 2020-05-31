@@ -80,7 +80,7 @@ $caption='RINCIAN LAPORAN HUTANG KONSINYASI';
                 <td rowspan=2>NO</td><td rowspan=2>KODE SUPPLIER</td>
                 <td rowspan=2>NAMA SUPPLIER</td>
                 <td colspan=2>TERJUAL</td>
-                <td colspan=2>PLUS</td>
+                <td colspan=2>ADJ PLUS</td>
                 <td colspan=2>KEHILANGAN</td>
                 <td colspan=2>TOTAL</td>
                 <td rowspan=2>LABEL</td>
@@ -107,7 +107,8 @@ $caption='RINCIAN LAPORAN HUTANG KONSINYASI';
         </thead>
         <tbody>
                 <?php
-                $sql="select i.supplier_number,s.supplier_name 
+                $sql="select i.supplier_number,s.supplier_name,s.partisipasi,
+                s.biaya_admin  
                 from inventory i left join suppliers s on s.supplier_number=i.supplier_number 
                 left join qry_kartustock_union  q on q.item_number=i.item_number
                 where q.tanggal between '$date1' and '$date2' ";
@@ -115,7 +116,7 @@ $caption='RINCIAN LAPORAN HUTANG KONSINYASI';
                 if($sistim!="")$sql.=" and i.type_of_invoice='$sistim'";    
                 if($supplier!="")$sql.=" and i.supplier_number='$supplier'";
                 if($outlet!="")$sql.=" and q.gudang='$outlet' ";
-                $sql.=" group by i.supplier_number";
+                $sql.=" group by i.supplier_number,s.partisipasi";
                                 
                 $rst_item=$CI->db->query($sql);
                 $tbl="";
@@ -139,7 +140,7 @@ $caption='RINCIAN LAPORAN HUTANG KONSINYASI';
                     $gth_amt=0;
                     $ket_dpp_amt=0;
                     $ket_lain_amt=0;
-                
+                $adj_amt=0;
                 
                 foreach($rst_item->result() as $row){
                     $nomor++;
@@ -148,7 +149,8 @@ $caption='RINCIAN LAPORAN HUTANG KONSINYASI';
                     
                     $jual=$CI->inventory_model->qty_jual_gab($item_number,$date1,$date2,$supplier,$outlet,$category,$sistim);
                     $beli=$CI->inventory_model->qty_beli_gab($item_number,$date1,$date2,$supplier,$outlet,$category,$sistim);
-                    $hilang=$CI->inventory_model->qty_hilang_gab($item_number,$date1,$date2,$supplier,$outlet,$category,$sistim);
+					$adj=$CI->inventory_model->qty_adj_plus_gab($item_number,$date1,$date2,$supplier,$outlet,$category,$sistim);
+                    $hilang=$CI->inventory_model->qty_adj_min_gab($item_number,$date1,$date2,$supplier,$outlet,$category,$sistim);
                     $label=$CI->purchase_invoice_model->biaya_label_amount($date1,$date2,$supplier,$outlet,$category,$sistim);
                     $admin=$CI->purchase_invoice_model->biaya_admin_amount($date1,$date2,$supplier,$outlet,$category,$sistim);
                     $htag1=$CI->purchase_invoice_model->biaya_htag1_amount($date1,$date2,$supplier,$outlet,$category,$sistim);
@@ -156,21 +158,32 @@ $caption='RINCIAN LAPORAN HUTANG KONSINYASI';
                     $transfer=$CI->purchase_invoice_model->biaya_transfer_amount($date1,$date2,$supplier,$outlet,$category,$sistim);
                     $paket=$CI->purchase_invoice_model->biaya_paket_amount($date1,$date2,$supplier,$outlet,$category,$sistim);
                     $lain=$CI->purchase_invoice_model->biaya_lain_amount($date1,$date2,$supplier,$outlet,$category,$sistim);
-                    $ppn=0;
+                    $pajak=$CI->purchase_invoice_model->biaya_pajak_amount($date1,$date2,$supplier,$outlet,$category,$sistim);
                                         
-                    $jbh_tot["qty"]=$beli['qty']-$jual['qty']+$hilang['qty'];
-                    $jbh_tot["amount"]=$beli['amount']-$jual['amount']+$hilang['amount'];
+                    $jbh_tot["qty"]=$jual['qty']-$adj['qty']-$hilang['qty'];
+                    $jbh_tot["amount"]=$jual['amount_cost']-$adj['amount']-$hilang['amount'];
                     $hut_tot=$jbh_tot['amount']-$label['amount'];
                                                             
-                                                            
+                    $ppn=0;
+					if($row->partisipasi>0){
+							$ppn_prc=$row->partisipasi;
+							if($ppn_prc>1)$ppn_prc=$ppn_prc/100;
+							$ppn=$ppn_prc*$hut_tot;
+					}
+                    $ppn=$ppn+$pajak['amount'];
+					
+                    //$admin=0;   //cari yg terjual saja
+                    if($row->biaya_admin){
+                        //$admin=$row->biaya_admin;
+                    }                                       
                     $tbl.="<tr>";
                     $tbl.="<td>$nomor</td>";
                     $tbl.="<td>$row->supplier_number</td>";
                     $tbl.="<td>$row->supplier_name</td>";
                     $tbl.="<td align='right'>".number_format($jual['qty'])."</td>";
-                    $tbl.="<td align='right'>".number_format($jual['amount'])."</td>";
-                    $tbl.="<td align='right'>".number_format($beli['qty'])."</td>";
-                    $tbl.="<td align='right'>".number_format($beli['amount'])."</td>";
+                    $tbl.="<td align='right'>".number_format($jual['amount_cost'])."</td>";
+                    $tbl.="<td align='right'>".number_format($adj['qty'])."</td>";
+                    $tbl.="<td align='right'>".number_format($adj['amount'])."</td>";
                     $tbl.="<td align='right'>".number_format($hilang['qty'])."</td>";
                     $tbl.="<td align='right'>".number_format($hilang['amount'])."</td>";
                     $tbl.="<td align='right'>".number_format($jbh_tot['qty'])."</td>";
@@ -197,7 +210,9 @@ $caption='RINCIAN LAPORAN HUTANG KONSINYASI';
                     $tbl.="<td align='right'>".number_format($ket_dpp)."</td>";
                     $tbl.="<td align='right'>".number_format($ket_lain)."</td>";
 
-                    $beli_amt+=$beli['amount'];                    
+                    $beli_amt+=$beli['amount'];            
+					$adj_amt+=$adj['amount'];
+					        
                     $jual_amt+=$jual['amount'];
                     $hilang_amt+=$hilang['amount'];
                     $jbh_tot_amt+=$jbh_tot["amount"];
@@ -223,27 +238,27 @@ $caption='RINCIAN LAPORAN HUTANG KONSINYASI';
             $tbl.="<tr>";
             $tbl.="<td></td>";
             $tbl.="<td></td>";
-            $tbl.="<td></td>";
-            $tbl.="<td align='right'>".number_format(0)."</td>";
-            $tbl.="<td align='right'>".number_format($jual_amt)."</td>";
-            $tbl.="<td align='right'>".number_format(0)."</td>";
-            $tbl.="<td align='right'>".number_format($beli_amt)."</td>";
-            $tbl.="<td align='right'>".number_format(0)."</td>";
-            $tbl.="<td align='right'>".number_format($hilang_amt)."</td>";
-            $tbl.="<td align='right'>".number_format(0)."</td>";
-            $tbl.="<td align='right'>".number_format($jbh_tot_amt)."</td>";
-            $tbl.="<td align='right'>".number_format($label_amt)."</td>";
-            $tbl.="<td align='right'>".number_format($hut_tot_amt)."</td>";
-            $tbl.="<td align='right'>".number_format($ppn_amt)."</td>";
-            $tbl.="<td align='right'>".number_format($admin_amt)."</td>";
-            $tbl.="<td align='right'>".number_format($htag1_amt)."</td>";
-            $tbl.="<td align='right'>".number_format($htag2_amt)."</td>";
-            $tbl.="<td align='right'>".number_format($tran_amt)."</td>";
-            $tbl.="<td align='right'>".number_format($paket_amt)."</td>";
-            $tbl.="<td align='right'>".number_format($lain_amt)."</td>";
-            $tbl.="<td align='right'>".number_format($gth_amt)."</td>";
-            $tbl.="<td align='right'>".number_format($ket_dpp_amt)."</td>";
-            $tbl.="<td align='right'>".number_format($ket_lain_amt)."</td>";
+            $tbl.="<td><b>TOTAL</b></td>";
+            $tbl.="<td align='right'><b>".number_format(0)."</b></td>";
+            $tbl.="<td align='right'><b>".number_format($jual_amt)."</b></td>";
+            $tbl.="<td align='right'><b>".number_format(0)."</b></td>";
+            $tbl.="<td align='right'><b>".number_format($adj_amt)."</b></td>";
+            $tbl.="<td align='right'><b>".number_format(0)."</b></td>";
+            $tbl.="<td align='right'><b>".number_format($hilang_amt)."</b></td>";
+            $tbl.="<td align='right'><b>".number_format(0)."</b></td>";
+            $tbl.="<td align='right'><b>".number_format($jbh_tot_amt)."</b></td>";
+            $tbl.="<td align='right'><b>".number_format($label_amt)."</b></td>";
+            $tbl.="<td align='right'><b>".number_format($hut_tot_amt)."</b></td>";
+            $tbl.="<td align='right'><b>".number_format($ppn_amt)."</b></td>";
+            $tbl.="<td align='right'><b>".number_format($admin_amt)."</b></td>";
+            $tbl.="<td align='right'><b>".number_format($htag1_amt)."</b></td>";
+            $tbl.="<td align='right'><b>".number_format($htag2_amt)."</b></td>";
+            $tbl.="<td align='right'><b>".number_format($tran_amt)."</b></td>";
+            $tbl.="<td align='right'><b>".number_format($paket_amt)."</b></td>";
+            $tbl.="<td align='right'><b>".number_format($lain_amt)."</b></td>";
+            $tbl.="<td align='right'><b>".number_format($gth_amt)."</b></td>";
+            $tbl.="<td align='right'><b>".number_format($ket_dpp_amt)."</b></td>";
+            $tbl.="<td align='right'><b>".number_format($ket_lain_amt)."</b></td>";
                                 
             
                 echo $tbl;

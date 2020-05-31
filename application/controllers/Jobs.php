@@ -25,7 +25,7 @@ class Jobs extends CI_Controller {
             $data=data_table($this->table_name,$record);
             $data['mode']='';
             $data['message']='';
-			$data['lookup_group_modules']=$this->list_of_values->render(
+			$data['lookup_modules_groups']=$this->list_of_values->render(
 				array("dlgBindId"=>"group_modules",
 					"dlgColsData"=>array("module_id","module_name"),
 					"dlgRetFunc"=>"$('#group_module').val(row.module_id);
@@ -80,7 +80,8 @@ class Jobs extends CI_Controller {
 		 	$modules=$this->input->post('modules');
 		 	$group_id=$this->input->post('user_group_id');
 			$this->modules_groups_model->save($data);		
-			if($modules)$this->modules_groups_model->save_module($group_id,$modules);
+            //save modules jangan dulu simpan karena masih belum benar semua jadi kecontreng !!!
+			//if($modules)$this->modules_groups_model->save_module($group_id,$modules);
             $message='Update Success';
             $data['mode']='view';
 			$ok=true;
@@ -176,20 +177,36 @@ class Jobs extends CI_Controller {
 	function has_child($id){
 		return $this->db->query("select * from modules where parentid='$id' limit 1")->num_rows();
 	}
-	function list_modules_show($group_id,$parent_id){
-		echo $this->list_modules($group_id,$parent_id);
+	function list_modules_show($group_id='',$parent_id=''){
+		$search="";
+		if($this->input->get("find")){
+			$search=$this->input->get("find");
+		}
+		if($this->input->get("ugi")){
+			$group_id=$this->input->get("ugi");
+		}
+		if($this->input->get("gm")){
+			$parent_id=$this->input->get("gm");
+		}
+		echo $this->list_modules($group_id,$parent_id,$search);
 	}
-	function list_modules($group_id,$filter=''){
+	function list_modules($group_id,$filter='',$search=""){
 		$group_id=urldecode($group_id);
 		$filter=urldecode($filter);
-		if($filter=="")$filter="_00000";
 		$sql="select * from modules where 1=1 ";
-		if($filter==""){
-			$sql.=" and (parentid='0' or parentid is null)";
-		} else  {
+		if($search!=""){
+			$sql.=" and (module_id='$search' or module_name like '%$search%' or description like '%$search%') ";
+		}
+//if($filter=="")$filter="_00000";
+//	$sql.=" and (parentid='0' or parentid is null or parentid='$filter' or module_id like '$filter%')";
+//} else  {
+		if($filter!=""){			
 			$sql.=" and (parentid='$filter' or module_id like '$filter%')";			
 		}
+
 		$sql.=" order by module_id";
+//		echo $sql;
+
 		$modules=$this->db->query($sql);
 		$tbl="<table id='tbJobs' class='table2', style='width:100%' data-options='singleSelect:true'>
 		<thead><th>Cek</th><th data-options=\"field:'0'\">Module Name</th>

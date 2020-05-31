@@ -10,7 +10,7 @@
 	} else {
 		$data['caption']="DAFTAR MASTER BARANG";
 		$sql="select item_number,description,category,i.supplier_number,
-		s.supplier_name,i.model,i.manufacturer,i.retail,i.cost_from_mfg,i.cost
+			s.supplier_name,i.model,i.manufacturer,i.retail,i.cost_from_mfg,i.cost
 			FROM inventory i 
 			left join suppliers s on s.supplier_number=i.supplier_number 
 			where 1=1";

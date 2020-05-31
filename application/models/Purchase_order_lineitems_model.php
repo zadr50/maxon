@@ -140,13 +140,29 @@ function save($data){
 	$data["mu_harga"]=$mu_harga;
 	
 	$gross=floatval($data['quantity'])*floatval($data['price']);
-	$disc_amount=floatval($data['discount'])*$gross;
+
+	if(isset($data['discount'])) {
+		$disc_amount=floatval($data['discount'])*$gross;
+	} else {
+		$disc_amount=0;
+		$data['discount']=$disc_amount;
+	}
 	$gross=$gross-$disc_amount;
 	
-	$disc_amount_2=floatval($data['disc_2'])*$gross;
+	if(isset($data['disc_2'])) {
+		$disc_amount_2=floatval($data['disc_2'])*$gross;
+	} else {
+		$disc_amount_2=0;
+		$data['disc_2']=0;
+	}
 	$gross=$gross-$disc_amount_2;
 
-	$disc_amount_3=floatval($data['disc_3'])*$gross;
+	if(isset($data['disc_3'])) {
+		$disc_amount_3=floatval($data['disc_3'])*$gross;
+	} else {
+		$disc_amount_3=0;
+		$data['disc_3']=0;
+	}
 	$gross=$gross-$disc_amount_3;
 	
 	$data['disc_amount_1']=$disc_amount;
@@ -157,15 +173,34 @@ function save($data){
 	$data['total_price']=$gross;
     if($data['unit']=='')$data['unit']='Pcs';
     
-    $item_no=$data['item_number']; item_need_update($item_no);
+    $item_no=$data['item_number']; 
+    item_need_update($item_no);
+	$this->inventory_model->hpp_calc($data['item_number'],$data['price'],$data['quantity']);
     
     if($data["warehouse_code"]=="")$data["warehouse_code"]=current_gudang();
     if(!isset($data['currency_code']))$data['currency_code']="IDR";
     if($data['currency_code']=="")$data["currency_code"]="IDR";
     if(!isset($data['currency_rate']))$data['currency_rate']=1;
     if($data['currency_rate']=="")$data["currency_rate"]=1;
-    
-	unset($data['amount']);
+    $data['no_urut']=$this->no_urut_next($data['purchase_order_number']);
+	
+	$tanggal="";
+	$gudang=$data['warehouse_code'];
+	if($qinv=$this->db->select("po_date")
+		->where("purchase_order_number",$data["purchase_order_number"])->get("purchase_order")){
+			if($rinv=$qinv->row()){
+				$tanggal=$rinv->po_date;
+			}
+		}
+	item_need_update_arsip($item_no, $gudang, $tanggal);
+	
+	if(isset($data['amount'])){
+		$data['total_price']=$data['amount'];
+		unset($data['amount']);
+	}
+	
+	if(isset($data['mode']))unset($data['mode']);
+
 	if($id!=0){
 		$this->db->where($this->primary_key,$id);
 		$this->db->update($this->table_name,$data);
@@ -175,6 +210,25 @@ function save($data){
 		$this->db->insert($this->table_name,$data);
 		return $this->db->insert_id();
 	}
+}
+function no_urut_next($nomor_po){
+	$no=1;
+	$s="select line_number,no_urut from purchase_order_lineitems where purchase_order_number='$nomor_po' 
+		order by no_urut";
+		
+	if($q=$this->db->query($s)){
+		$s="";
+		$this->db->trans_start();
+		foreach ($q->result() as $r) {
+			if($r->no_urut==""){
+				$s="update purchase_order_lineitems set no_urut='$no' where line_number='$r->line_number';";
+				$this->db->query($s);
+			}
+			$no++;
+		}
+		$this->db->trans_complete(); 
+	}
+	return $no;
 }
 function updatexxxxx($id,$data){
 	$data=$this->default_values($data);
@@ -191,7 +245,20 @@ function updatexxxxx($id,$data){
 	return $this->db->update($this->table_name,$data);
 }
 function delete($id){
-    $item_no=$id; item_need_update($item_no);    
+    $item_no=$id; 
+    item_need_update($item_no);
+    
+	$tanggal="";
+	$gudang="";
+	if($qinv=$this->db->query("select p.po_date,pl.warehouse_code from purchase_order p 
+		left join purchase_order_lineitems pl on pl.purchase_order_number=p.purchase_order_number")){
+			if($rinv=$qinv->row()){
+				$tanggal=$rinv->po_date;
+				$gudang=$rinv->warehouse_code;
+			}
+		}
+	item_need_update_arsip($item_no, $gudang, $tanggal);
+            
 	$this->db->where($this->primary_key,$id);
 	return $this->db->delete($this->table_name);
 }

@@ -91,7 +91,7 @@ class Cash_in extends CI_Controller {
             $data['lookup_doc_type']=$this->list_of_values->render($setting);
             
             $data['lookup_rekening']=$this->list_of_values->render(
-                array("dlgBindId"=>"bank_accounts",
+                array("dlgBindId"=>"bank_accounts","modules"=>"banks/banks",
                 "dlgRetFunc"=>"$('#account_number').val(row.bank_account_number);",
                 "dlgCols"=>array(array("fieldname"=>"bank_account_number","caption"=>"Rekening","width"=>"100px"),
                 array("fieldname"=>"bank_name","caption"=>"Nama Bank","width"=>"250px"),
@@ -103,6 +103,21 @@ class Cash_in extends CI_Controller {
                 "dlgCols"=>array(array("fieldname"=>"dept_code","caption"=>"Dept Code","width"=>"100px"),
                 array("fieldname"=>"dept_name","caption"=>"Keterengan","width"=>"250px"))));
             $data["lookup_gl_projects"]=$this->list_of_values->lookup_gl_projects("ref2");
+            $data["lookup_customers"]=$this->list_of_values->lookup_customers();
+            
+            $data['lookup_outlet']=$this->list_of_values->render(
+				array(
+					"dlgBindId"=>"outlet",
+					"dlgId"=>"outlet",
+					"dlgUrlQuery"=>"gudang/browse_data",
+					"dlgCols"=>array(
+						array("fieldname"=>"location_number","caption"=>"Oulet","width"=>"80px"),
+						array("fieldname"=>"attention_name","caption"=>"Keterangan")
+					),
+					"dlgRetFunc"=>"$('#ref3').val(row.location_number);"
+				)
+			);
+                        
             return $data;
 	}
 	function index()
@@ -301,6 +316,7 @@ class Cash_in extends CI_Controller {
 				$ret['msg']='Sukses tambah data';
 			}			
 		}
+		$ret['deposit_amount']=$this->check_writer_items_model->amount_total;
 		echo json_encode($ret);
 		return $ok;
 		
@@ -315,6 +331,7 @@ class Cash_in extends CI_Controller {
 			$this->syslog_model->add($id,"cash_in","delete");			
 
 		}
+		$data['deposit_amount']=$this->check_writer_items_model->amount_total;
 		echo json_encode($data);
 	}
 	
@@ -362,7 +379,7 @@ class Cash_in extends CI_Controller {
     function print_bukti($nomor){
             $nomor=urldecode($nomor);
             $data['voucher']=$nomor;
-            $this->load->view("bank/rpt/cash_in",$data);                   
+            $this->load->view("bank/rpt/print_cash_in",$data);                   
     }
 	
 }

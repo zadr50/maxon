@@ -71,6 +71,7 @@
            <tr>
                 <td>Rekening Dikeluarkan </td><td><?php echo form_input('account_number',$account_number,"id='account_number' style='width:120px'");?>
                 <?=link_button("","dlgbank_accounts_show();return false","search");?>
+                <?=link_button("","dlgbank_accounts_list_master();return false","add");?>
                 </td>
                 <td>Tanggal</td><td><?php echo form_input('check_date',$check_date,'id=check_date 
                  class="easyui-datetimebox"  style="width:150px;height:30px" 
@@ -86,6 +87,7 @@
             <tr>
                 <td>Kelompok Voucher </td><td><?php echo form_input('doc_type',$doc_type,"id='doc_type' style='width:90px'");?>
                     <?=link_button('','dlgdoc_type_show();return false;','search','false');?>      
+                    <?=link_button('',"dlgdoc_type_list('doc_type_cash_out');return false;",'add','false');?>      
                 </td>
                 <td>Nomor Giro</td><td><?php echo form_input('check_number',$check_number);?></td>
             </tr>
@@ -101,6 +103,7 @@
                 <td>Penerima / Supplier </td>
                 <td><?php echo form_input('supplier_number',$supplier_number,"id='supplier_number' style='width:90px'");?>
                 <?=link_button("","dlgsuppliers_show();return false","search");?>
+                <?=link_button("","dlgsuppliers_list_master();return false","add");?>
                 </td>
                 <td>Tanggal Jth Tempo</td><td><?php echo form_input('cleared_date',$cleared_date,'id=cleared_date 
                  class="easyui-datetimebox"   style="width:150px;height:30px" 
@@ -115,12 +118,17 @@
                 <td>Company Code</td><td><?php echo form_input('org_id',$org_id,"id='org_id' style='width:90px'");?></td>
                 <td>Doc Status</td><td><?=form_input('doc_status',$doc_status,"id='doc_status' style='width:90px'")?>
                 <?=link_button('','dlgdoc_status_show();return false;','search','false');?>      
+                <?=link_button('',"dlgdoc_status_list('doc_status');return false;",'add','false');?>      
     		    </td> 
            </tr>
            <tr>
                 <td>Project#</td><td><?php echo form_input('ref1',$ref1,"id='ref1' style='width:90px'");
                 	echo link_button("", "dlggl_projects_show();return false","search");
+                    echo link_button("", "dlggl_projects_list_master();return false","add");
                 	?></td>
+				<td>Outlet</td><td><?=form_input("ref2",$ref2,"id='ref2'")
+					.link_button('',"dlgoutlet_show()","search")?></td>
+                	
            </tr>
            
            <tr>
@@ -152,12 +160,16 @@
 <?=$lookup_rekening?>
 <?=$lookup_department?>
 <?=$lookup_gl_projects?>
+<?=$lookup_outlet?>
 
 <script type="text/javascript">
     function save_this(){
         var valid_date=true;
         var min_date='<?=$min_date?>';
         var tanggal=$('#check_date').datetimebox('getValue'); 
+        var amt=$('#payment_amount').val();
+        if(amt=='')amt='0';
+        
         if(tanggal<min_date){
             valid_date=false;
         }
@@ -165,8 +177,7 @@
         if($('#voucher').val()===''){log_err('Isi kode voucher !');return false;};
         if($('#trans_type').val()===''){log_err('Isi jenis penerimaan !');return false;};
         if($('#account_number').val()===''){log_err('Isi kode rekening !');return false;};
-        if($('#payment_amount').val()===''){log_err('Isi jumlah dikeluarkan !');return false;};
-        if($('#payment_amount').val()==='0'){log_err('Isi jumlah dikeluarkan !');return false;};
+        if(amt=='0'){log_err('Jumlah dikeluarkan akan diinput dari item pilihan kode perkiraan');};
        $('#myform').submit();
     }
 	function save_item(){
@@ -185,6 +196,7 @@
 			success: function(result){
 				var result = eval('('+result+')');
 				if (result.success){
+					$('#payment_amount').val(result.payment_amount);
 				    $('#dlgItem').dialog('close');
 				    load_item();
 					clear_item();
@@ -229,10 +241,11 @@
 						url='<?=base_url()?>index.php/cash_out/delete_item';
 						$.post(url,{line_number:row.line_number},function(result){
 							if (result.success){
+								$('#payment_amount').val(result.payment_amount);
 								load_item();
-								loaing_close();
+								loading_close();
 							} else {
-								loaing_close();
+								loading_close();
 								log_err(result.msg);
 								$.messager.show({	// show error message
 									title: 'Error',

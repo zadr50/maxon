@@ -3,14 +3,13 @@
 	<form id="frmAsm" name="frmAsm" method="POST">
 	<table class="table2" width="100%">
 		<?php 
-		  $min_date=$this->session->userdata("min_date","");
-		
-		$search=link_button('','frmAsm_CariBarang()','search');
-		my_input_tr("Kode Baramg","assembly_item_number","",$search);
-		my_input_tr("Nama Baramg","description");
-		my_input_tr("Quantity","quantity");
-		my_input_tr("Cost","default_cost");
-		my_input_tr("Comment","comment");
+			$min_date=$this->session->userdata("min_date","");		
+			$search=link_button('','dlgmaterial_show()','search');
+			my_input_tr("Kode Barang","assembly_item_number","",$search);
+			my_input_tr("Nama Barang","assembly_description");
+			my_input_tr("Quantity","quantity");
+			my_input_tr("Cost","default_cost");
+			my_input_tr("Comment","comment");
 		?>
 	</table>
 	</form>
@@ -21,9 +20,25 @@
 	echo link_button("Close","dlgAsm_Close()","cancel");
 	?>
 </div>
- 
+<?php 
+	//$this->load->library("list_of_values");
+	echo $this->list_of_values->render(
+		array(
+			"dlgBindId"=>"material",
+			"dlgRetFunc"=>"
+				$('#assembly_item_number').val(row.item_number);
+				$('#assembly_description').val(row.description);
+			",
+			"dlgColsData"=>array("item_number","description","unit","cost","category"),
+			"dlgUrlQuery"=>"inventory/data_material"
+		)
+	);
 
+?>
 <script language="JavaScript">
+	function dlgmaterial_find(){
+
+	}
 	function frmAsm_CariBarang(){
 		var fields=[[
 				{field:'item_number',title:'Item Number',width:100},
@@ -90,6 +105,8 @@
 		$("#dlgAsm").dialog("close");
 	}
 	function dlgAsm_Save(){
+		if($("#quantity").val()=="")$("#quantity").val("1");
+		if($("#default_cost").val()=="")$("#default_cost").val("0");
 		url='<?=base_url()?>index.php/inventory/assembly_add/<?=$item_number?>';
 		$('#frmAsm').form('submit',{
 			url: url,

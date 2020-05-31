@@ -41,7 +41,21 @@ class Paycheck_model extends CI_Model {
 			$this->gaji_pokok=$emp->gp;
 		}
 		if($data['emp_level']=='')$data['emp_level']=$this->level_code;
-		$id=$this->db->insert($this->table_name,$data);
+        $id=0;
+        if(isset($data["id"]))$id=$data["id"];
+        if($id==0){
+        	if($q=$this->db->query("select id from hr_paycheck where pay_no='$this->pay_no' ")){
+        		if($r=$q->row()){
+        			$id=$r->id;
+        		}
+        	}
+        }
+		if($id==0){
+            $this->db->insert($this->table_name,$data);			
+			$id=$this->db->insert_id();
+		} else {
+			$this->db->where("id",$id)->update($this->table_name,$data);
+		}
 		$this->save_slip_gaji();
 		return $id;
 	}
@@ -68,12 +82,13 @@ class Paycheck_model extends CI_Model {
 	}
 	function save_slip_gaji(){
 		$rec_level=$this->hr_emp_level_com_model->loadlist($this->level_code);
-		$data['pay_no']=$this->pay_no;		
 		$com_code=$this->input->post('com_code');
 		for($i=0;$i<count($rec_level);$i++){
 			$rec=$rec_level[$i];
+			$data=null;
+			$data['pay_no']=$this->pay_no;		
 			$data['salary_com_code']=$rec->salary_com_code;
-			$data['org_value']=$com_code[$rec->salary_com_code];
+			if(isset($com_code))$data['org_value']=$com_code[$rec->salary_com_code];
 			$data['calc_value']=0;
 			$data['unit']='';
 			if($rec->salary_com_code=="G_POKOK"){
@@ -89,4 +104,22 @@ class Paycheck_model extends CI_Model {
 		}
 		$this->paycheck_sal_com_model->recalc($this->pay_no,$this->level_code);
 	}
+    function salary_no_from_date($tanggal,$nip){
+    	return $this->get_salary_no($nip, $tanggal);
+    }
+	function get_salary_no($nip,$tanggal){
+		$s="select pay_no from hr_paycheck where '$tanggal' between from_date and to_date 
+			and employee_id='$nip' ";
+		$pay_no="";
+		if($q=$this->db->query($s)){
+			if($r=$q->row()){
+				$pay_no=$r->pay_no;
+			}
+		}
+		$this->pay_no=$pay_no;
+		return $this->pay_no;
+		
+	}
+        
+    
 }

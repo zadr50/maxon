@@ -4,8 +4,8 @@
     
 	echo link_button('Save', 'process()','save');		
 	echo link_button('Print', 'print()','print');
-	echo link_button('Add','','add','false',base_url().'index.php/payment/add');		
-	echo link_button('Search','','search','false',base_url().'index.php/payment');
+//	echo link_button('Add','','add','false',base_url().'index.php/payment/add');		
+//	echo link_button('Search','','search','false',base_url().'index.php/payment');
 		
 	echo "<div style='float:right'>";
 		echo link_button('Help', 'load_help(\'payment\')','help');		
@@ -24,30 +24,14 @@
 	<form id="myform" method="POST" action="<?=base_url()?>index.php/payment/save">
 	<table class='table2' width='100%'>
 		<tr>
-            <td>Rekening: </td><td width=200px><?=form_input('how_paid_acct_id',$how_paid_acct_id,"id='how_paid_acct_id'");
-                echo link_button("","dlgbank_accounts_show();return false","search");
-                
-                ?>
-            </td>			
-			<td>Tanggal Bayar: <?=form_input('date_paid',$date_paid,'id="date_paid" 
-			class="easyui-datetimebox"
-			data-options="formatter:format_date,parser:parse_date" style="width:200px"
-			');?></td>
-		</tr>
-		<tr>
-			<td>Pelanggan: </td><td colspan='2'><?=form_input('customer_number',$customer_number,"id=customer_number");?>
-				<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" 
-				onclick="cari_cust();return false"></a>
-				<input type='text' disabled id='company' style='width:40%'> 				
-			</td>
-			<td>&nbsp</td>
-
-		</tr>
-		<tr>
-			<td>Jenis Bayar: </td><td><?=form_dropdown('how_paid',array('Cash','Giro','Transfer'),$how_paid,"id='how_paid' style='width:150px' 
+			<td>Jenis Bayar </td>
+			<td><?=form_input('how_paid',$how_paid,"id='how_paid'  
 				title='*apabila dilakukan pembayaran dengan giro silahkan isi informasi giro dan tanggal  jatuh tempo giro.	'
-			");?></td>
-			<td>
+			");?>
+			<?=link_button("", "dlghow_paid_show();return false;","search")?>
+			<?=link_button("", "dlghow_paid_list('how_paid');return false;","add")?>
+			</td>
+			<td rowspan="3">
 			<span class='thumbnail'>
 				<p><?=form_input('credit_card_number',$credit_card_number,"id='credit_card_number'")?>&nbsp Giro Nomor
 				</p>
@@ -62,9 +46,37 @@
 			</span>
 			
 			</td>			
+
 		</tr>
 		<tr>
-			<td>Jumlah Bayar: </td><td><?=form_input('amount_paid',$amount_paid,"id='amount_paid'");?></td>
+            <td>Rekening: </td><td width=200px><?=form_input('how_paid_acct_id',$how_paid_acct_id,"id='how_paid_acct_id'");
+                echo link_button("","dlgbank_accounts_show();return false","search");
+				echo link_button("", "dlgbank_accounts_list_master();return false;","add");
+                
+                ?>
+            </td>			
+		</tr>
+		<tr>
+			<td>Tanggal Bayar</td>
+			<td><?=form_input('date_paid',$date_paid,'id="date_paid" 
+			class="easyui-datetimebox"
+			data-options="formatter:format_date,parser:parse_date" style="width:180px"
+			');?></td>
+		</tr>
+		<tr>	
+			<td>Pelanggan: </td><td colspan='2'><?=form_input('customer_number',$customer_number,"id=customer_number");?>
+				<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" 
+				onclick="cari_cust();return false"></a>
+				<?=link_button("", "dlgcustomers_list_master();return false;","add")?>
+				<input type='text' disabled id='company' style='width:40%'> 				
+			</td>
+			<td>&nbsp</td>
+
+		</tr>
+		<tr>
+			<td>Jumlah Bayar: </td><td><?=form_input('amount_paid',$amount_paid,"id='amount_paid'");?>
+			    <?=link_button("Calc", "calc_bayar();return false","sum")?>
+			</td>
 			<td>&nbsp</td>
 		</tr>
 	</table>
@@ -97,7 +109,7 @@
 <?php
 	echo $lookup_rekening;
 	echo $lookup_customer;
-	
+	echo $lookup_how_paid;
 ?>
 
 
@@ -108,7 +120,7 @@
             onDblClickRow:function(){
             	view_invoice();
             }
-        });        
+        });
     });
 
 	function cari_cust(){
@@ -174,6 +186,9 @@
         if(tanggal<min_date){
             valid_date=false;
         }
+        
+        calc_bayar();
+        
         if(!valid_date){alert("Tanggal tidak benar ! Mungkin sudah closing !");return false;}
 	    if($("#how_paid").val()!="Cash"){
 	    	if($("#credit_card_number").val()==""){

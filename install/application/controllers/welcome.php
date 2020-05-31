@@ -128,7 +128,12 @@ function __construct()
 					$ok=true;
 			   }
 			   fclose($handle);
-			
+				
+				$filenamepos="../pos/config/database.php";
+			    if ($handle2 = fopen($filenamepos, 'w')) {
+				   fwrite($handle2, $content);	   
+					fclose($handle2);
+			    }			
 			} else {
 			   $msg.="<br>The file $filename is not writable, check permission file or directory. <br>";
 			   $ok=false;
@@ -179,11 +184,14 @@ function __construct()
 		$ok=true;
 		$msg="Creating tables and queries";
 		$path=realpath(dirname(__FILE__));
+		//rename($path."/../../../install",$path."/../../../install_ex");
+		
 		include $path."/../views/sql/create_db.php";
 		$finish="<h1>Finish.</h1><p>Congratulation you have new application, next button 
 		setting your company data master.</p>
 		<a href='".base_url()."../index.php' 
 		class='btn btn-warning' role='button'>Lanjutkan Login</a>		
+		<p>Before continue please delete folder <strong>[install]</strong></p>
 		";
 		///welcome/set_web next release
 		$data=array("success"=>$ok,"message"=>$msg,"finish"=>$finish);

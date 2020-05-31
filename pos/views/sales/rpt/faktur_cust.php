@@ -1,7 +1,4 @@
-<?
-//var_dump($_POST);
-?>
-<?
+<?php
      $CI =& get_instance();
      $CI->load->model('company_model');
     $CI->load->model('shipping_locations_model');
@@ -9,8 +6,7 @@
      $model=$CI->company_model->get_by_id($CI->access->cid)->row();
 	$date1= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateFrom')));
 	$date2= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateTo')));
-	$text1=$CI->input->post('text1');
-    //$CI->load->model('sales_order_model');
+	$cust=$CI->input->post('text1');
 ?>
 <link href="<?php echo base_url();?>/themes/standard/style_print.css" rel="stylesheet">
 <table cellspacing="0" cellpadding="1" border="0" width='800px'> 
@@ -48,7 +44,7 @@
 	     		<tbody>
      			<?
      			$sql="select i.* from qry_invoice i where invoice_date between '$date1' and '$date2'  ";
-				if($text1!="")$sql.=" and i.sold_to_customer='" . $text1 . "'";
+				if($cust!="")$sql.=" and i.sold_to_customer='" . $cust . "'";
 				
 				$logged_in=$this->session->userdata('logged_in');
 				if($logged_in['flag1']!=''){

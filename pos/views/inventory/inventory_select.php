@@ -29,6 +29,19 @@
 
 
 <script type="text/javascript">
+	$().ready(function (){
+	    $('#dgItemSearch').datagrid({
+	        onDblClickRow:function(){
+	            var row = $('#dgItemSearch').datagrid('getSelected');
+	            if (row){
+	            	selectSearchItem();
+	            }       
+	        }
+	    });        
+	});
+	function dlgSearchItem_close(){
+		$("#dlgSearchItem").dialog("close");
+	}
 
 
 		function find(){
@@ -85,9 +98,5 @@
 			$('#dgItemSearch').datagrid('reload');
 
 		}
-		function dlgSearchItem_Close(){
-			$("#dlgSearchItem").dialog("close");
-		}
-
 		
 </script>

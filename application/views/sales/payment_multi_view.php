@@ -1,5 +1,5 @@
 <div class="thumbnail box-gradient">
-	<?
+	<?php
 	if($posted=="")$posted=0;
 	if($closed=="")$closed=0;	
 	echo link_button('Print', 'print_pay()','print');		

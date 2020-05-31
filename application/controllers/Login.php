@@ -115,10 +115,10 @@ function verify(){
     } else {
 	   //$this->form_validation->set_rules('user_id', 'User Id', 'trim|required|xss_clean');
 	   $this->form_validation->set_rules('password', 'Password', 'trim|required|callback_check_database');
-	   if($this->form_validation->run()) {
+	   if($this->form_validation->run() && $this->session->userdata("logged_in")) {
 			//echo json_encode(array('success'=>true));
-			//header("location:".base_url()."index.php");
-			$this->index();	
+			header("location:".base_url()."index.php");
+			//$this->index();	
 	   } else {
 	   		//echo json_encode(array('msg'=>'User atau password salah ! '.strip_tags(validation_errors())));
 			$data["message"]="UserID atau Password salah !";			
@@ -236,8 +236,11 @@ function welcome(){
    if($result)  {
 	 my_log("LOGIN","",$user_id);			
      $sess_array = array();
-     foreach($result as $row) {
+     foreach($result->result() as $row) {
        $sess_array = (array)$row;
+	   
+	  
+	   		 
        unset($sess_array['password']);
        
        $this->session->set_userdata('logged_in', $sess_array);
@@ -299,7 +302,7 @@ function welcome(){
      }
      return true;
    } else {
-     $this->form_validation->set_message('password', "Error user_id or password !");
+     $this->form_validation->set_message('password', "Error user_id or password ! or Unknown !");
      return false;
    }
  }

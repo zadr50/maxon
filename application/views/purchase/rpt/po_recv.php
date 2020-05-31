@@ -29,12 +29,14 @@
  			</tr>
  		</thead>
  		<tbody>
-     			<?
+     			<?php 
+						    $potype=getvar("PoType","O");
+
 	 		       $sql="select p.purchase_order_number,p.po_date,p.terms,p.supplier_number,
 	 		        s.supplier_name,p.amount,p.received,s.city,s.phone,p.due_date   
 	                from purchase_order p
 	                left join suppliers s on s.supplier_number=p.supplier_number
-	                where p.potype='O' and p.po_date between '$date1' and '$date2'";
+	                where p.potype='$potype' and p.po_date between '$date1' and '$date2'";
 					if($supplier!="")$sql.=" and p.supplier_number='$supplier'"; 
 	                $sql.=" order by p.purchase_order_number";
 			        $query=$CI->db->query($sql);

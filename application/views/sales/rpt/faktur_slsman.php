@@ -45,8 +45,9 @@
                 </thead>
                 <tbody>
                 <?
-                $sql="select * from qry_invoice i 
+                $sql="select i.*,c.salesman as salesman_cust from qry_invoice i 
                 join invoice i2 on i2.invoice_number=i.invoice_number
+                join customers c on c.customer_number=i2.sold_to_customer
                 where i.invoice_date between '$date1' and '$date2'  ";
                 
                 $logged_in=$this->session->userdata('logged_in');
@@ -58,7 +59,7 @@
                 if($customer!="")$sql.=" and i.sold_to_customer='" . $customer . "'";
                 if($outlet!="")$sql.=" and i2.warehouse_code='$outlet'";
                 
-                $sql.=" order by i.salesman,i.invoice_date";
+                $sql.=" order by c.salesman,i.invoice_date,i.invoice_number";
                 
                 $rst_so=$CI->db->query($sql);
                 $tbl="";
@@ -75,9 +76,9 @@
                 $rows=$rst_so->result();
                  for($i=0;$i<count($rows);$i++){
                     $row=$rows[$i];
-                    $old_sales=$row->salesman;
+                    $old_sales=$row->salesman_cust;
                     $tbl.="<tr>";
-                    $tbl.="<td>".$row->salesman."</td>";
+                    $tbl.="<td>".$row->salesman_cust."</td>";
                     $tbl.="<td>".$row->invoice_date."</td>";
                     $tbl.="<td>".$row->invoice_number."</td>";
                     $tbl.="<td>".($row->sold_to_customer)."</td>";
@@ -107,7 +108,7 @@
                     $z_saldo_sls=$z_saldo_sls+$saldo;
 
                     if($i<count($rows)-1){
-                        if($old_sales != $rows[$i+1]->salesman){
+                        if($old_sales != $rows[$i+1]->salesman_cust){
                             $tbl.= "<tr><td><h4>Sub Total : ".$old_sales."</h4></td>
                             <td colspan='6'>
                             <td align='right'><h4>".number_format($z_amount_sls)."</h4></td>

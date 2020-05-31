@@ -21,26 +21,37 @@ class Template_eshop {
 	$themes=$this->_ci->sysvar->getvar('themes','standard');	
 	add_log_ip_address();
 }
-
- function display($template,$data){
+ function display_main($template,$data){
 	$data['folder_view']=$this->folder_view; 
   	$data['library_src']=$this->bootstrap_only;
   	$data['script_head']=$this->flexslider;
-	$data['file_content']=$template;
-	$data['content']=true;
 	$data['footer']='footer';
 	$data['folder_view']=$this->folder_view;
 	$data['category_menus']='eshop/widget_category';
 	$data['widget_brand']='eshop/widget_brand';
 	$data['google_ads']='google_ads';
 	$data['widget_ym']='widget_ym';
+    $data['categories_menu']="eshop/category_list";
 	$data['widget_testimoni']='eshop/widget_testimoni';
+    $data['promo']="eshop/category";
 	if($template=="home"){
 		$data['slider']='slider';
 	}	
 	$data['menu']='widget_menu';
 	//var_dump($data);
-	$this->_ci->load->view($this->folder_view."/layout",$data);		 
+	$this->_ci->load->view("eshop/template/layout_home",$data);		 
+ }
+
+ function display($template,$data){
+	$data['folder_view']=$this->folder_view; 
+  	$data['library_src']=$this->bootstrap_only;
+  	$data['script_head']=$this->flexslider;
+	$data['file_content']=$this->folder_view.'/'.$template;
+	$data['content']=true;
+	$data['footer']='footer';
+	$data['folder_view']=$this->folder_view;
+	$data['menu']='widget_menu';
+	$this->_ci->load->view("eshop/template/layout",$data);		 
  }
  function item($item_id){
 	 

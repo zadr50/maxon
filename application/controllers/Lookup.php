@@ -6,7 +6,7 @@ class Lookup extends CI_Controller {
     private $file_view='admin/lookup';
     private $primary_key='id';
     private $controller='lookup';
-
+    private $filter_varname='';
 	function __construct(){
 		parent::__construct();        
          
@@ -17,7 +17,10 @@ class Lookup extends CI_Controller {
         $this->load->library("list_of_values");
         $this->load->model('chart_of_accounts_model');
 	}
-	function index(){	
+	function index(){
+	    if($this->input->get('filter')){
+            $this->filter_varname=$this->input->get('filter');    	        
+	    }
 		$this->browse();	
 	}
 	function browse(){
@@ -34,18 +37,25 @@ class Lookup extends CI_Controller {
 		
 		$faa[]=criteria("Search: ","sid_nama");
 		$data['criteria']=$faa;
+        if($this->filter_varname!='')$data['filter']=$this->filter_varname;
         $this->template->display_browse2($data);            
 	}
     function browse_data($nama='',$offset=0,$limit=10){
 		$nama=urldecode($nama);
-    	$sql="select varname,varvalue,keterangan,id from system_variables 
-    	where varname like 'lookup.%' ";
+    	$sql="select varname,varvalue,keterangan,id from system_variables ";
+    	
+        if($this->input->get('filter')){
+            $this->filter_varname=$this->input->get('filter');            
+            $sql.=" where varname='lookup.$this->filter_varname'";
+        } else {
+            $sql.=" where varname like 'lookup.%' ";
+        }
+    	
 		if($this->input->get('sid_nama')!='')$sql.=" and varname like 'lookup.".$this->input->get('sid_nama')."%'";
         if($this->input->get('tb_search')!='')$sql.=" and varname like 'lookup.".$this->input->get('tb_search')."%'";
 
         if($this->input->get("page"))$offset=$this->input->get("page");
         if($this->input->get("rows"))$limit=$this->input->get("rows");
-
 
    		$sql.=" order by varname,varvalue";
         if($offset>0)$offset--;
@@ -64,6 +74,14 @@ class Lookup extends CI_Controller {
             $data['varname']=$varname;
 	        $data['varvalue']=$this->input->post('varvalue');
 	        $data['keterangan']=$this->input->post('keterangan');
+	        $data['coa1']=$this->acc_id($this->input->post("coa1"));
+	        $data['coa2']=$this->acc_id($this->input->post("coa2"));
+	        $data['coa3']=$this->acc_id($this->input->post("coa3"));
+	        $data['coa4']=$this->acc_id($this->input->post("coa4"));
+	        $data['coa5']=$this->acc_id($this->input->post("coa5"));
+			$data['plus_minus']=$this->input->post("plus_minus");
+	        	        
+			
 	        $this->sysvar_model->save($data);
 	        $data['message']='Tambah variabel sukses. Silahkan refresh...';
             $data['content']="<script languange='javascript'>remove_tab_parent();</script>";   		
@@ -71,6 +89,9 @@ class Lookup extends CI_Controller {
 		} else {
 			 $data=$this->set_defaults();
 	         $data['mode']='add';
+             if($filter=$this->input->get('filter')){
+                 $data['varname']=$filter;
+             }
 	        $this->template->display_form_input($this->file_view,$data);
 		}
     }
@@ -108,6 +129,7 @@ class Lookup extends CI_Controller {
         $data['coa3']=$this->acc_id($this->input->post("coa3"));
         $data['coa4']=$this->acc_id($this->input->post("coa4"));
         $data['coa5']=$this->acc_id($this->input->post("coa5"));
+		$data['plus_minus']=$this->input->post("plus_minus");
                 
         
         $this->sysvar_model->update_id($id,$data);
@@ -139,6 +161,7 @@ class Lookup extends CI_Controller {
 	}
 	function query($what,$search='',$with_autocomplete=false){
         $sql=$this->list_of_values->get_by_name($what,$search);
+        
 		if($sql==""){
 			echo "<div class='alert alert-warning'>Invalid Query Check Controller Lookup.php !!!</div>";
 		} else {
@@ -166,8 +189,10 @@ class Lookup extends CI_Controller {
             return 0;
         }
     }
-    function table($table,$field_key,$field2){
-        $sql="select $field_key,$field2 from $table where 1=1";
+    function table($table,$field_key,$field2,$field3=""){
+        $sql="select $field_key,$field2";
+        if($field3!="")$sql.=",$field3"; 
+        $sql.=" from $table where 1=1";
         if($search=$this->input->get("q")){
             if($search!="")$sql.=" and ($field_key like '%$search%' 
                 or $field2 like '%$search%')";
@@ -178,7 +203,9 @@ class Lookup extends CI_Controller {
         $output="";
         if($qry=$this->db->query($sql)){
             foreach($qry->result_array() as $row){
-                $output.=$row[$field_key]." - ".$row[$field2]."|".$row[$field_key]."|".$row[$field2]."\n";
+                $output.=$row[$field_key]." - ".$row[$field2]."|".$row[$field_key]."|".$row[$field2];
+                if($field3!="")$output.="|".$row[$field3];
+                $output.="\n";
             }
         }
         echo $output;

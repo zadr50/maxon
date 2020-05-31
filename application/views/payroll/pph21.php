@@ -17,6 +17,7 @@
                     ?>
                     <span id='nama'></span>
                 </tr>
+                <tr><td>Nomor</td><td><?=form_input('nomor',$nomor,"id='nomor'");?></td></tr>    
                 <tr><td>Keterangan</td><td><?=form_input('keterangan',$keterangan,"id='keterangan' style='width:300px'");?></td></tr>    
                 <tr><td>Rumus</td><td><?=form_input('rumus',$rumus,"id='rumus' style='width:300px'");?></td></tr>    
                 <tr><td>Kelompok</td><td><?=form_input('kelompok',$kelompok,"id='kelompok'");?></td></tr>    

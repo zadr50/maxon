@@ -6,7 +6,9 @@ private $table_name='bank_accounts';
 
 function __construct(){
 	parent::__construct();        
+      
         
+    
 }
 	function get_paged_list($limit=10,$offset=0,
 	$order_column='',$order_type='asc')
@@ -27,6 +29,9 @@ function __construct(){
 		return $this->db->count_all($this->table_name);
 	}
 	function get_by_id($id){
+		$id=urldecode($id);
+		rekening_need_update($id);
+		
 		$this->db->where($this->primary_key,$id);
 		return $this->db->get($this->table_name);
 	}
@@ -34,15 +39,63 @@ function __construct(){
 		$this->db->where("account_id",$id);
 		return $this->db->get($this->table_name);		
 	}
+    function get_account_id($account_number){
+        $ret=0;
+        if($q=$this->get_by_id($account_number)){
+            if($r=$q->row()){
+                $ret=$r->account_id;
+            }
+        }
+        return $ret;
+    }
 	function save($data){
+		$id=$data[$this->primary_key];
+		rekening_need_update($id);
+	    $data=$this->cek_setting_no_bukti($data);
 		$this->db->insert($this->table_name,$data);
 		return $this->db->insert_id();
 	}
 	function update($id,$data){
+			
+		rekening_need_update($id);
+		
+        $data=$this->cek_setting_no_bukti($data);
 		$this->db->where($this->primary_key,$id);
 		$this->db->update($this->table_name,$data);
 	}
+    function cek_setting_no_bukti($data){
+            
+        $acc=$data["bank_account_number"];
+        $in=$data["no_bukti_in"];
+        $out=$data["no_bukti_out"];
+        
+        $key="Acc In $acc Numbering";
+        $val=$this->sysvar->getvar($key);
+        if($val!=""){
+            $data["no_bukti_in"]=$val;
+        } else {
+            if($in!=""){
+                $this->sysvar->insert($key,$in);
+            }
+        }
+        $key="Acc Out $acc Numbering";
+        $val=$this->sysvar->getvar($key);
+        if($val!=""){
+            $data["no_bukti_out"]=$val;
+        } else {
+            if($out!=""){
+                $this->sysvar->insert($key,$out);
+            }
+        }
+       
+        return $data;
+    }
 	function delete($id){
+		
+		$id=urldecode($id);
+		
+		rekening_need_update($id);
+		
 		$this->db->where($this->primary_key,$id);
 		$this->db->delete($this->table_name);
 	}
@@ -70,6 +123,7 @@ function __construct(){
 			if($item=="")$item="Unknown";
 			$qty=$row->sum_amount;
 			if($qty==null)$qty=0;
+            if($qty>1)$qty=$qty/10000;
 			$data[]=array(substr($item,0,10),$qty);
 		}
 		return $data;
@@ -107,6 +161,7 @@ function __construct(){
 		}
 		return $ret;
 	}
+    
     function select_edc(){
         $ret[""]="--Pilih Rekening--";
         $sql="select bank_account_number,bank_name,org_id 
@@ -118,20 +173,10 @@ function __construct(){
                 $ret[$row->bank_account_number]="$row->bank_name - $row->bank_account_number - $row->org_id";
             }
         }
-        if(count($ret)==1){
-            $sql="select bank_account_number,bank_name,org_id 
-                from bank_accounts 
-                where has_edc=1 
-                order by bank_name";
-            if($q=$this->db->query($sql)){
-                foreach($q->result() as $row){
-                    $ret[$row->bank_account_number]="$row->bank_name - $row->bank_account_number - $row->org_id";
-                }
-            }
-            
-        }
-        
         return $ret;
+    }
+    function next_bank_recalc(){
+    	
     }
 	
 }

@@ -1,7 +1,5 @@
-
-
 <?php 
-	 $CI =& get_instance();
+	$CI =& get_instance();
 	$data['caption']='PENGELUARAN BARANG LAINNYA - BY PROJECT';
 	if(!$CI->input->post('cmdPrint')){
 		$data['criteria1']=true;
@@ -59,12 +57,14 @@
 		ip.quantity_received as qty,
 		ip.unit,ip.cost,ip.total_amount,ip.shipment_id,ip.doc_type
 		 from inventory_products ip
-			left join inventory i on i.item_number=ip.item_number
+			join inventory i on i.item_number=ip.item_number
 			left join suppliers s on s.supplier_number=i.supplier_number
-			left join gl_projects g on g.kode=ip.ref2
-		where ip.receipt_type='ETC_OUT' and ip.date_received between '$date1' and '$date2'  ";
+			join gl_projects g on g.kode=ip.ref2
+		where ip.receipt_type='ETC_OUT' and ip.date_received between '$date1' and '$date2' 
 		
+		";
 		
+				
 		if($supp!=""){
 			$sql.=" and ip.supplier_number='$supp'";
 		}
@@ -74,9 +74,40 @@
 		
 		if($kelompok!="")$sql.=" and i.category='$kelompok'";
 		if($gudang!="")$sql.=" and ip.warehouse_code='$gudang'";
+		
+		//$sql.="order by concat(g.keterangan,' (',ip.ref2,')') ";
+
+		$sql.=" union all 
+		select cw.check_date,concat(g.keterangan, ' (',cw.ref1,')') as proyek, 
+			cw.account_number,cw.memo,cw.supplier_number,0 as x1,'' as x2,
+			0 as x3, cw.payment_amount as total_amount,cw.voucher,cw.trans_type 
+			from check_writer cw join gl_projects g on g.kode=cw.ref1
+			where cw.trans_type in ('cash out','cheque out','trans out') 
+			and cw.check_date between '$date1' and '$date2' 
+			";
+		
+		if($proj!=""){
+			$sql.=" and cw.ref1='$proj'";
+		}
+				
+				
 		$data['content']=browse_select(array('sql'=>$sql,'show_action'=>false,
-			'group_by'=>array('proyek'))
+			'group_by'=>array('proyek'),"fields_sum"=>array("total_amount"),
+			"hidden"=>array("proyek"),"order_column"=>"proyek ")
 		);
+		
+			
+		//echo $sql;
+		
+//		$kas_keluar=browse_select(array(
+//			"sql"=>$sql,
+//			"group_by"=>array("proyek"),
+//			"fields_sum"=>array("payment_amount"),
+//			"hidden"=>array("proyek"),
+//			"order_column"=>"concat(g.keterangan, '(',cw.ref1,')')"
+//		));
+//		$data['content']=$data['content']."</br>".$kas_keluar;
+		
 		 $data['header']=company_header();
 		 $data['criteria']="Periode: $date1 s/d $date2, Kelompok: $kelompok, Gudang: $gudang, 
 		 	Supplier: $supp, Proyek: $proj" ;

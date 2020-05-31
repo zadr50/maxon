@@ -91,7 +91,8 @@
                     $tbl.="<td align='right'>".number_format($row->retur)."</td>";
                     $tbl.="<td align='right'>".number_format($row->cr_amount)."</td>";
                     $tbl.="<td align='right'>".number_format($row->db_amount)."</td>";
-					$saldo=$row->amount-$row->payment-$row->cr_amount+$row->db_amount;
+					
+					$saldo=$row->amount-$row->payment-$row->retur-$row->cr_amount+$row->db_amount;
                     $tbl.="<td align='right'>".number_format($saldo)."</td>";
                     $tbl.="</tr>";
 					$z_amount=$z_amount+$row->amount;
@@ -137,13 +138,13 @@
 				<td align='right'><h4>".number_format($z_saldo_cst)."</h4></td>
 				</tr>";
 			   
-			   $tbl.="<tr><td>TOTAL</td><td></td><td></td><td></td>
-	     				<td></td><td></td><td></td><td align='right'>".number_format($z_amount)."</td>
-						<td align='right'>".number_format($z_payment)."</td>
-						<td align='right'>".number_format($z_retur)."</td>
-						<td align='right'>".number_format($z_cr_amount)."</td>
-						<td align='right'>".number_format($z_db_amount)."</td>
-						<td align='right'>".number_format($z_saldo)."</td></tr>";
+			   $tbl.="<tr><td><b>TOTAL</b></td><td></td><td></td><td></td>
+	     				<td></td><td></td><td></td><td align='right'><b>".number_format($z_amount)."</b></td>
+						<td align='right'><b>".number_format($z_payment)."</b></td>
+						<td align='right'><b>".number_format($z_retur)."</b></td>
+						<td align='right'><b>".number_format($z_cr_amount)."</b></td>
+						<td align='right'><b>".number_format($z_db_amount)."</b></td>
+						<td align='right'><b>".number_format($z_saldo)."</b></td></tr>";
 			   echo $tbl;
 				   				   				   
 			?>	

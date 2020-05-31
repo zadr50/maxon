@@ -158,7 +158,7 @@ class Aktiva extends CI_Controller {
 	 	$this->browse();
 	}
 	function find($nomor){
-		 $id=urldecode($id);
+		$nomor=urldecode($nomor);
 		$query=$this->db->query("select description,depn_method,useful_lives from fa_asset where id='$nomor'");
 		echo json_encode($query->row_array());
  	}
@@ -175,13 +175,42 @@ class Aktiva extends CI_Controller {
 			 default:
 				 break;
 		 }
-		 $rpt='aktiva/rpt/'.$id;
+		 $rpt='aktiva/aktiva/rpt/'.$id;
 		 $data['rpt_controller']=$rpt;
 		 
 		if(!$this->input->post('cmdPrint')){
 			$this->template->display_form_input('criteria',$data,'');
 		} else {
-			$this->load->view('aktiva/rpt/'.$id);
+			///$this->load->view('aktiva/rpt/'.$id);
+			$this->load->helper('browse_select');
+			switch($id){
+				case 'aktiva':
+					$sql="select * from fa_asset";
+					$data['caption']="DAFTAR ASSET";
+					$data['content']=browse_select(
+							array('sql'=>$sql,
+							'action_button'=>''));
+					$this->load->view('simple_print.php',$data);    	
+					break;
+				case 'group':
+					$sql="select * from fa_asset_group";
+					$data['caption']="DAFTAR ASSET GROUP";
+					$data['content']=browse_select(
+							array('sql'=>$sql,
+							'action_button'=>''));
+					$this->load->view('simple_print.php',$data);    
+					break;
+				case 'proses':
+					$sql="select * from fa_asset_depreciation_schedule";
+					$data['caption']="DAFTAR ASSET PROSES";
+					$data['content']=browse_select(
+							array('sql'=>$sql,
+							'action_button'=>''));
+					$this->load->view('simple_print.php',$data);    
+		
+					break;
+
+			}
 		}
    }	
    function reports(){

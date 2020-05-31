@@ -7,7 +7,7 @@
 
 	<div title="DASHBOARD" style="padding:10px;height:auto">
 		<div class="row">
-			<div class="col-xs-12 thumbnail">
+			<div class="col-md-7 thumbnail">
 				<img src="<?=base_url()?>images/gl.png" usemap="#mapdata" class="map">
 				<map id="mapdata" name="mapdata">
 					<area shape="circle" alt="Jurnal Umum" coords="120,92,29" href="<?=base_url()?>index.php/jurnal"  class="info_link" title="Jurnal Umum" />
@@ -18,6 +18,12 @@
 					<area shape="circle" alt="Kartu GL" coords="263,304,30" href="<?=base_url()?>index.php/gl/rpt/cards" class="info_link"  title="Kartu GL" />
 					<area shape="default" nohref="nohref" alt="" />
 				</map>
+			</div>
+			<div class="col-md-4 thumbnail" style="margin-left:10px">
+			    <h3>Expenses</h3>
+                <div id='divGrafikBiaya' style="height:350px;width:300px">
+                     <img src="<?=base_url('images/loading.gif')?>">      
+                </div>			    
 			</div>
 		</div>	
 		<div class="col-xs-12 thumbnail">
@@ -54,7 +60,8 @@
  <script type="text/javascript" src="<?=base_url()?>assets/flot/excanvas.js"></script>
 <script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.js"></script>
 <script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.categories.js"></script>
- <script type="text/javascript" src="<?=base_url()?>assets/maphilight-master/jquery.maphilight.min.js"></script>
+<script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.pie.js"></script>
+<script type="text/javascript" src="<?=base_url()?>assets/maphilight-master/jquery.maphilight.min.js"></script>
 
 <script  language="javascript">
 $().ready(function(){
@@ -96,6 +103,40 @@ $().ready(function(){
 		}
 		$.plot("#divAkun", data, options);
 	}
+	
+	
+    var data_grafik_biaya = [{label:'aaaa',data:75},{label:'bbbb',data:25},{label:'cccc',data:25}];
+    var data_grafik_biayax=[];
+    var alreadyFetched2 = {};
+    var dataurl2=CI_ROOT+'gl/grafik_biaya';
+    var idx_gb=0;
+    
+        $.ajax({
+            url: CI_ROOT+'gl/grafik_biaya',type: "GET",dataType: "json",
+            success: onDataReceived2          
+        });
+        function onDataReceived2(series) {
+            if (!alreadyFetched2[series.label]) {
+                alreadyFetched2[series.label] = true;
+                for(j=0;j<series.data.length;j++){
+                    data_grafik_biayax[idx_gb]={
+                        label:series.data[j][0], 
+                        data:series.data[j][1]
+                    };
+                    idx_gb++;
+                }
+            }
+            $.plot($('#divGrafikBiaya'), data_grafik_biayax, {
+                series: {
+                    pie: { show: true},
+                    show: true
+                },
+                    legend: {
+                        show: false
+                    },
+                    title: "Grafik Biaya"
+            });
+       }  
 	
 			
 </script>

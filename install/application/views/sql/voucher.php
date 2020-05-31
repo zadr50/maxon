@@ -1,6 +1,6 @@
 <?php
  
-$table="voucher";
+$table="voucher_master";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `voucher_master` (
@@ -22,6 +22,8 @@ CREATE TABLE IF NOT EXISTS `voucher_master` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
+$table.=", wilayah";
 
 $sql="
 CREATE TABLE IF NOT EXISTS `wilayah` (

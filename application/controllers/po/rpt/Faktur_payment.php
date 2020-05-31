@@ -1,6 +1,6 @@
 <?php
 class Faktur_payment extends CI_Controller {
-	private	$rpt='purchase/rpt/faktur_not_paid';
+	private	$rpt='purchase/rpt/faktur_payment';
 	function __construct()
 	{
 		parent::__construct();

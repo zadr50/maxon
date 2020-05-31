@@ -19,7 +19,7 @@
 		$date_from=$CI->input->post("txtDateFrom");
 		$date_to=$CI->input->post("txtDateTo");
 		
-		$sql="select i.sold_to_customer,c.company,
+		$sql="select c.company,
 		il.item_number,il.description,sum(il.quantity) as z_qty,
 		sum(il.amount) as z_amount 
 		from invoice_lineitems il  
@@ -29,13 +29,14 @@
 		where i.invoice_type in ('I','R') and i.invoice_date between '$date_from' and '$date_to' ";
 		
 		if($customer=$CI->input->post("text1"))$sql.=" and i.sold_to_customer='$customer'";
-		$sql.=" group by i.sold_to_customer,c.company,il.item_number,il.description";
+		$sql.=" group by c.company,il.item_number,il.description";
 		
 		
 		$data['content']=browse_select(	
 			array('sql'=>$sql,'show_action'=>false,
-				"group_by"=>array("sold_to_customer"),
-				"fields_sum"=>array("z_qty","z_amount")
+				"group_by"=>array("company"),
+				"fields_sum"=>array("z_qty","z_amount"),
+				"hidden"=>array("company")
 			)
 		);
 		 $data['header']=company_header();

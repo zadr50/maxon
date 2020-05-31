@@ -25,9 +25,23 @@ class Product extends CI_Controller {
 		$data['mode']='';
 		$data['message']='';
         $data['akun_list']=$this->chart_of_accounts_model->select_list();
-		$data['category_list']=$this->inventory_model->category_list();
-		$data['sub_category_list']=$this->inventory_model->category_list();               
-	 
+
+		$setting['dlgBindId']="inventory_categories";
+		$setting['dlgCols']=array( 
+			array("fieldname"=>"kode","caption"=>"Kode","width"=>"80px"),
+			array("fieldname"=>"category","caption"=>"Category","width"=>"200px")
+		);
+		$setting['dlgRetFunc']="$('#category').val(row.kode);";
+		$data['lookup_category']=$this->list_of_values->render($setting);
+
+		$setting['dlgBindId']="inventory_sub_categories";
+		$setting['dlgCols']=array( 
+			array("fieldname"=>"kode","caption"=>"Kode","width"=>"80px"),
+			array("fieldname"=>"category","caption"=>"Category","width"=>"200px")
+		);
+		$setting['dlgRetFunc']="$('#sub_category').val(row.kode);";
+		$data['lookup_sub_category']=$this->list_of_values->render($setting);
+
 		return $data;
 	}
 	function index()
@@ -139,8 +153,8 @@ class Product extends CI_Controller {
 	{
         $data['caption']='DAFTAR BARANG JADI';
 		$data['controller']='manuf/product';		
-		$data['fields_caption']=array('Kode','Nama Barang','Unit','Kelompok','Sub','Harga Jual','Cost');
-		$data['fields']=array('item_number','description','unit_of_measure','category','sub_category','retail','cost');
+		$data['fields_caption']=array('Nama Barang','Kode','Unit','Kelompok','Sub','Harga Jual','Cost');
+		$data['fields']=array('description','item_number','unit_of_measure','category','sub_category','retail','cost');
 		$data['field_key']='item_number';
 		$this->load->library('search_criteria');
 		
@@ -148,6 +162,7 @@ class Product extends CI_Controller {
 		$faa[]=criteria("Nama","sid_nama");
 		$faa[]=criteria("Kelompok","sid_cat");
 		$data['criteria']=$faa;
+        $data['fields_format_numeric']=array("retail","cost");
         $this->template->display_browse2($data);            
     }
     function browse_data($offset=0,$limit=10,$nama=''){

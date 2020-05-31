@@ -30,14 +30,19 @@ function __construct(){
 		return $this->db->get($this->table_name);
 	}
 	function save($data){
-        $item_no=$data['item_number']; item_need_update($item_no);
+        $item_no=$data['item_number']; 
+        item_need_update($item_no);
+        item_need_update_arsip($item_no, $data['warehouse_code'], $data['date_received']);
+				
 		$this->db->insert($this->table_name,$data);
 		return $this->db->insert_id();
 	}
 	function update($id,$data){
 	    
         
-        $item_no=$data['item_number']; item_need_update($item_no);
+        $item_no=$data['item_number']; 
+        item_need_update($item_no);
+        item_need_update_arsip($item_no, $data['warehouse_code'], $data['date_received']);
     
 		$this->db->where($this->primary_key,$id);
 		$this->db->update($this->table_name,$data);

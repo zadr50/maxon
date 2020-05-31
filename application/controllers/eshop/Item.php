@@ -8,16 +8,6 @@ class Item extends CI_Controller {
 	{
 		parent::__construct();
  		$this->load->helper(array('url','form'));
-                
-        $multi_company=$this->config->item('multi_company');
-       if($multi_company){
-            $company_code=$this->session->userdata("company_code","");
-            if($company_code!=""){
-               $this->db = $this->load->database($company_code, TRUE);
-           }
-       }         
-        
-        
 		$this->load->library('template_eshop');
 	}
 	function index() {}
@@ -38,7 +28,7 @@ class Item extends CI_Controller {
 		$data['message']='';
 		$data['item_id']=$item_id;
 		$data['page']=$page;
-		$data['sidebar']='category_list';
+		$data['sidebar']='eshop/items/category_list';
 		$view_count=0;
 		$create_by='';
 		$cust_id=cust_id();
@@ -60,7 +50,7 @@ class Item extends CI_Controller {
 			$data['message']='';
 			$this->template_eshop->display('admin/item',$data);
 		} else {
-			$this->template_eshop->display('item',$data);
+			$this->template_eshop->display('items/item',$data);
 		}
 	}	
 	function add() {
@@ -126,8 +116,8 @@ class Item extends CI_Controller {
 		$data['cart']=$cart;
 		$data['content']=true;
 		$data['footer']='footer';
-		$data['sidebar']='category_list';
-		$this->template_eshop->display("cart",$data);
+		$data['sidebar']='eshop/items/category_list';
+		$this->template_eshop->display("sales/cart",$data);
 	}
 	function search($cat_kode='') {
 		$search_items='';
@@ -204,7 +194,7 @@ class Item extends CI_Controller {
 			$this->db->like('description',$search_items);
 		}
 		$this->db->where("retail between $from and $to ","",FALSE);
-		$this->db->select('item_number,description,item_picture,retail');
+		$this->db->select('item_number,description,item_picture,retail,active');
 		if($sales_stat_type==0){	//item baru
 			$this->db->order_by("view_count");
 		}
@@ -214,14 +204,16 @@ class Item extends CI_Controller {
 		if($sales_stat_type==2){	// item terlaris
 			$this->db->order_by("sales_count","de	sc");
 		}
-		$this->db->limit(20);
+		$this->db->limit(100);
 		$data['cat_items']=$this->db->get("inventory");
 		$data['data']=$data;
 		$data['sales_stat_type']=$sales_stat_type;
 		$data['search_items']=$search_items;
 		$data['search_category']=$cat_id;
-		$data['sidebar']='category_list';
-		$this->template_eshop->display('category',$data);		
+		//$data['sidebar']='category_list';
+		///$data['category_menus']='eshop/widget_category';
+				
+		$this->template_eshop->display('items/category',$data);		
 	}
 	function browse($page=0,$limit=10) {
 		$data['title']='Daftar Produk';

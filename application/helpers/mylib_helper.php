@@ -2,6 +2,42 @@
 
 date_default_timezone_set("Asia/Jakarta");
 
+if(!function_exists("themes")){
+    function themes(){
+		$CI =& get_instance();
+		$CI->load->library("sysvar");
+		$themes=$CI->sysvar->getvar('themes','standard');
+		if($themes==""){
+			$themes="standard";
+		}
+		return $themes;
+	}
+}
+
+if(!function_exists("menu")){
+    function menu($title,$url,$func=false){
+        if(!$func){
+            echo "<div><a href='".base_url()."index.php/".$url."' class='easyui-linkbutton' data-options='plain:true'>".$title."</a></div>";    
+        } else {
+            echo "<div><a href='#' onclick=\"load_menu('$url')\"  class='easyui-linkbutton' data-options='plain:true'>".$title."</a></div>";
+        }
+    }
+}
+if(!function_exists("add_menu_drop")){
+    function add_menu_drop($menu_id,$caption,$mod_id) {
+        if(allow_mod($mod_id)){
+            echo "<li><a onclick=load_menu('$menu_id') href='#'>$caption</a></li>";
+        }
+    }
+}
+if(!function_exists("add_menu_drop_2")){
+    function add_menu_drop_2($menu_id,$caption,$mod_id) {
+        if(allow_mod($mod_id)){
+            echo "<li><a href='".base_url()."index.php/$menu_id'
+            class='info_link' >$caption</a></li>";
+        }
+    }
+}
 
 	if ( ! function_exists('set_show_columns')) {
     function set_show_columns($key,$data){
@@ -13,8 +49,14 @@ date_default_timezone_set("Asia/Jakarta");
 				$show_cols=null;
 				echo json_encode(array("success"=>true,"msg"=>"Success"));
 				return false;
-				
-			} else{			
+			} else if ($ck_double_click=$CI->input->get('ck_double_click')){
+				$CI->session->set_userdata("row_double_click",true);
+				echo json_encode(array("success"=>true,"msg"=>"Success"));
+				return false;
+								
+			} else {
+//				$CI->session->unset_userdata("row_double_click",false);
+							
 				if($ck_cols=$CI->input->get("ck_cols")){
 					$show_cols=$ck_cols;
 					$CI->session->set_userdata("cols_".$key,$ck_cols);
@@ -62,7 +104,20 @@ if ( ! function_exists('app_active')) {
 
 if(!function_exists('c_')){
     function c_($Vhwsbz520bqc){
-        return str_replace(',','',$Vhwsbz520bqc);
+        if($Vhwsbz520bqc){
+            return str_replace(',','',$Vhwsbz520bqc);                
+        } else {
+            return 0;
+        }
+    }
+}
+if(!function_exists('valtime')){
+    function valtime($Vhwsbz520bqc){
+        if($Vhwsbz520bqc){
+            return str_replace(':','',$Vhwsbz520bqc);                
+        } else {
+            return 0;
+        }
     }
 }
 
@@ -180,8 +235,8 @@ if(!function_exists("my_input")){
 				if ( $Vm0pnfecgctz == "clear_line" ) $Viuwkmsl0bs3=$Vhwsbz520bqc;
 			}
 		}
-		if($Vyfsyvpoqvi0_class=="")$Vyfsyvpoqvi0_class="col-xs-3";
-		if($Vtuoz1tgdkjb=="")$Vtuoz1tgdkjb="col-xs-4";
+		//if($Vyfsyvpoqvi0_class=="")$Vyfsyvpoqvi0_class="col-xs-3";
+		//if($Vtuoz1tgdkjb=="")$Vtuoz1tgdkjb="col-xs-4";
 		echo "<div class='form-group'>
 		<label $Vhtvpgztfiyp class='control-label $Vyfsyvpoqvi0_class ' for='$V15dbrpajeabield_name'>$Vyfsyvpoqvi0</label>
 		<div class='$Vtuoz1tgdkjb'>"
@@ -295,9 +350,9 @@ if(!function_exists("my_input_tr")){
 	}
 }
 if(!function_exists("my_input_td")){
-    function my_input_td($Vyfsyvpoqvi0,$V15dbrpajeabield_name,$V15dbrpajeabield_value='',$Vpgxedlkcze2=''){
+    function my_input_td($Vyfsyvpoqvi0,$V15dbrpajeabield_name,$V15dbrpajeabield_value='',$Vpgxedlkcze2='',$extra=''){
         $Vgln3nzd1pum="<td>".$Vyfsyvpoqvi0."</td><td>
-        <input type='text' name='".$V15dbrpajeabield_name."' id='".$V15dbrpajeabield_name."' value='$V15dbrpajeabield_value'>";
+        <input type='text' name='".$V15dbrpajeabield_name."' id='".$V15dbrpajeabield_name."' value='$V15dbrpajeabield_value' $extra>";
         if($Vpgxedlkcze2!="") $Vgln3nzd1pum .= $Vpgxedlkcze2;
         $Vgln3nzd1pum .= "</td>";
         echo $Vgln3nzd1pum;
@@ -350,41 +405,41 @@ if(!function_exists("array_data_table")){
 	}
 }
 if(!function_exists("my_checkbox")){
-	function my_checkbox($Vyfsyvpoqvi0,$V15dbrpajeabield_name,$V15dbrpajeabield_value,$Vo4jreid3ahw,$Vuhvbhltib2h="col-sm-4",$Vvw3402cj5ls="col-sm-2"){
-		if(is_array($Vo4jreid3ahw)){
-		echo "<div class='form-group' >
-		<label class='control-label ".$Vuhvbhltib2h."' for='".$V15dbrpajeabield_name."'>".$Vyfsyvpoqvi0."</label>
-		<div class='col-md-6'>";
-		$V15dbrpajeabield_value_array=explode(",",$V15dbrpajeabield_value);
-		foreach( $Vo4jreid3ahw as $Vm0pnfecgctz => $Vhwsbz520bqc ) {
-			$V15dbrpajeabound=false;
-			if(is_array($V15dbrpajeabield_value_array)){
-				for($Voocn2l14sua=0;$Voocn2l14sua<count($V15dbrpajeabield_value_array);$Voocn2l14sua++) {
-					if($V15dbrpajeabield_value_array[$Voocn2l14sua]==$Vhwsbz520bqc){
-						$V15dbrpajeabound=true;
+	function my_checkbox($caption,$field_name,$field_value,$array_list=false,$class_cap="col-sm-4",$class_text="col-sm-2"){
+		
+		if(is_array($array_list)){
+			echo "<div class='form-check' >
+			<label class='control-label ".$class_cap."' for='".$field_name."'>".$caption."</label>
+			<div class='col-md-6'>";
+			$field_value_array=explode(",",$field_value);
+			foreach( $array_list as $key => $value ) {
+				$found=false;
+				if(is_array($field_value_array)){
+					for($j=0;$j<count($field_value_array);$j++) {
+						if($field_value_array[$j]==$value){
+							$found=true;
+						}
 					}
+					$checked=$found;
+				} else {
+					$checked=$field_value==$value?true:false;
 				}
-				$V5yekxe4oy02=$V15dbrpajeabound;
-			} else {
-				$V5yekxe4oy02=$V15dbrpajeabield_value==$Vhwsbz520bqc?true:false;
+				echo form_checkbox($field_name.'[]', $key, $checked,
+					"id='".$field_name."' class='form-check-input'").' '.$value.' ';
+				echo "<label class='form-check-label'>$caption</label>";
 			}
-			echo "<label class='control-label col-md-4'>";
-			echo form_checkbox($V15dbrpajeabield_name.'[]', $Vm0pnfecgctz, $V5yekxe4oy02,
-				"id='".$V15dbrpajeabield_name."' class='checkbox'").' '.$Vhwsbz520bqc.' ';
-			echo "</label>";
-		}
-		echo "</div>
-		</div>
-		<div class='clearfix'></div>";
+			echo "</div>
+			</div>
+			<div class='clearfix'></div>";
 		} else {
-			$V5yekxe4oy02=$V15dbrpajeabield_value=="1"?true:false;
-			echo "<div class='form-group'>
-			<label class='control-label ".$Vuhvbhltib2h."' for='".$V15dbrpajeabield_name."'>".$Vyfsyvpoqvi0."</label>
-			<div class='".$Vvw3402cj5ls."'>".form_checkbox($V15dbrpajeabield_name,$V15dbrpajeabield_value,$V5yekxe4oy02,
-			"id='".$V15dbrpajeabield_name."' class='form-control input-sm'")."</div></div>";	
+			$checked=$field_value=="1"?true:false;
+			echo form_checkbox($field_name,1,$checked,"id='".$field_name."' class='form-check-input'");	
+			echo "<label class='form-check-label ".$class_cap."' for='".$field_name."'>".$caption."</label>";
 
 		}
 	}
+	
+	
 }
 if(!function_exists("render_form")) {
 	function render_form($V15dbrpajeaborm) {
@@ -418,7 +473,7 @@ if(!function_exists("add_button_menu")){
 	function add_button_menu($Vyfsyvpoqvi0,$Vpckg22z3gi4,$Vu0pjn5k3qbkco,$Vcoivezkelba,$Vqlidxeiorll=""){
 	$Vr24ddw5fsns="href='".base_url()."index.php/$Vpckg22z3gi4'";
 	if($Vqlidxeiorll<>"") $Vr24ddw5fsns=" onclick='$Vqlidxeiorll'";
-	echo "<div class='col-lg-3 col-md-4 col-sm-12 info thumbnail info_link box-gradient' $Vr24ddw5fsns>
+	echo "<div class='col-lg-3 col-md-4 col-sm-12 info-maxon thumbnail info_link box-gradient' $Vr24ddw5fsns>
 				<div class='photo'><img src='".base_url()."images/$Vu0pjn5k3qbkco'/></div>
 				<div class='detail'><h4>$Vyfsyvpoqvi0</h4></br>$Vcoivezkelba</div>
 		</div>";
@@ -443,15 +498,26 @@ if(!function_exists("dropdown_data")){
 		return $Vywv2o3maeva;
 	}
 }
-if(!function_exists('add_date')){
-	function add_date($Vwyub51m1igs,$Vxec3ip1xh03=0,$Vtqgof0nw0q5=0,$Vo5dmj0fab1q=0) {
-		  $Vwjune35k3c5 = strtotime($Vwyub51m1igs);
-		  $Vduclvfkniqu = date('Y-m-d h:i:s', mktime(date('h',$Vwjune35k3c5),
-		date('i',$Vwjune35k3c5), date('s',$Vwjune35k3c5), date('m',$Vwjune35k3c5)+$Vtqgof0nw0q5,
-		date('d',$Vwjune35k3c5)+$Vxec3ip1xh03, date('Y',$Vwjune35k3c5)+$Vo5dmj0fab1q));
-		  return $Vduclvfkniqu;
+if(!function_exists('add_datex')){
+	function add_datex($givendate,$day=0,$mth=0,$yr=0) {
+		  $cd = strtotime($givendate);
+		  $newdate = date('Y-m-d h:i:s', mktime(date('h',$cd),
+		date('i',$cd), date('s',$cd), date('m',$cd)+$mth,
+		date('d',$cd)+$day, date('Y',$cd)+$yr));
+		  return $newdate;
 	}
 }
+if(!function_exists('add_date')){
+	function add_date($date_from,$day) {
+		//add $g days to $dayYmd (date is in YYYY-MM-DD format)
+		if($day=="")$day=0;
+		if($date_from=="")$date_from=date("Y-m-d");
+		$new_date = date("Y-m-d",strtotime($date_from." +$day day"));
+		return $new_date;
+	}
+}
+
+
 if(!function_exists('add_log_run')){
 	function add_log_run($Vnkbdrgv0cj1){
         $Vnpr0xe0jkmu =& get_instance();
@@ -523,15 +589,49 @@ if(!function_exists("user_pass")){
 }
 if(!function_exists("current_gudang")){
     function current_gudang(){
-        $Vnpr0xe0jkmu =& get_instance();
-       $V1rsrxupxxp4=$Vnpr0xe0jkmu->session->userdata("session_outlet",'');     
-       $V31baunwn3zi=$Vnpr0xe0jkmu->access->current_gudang();
-       $Vbnoleywpry2="";
-       if($V1rsrxupxxp4!="")$Vbnoleywpry2=$V1rsrxupxxp4;
-       if($Vbnoleywpry2=="")$Vbnoleywpry2=$V31baunwn3zi;
-       return $Vbnoleywpry2;
+       $CI =& get_instance();
+       $gudang_session=$CI->session->userdata("session_outlet",'');     
+       $gudang=$CI->access->current_gudang();
+       $retval="";
+       if($gudang_session!="")$retval=$gudang_session;
+       if($retval=="")$retval=$gudang;
+	   if($retval=="" || $retval=="UNKNOWN"){
+	   		if($q=$CI->db->query("select location_number from shipping_locations where default_gudang='1'")){
+	   			if($r=$q->row()){
+	   				$retval=$r->location_number;
+	   			}
+	   		}
+	   }
+	   
+       return $retval;
+	   
     }
 }
+    
+    if(!function_exists("current_company")){
+        function current_company(){
+            $CI =& get_instance();
+           $company_session=$CI->session->userdata("session_company_code",'');     
+           $company=cid();
+           $retval="";
+           if($company_session!="")$retval=$company_session;
+           if($retval=="")$retval=$company;
+           return $retval;
+        }
+    }
+
+if(!function_exists("current_database")){
+    function current_database(){
+       $CI =& get_instance();
+	   $db="";
+	   if($q=$CI->db->query("select database() as db")){
+		   	if($r=$q->row())$db=$r->db;
+	   }
+	   if($db=="")$db="Unknown";
+	   return $db;	   
+    }
+}
+
 
 if(!function_exists("cid")){
 	function cid(){
@@ -612,8 +712,11 @@ if(!function_exists("user_name")){
 }
 if(!function_exists("user_admin")){
 	function user_admin(){
-        $Vnpr0xe0jkmu =& get_instance();
-		return $Vnpr0xe0jkmu->session->userdata('user_admin');
+        $CI =& get_instance();
+		//return $Vnpr0xe0jkmu->session->userdata('user_admin');
+		$CI->load->library("Access");
+		return $CI->access->is_admin();
+
 	}
 }
 if(!function_exists('account')){
@@ -652,33 +755,45 @@ if(!function_exists('invalid_account')){
 }
 
 if(!function_exists('criteria')){
-	function criteria($Vd3wp2cgkz3a,$V15dbrpajeabld,$V3tw2q0jijei='easyui-input',$Vfa0ao3qzwiftyle=""){
-        $Vnpr0xe0jkmu =& get_instance();
-		$V15dbrpajeabnc=new search_criteria();
-		if($Vnpr0xe0jkmu->input->get($V15dbrpajeabld) or $Vnpr0xe0jkmu->input->get($V15dbrpajeabld)==''){
-			$Vhwsbz520bqc=$Vnpr0xe0jkmu->input->get($V15dbrpajeabld);
-			$Vnpr0xe0jkmu->session->set_userdata($V15dbrpajeabld,$Vhwsbz520bqc);
-		} else {
-			$Vhwsbz520bqc=$Vnpr0xe0jkmu->session->userdata($V15dbrpajeabld);
-		}
-		$V15dbrpajeabnc->caption=$Vd3wp2cgkz3a;
-		$V15dbrpajeabnc->field_id=$V15dbrpajeabld;
-		$V15dbrpajeabnc->field_class=$V3tw2q0jijei;
-		$V15dbrpajeabnc->field_value=$Vhwsbz520bqc;
-		$V15dbrpajeabnc->field_style=$Vfa0ao3qzwiftyle;
-		return $V15dbrpajeabnc;
-	}
+    function criteria($capt,$fld='',$cls='easyui-input',$style=""){
+       $CI =& get_instance();
+        $fnc=new search_criteria();
+        $value="";
+        if($CI->input->get($fld) or $CI->input->get($fld)==''){
+            $value=$CI->input->get($fld);
+            $CI->session->set_userdata($fld,$value);
+        } else {
+            $value=$CI->session->userdata($fld);
+        }
+        if(is_array($capt)){
+            $param=$capt;
+            $fld=$param['id'];
+            $capt=ucfirst($fld);
+            if(isset($param['caption']))$capt=$param['caption'];
+            if(isset($param['value']))$valur=$param['value'];
+            if(isset($param['cls']))$cls=$param['cls'];
+            if(isset($param['style']))$style=$param['style'];
+        }
+        $fnc->caption=$capt;
+        $fnc->field_id=$fld;
+        $fnc->field_class=$cls;
+        $fnc->field_value=$value;
+        $fnc->field_style=$style;
+        return $fnc;
+    }    
 }
 if(!function_exists('link_button')){
-    function link_button($Vyfsyvpoqvi0,$Vptcygd5bjzq,$Vzdk5vpgmbjh='',$Vvaogvlyae2u='false',$Vnkbdrgv0cj1='',$Vwl05d2zvcw2=''){
-    	if($Vnkbdrgv0cj1==''){
-	        return '<a href="#" class="easyui-linkbutton"
-	        data-options="iconCls:\'icon-'.$Vzdk5vpgmbjh.'\',
-	        plain: '.$Vvaogvlyae2u.'" onclick="'.$Vptcygd5bjzq.';return false;">'.$Vyfsyvpoqvi0.'</a>';
+    function link_button($caption,$func,$icon='',$plain='false',$url='',$title='',$id='',$class=''){
+    	$idd="";
+    	if($id=="")$id="id_link_button";
+    	if($url==''){
+	        return '<a href="#" class="easyui-linkbutton '.$class.' " id='.$id.' 
+	        data-options="iconCls:\'icon-'.$icon.'\',
+	        plain: '.$plain.'" onclick="'.$func.';return false;">'.$caption.'</a>';
 		} else {
-	        return '<a href="'.$Vnkbdrgv0cj1.'" class="easyui-linkbutton"
-	        data-options="iconCls:\'icon-'.$Vzdk5vpgmbjh.'\',
-	        plain: '.$Vvaogvlyae2u.'"  " >'.$Vyfsyvpoqvi0.'</a>';
+	        return '<a href="'.$url.'" class="easyui-linkbutton '.$class.' " id='.$id.'
+	        data-options="iconCls:\'icon-'.$icon.'\',
+	        plain: '.$plain.'"  " >'.$caption.'</a>';
 		}
     }
 }
@@ -696,7 +811,8 @@ if(!function_exists('link_button2')){
     }
 }
 if(!function_exists('datasource')){
-    function datasource($sql,$with_checkbox=false,$primary_key="",$row_count=0){
+    function datasource($sql,$with_checkbox=false,$primary_key="",$row_count=0,
+    	$input_field="",$input_field_id=""){
         $CI =& get_instance();
 //    $CI->benchmark->mark('code_start');        
        $pages=1000;
@@ -707,8 +823,15 @@ if(!function_exists('datasource')){
             foreach($query->result_array() as $row){
                 if($row){
                     if($with_checkbox){
-                        $row["ck"]=form_checkbox("ck[]",$row[$primary_key],'',"style='width:50px' ");
+                        $row["ck"]=form_checkbox("ck[]",$row[$primary_key],'',"style='width:30px' ");
                     }
+					if($input_field!=""){
+						$row["input_field"]=form_input($input_field."[]",$row[$input_field],"style='width:50px' ");
+					}
+					if($input_field_id!=""){
+						$row['input_field_id']=form_input($input_field_id."[]",$row[$input_field_id],"style='width:30px'");
+						
+					}
                     $rows[]=$row;
                 }
             };
@@ -730,14 +853,6 @@ if(!function_exists('is_ajax')){
 function is_ajax()
  {
     $Vnpr0xe0jkmu =& get_instance();
- 	            
-       $V53kxz2hlhla=$Vnpr0xe0jkmu->config->item('multi_company');
-       if($V53kxz2hlhla){
-            $Vdxtlp2zja1w=$Vnpr0xe0jkmu->session->userdata("company_code","");
-            if($Vdxtlp2zja1w!=""){
-               $Vnpr0xe0jkmu->db = $Vnpr0xe0jkmu->load->database($Vdxtlp2zja1w, TRUE);
-           }
-       }         
  	return (
 	       $Vnpr0xe0jkmu->input->server('HTTP_X_REQUESTED_WITH')&&
 	           ($Vnpr0xe0jkmu->input->server('HTTP_X_REQUESTED_WITH')=='XMLHttpRequest'));
@@ -785,16 +900,17 @@ if(!function_exists('company_header')){
     }
 }
 if(!function_exists('getColoumn')){
-function getColoumn($V4t0nvjolfqr) {
-		$Vi25tpdnh4in=array();	$V15dbrpajeabieldnames=array();	$Vc0qlmrwpvpo=array(); $V15dbrpajeablag=array();
-		if($V15dbrpajeabields=$Vnpr0xe0jkmu->db->field_data("SHOW COLUMNS FROM ".$V4t0nvjolfqr)){
-			foreach($V15dbrpajeabields as $V15dbrpajeabld){
-				$V15dbrpajeabieldnames[]=$V15dbrpajeabld->name;
+	function getColoumn($V4t0nvjolfqr) {
+		$Vnpr0xe0jkmu =& get_instance();
+			$Vi25tpdnh4in=array();	$V15dbrpajeabieldnames=array();	$Vc0qlmrwpvpo=array(); $V15dbrpajeablag=array();
+			if($V15dbrpajeabields=$Vnpr0xe0jkmu->db->field_data("SHOW COLUMNS FROM ".$V4t0nvjolfqr)){
+				foreach($V15dbrpajeabields as $V15dbrpajeabld){
+					$V15dbrpajeabieldnames[]=$V15dbrpajeabld->name;
+				}
 			}
-		}
 
-      return $V15dbrpajeabieldnames;
-}
+		return $V15dbrpajeabieldnames;
+	}
 }
 
 
@@ -819,7 +935,7 @@ function data_table_v2($table,$record=null,$is_sql=false){
             if($q)$result_id=$q->result_id;
         }
         if($result_id){ 
-            $count = mysql_num_fields($result_id);
+            $count = mysqli_num_fields($result_id);
             for($i=0;$i<=$count-1;$i++){
                 $type=mysql_field_type($result_id, $i);
                 $name=mysql_field_name($result_id, $i);
@@ -845,46 +961,45 @@ function data_table_v2($table,$record=null,$is_sql=false){
 }
 
 if(!function_exists('data_table')){
-function data_table($table,$record=null,$is_sql=false){
-    //CI3 using db->field_data 
-    //ci2 using query mysql_num_fields
-    if( substr(CI_VERSION,0,1)== '2' ) {
-        return data_table_v2($table,$record,$is_sql);
-    } else {
-        $CI =& get_instance();
-        $data=null;
-        if($record){
-            foreach ($record as $key => $value) {
-                $data[$key]=$value;
-            }
-        } else {
-             
-                if($fields=$CI->db->field_data($table)){
-                    foreach($fields as $fld){
-                        $type=$fld->type;
-                        $name=$fld->name;
-                        $len=$fld->max_length;
-                //            $flags = mysql_field_flags($result, $i);
-                            switch ($type) {
-                                case 'datetime':
-                                    $val=date('Y-m-d');
-                                    break;
-                                case 'varchar':
-                                case 'string':
-                                    $val='';
-                                    break;
-                                default:
-                                    $val=0;
-                                    break;
-                            }
-                        $data[$name]=$val;
-                    }
-                }
-            } 
-        }
-
-        return $data;
-}
+	function data_table($table,$record=null,$is_sql=false){
+		//CI3 using db->field_data 
+		//ci2 using query mysql_num_fields
+		if( substr(CI_VERSION,0,1)== '2' ) {
+			return data_table_v2($table,$record,$is_sql);
+		} else {
+			$CI =& get_instance();
+			$data=null;
+			if($record){
+				foreach ($record as $key => $value) {
+					$data[$key]=$value;
+				}
+			} else {
+				
+					if($fields=$CI->db->field_data($table)){
+						foreach($fields as $fld){
+							$type=$fld->type;
+							$name=$fld->name;
+							$len=$fld->max_length;
+					//            $flags = mysql_field_flags($result, $i);
+								switch ($type) {
+									case 'datetime':
+										$val=date('Y-m-d');
+										break;
+									case 'varchar':
+									case 'string':
+										$val='';
+										break;
+									default:
+										$val=0;
+										break;
+								}
+							$data[$name]=$val;
+						}
+					}
+				} 
+			}
+		return $data;
+	}
 }
 if(!function_exists('data_table_post')){
 function data_table_post($table,$is_sql=false){
@@ -1108,6 +1223,15 @@ if ( ! function_exists('allow_mod')) {
         if($Vmsas2mchsb3=$Vnpr0xe0jkmu->db->query($Vfa0ao3qzwifql)){
 			$Vbnoleywpry2=$Vmsas2mchsb3->num_rows();
 		}
+		$s="select count(1) as cnt from modules where module_id='$V50zhcrdvbej'";
+		if($q = $Vnpr0xe0jkmu->db->query($s)){
+			$cnt=$q->row()->cnt;
+			if($cnt==0){
+				$s="insert into modules set module_id='$V50zhcrdvbej',module_name='$V50zhcrdvbej' ";
+				$Vnpr0xe0jkmu->db->query($s);
+			}
+		}
+
 		return $Vbnoleywpry2;
 	}
 }
@@ -1125,35 +1249,38 @@ if ( ! function_exists('user_job_exist')) {
 }
 
 if ( ! function_exists('allow_mod2')) {
-	function allow_mod2($V50zhcrdvbej,$Voocn2l14suason_format=false){
-		if(user_admin())return true;
-        $Vnpr0xe0jkmu =& get_instance();
-		$Vzg4naelvb55=$Vnpr0xe0jkmu->access->user_id();
-        $Vfa0ao3qzwifql="select distinct ugm.module_id from user_job uj
-		join modules_groups mg on mg.user_group_id=uj.group_id
-		join user_group_modules ugm on ugm.group_id=uj.group_id
-		where uj.user_id='$Vzg4naelvb55' and ugm.module_id='$V50zhcrdvbej'";
-        $Vmsas2mchsb3=$Vnpr0xe0jkmu->db->query($Vfa0ao3qzwifql);
-		if($Vmsas2mchsb3->num_rows()){
-			if($Voocn2l14suason_format){
-				echo json_encode(array("success"=>false,"msg"=>"Not Found Row !"));
-			} else {
-				return true;
-			}
-		} else {
-			if($Voocn2l14suason_format){
-				echo json_encode(array("success"=>false,"msg"=>"Anda tidak diijinkan  !"))				;
-			} else {
-				echo "<span class='not_access alert alert-warning'>
-				Anda tidak diijinkan menjalankan proses module ini.
-				<br>Silahkan hubungi administrator.
-				<br>Module Id: <strong>[$V50zhcrdvbej]</strong>
-				</span>";
-				return false;
-			}
-		}
-	}
+    function allow_mod2($mod_id,$json_format=false){
+        if(user_admin())return true;
+        $CI =& get_instance();
+        $uid=$CI->access->user_id();
+        $sql="select distinct ugm.module_id from user_job uj
+        join modules_groups mg on mg.user_group_id=uj.group_id
+        join user_group_modules ugm on ugm.group_id=uj.group_id
+		where mg.user_group_id='$uid' and ugm.module_id='$mod_id'";
+		
+        $query=$CI->db->query($sql);
+        if($query->num_rows()){
+            if($json_format){
+                echo json_encode(array("success"=>false,"msg"=>"Not Found Row !"));
+            } else {
+                return true;
+            }
+        } else {
+            if($json_format){
+                echo json_encode(array("success"=>false,"msg"=>"Anda tidak diijinkan !"));
+            } else {
+				echo "
+				<span class='not_access alert alert-warning'>
+                Anda tidak diijinkan menjalankan proses module ini.
+                <br>Silahkan hubungi administrator.
+                <br>Module Id: <strong>[$mod_id]</strong>
+                </span>";
+                return false;
+            }
+        }
+    }
 }
+
 if ( ! function_exists('to_array')) {
 	function to_array($Vpyytnrwhwf3){
 		$Vywv2o3maeva=null;
@@ -1203,6 +1330,16 @@ if(!function_exists("inbox_send")){
 					return number_format(value,$Vuit3ldmgeqp,'.',',');}";
 		}
 	}
+	if(!function_exists("col_number2")){
+		function col_number2($field,$caption){
+			$fld=col_number($field,2);
+			return "<th data-options=\"$fld\">$caption</th>";			
+		}
+	}
+
+
+	                    
+
     if(!function_exists("sqlinto")){
         function sqlinto($Vfa0ao3qzwifql){
             $Vnpr0xe0jkmu =& get_instance();
@@ -1213,29 +1350,35 @@ if(!function_exists("inbox_send")){
             return $Vywv2o3maeva;
         }
     }
+	if(!function_exists("exist_var")){
+		function exist_var($varname,$varvalue=null){
+			$CI =& get_instance();
+        	$CI->load->library("sysvar");
+			$retval=$CI->sysvar->exist_var($varname);
+			return $retval;
+		}
+	}
 	if(!function_exists("getvar")){
-		function getvar($Vheloqro25dq,$V1mvx1icblm4=null){
-			$Vnpr0xe0jkmu =& get_instance();
-        	$Vnpr0xe0jkmu->load->library("sysvar");
-			$Vnpr0xe0jkmu->load->model("company_model");
-			$Vxlup4argmlf=$Vnpr0xe0jkmu->access->cid;
-			if($Vxlup4argmlf=="ALL" || $Vxlup4argmlf==""){
-				$Vxlup4argmlf=$Vnpr0xe0jkmu->db->select("company_code")->get("preferences")->row()->company_code;
-			}
-			$Vaszyvizbaj4=$Vnpr0xe0jkmu->company_model->get_by_id($Vxlup4argmlf)->row_array();
-			if(isset($Vaszyvizbaj4[$Vheloqro25dq])){
-				$Vbnoleywpry2=$Vaszyvizbaj4[$Vheloqro25dq];
-			} else {
-				$Vbnoleywpry2=$Vnpr0xe0jkmu->sysvar->getvar($Vheloqro25dq,$V1mvx1icblm4);
-			}
-			return $Vbnoleywpry2;
+		function getvar($varname,$varvalue=null){
+			$CI =& get_instance();
+        	$CI->load->library("sysvar");
+			$retval=$CI->sysvar->getvar($varname,$varvalue);
+			return $retval;
+		}
+	}
+	if(!function_exists("insert_var")){
+		function insert_var($varname,$varvalue=null){
+			$CI =& get_instance();
+        	$CI->load->library("sysvar");
+			$retval=$CI->sysvar->insert($varname,$varvalue);
+			return $retval;
 		}
 	}
 	if(!function_exists("putvar")){
-		function putvar($Vheloqro25dq,$V1mvx1icblm4){
-			$Vnpr0xe0jkmu =& get_instance();
-			$Vnpr0xe0jkmu->load->library("sysvar");
-			return $Vnpr0xe0jkmu->sysvar->save($Vheloqro25dq,$V1mvx1icblm4);
+		function putvar($varname,$varvalue){
+			$CI =& get_instance();         
+			$CI->load->library("sysvar");
+			return $CI->sysvar->save($varname,$varvalue);
 		}
 	}
 	if(!function_exists("website_activated")){
@@ -1374,6 +1517,25 @@ if(!function_exists("inbox_send")){
 			}
 		}
 	}
+    if (!function_exists('exist_unit_item')){
+        function exist_unit_item($unit,$item_no){
+            $CI=&get_instance();
+            $retval=null;
+            if($unit!="" && $item_no!="")
+            {
+                if($q=$CI->db->where("item_number",$item_no)->where("customer_pricing_code",$unit)
+                    ->get("inventory_prices"))
+                {
+                    if($row=$q->row())
+                    {
+                        $retval=(array)$row;
+                    }               
+                    
+                }
+            }
+            return $retval;
+        }
+    }
 	if (!function_exists('exist_unit')){
 		function exist_unit($Vz5jsdpw3ddn){
 			$Vnpr0xe0jkmu=&get_instance();
@@ -1635,13 +1797,35 @@ if(!function_exists('msgbox')){
      }
 }
 if(!function_exists('item_need_update')){
-     function item_need_update($Vu0pjn5k3qbktem_no){
-        $Vnpr0xe0jkmu =& get_instance();
-        $Vu0pjn5k3qbktem_no=urldecode($Vu0pjn5k3qbktem_no);
-        if($Vu0pjn5k3qbktem_no!="") {
-            if($Vtvympurzd4r=$Vnpr0xe0jkmu->db->where("item_no",$Vu0pjn5k3qbktem_no)->get("zzz_item_need_update")){
-                if($Vtvympurzd4r->num_rows()==0){
-                    $Vnpr0xe0jkmu->db->insert("zzz_item_need_update",array("item_no"=>$Vu0pjn5k3qbktem_no));
+     function item_need_update($item_no){
+        $CI =& get_instance();
+        $item_no=urldecode($item_no);
+        if($item_no!="") {
+            if($q=$CI->db->where("item_no",$item_no)->get("zzz_item_need_update")){
+                if($q->num_rows()==0){
+                    $CI->db->insert("zzz_item_need_update",array("item_no"=>$item_no));
+                    //$CI->load->model("inventory_model");
+                    //$CI->inventory_model->recalc($item_no);                                        
+                }
+            }
+        }
+     }
+}
+if(!function_exists('item_need_update_arsip')){
+     function item_need_update_arsip($item_no,$gudang,$tanggal){
+        $CI =& get_instance();
+        $item_no=urldecode($item_no);
+		if($item_no=="" || $gudang=="" || $tanggal==""){
+			return false;
+		}
+		$tanggal=date("Y-m-d",strtotime($tanggal));
+		
+        if($item_no!="") {
+            if($q=$CI->db->where("item_no",$item_no)->where("gudang",$gudang)
+            	->where("tanggal",$tanggal)->get("zzz_item_need_update_arsip")){
+                if($q->num_rows()==0){
+                    $CI->db->insert("zzz_item_need_update_arsip",
+                    	array("item_no"=>$item_no,"gudang"=>$gudang,"tanggal"=>$tanggal));
                 }
             }
         }
@@ -1667,7 +1851,7 @@ if(!function_exists("date_diff2")){
 
         $Vdgbiavfme2k = $V15dbrpajeabirst->diff( $Vfa0ao3qzwifecond );
 
-        return $Vdgbiavfme2k->format( '%d' ); 
+        return $Vdgbiavfme2k->days; 
         
     }
 }
@@ -1708,13 +1892,13 @@ if(!function_exists("tool_option")){
 }
 if(!function_exists("info_link")){
 	function info_link($controller,$caption){
-		return "<li>".anchor($controller,$caption,'class="info_link"')."</li>";
+		return "<li>".anchor($controller,$caption,'class="info_link link2"')."</li>";
 	}
 }
 if(!function_exists("info_link_box")){
 	function info_link_box($controller,$caption,$icon,$keterangan){
 	return "
-			<div class='info thumbnail info_link' href='".base_url($controller)."'>
+			<div class='info-maxon thumbnail info_link' href='".base_url($controller)."'>
 				<div class='photo'><img src='$icon'/></div>
 				<div class='detail'>
 					<h4>$caption</h4>
@@ -1724,8 +1908,162 @@ if(!function_exists("info_link_box")){
 		";
 	}
 }
+if(!function_exists("uc")){
+    function uc($text){
+        return str_replace("\"","", $text);
+    }
+}
+if(!function_exists('customer_need_update')){
+     function customer_need_update($cust_no){
+        $CI =& get_instance();
+        $cust_no=urldecode($cust_no);
+        if($cust_no!="") {
+            if($q=$CI->db->where("cust_no",$cust_no)->get("zzz_customer_need_update")){
+                if($q->num_rows()==0){
+                    $CI->db->insert("zzz_customer_need_update",array("cust_no"=>$cust_no));
+                }
+            }
+        }
+     }
+}
+if(!function_exists('supplier_need_update')){
+     function supplier_need_update($supp_no){
+        $CI =& get_instance();
+        $supp_no=urldecode($supp_no);
+        if($supp_no!="") {
+            if($q=$CI->db->where("supp_no",$supp_no)->get("zzz_supplier_need_update")){
+                if($q->num_rows()==0){
+                    $CI->db->insert("zzz_supplier_need_update",array("supp_no"=>$supp_no));
+                }
+            }
+        }
+     }
+}
+if(!function_exists('rekening_need_update')){
+     function rekening_need_update($rek_no){
+        $CI =& get_instance();
+        $rek_no=urldecode($rek_no);
+        if($rek_no!="") {
+            if($q=$CI->db->where("rek_no",$rek_no)->get("zzz_rekening_need_update")){
+                if($q->num_rows()==0){
+                    $CI->db->insert("zzz_rekening_need_update",array("rek_no"=>$rek_no));
+                }
+            }
+        }
+     }
+}
+if(!function_exists("due_date")){
+	function due_date($tanggal,$terms){
+        $CI =& get_instance();
+		$due_date=$tanggal;
+		if($t=$CI->db->query("select days from type_of_payment 
+			where type_of_payment='$terms'")){
+			if($r=$t->row()){
+				$due_date=add_date($tanggal,$r->days);
+			}
+		}
+		return $due_date;
+		
+	}
+}
 
-
+	if(!function_exists("for_this_gudang")){
+		function for_this_gudang($gudang_tujuan,$db_name){
+	        $CI =& get_instance();		
+			$retval=false;
+			$company="";
+			$s="select company_name from shipping_locations where location_number='$gudang_tujuan' ";
+			if($q=$CI->db->query($s)){
+				if($r=$q->row()){
+					$company=$r->company_name;
+				}
+			}
+			$db_prefix=getvar("prefix_db_name","kagum_");
+			
+			if($db_prefix.$company==$db_name){
+				$retval=true;
+			}	
+			return $retval;
+		}
+	}
+	
+	if(!function_exists("db_names")){
+		function db_names($process){
+	        $CI =& get_instance();		
+			$retval=null;
+			$ok=false;
+			if(!$CI->config->item("multi_company")){
+				return $retval;
+			}
+			$s="select varvalue from system_variables where varname='copy_$process'";
+			if($q=$CI->db->query($s)){
+				if($r=$q->row()){
+					$ok=$r->varvalue;
+				}
+			}
+			if($ok){
+				$s="select varvalue  from system_variables where varname like 'db_$process%' 
+					and not (varvalue='0' or varvalue='' or varvalue is null) 
+					order by varvalue";
+				if($q=$CI->db->query($s)){
+					foreach($q->result() as $r){
+						$retval[]=$r->varvalue;
+					}
+				}
+			
+			}
+			return $retval;
+		}
+	}
+	
+	if(!function_exists("sql_fields")){
+		function sql_fields($data_src,$key_field=""){
+	        $CI =& get_instance();		
+			$retval="";
+			foreach ($data_src as $key => $value){
+				if($key_field!=""){
+					if($key!=$key_field){
+						if($value!=null)$retval.="`$key`='$value',";				
+					}
+				} else {
+					if($key!=$key_field){
+						if($value!=null)$retval.="`$key`='$value',";				
+					}
+				}
+			}		
+			if(strlen($retval)){
+				$retval=substr($retval,0,strlen($retval)-1);
+			}												
+			
+			return $retval;		
+		}
+	}
+	
+if(!function_exists("qty_stock")){
+	function qty_stock($item_number,$warehouse_code){
+        $CI =& get_instance();
+		$qty=0;
+		if($t=$CI->db->query("select quantity from inventory_warehouse 
+			where item_number='$item_number' and warehouse_code='$warehouse_code'")){
+			if($r=$t->row()){
+				$qty=$r->quantity;
+			}
+		}
+		return $qty;
+		
+	}
+}
+if(!function_exists('date_sql')){
+	function date_sql($date1){		
+		if(strpos($date1,'(')){
+			$date1 = substr($date1, 0, strpos($date1, '('));
+			$date1 = date('Y-m-d h:i:s', strtotime($date1));
+		}
+		return $date1;
+	}
+	
+}
+	
 
 }
 ?>

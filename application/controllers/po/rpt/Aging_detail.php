@@ -27,6 +27,12 @@ class Aging_detail extends CI_Controller {
          $data['key1']="supplier_number";
          $data['fields1'][]=array("supplier_name","180","Supplier");
          $data['ctr1']='supplier/select';
+		 
+         $data['criteria2']=true;                 
+         $data['label2']='Tampil Saldo 0 (1-Yes, 0-No)';
+         $data['text2']='0';
+         $data['output2']="text2";                 
+ 
          
         
         

@@ -14,10 +14,11 @@ if($mode=='view'){
 	echo form_open('lookup/add'); 
 }
 ?> 
+<legend>Lookup Variable Name</legend>
 <table class='table'>
 	<tr>
 		<td>Kode</td><td>
-		<?=form_input('varname',$varname);?></td>
+		<?=form_input('varname',$varname,'style="width:200px"');?></td>
 	</tr>	 
        <tr>
             <td>Value</td><td><?php echo form_input('varvalue',$varvalue,'style="width:200px"');?></td>
@@ -56,7 +57,11 @@ if($mode=='view'){
             ?></td>         
     </tr>
     <tr>     
-        <td>Id</td><td><?php echo form_input('id',$id,"id='id'");
+        <td>Sifat (0 - Plus, 1 - Minus)</td><td><?php echo form_input('plus_minus',$plus_minus,"id='plus_minus' ");
+            ?></td>         
+    </tr>
+    <tr>     
+        <td>Id</td><td><?php echo form_input('id',$id,"id='id' readonly");
             ?></td>         
     </tr>
 	

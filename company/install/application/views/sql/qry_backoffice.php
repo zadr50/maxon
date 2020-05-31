@@ -1,6 +1,6 @@
 <?php
- 
-$table="query";
+$msg=""; 
+$table="qry_coa";
 $sql="
 CREATE  VIEW `qry_coa` AS select `chart_of_accounts`.`account` AS `account`,
 `chart_of_accounts`.`account_description` AS `account_description`,_utf8'D' AS `jenis`,
@@ -13,6 +13,7 @@ from `gl_report_groups`;
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="qry_kartustock_adj";
 $sql="
 CREATE VIEW `qry_kartustock_adj` AS select `i`.`date_trans` AS `tanggal`,
 _utf8'Adjustment' AS `jenis`,`i`.`transfer_id` AS `no_sumber`,`i`.`item_number` AS `item_number`,
@@ -25,6 +26,7 @@ on ((`i`.`item_number` = `s`.`item_number`)));
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="qry_kartustock_delivery";
 $sql="
 CREATE  VIEW `qry_kartustock_delivery` AS select `i`.`invoice_date` AS `tanggal`,
 `i`.`invoice_type` AS `tipe`,_utf8'Surat Jalan' AS `jenis`,
@@ -40,6 +42,7 @@ abs(`il`.`quantity`) AS `qty_keluar`,`il`.`unit` AS `unit`,`il`.`price` AS `pric
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="qry_kartustock_etc_out";
 $sql="
 CREATE   VIEW `qry_kartustock_etc_out` AS select `pp`.`date_received` AS `tanggal`,
 `pp`.`receipt_type` AS `tipe`,`pp`.`receipt_type` AS `jenis`,_utf8'Unknown' AS `termin`,
@@ -54,6 +57,7 @@ on ((`pp`.`item_number` = `s`.`item_number`))) where (`pp`.`receipt_type` = _utf
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="qry_kartustock_invoice";
 $sql="
 CREATE   VIEW `qry_kartustock_invoice` AS select `i`.`invoice_date` AS `tanggal`,
 `i`.`invoice_type` AS `tipe`,_utf8'Faktur Jual Kontan' AS `jenis`,`i`.`payment_terms` AS `termin`,
@@ -97,6 +101,7 @@ on ((`i`.`invoice_number` = `il`.`invoice_number`))) where (`i`.`invoice_type` =
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="qry_kartustock_purchcase";
 $sql="
 CREATE VIEW `qry_kartustock_purchase` AS select `p`.`po_date` AS `tanggal`, 
 _utf8'BELI_KONTAN' AS `tipe`,_utf8'Faktur Beli Kredit' AS `jenis`,`p`.`terms` AS `terms`,
@@ -130,6 +135,7 @@ where (`p`.`potype` = _utf8'R');
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="qry_kartustock_receipt";
 $sql="
 CREATE  VIEW `qry_kartustock_receipt` AS select `pp`.`date_received` AS `tanggal`,
 `pp`.`receipt_type` AS `tipe`,`pp`.`receipt_type` AS `jenis`,_utf8'Unknown' AS `termin`,
@@ -147,6 +153,7 @@ not in (_utf8'INVOICE',_utf8'RET_BELI',_utf8'ETC_OUT'));
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="qry_kartustock_transfer";
 $sql="
 CREATE VIEW `qry_kartustock_transfer` AS select `i`.`date_trans` AS `tanggal`,
 _utf8'Transfer' AS `jenis`,`i`.`transfer_id` AS `no_sumber`,`i`.`item_number` AS `item_number`,
@@ -159,6 +166,7 @@ union all select `i`.`date_trans` AS `tanggal`,_utf8'Transfer' AS `jenis`,`i`.`t
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="qry_kartustock_union";
 $sql="CREATE VIEW `qry_kartustock_union` AS select `i`.`tanggal` AS `tanggal`,
 `i`.`jenis` AS `jenis`,`i`.`no_sumber` AS `no_sumber`,`i`.`item_number` AS `item_number`,
 `i`.`description` AS `description`,`i`.`qty_masuk` AS `qty_masuk`,

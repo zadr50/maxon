@@ -1,11 +1,8 @@
-<div><div class="thumbnail">
-<legend>Master Data Karyawan Produksi</legend>
-
-	<?
+<div class="thumbnail">
+	<?php
 	echo link_button('Save', 'save_this()','save');		
-	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','false',base_url().'index.php/manuf/product_person/add');		
-	echo link_button('Search','','search','false',base_url().'index.php/manuf/product_person');		
+    echo link_button('Delete', 'on_delete()','remove');     
+    echo link_button('Refresh', 'on_refresh()','reload');     
 	echo "<div style='float:right'>";
 	echo link_button('Help', 'load_help()','help');		
 	
@@ -19,14 +16,11 @@
 			<div>MaxOn Forum</div>
 			<div>About</div>
 		</div>
+        <?=link_button("Close","remove_tab_parent()","cancel")?>
+		
 	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/product_person");
-		}
-	</script>
-	
-</div></H1>
+</div>
+<legend>Master Data Karyawan Produksi</legend>
 <div class="thumbnail">	
 
 <?php if (validation_errors()) { ?>
@@ -62,9 +56,53 @@
 
 <script type="text/javascript">
     function save_this(){
-        if($('#nip').val()===''){alert('Isi dulu kode  !');return false;};
-        $('#myform').submit();
+        if($('#nip').val()===''){
+            log_err('Isi dulu kode  !');
+            return false;
+        };
+            $('#myform').form('submit',{
+                onSubmit: function(){
+                    return $(this).form('validate');
+                },
+                success: function(result){
+                    var result = eval('('+result+')');
+                    if (result.success){
+                        log_msg('Data sudah tersimpan.');
+                        remove_tab_parent();
+                    } else {
+                        log_err(result.msg);
+                    }
+                }
+            });
+        
+        
     }
+        function load_help() {
+            window.parent.$("#help").load("<?=base_url()?>index.php/help/load/product_person");
+        }
+    function on_delete(){
+        var id=$("#nip").val();
+
+        $.messager.confirm('Confirm','Are you sure you want to remove this ?',function(r){
+            if(!r)return false;
+        
+            $.ajax({
+                url: CI_ROOT+"manuf/product_person/delete/"+id,
+                success: function(result){
+                    log_msg("Success");
+                    remove_tab_parent();
+                },
+                error:function(result){
+                    log_msg("Error !");
+                }
+            })
+        })
+    }
+    function on_refresh(){
+        var id=$("#nip").val();
+        window.open(CI_ROOT+"manuf/product_person/view/"+id,"_self");
+    }    
+    
 </script>  
 
  

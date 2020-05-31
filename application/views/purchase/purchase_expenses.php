@@ -64,6 +64,12 @@ data-options="title:'Setting'"
     });	
 
     function add_expenses(){
+    	var po=$('#purchase_order_number').val();
+	    if(po=="AUTO"){
+	    	log_err("Simpan dulu !");return false;
+	    }
+    	
+    	
         $('#dlgExpense').dialog({  
            title: 'Tambah/Edit Data', closed: false, 
            cache: false, modal: true,
@@ -142,6 +148,10 @@ data-options="title:'Setting'"
    }
    function save_expenses(){
         var nomor=$("#purchase_order_number").val();
+	    if(nomor=="AUTO"){
+	    	log_err("Simpan dulu !");return false;
+	    }
+        
         url='<?=base_url()?>index.php/purchase_order/expenses/'+nomor+'/save';
         $('#frmExpenses').form('submit',{
             url: url,

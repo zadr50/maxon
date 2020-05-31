@@ -104,6 +104,8 @@ class Maxon_Inbox extends CI_Controller {
         $cnt=$this->db->query($s)->row()->cnt;
         $data['success']=true;
         $data['count']=$cnt;
+        $data['current_database']=current_database();
+		$data['user_id']=$user_id;
         echo json_encode($data);        
     }
 		

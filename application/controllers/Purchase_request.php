@@ -29,11 +29,14 @@ class Purchase_request extends CI_Controller {
 		$this->load->library("detail_grid");
 	}
 	function set_defaults($record=NULL){
-            $data=data_table($this->table_name,$record);
+			$data=data_table($this->table_name,$record);
+			$data['data_table']=$data;
             $data['mode']='';
             $data['message']='';
             if($record==NULL){
 				$data['purchase_order_number']=$this->nomor_bukti();
+				$data['doc_status']='OPEN';			
+				$data['ordered_by']=user_id();
 			}
 			$data['has_receive']=false;
 			$data['info']='';
@@ -44,8 +47,7 @@ class Purchase_request extends CI_Controller {
 			
 			$data['status_po_request_list']=$this->sysvar->lookup('status_po_request');
 			$data['term_list']=$this->type_of_payment_model->select_list();
-			
-			
+						
 			$this->load->model('branch_model');
 			$data['branch_list']=$this->branch_model->lookup();
 			
@@ -53,8 +55,6 @@ class Purchase_request extends CI_Controller {
 			$this->load->model('department_model');
 			
 			$data['dept_list']=$this->department_model->lookup();
-			$data['doc_status']='OPEN';
-			
             $data['lookup_employee']=$this->list_of_values->render(
                 array("dlgBindId"=>"employee",
                 "dlgRetFunc"=>"$('#ordered_by').val(row.nip); ",
@@ -71,6 +71,8 @@ class Purchase_request extends CI_Controller {
                     array("fieldname"=>"kode","caption"=>"Kode","width"=>"80px")                    
                 ))
             );
+			$data['lookup_inventory']=$this->list_of_values->lookup_inventory();
+			$data['allow_ch_status_poreq']=allow_mod("allow_ch_status_poreq");
 
             return $data;
 	}
@@ -90,7 +92,8 @@ class Purchase_request extends CI_Controller {
 		$data['mode']='add';
 		$data['message']='';
         $data['po_date']= date("Y-m-d");
-        $data["purchase_order_number"]="AUTO";
+		$data["purchase_order_number"]="AUTO";
+		
 		$this->template->display_form_input($this->file_view,$data,'');			
 	}
 	function nomor_bukti($add=false)
@@ -150,7 +153,7 @@ class Purchase_request extends CI_Controller {
 	function items($nomor,$type='')
 	{
 		$nomor=urldecode($nomor);
-		$sql="select p.item_number,i.description,p.quantity,p.qty_recvd 
+		$sql="select p.item_number,p.description,p.quantity,p.qty_recvd 
 		,p.unit,p.price,p.discount,p.total_price,p.line_number,p.from_line_doc
 		from purchase_order_lineitems p
 		left join inventory i on i.item_number=p.item_number
@@ -573,6 +576,16 @@ class Purchase_request extends CI_Controller {
 	function recalc($nomor){
 		$nomor=urldecode($nomor);
 		$this->purchase_order_model->recalc($nomor);
+	}
+	function approve($nomor){
+		if($nomor!=""){
+			$s="update purchase_order set doc_status='APPROVED',update_by='".user_id()."',
+				update_date=NOW() where purchase_order_number='$nomor'";
+			$this->db->query($s);
+			$this->syslog_model->add($nomor,"purchase_request","approve");
+
+		}
+		$this->view($nomor);
 	}
 				
 }

@@ -66,7 +66,7 @@ class CrDb extends CI_Controller {
 		$mode=$this->input->post('mode');
 		$type="";
 		if($this->input->post('trans_type'))$type=$this->input->post('trans_type');
-		if($invoice_number)
+		if($invoice_number!="")
 		{
 			if($mode=="add"){
 		        $id=$this->nomor_bukti(false,$type);
@@ -80,6 +80,15 @@ class CrDb extends CI_Controller {
 			if($data['amount']=="")$data["amount"]=0;
 			$data['keterangan']=$this->input->post('keterangan');
 			$data['transtype']=$this->input->post('transtype');
+			if($this->input->post("supplier_number")){
+				$data['cust_supp']=$this->input->post("supplier_number");
+			}
+			if($this->input->post("customer_number")){
+				$data['cust_supp']=$this->input->post("customer_number");
+			}
+			$data['doc_type']=$this->input->post('doc_type');
+			$data['outlet']=$this->input->post("outlet");
+			
 			if($mode=="add"){
 				$ok=$this->crdb_model->save($data);
 				$this->syslog_model->add($id,"crdb","add");
@@ -131,7 +140,8 @@ class CrDb extends CI_Controller {
     	$id=$this->input->post('line_number');
         $this->load->model('crdb_model');
 		$this->syslog_model->add($id,"crdb","delete");
-        return $this->crdb_model->delete_item($id);
+        $ok = $this->crdb_model->delete_item($id);
+        echo json_encode(array("success"=>$ok));
     }   
 	function print_bukti($nomor){
 		$nomor=urldecode($nomor);

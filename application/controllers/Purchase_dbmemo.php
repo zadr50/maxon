@@ -2,8 +2,10 @@
 
 class Purchase_DbMemo extends CI_Controller {
     private $limit=10;
-    private $sql="select kodecrdb,tanggal,docnumber,amount, cm.posted,keterangan,c.account, c.account_description
-     from crdb_memo cm left join chart_of_accounts c on c.id=cm.accountid where transtype='PO-DEBIT MEMO'";
+    private $sql="select kodecrdb,tanggal,docnumber,amount, cm.posted,keterangan,c.account, 
+    	c.account_description,cm.cust_supp
+     from crdb_memo cm left join chart_of_accounts c on c.id=cm.accountid 
+     where transtype='PO-DEBIT MEMO'";
     private $controller='purchase_dbmemo';
     private $primary_key='kodecrdb';
     private $file_view='purchase/debit_memo';
@@ -22,6 +24,7 @@ class Purchase_DbMemo extends CI_Controller {
 		$this->load->model('supplier_model');
 		$this->load->model('purchase_order_model');
 		$this->load->model('syslog_model');
+		$this->load->model('sysvar_model');
 	}
 	function nomor_bukti($add=false)
 	{
@@ -49,8 +52,8 @@ class Purchase_DbMemo extends CI_Controller {
 	}
     function browse($offset=0,$limit=50,$order_column='',$order_type='asc'){
 		$data['controller']=$this->controller;
-		$data['fields_caption']=array('Nomor Bukti','Tanggal','Faktur','Jumlah','Posted','Keterangan','Kode Akun','Perkiraan');
-		$data['fields']=array('kodecrdb','tanggal','docnumber','amount','posted','keterangan','account','account_description');
+		$data['fields_caption']=array('Nomor Bukti','Tanggal','Faktur','Jumlah','Supplier','Posted','Keterangan','Kode Akun','Perkiraan');
+		$data['fields']=array('kodecrdb','tanggal','docnumber','amount','cust_supp','posted','keterangan','account','account_description');
 					
 		if(!$data=set_show_columns($data['controller'],$data)) return false;
 			
@@ -112,6 +115,7 @@ class Purchase_DbMemo extends CI_Controller {
 		$data['keterangan']="";
 		$data['mode']='add';
 		$data['posted']=false;
+		$data['supplier_number']="";
 		$this->template->display_form_input('purchase/debit_memo',$data,'');			
 		
 	}
@@ -130,6 +134,9 @@ class Purchase_DbMemo extends CI_Controller {
 			$data['keterangan']=$this->input->post('keterangan');
 			$data['transtype']=$this->input->post('transtype');
             $data['prc_value']=$this->input->post('prc_value');
+			$data['cust_supp']=$this->input->post("supplier_number");
+			$data['doc_type']=$this->input->post('doc_type');
+			$data['outlet']=$this->input->post("outlet");
 			$this->crdb_model->save($data);
 			$this->nomor_bukti(true);
 			$this->syslog_model->add($data['kodecrdb'],"crdb","edit");
@@ -138,18 +145,48 @@ class Purchase_DbMemo extends CI_Controller {
 	
 	}
 	function view($id,$message=null){
-		if(!allow_mod2('_40100'))return false;   
+		
+		if(!allow_mod2('_40100'))return false;  
+		 
 		$id=urldecode($id);
+		
 		 $data['id']=$id;
 		 $model=$this->crdb_model->get_by_id($id)->result_array();
+		 
 		 $data=$this->set_defaults($model[0]);
+		 
 		 $data['mode']='view';
-		 $q=$this->purchase_order_model->get_by_id($data['docnumber'])->row();
-		 $data['supplier_number']=$q->supplier_number;
-		 $data['faktur_info']=$q->po_date." Rp. ".number_format($q->amount);
-		 $q=$this->supplier_model->get_by_id($data['supplier_number'])->row();
-		 $data['supplier_name']=$q->supplier_name;
-		 $data['supplier_info']=$q->supplier_name." ".$q->street." ".$q->city;
+		 $docnumber=$data['docnumber'];
+		 
+		 $supplier_number=$data['cust_supp'];
+		 
+		 $faktur_amount=0;
+		 $po_date="";
+		 $street="";
+		 $city="";
+		 $supplier_name="";
+		 if($supplier_number==""){
+			 if($qs=$this->purchase_order_model->get_by_id($docnumber)){
+			 	if($q=$qs->row()){
+			 		$supplier_number=$q->supplier_number;
+					$po_date=$q->po_date;
+					$faktur_amount=$q->amount;
+			 	}	
+			 }		 	
+		 }
+		 $data['supplier_number']=$supplier_number;
+		 $data['faktur_info']=$po_date." Rp. ".number_format($faktur_amount,2);
+		 
+		 if($q1=$this->supplier_model->get_by_id($supplier_number)){
+		 	if($q=$q1->row()){
+		 		$supplier_name=$q->supplier_name;
+				$street=$q->street;
+				$city=$q->city;
+		 	}	
+		 };
+		 
+		 $data['supplier_name']=$supplier_name;
+		 $data['supplier_info']=$supplier_name." ".$street." ".$city;
 		 
          $this->template->display('purchase/debit_memo',$data);                 
 	}
@@ -161,10 +198,47 @@ class Purchase_DbMemo extends CI_Controller {
 		$data['supplier_info']="";
 		$data['faktur_info']="";
 		if(!$record){
-        $data['supplier_number']="";
-		    
+        	$data['supplier_number']="";		    
 		}
         $data['lookup_suppliers']=$this->supplier_model->lookup();
+		
+		$data['lookup_faktur']=$this->list_of_values->render(
+			array("dlgBindId"=>'purchase_invoice',
+                'dlgCols'=>array(
+                    array("fieldname"=>"purchase_order_number","caption"=>"Faktur#","width"=>"80px"),
+                    array("fieldname"=>"po_date","caption"=>"Tanggal","width"=>"80px"),
+                    array("fieldname"=>"terms","caption"=>"Termin","width"=>"80px"),
+                    array("fieldname"=>"nomor_recv","caption"=>"Ref1","width"=>"80px"),
+                    array("fieldname"=>"nomor_po","caption"=>"Ref2","width"=>"80px"),
+                    array("fieldname"=>"warehouse_code","caption"=>"Gudang","width"=>"80px"),
+                    array("fieldname"=>"supplier_name","caption"=>"Supplier","width"=>"180px")
+                ),
+                "dlgRetFunc"=>"$('#docnumber').val(row.purchase_order_number); 
+                	find_faktur();",
+                "dlgBeforeLookup"=>"search_id=$('#supplier_number').val();"
+                
+                				
+			)
+		);
+		
+		$data['lookup_doc_type']=$this->sysvar_model->lookup(array(
+			"dlgBindId"=>"doc_type","dlgId"=>"doc_type_podb"
+		));
+			
+            $setwh['dlgBindId']="outlet";
+            $setwh['dlgRetFunc']="$('#outlet').val(row.location_number);";
+            $setwh['dlgCols']=array( 
+                        array("fieldname"=>"location_number","caption"=>"Kode","width"=>"80px"),
+                        array("fieldname"=>"attention_name","caption"=>"Nama Toko","width"=>"180px"),
+                        array("fieldname"=>"company_name","caption"=>"Kode Pers","width"=>"50px"),
+                        array("fieldname"=>"company","caption"=>"Perusahaan","width"=>"200px")
+                    );          
+            $setwh['show_date_range']=false;
+            $data['lookup_gudang']=$this->list_of_values->render($setwh);
+            
+            if($data['outlet']=='') $data['outlet']=$this->session->userdata('session_outlet','');
+            if($data['outlet']=='') $data['outlet']=current_gudang();          
+		
 		return $data;
 	}
 	function posting($nomor) {

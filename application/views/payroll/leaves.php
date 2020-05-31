@@ -1,6 +1,8 @@
 <div class="thumbnail box-gradient">
 	<?php
 	echo link_button('Save', 'simpan()','save');		
+    echo link_button('Delete', 'on_delete()','remove');        
+    echo link_button('Refresh', 'on_refresh()','reload');        
 	?>
 	<div style='float:right'>
 	<?php echo link_button('Help', 'load_help(\'cuti\')','help');	?>	
@@ -12,7 +14,7 @@
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-    <?php echo link_button('Close', 'simpan()','cancel');   ?>     
+    <?php echo link_button('Close', 'remove_tab_parent()','cancel');   ?>     
 	</div>
 </div> 
 
@@ -20,6 +22,8 @@
 if(!isset($disabled))$disabled="";
 ?>
 
+<div class='thumbnail'>
+    
 <form id="frmCuti"  method="post">
 
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
@@ -49,21 +53,22 @@ if(!isset($disabled))$disabled="";
 		   </tr>
             <tr>
                 <td>Jumlah hari</td>
-                <td><? echo form_input('leave_day',$leave_day,"id='leave_day' $disabled");?>                    
+                <td><? echo form_input('leave_day',$leave_day,"id='leave_day' $disabled");?>
+                    <i>* Tidak perlu diisi agar menghitung otomatis dari tanggal awal dan akhir.</i>                    
                 </td>
             </tr>
             <tr>
                 <td>Status Permohonan</td>
                 <td><? echo form_input('doc_status',$doc_status,"id='doc_status' $disabled");
                     if($disabled=="") echo link_button("","dlgdoc_status_show()","search")?>                    
-                    <?=link_button("","dlgdoc_status_list()","add")?>                    
+                    <?=link_button("","dlgdoc_status_list('doc_status')","add")?>                    
                 </td>
             </tr>
             <tr>
                 <td>Doc Type</td>
                 <td><? echo form_input('doc_type',$doc_type,"id='doc_type' $disabled");
                     if($disabled=="") echo link_button("","dlgdoc_type_show()","search")?>                    
-                    <?=link_button("","dlgdoc_type_list()","add")?>                    
+                    <?=link_button("","dlgdoc_type_list('doc_type_cuti')","add")?>                    
                 </td>
             </tr>
             <tr>
@@ -72,6 +77,8 @@ if(!isset($disabled))$disabled="";
             </tr>
 	</table>	   
 </form>
+
+</div>
 
 <?php 
  echo $lookup_employee;
@@ -106,6 +113,28 @@ if(!isset($disabled))$disabled="";
 	function load_help() {
 			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/cuti");
 	}
+    function on_delete(){
+        var id=$("#id").val();
+        
+        $.messager.confirm('Confirm','Are you sure you want to remove this line?',function(r){
+            if(!r)return false;
+        
+                $.ajax({
+                    url: CI_ROOT+"payroll/cuti/delete/"+id,
+                    success: function(result){
+                        log_msg("Success");
+                        remove_tab_parent();
+                    },
+                    error:function(result){
+                        log_msg("Error !");
+                    }
+                })
+        })
+    }
+    function on_refresh(){
+        var id=$("#id").val();
+        window.open(CI_ROOT+"payroll/cuti/view/"+id,"_self");
+    }
 
 </script>  
  

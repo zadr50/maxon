@@ -1,13 +1,11 @@
-<legend>WORK ORDER EXECUTION</legend>
 <div class="thumbnail box-gradient">
 	<?php
-	   $min_date=$this->session->userdata("min_date","");
-	
+	   $min_date=$this->session->userdata("min_date","");	
 	echo link_button('Save', 'save_this()','save');		
-	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','false',base_url().'index.php/manuf/work_exec/add');		
-	echo link_button('Search','','search','false',base_url().'index.php/manuf/work_exec');		
-	echo link_button('Refresh','','reload','false',base_url().'index.php/manuf/work_exec/view/'.$work_exec_no);		
+	echo link_button('Print', 'on_print()','print');		
+//	echo link_button('Add','','add','false',base_url().'index.php/manuf/work_exec/add');		
+//	echo link_button('Search','','search','false',base_url().'index.php/manuf/work_exec');		
+//	echo link_button('Refresh','','reload','false',base_url().'index.php/manuf/work_exec/view/'.$work_exec_no);		
 	echo "<div style='float:right'>";	
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
@@ -29,8 +27,8 @@
 	<?php echo validation_errors(); ?>
 	</div>
 <?php } ?>
- <?php if($message!="") { ?>
-<div class="alert alert-success"><? echo $message;?></div>
+	<?php if($message!="") { ?>
+	<div class="alert alert-success"><? echo $message;?></div>
 <? } ?>
 
 
@@ -61,7 +59,9 @@
 			</tr>
 			<tr>
 				<td>WO Number</td><td><?=form_input("wo_number",$wo_number,"id='wo_number'")?>
-				<?=link_button('','lookup_work_order()','search');?>
+					<?php 
+						if($mode=="add" || $mode=="") echo link_button('','dlgwork_order_show()','search');
+					?>
 				</td>
 			</tr>
 			<tr><td>Start Date</td><td><?=form_input("start_date",$start_date,
@@ -106,6 +106,7 @@
 <!-- ADD MATERIAL USE, ADD FINISHED PRODUCT RESULTS, ADD DELIVERY PRODUCT -->
 	</form>
 </div>
+
 <div id='dlgWo'class="easyui-dialog" style="width:500px;height:380px;padding:10px 20px;left:100px;top:20px"
 		closed="true" buttons="#btnWo">
 		<table id="dgWo" class="easyui-datagrid" width='100%' data-options="singleSelect: true, fitColumns: true">
@@ -120,6 +121,14 @@
 		</table>
 </div>
 <div id="btnWo"><?=link_button("Select","select_work_order();return false;","ok")?></div>	   
+<div id="tb" style="height:auto" >
+	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="false" onclick="editItem();return false;">Edit</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="false" onclick="deleteItem();return false;">Delete</a>	
+</div>
+
+<?php 
+	echo $workorder_lookup;
+?>
 
 <script type="text/javascript">
     function save_this(){
@@ -169,6 +178,9 @@
 			$('#dlgWo').dialog('close');
 		}
 	}
+	function dlgwork_order_find(){
+		load_work_order();
+	}
 	function load_work_order(){
  		if($('#wo_number').val()==''){alert('Pilih nomor work order !');return false;}
  		$("#divWoItem").fadeIn("slow");
@@ -199,6 +211,29 @@
 		
 		
 	}
+	function on_print(){
+		var no=$("#work_exec_no").val(); 
+			if(no=="" || no=="AUTO"){
+				log_msg("Pilih nomor work exec");
+				return false;
+			}
+	        window.open(CI_BASE+"index.php/manuf/work_exec/print_bukti/"+no,"new");  		
+
+	}
+	function editItem(){
+			var row = $('#dg').datagrid('getSelected');
+			if (row){
+				var line = row.line_number;
+				console.log(row);
+				$('#frmItem').form('load',row);
+				$('#item_number').val(row.item_number);
+				$('#description').val(row.description);
+				$('#quantity').val(row.quantity);
+				$('#unit').val(row.unit);
+				$('#line_number').val(row.line_number);
+				$('#work_order_no_item').val(row.work_order_no);
+			}
+		}
 	
 </script>  
 

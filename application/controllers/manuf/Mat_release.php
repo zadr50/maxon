@@ -21,6 +21,7 @@ private $limit=10;
 		$this->load->library('template');
 		$this->load->library('form_validation');
 		$this->load->model('manuf/mat_release_model');
+		$this->load->model('manuf/work_exec_model');
 		$this->load->model('inventory_model');
 		$this->load->model('shipping_locations_model');
 	}
@@ -48,9 +49,15 @@ private $limit=10;
         $data=data_table($this->table_name,$record);
 		$data['mode']='';
 		$data['message']='';
-		if($record==NULL)$data['mat_rel_no']=$this->nomor_bukti();
+		if($record==NULL){
+			$data['mat_rel_no']="AUTO";
+			$data['warehouse']=current_gudang();
+			$data['person']=user_id();
+		}
 		if($data['date_rel']=='')$data['date_rel']= date("Y-m-d H:i:s");
-		$data['warehouse_list']=$this->shipping_locations_model->select_list();
+		$data['warehouse_list']=$this->shipping_locations_model->lookup();
+		$data['work_exec_list']=$this->work_exec_model->lookup();
+
 		return $data;
 	}
 	function index()
@@ -80,13 +87,13 @@ private $limit=10;
 	}
 	function save()
 	{
-		$mode=$this->input->post('mode');
+		$data=$this->input->post();
+		$mode=$data['mode'];
+		$id=$data['mat_rel_no'];
 		if($mode=="add"){
 	        $id=$this->nomor_bukti();
-		} else {
-			$id=$this->input->post('mat_rel_no');			
+			$this->nomor_bukti(true);
 		}
-		$data=$this->input->post();
 		
 		$data['mat_rel_no']=$id;
 		
@@ -103,10 +110,9 @@ private $limit=10;
 		}
 		$this->mat_release_model->update_item_release($id);
 		if ($ok){
-			if($mode=="add") $this->nomor_bukti(true);
 			echo json_encode(array('success'=>true,'mat_rel_no'=>$id));
 		} else {
-			echo json_encode(array('msg'=>'Some errors occured.'.mysql_error()));
+			echo json_encode(array('msg'=>'Some errors occured.'.$this->db->display_error()));
 		}
 	}
 	function view($id=null,$data=null){
@@ -225,7 +231,7 @@ private $limit=10;
 		if ($ok){
 			echo json_encode(array('success'=>true));
 		} else {
-			echo json_encode(array('msg'=>mysql_error()));
+			echo json_encode(array('msg'=>$this->db->display_error()));
 		}
     }        
 	function save_item_exec_detail($exec_no, $arLine,$arQtyExec)
@@ -261,6 +267,14 @@ private $limit=10;
 		} else {
 			echo json_encode(array('msg'=>'Some errors occured.'));
 		}
-    }        
+	}    
+	function print_bukti($nomor){
+		$nomor=urldecode($nomor);
+        $data=$this->mat_release_model->get_by_id($nomor)->row_array();
+		$data['content']=load_view('manuf/rpt/mat_release',$data);
+        $this->load->view('pdf_print',$data);                
+
+	}
+    
 }
 ?>

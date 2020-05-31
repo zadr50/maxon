@@ -58,7 +58,7 @@
 			<table class='table'>
 				<tr><td>Komponen</td>
 					<td><?=form_dropdown('salary_com_code',$jenis_tunjangan,
-						$salary_com_code,"id='salary_com_code'")?></td>
+						$salary_com_code,"id='salary_com_code' style='width:300px'")?></td>
 				</tr>
 				<tr><td>Rumus</td>
 					<td><?=form_input('formula_string',$formula_string,"style='width:350px' id='formula_string'")?></td>
@@ -105,6 +105,8 @@
 
 <script language="JavaScript">
 	function dlgFrmIncome_Show(){
+		$("#formula_string").val("");
+		$("#no_urut").val("");		
 		$('#dlgFrmIncome').dialog('open').dialog('setTitle','Pilihan komponen');
 	}
 	
@@ -122,7 +124,7 @@
 						$("#id").val('');
 						$("#dlgFrmIncome").dialog("close");
 						$('#dgPendapatan').datagrid({url:'<?=base_url()?>index.php/payroll/group/income/<?=$kode_group?>'});
-						$('#dgPendapatan').datagrid('reload');
+						//$('#dgPendapatan').datagrid('reload');
 					} else {
 						$.messager.show({
 							title: 'Error',
@@ -141,7 +143,7 @@
 					$.post(url,{line_number:row.id},function(result){
 						if (result.success){
 							$('#dgPendapatan').datagrid({url:'<?=base_url()?>index.php/payroll/group/income/<?=$kode_group?>'});
-							$('#dgPendapatan').datagrid('reload');
+							//$('#dgPendapatan').datagrid('reload');
 						} else {
 							$.messager.show({	// show error message
 								title: 'Error',
@@ -185,7 +187,7 @@
 						$("#id2").val('');
 						$("#dlgFrmDeduct").dialog("close");
 						$('#dgPotongan').datagrid({url:'<?=base_url()?>index.php/payroll/group/deduct/<?=$kode_group?>'});
-						$('#dgPotongan').datagrid('reload');
+						//$('#dgPotongan').datagrid('reload');
 					} else {
 						$.messager.show({
 							title: 'Error',
@@ -204,7 +206,7 @@
 					$.post(url,{line_number:row.id},function(result){
 						if (result.success){
 							$('#dgPotongan').datagrid({url:'<?=base_url()?>index.php/payroll/group/deduct/<?=$kode_group?>'});
-							$('#dgPotongan').datagrid('reload');
+							//$('#dgPotongan').datagrid('reload');
 						} else {
 							$.messager.show({	// show error message
 								title: 'Error',

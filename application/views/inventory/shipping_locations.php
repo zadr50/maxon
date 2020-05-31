@@ -1,8 +1,8 @@
 <div class="thumbnail box-gradient">
-	<?
-	echo link_button('Add','','add','false',base_url().'index.php/shipping_locations/add');		
+	<?php
 	echo link_button('Save', 'simpan()','save');		
-	echo link_button('Search','','search','false',base_url().'index.php/shipping_locations');		
+    echo link_button('Delete', 'on_delete()','save');        
+    echo link_button('Refresh', 'on_refresh()','reload');        
 	echo "<div style='float:right'>";
 	echo link_button('Help', 'load_help(\'shipping_locations\')','help');		
 	?>
@@ -15,6 +15,7 @@
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
+	<?=link_button("Close","remove_tab_parent()","cancel")?>
 	</div>
 </div>
 <div class="thumbnail">	
@@ -74,7 +75,10 @@
 		   </tr>
 		   <tr>
 				<td>Kota</td><td><?php echo form_input('city',$city);?></td>
-                <td></td>
+                <td><?=form_checkbox("default_gudang",1,
+                	$default_gudang!=""?true:false," id='default_gudang' style='width:30px'")?>
+                	Default Gudang
+                </td>
 		   </tr>
 		   <tr>
 				<td>Kontak Person</td><td><?php echo form_input('attention_name',$attention_name);?></td>
@@ -130,8 +134,26 @@ echo $lookup_gudang;
 
  <script language="JavaScript">
  	function simpan(){
- 		if($("#location_number")=="")alert("Isi kode gudang !");
- 		$("#myform").submit();
+ 		if($("#location_number")==""){
+ 		    log_err("Isi kode gudang !");
+ 		     return false;
+ 		 }
+        $('#myform').form('submit',{
+            onSubmit: function(){
+                return $(this).form('validate');
+            },
+            success: function(result){
+                var result = eval('('+result+')');
+                if (result.success){
+                    remove_tab_parent();
+                    log_msg('Data sudah tersimpan.');
+                } else {
+                    log_err(result.msg);
+                }
+            }
+        }); 
+        
+         		
  	}
 	function search_cards()
 	{
@@ -141,6 +163,28 @@ echo $lookup_gudang;
 		$('#dgCard').datagrid({url:xurl});
 		$('#dgCard').datagrid('reload');
 	}
+    function on_delete(){
+        var id=$("#location_number").val();
+
+        $.messager.confirm('Confirm','Are you sure you want to remove ?',function(r){
+            if(!r)return false;
+        
+            $.ajax({
+                url: CI_ROOT+"shipping_locations/delete/"+id,
+                success: function(result){
+                    log_msg("Success");
+                    remove_tab_parent();
+                },
+                error:function(result){
+                    log_msg("Error !");
+                }
+            })
+        })
+    }
+    function on_refresh(){
+        var id=$("#location_number").val();
+        window.open(CI_ROOT+"shipping_locations/view/"+id,"_self");
+    }
 	
  </script>
  

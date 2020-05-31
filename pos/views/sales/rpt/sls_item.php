@@ -52,13 +52,16 @@
 	     		<thead>
 	     			<tr>
 	     				<td>Kode Barang</td><td>Nama Barang</td><td>Qty</td>
+	     				<td>Disc</td><td>Amount</td>
 	     			</tr>
 	     		</thead>
 	     		<tbody>
      			<?php
-     			$sql="select il.item_number,il.description,sum(il.quantity) as quantity
+     			$sql="select il.item_number,il.description,
+     			sum(il.quantity) as quantity,
+     			sum(il.discount_amount) as disc_amt,sum(il.amount) as amt
      			 from invoice i 
-     			 left join invoice_lineitems il on il.invoice_number=i.invoice_number
+     			 join invoice_lineitems il on il.invoice_number=i.invoice_number
 	            where i.invoice_type='I' and i.invoice_date between '$date1' and '$date2'  
 				and il.quantity<>0";
                 if($outlet!="")$sql.=" and il.warehouse_code='$outlet' ";
@@ -70,22 +73,33 @@
 				$item_new="";	$item_old="";
 				$i=0;
 				$z_qty=0;
+				$z_disc=0;
+				$z_amt=0;
+				
                 while($i<count($rst_so)){
 					$row=$rst_so[$i];
 						$tbl="<tr>";
 						$tbl.="<td>".$row->item_number."</td>";
 						$tbl.="<td>".$row->description."</td>";
 						$tbl.="<td align='right'>".number_format($row->quantity)."</td>";
+						$tbl.="<td align='right'>".number_format($row->disc_amt)."</td>";
+						$tbl.="<td align='right'>".number_format($row->amt)."</td>";
+												
 						$tbl.="</tr>";
 						$z_qty=$z_qty+$row->quantity;
+						$z_disc+=$row->disc_amt;
+						$z_amt+=$row->amt;
+						
 						$i++;
-                   echo $tbl;
+	                   echo $tbl;
 					}
 					
 					$tbl="
 					<thead>
 					<tr>
 	     				<td>Sub Total</td><td></td><td align='right'>$z_qty</td>
+	     				<td align='right'><b>".number_format($z_disc)."</b></td>
+	     				<td align='right'><b>".number_format($z_amt)."</b></td>
 	     			</tr>
 					</thead>
 					";

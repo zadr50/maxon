@@ -17,9 +17,21 @@ private $table_name='payables';
 	}
 	function save($data){
 		$this->db->insert($this->table_name,$data);
-		return $this->db->insert_id();
+		$ok = $this->db->insert_id();
+        if(isset($data['supplier_number'])){
+        	supplier_need_update($data['supplier_number']);
+        }
+	
+		
+		return $ok;
 	}
 	function update($id,$data){
+		
+        if(isset($data['supplier_number'])){
+        	supplier_need_update($data['supplier_number']);
+        }
+	
+		
 		$this->db->where($this->primary_key,$id);
 		$this->db->update($this->table_name,$data);
 	}

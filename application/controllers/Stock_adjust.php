@@ -6,7 +6,7 @@ class Stock_adjust extends CI_Controller {
     
     private $sql="select distinct ip.transfer_id,
         concat(year(date_trans),'-',month(date_trans),'-',day(date_trans)) as date_trans,
-        ip.from_location,ip.status,ip.trans_by,ip.comments
+        ip.from_location,ip.status,ip.trans_by,ip.comments,ip.doc_type
         from inventory_moving ip
         where trans_type='ADJ'"; 
     
@@ -26,7 +26,7 @@ class Stock_adjust extends CI_Controller {
         $this->load->library('javascript');
 		$this->load->model('shipping_locations_model');
 		$this->load->model('inventory_model');
-		$this->load->model('syslog_model');
+		$this->load->model(array('syslog_model','sysvar_model'));
 	}
 	function index()
 	{
@@ -61,7 +61,13 @@ class Stock_adjust extends CI_Controller {
 				$data['date_trans']=date("Y-m-d H:i:s");
                 $data['trans_by']=user_id();
                 $data['status']="OPEN";
+				$data['from_location']=current_gudang();
 			}
+			
+			$data['lookup_doc_type']=$this->sysvar_model->lookup(array(
+				"dlgBindId"=>"doc_type","dlgId"=>"doc_type_adjust_stock"				
+			));
+			
             $setwh['dlgBindId']="warehouse";
             $setwh['dlgRetFunc']="$('#from_location').val(row.location_number);";
             $setwh['dlgCols']=array( 
@@ -75,8 +81,8 @@ class Stock_adjust extends CI_Controller {
             if($data['from_location']=='') $data['from_location']=$this->session->userdata('session_outlet','');          
             
             $opname['dlgBindId']="stock_opname";
-            $opname['dlgRetFunc']="$('#transfer_id').val(result.transfer_id);
-                selected_doc();";
+			$opname['dlgRetFunc']="$('#transfer_id').val(result.transfer_id);
+				selected_doc();";
             $opname['extra_fields']="<input type='hidden' id='outlet' name='outlet' >";
             $opname['show_checkbox']=true;
             $opname['show_date_range']=true;
@@ -89,28 +95,50 @@ class Stock_adjust extends CI_Controller {
                     );          
             $opname['url_submit']=base_url("stock_adjust/selected_sop");
             $data['lookup_stock_opname']=$this->list_of_values->render($opname);
+			$data['lookup_inventory']=$this->list_of_values->lookup_inventory();
             
             return $data;
 	}	
     function selected_sop(){
-        $nomor=$this->input->post("ck");
-        $outlet=$this->input->post("outlet");
+        $nomor_sop=$this->input->post("ck");
+		$outlet1=$this->input->post("outlet");
+		$nomor_sop1="";
         $list="";
-        for($i=0;$i<count($nomor);$i++){
-            if($i<count($nomor)-1){
-                $list.="'$nomor[$i]',";                
+        for($i=0;$i<count($nomor_sop);$i++){
+            if($i<count($nomor_sop)-1){
+                $list.="'$nomor_sop[$i]',";                
             } else {
-                $list.="'$nomor[$i]'";
-            }
-        }
+                $list.="'$nomor_sop[$i]'";
+			}
+			if($nomor_sop1=="")$nomor_sop1=$nomor_sop[$i];
+		}
+		$date_trans=date("Y-m-d H:i:s");
+		$userid=user_id();
+		$from_location=$outlet1;
+		$ref1="";
+
+		if($nomor_sop1!=""){
+			$s="select date_trans,trans_by,from_location,transfer_id 
+				from inventory_moving 
+				where transfer_id='$nomor_sop1' and from_location<>'' limit 1";
+			if($q=$this->db->query($s)){
+				if($r=$q->row()){
+					$date_trans=$r->date_trans;
+					$userid=$r->trans_by;
+					$from_location=$r->from_location;
+					$ref1.=$r->transfer_id.",";
+				}
+			}
+		}
+	
         $nomor="";
-        $sql="select item_number,sum(from_qty) as zqty from inventory_moving
+        $sql="select item_number,sum(to_qty) as zqty from inventory_moving
         where transfer_id in ($list) group by item_number";
         if($q=$this->db->query($sql)){
             
             $nomor=$this->nomor_bukti();
-            $this->nomor_bukti(true);
-            
+			$this->nomor_bukti(true);
+			
             foreach($q->result() as $r){
                 $item_number=$r->item_number;
                 if($item_number!=""){
@@ -120,27 +148,32 @@ class Stock_adjust extends CI_Controller {
                     if($qitem=$this->db->query("select cost,unit_of_measure from inventory 
                         where item_number='$item_number'")){
                         if($ritem=$qitem->row()){
-                            $cost=$ritem->cost;
+							$cost=$ritem->cost;
+							$unit=$ritem->unit_of_measure;
                         }
                     }
-                    if($qitem=$this->db->query("select quantity from inventory_warehouse 
-                        where item_number='$item_number' and warehouse_code='$outlet'")){
+					if($qitem=$this->db->query("select sum(qty_masuk)-sum(qty_keluar) as quantity 
+						from qry_kartustock_union 
+						where item_number='$item_number' and gudang='$from_location' 
+						and tanggal<'$date_trans'")){
                         if($ritem=$qitem->row()){
                             $qty_stock=$ritem->quantity;
                         }
                     }
                     $qty_adjust=$qty-$qty_stock;
                     $data['transfer_id']=$nomor;
-                    $data['date_trans']=date("Y-m-d H:i:s");
-                    $data["trans_by"]=user_id();
+                    $data['date_trans']=$date_trans;
+                    $data["trans_by"]=$userid;
                     $data["item_number"]=$item_number;
                     $data["unit"]=$unit;
                     $data["from_qty"]=$qty;
                     $data["to_qty"]=$qty_adjust;
-                    $data["from_location"]=$outlet;
-                    $data["to_location"]=$data["from_location"];
+                    $data["from_location"]=$from_location;
+					$data["to_location"]=$data["from_location"];
+					$data["cost"]=$cost;
                     $data["total_amount"]=$qty*$cost;
-                    $data["trans_type"]="ADJ";
+					$data["trans_type"]="ADJ";
+					$data["ref1"]=$ref1;
                     $ok=$this->inventory_moving_model->save($data);
                     
                 }
@@ -149,11 +182,14 @@ class Stock_adjust extends CI_Controller {
        echo json_encode(array("success"=>true,"msg"=>"Success","transfer_id"=>$nomor));
     }
 	function get_posts(){
-		$data['shipment_id']=$this->input->post('shipment_id');
-		$data['supplier_number']=$this->input->post('supplier_number');
-		$data['date_received']=$this->input->post('date_received');
-		$data['package_no']=$this->input->post('package_no');              
-                $data['receipt_type']='ADJ';
+		$data['transfer_id']=$this->input->post('transfer_id');
+		$data['date_trans']=$this->input->post('date_trans');
+		$data['from_location']=$this->input->post('from_location');
+		$data['comments']=$this->input->post('comments');              
+		$data['status']=$this->input->post('status');              
+		$data['trans_by']=$this->input->post('trans_by');              
+		$data['trans_type']='ADJ';
+		
                 
 		return $data;
 	}
@@ -185,7 +221,7 @@ class Stock_adjust extends CI_Controller {
 	{
        	 $data=$this->get_posts();
  		 $id=$data['transfer_id'];
-		 $ok=$this->inventory_moving_model->update($id,$data);
+		 $ok=$this->inventory_moving_model->update_bukti($id,$data);
 		 if($ok){		 	
 		    $msg='Update Success';
 			$this->syslog_model->add($id,"stock_adjust","edit");
@@ -209,7 +245,7 @@ class Stock_adjust extends CI_Controller {
 	{
 		$nomor=urldecode($nomor);
 		$sql="select p.item_number,i.description,p.from_qty,p.to_qty, 
-		p.unit,p.cost,p.from_location,p.id as line_number,p.multi_unit,p.mu_qty
+		p.unit,p.cost,p.from_location,p.id as line_number,p.multi_unit,p.mu_qty,p.date_trans
 		from inventory_moving p
 		left join inventory i on i.item_number=p.item_number
 		where transfer_id='$nomor'";
@@ -261,8 +297,8 @@ class Stock_adjust extends CI_Controller {
         $data['caption']='DAFTAR TRANSAKSI STOCK ADJUSTMENT';
 		$data['controller']='stock_adjust';		
         
-        $data['fields_caption']=array('Nomor Bukti','Tanggal','Gudang','Status','By','Comments');
-        $data['fields']=array('transfer_id', 'date_trans','from_location','status','trans_by','comments');
+        $data['fields_caption']=array('Nomor Bukti','Tanggal','Gudang','DocType','Status','By','Comments');
+        $data['fields']=array('transfer_id', 'date_trans','from_location','doc_type','status','trans_by','comments');
 					
 		if(!$data=set_show_columns($data['controller'],$data)) return false;
 			
@@ -281,6 +317,7 @@ class Stock_adjust extends CI_Controller {
 		$no=$this->input->get('sid_nomor');
 		$d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));
 		$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
+		if($this->input->get('tb_search'))$no=$this->input->get('tb_search');
 
 		if($no!=''){
 			$sql.=" and transfer_id='".$no."'";
@@ -310,6 +347,14 @@ class Stock_adjust extends CI_Controller {
 			$id=$this->input->post('transfer_id');
             $gudang=$this->input->post('from_location');
             $unit=$this->input->post('unit');
+			$doc_type=$this->input->post("doc_type");
+			if($doc_type=="")$doc_type=0;
+			$status=$this->input->post("status");
+			if($status=="")$status="OPEN";
+			$date_trans=$this->input->post('date_trans');
+			$comments=$this->input->post('comments');
+			$trans_by=$this->input->post('trans_by');
+			
             $qty_stock=0;
             $qty_adj=0;
 			$qty=$this->input->post("quantity");
@@ -342,9 +387,6 @@ class Stock_adjust extends CI_Controller {
             $data['to_location']=$gudang;
             $data['total_amount']=$qty_adj*$cost;
 			$data['trans_type']='ADJ';
-			$data['date_trans']=$this->input->post('date_trans');;
-			$data['comments']=$this->input->post('comments');;
-			$data['trans_by']=$this->input->post("trans_by");
 			
 			$mu_qty = $this->input->post("mu_qty");
 			
@@ -361,6 +403,10 @@ class Stock_adjust extends CI_Controller {
 				$ok=$this->inventory_moving_model->update($line,$data);				
 			}
 						
+			$this->db->where("transfer_id",$id)->update($this->table_name,array(
+				"doc_type"=>$doc_type,"status"=>$status,"date_trans"=>$date_trans,
+				"comments"=>$comments,"trans_by"=>$trans_by,'from_location'=>$gudang
+			));
 			
 			if ($ok){
 				echo json_encode(array('success'=>true,'transfer_id'=>$id));

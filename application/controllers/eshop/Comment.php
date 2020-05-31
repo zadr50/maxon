@@ -8,16 +8,6 @@ class Comment extends CI_Controller {
 	{
 		parent::__construct();
  		$this->load->helper(array('url','form'));
-                
-        $multi_company=$this->config->item('multi_company');
-       if($multi_company){
-            $company_code=$this->session->userdata("company_code","");
-            if($company_code!=""){
-               $this->db = $this->load->database($company_code, TRUE);
-           }
-       }         
-        
-        
 		$this->load->library('template_eshop');
 	}
 	function index() {	
@@ -26,9 +16,15 @@ class Comment extends CI_Controller {
 	{
 		$data=$this->input->post();
 		$data['cm_username']=$this->session->userdata("cust_id");
-		$data['cm_date']=date('Y-m-d H:i:s');
-		$data['item_id']=$item_id;
-		$success=$this->db->insert('eshop_comments',$data);
-		echo json_encode(array("success"=>$success,"message"=>($success)?"Sukses":"Error"));
+		if($data['cm_username']!=""){
+			$data['cm_date']=date('Y-m-d H:i:s');
+			$data['item_id']=$item_id;
+			$success=$this->db->insert('eshop_comments',$data);
+			$message="Success";			
+		} else {
+			$message="Silahkan login dulu !";
+			$success=false;
+		}
+		echo json_encode(array("success"=>$success,"message"=>$message));
 	}
 }

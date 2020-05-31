@@ -58,9 +58,9 @@
 		ip.quantity_received as qty,
 		ip.unit,ip.cost,ip.total_amount,ip.shipment_id,ip.doc_type
 		 from inventory_products ip
-			join inventory i on i.item_number=ip.item_number
-			join suppliers s on s.supplier_number=i.supplier_number
-			join gl_projects g on g.kode=ip.ref2
+			left join inventory i on i.item_number=ip.item_number
+			left join suppliers s on s.supplier_number=i.supplier_number
+			left join gl_projects g on g.kode=ip.ref2
 		where ip.receipt_type='ETC_OUT' and ip.date_received between '$date1' and '$date2'  ";
 		if($supp!=""){
 			$sql.=" and ip.supplier_number='$supp'";

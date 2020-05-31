@@ -43,8 +43,10 @@ class Pinjaman extends CI_Controller {
         $data['mode']='';
         $data['message']='';
 		$data['nama_pegawai']='';
-		$data['date_loan']= date("Y-m-d H:i:s");
-		if($record==NULL)$data['loan_number']=$this->nomor_bukti();
+		if($record==NULL){
+			$data['loan_number']=$this->nomor_bukti();
+			$data['date_loan']= date("Y-m-d H:i:s");		
+		}
         return $data;
 	}
 	function index(){$this->browse();}
@@ -104,8 +106,11 @@ class Pinjaman extends CI_Controller {
 		$faa[]=criteria("NIP","sid_nip");
 		$faa[]=criteria("Nama","sid_nama");
 		$faa[]=criteria("Dept","sid_dept");
+        
 		$data['criteria']=$faa;
+        $data['fields_format_numeric']=array("loan_amount");
         $this->template->display_browse2($data);            
+        
     }
     function browse_data($offset=0,$limit=10,$nama=''){
 		$sql="select l.loan_number,e.nip,e.nama,e.dept,e.divisi,l.loan_amount 
@@ -123,12 +128,19 @@ class Pinjaman extends CI_Controller {
         echo datasource($sql);		
     }
       
-	function delete($id){
+	function delete_by_id($id){
 		$id=urldecode($id);
-	 	$this->load->model("payroll/pinjaman_model");
-	 	$this->pinjaman_model->delete($id);
-	 	$this->browse();
+	 	$ok=$this->pinjaman_model->delete_row_id($id);
+	 	echo json_encode(array("success"=>$ok));
+	 	
 	}
+	function delete($loan_number){
+		$id=urldecode($loan_number);
+	 	$ok=$this->pinjaman_model->delete($id);
+	 	echo json_encode(array("success"=>$ok));
+	 	
+	}
+	
 	function select($search=''){
 		$search=urldecode($search);
 		$sql="select nama,nip,dept,divisi	from employee 

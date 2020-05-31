@@ -77,6 +77,7 @@ class Cash_out extends CI_Controller {
 
             $data['lookup_rekening']=$this->list_of_values->render(
                 array("dlgBindId"=>"bank_accounts",
+                "modules"=>"banks/banks",
                 "dlgRetFunc"=>"$('#account_number').val(row.bank_account_number);",
                 "dlgCols"=>array(array("fieldname"=>"bank_account_number","caption"=>"Rekening","width"=>"100px"),
                 array("fieldname"=>"bank_name","caption"=>"Nama Bank","width"=>"250px"),
@@ -92,6 +93,7 @@ class Cash_out extends CI_Controller {
                         array("fieldname"=>"first_name","caption"=>"Kontak","width"=>"50px"),
                         array("fieldname"=>"city","caption"=>"Kota","width"=>"200px")
                     );          
+            $setsupp['modules']="supplier";
             $data['lookup_suppliers']=$this->list_of_values->render($setsupp);
 
             $data['lookup_department']=$this->list_of_values->render(
@@ -101,6 +103,19 @@ class Cash_out extends CI_Controller {
                 array("fieldname"=>"dept_name","caption"=>"Keterengan","width"=>"250px"))));
                                     
             $data["lookup_gl_projects"]=$this->list_of_values->lookup_gl_projects("ref1");
+            $data['lookup_outlet']=$this->list_of_values->render(
+				array(
+					"dlgBindId"=>"outlet",
+					"dlgId"=>"outlet",
+					"dlgUrlQuery"=>"gudang/browse_data",
+					"dlgCols"=>array(
+						array("fieldname"=>"location_number","caption"=>"Oulet","width"=>"80px"),
+						array("fieldname"=>"attention_name","caption"=>"Keterangan")
+					),
+					"dlgRetFunc"=>"$('#ref2').val(row.location_number);"
+				)
+			);
+            			
 			
             return $data;
 	}
@@ -131,6 +146,7 @@ class Cash_out extends CI_Controller {
         $account=$data["account_number"];
         $data['voucher']=$this->nomor_bukti(false,$account);
 		$id=$this->check_writer_model->save($data);
+		
         $message='update success';
 		$this->nomor_bukti(true,$account);
 		
@@ -231,17 +247,21 @@ class Cash_out extends CI_Controller {
 		if($no!=''){
 			$sql.=" and voucher='".$no."'";
 		} else {
-			$sql.=" and check_date between '$d1' and '$d2'";
-			if($rek!='')$sql.=" and account_number like '$rek%'";	
-			if($this->input->get('sid_type')!='')$sql.=" and trans_type='".$this->input->get('sid_type')."'";
-			if($this->input->get('sid_posted')!=''){
-				if($this->input->get('sid_posted')=='1'){
-					$sql.=" and posted=true";
-				} else {
-					$sql.=" and posted=false";				
+			if($search!=""){
+	           $sql.="  and (voucher like '$search%' or memo like '%$search%')";
+			} else {
+				$sql.=" and check_date between '$d1' and '$d2'";
+				if($rek!='')$sql.=" and account_number like '$rek%'";	
+				if($this->input->get('sid_type')!='')$sql.=" and trans_type='".$this->input->get('sid_type')."'";
+				if($this->input->get('sid_posted')!=''){
+					if($this->input->get('sid_posted')=='1'){
+						$sql.=" and posted=true";
+					} else {
+						$sql.=" and posted=false";				
+					}
 				}
+				
 			}
-            if($search!="")$sql.=" or voucher like '$search%'";
 		}
         $sql.=" order by voucher";
         
@@ -301,6 +321,8 @@ class Cash_out extends CI_Controller {
 				$ret['msg']='Sukses tambah data';
 			}			
 		}
+		$ret['payment_amount']=$this->check_writer_items_model->amount_total;
+		
 		echo json_encode($ret);
 		return $ok;
 	}
@@ -314,6 +336,7 @@ class Cash_out extends CI_Controller {
 			$this->syslog_model->add($id,"cash_out","delete");
 
 		}
+		$data['payment_amount']=$this->check_writer_items_model->amount_total;
 		echo json_encode($data);
 	}
 	function unposting($voucher) {
@@ -362,8 +385,9 @@ class Cash_out extends CI_Controller {
 		echo "<p>Finish.</p>";
 	}	
 	function print_bukti($nomor){
-            $nomor=urldecode($nomor);
-            $data['voucher']=$nomor;
-            $this->load->view("bank/rpt/cash_out",$data);           	    
+        $nomor=urldecode($nomor);
+        $data['voucher']=$nomor;
+        $data['controller']='cash_out/print_bukti';
+        $this->load->view("bank/rpt/print_cash_out",$data);           	    
 	}
 }

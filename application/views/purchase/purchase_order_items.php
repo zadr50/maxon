@@ -1,4 +1,4 @@
-<? 
+<?php 
 if(!isset($gdg)){
 	$gdg=$this->db->get("shipping_locations");
 }
@@ -11,124 +11,114 @@ if($allow_addnew_item=="")$allow_addnew_item=false;
 if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 
 	<div id='dgItemForm' class="easyui-dialog" 
-	style="width:680px;height:500px;padding:5px 5px;top:10px"
-    closed="true" buttons="#tbItemForm" >
-	
-	<?php if (!$has_receive) { ?>
-    
-    
-	    <form id="frmItem" method='post' >
-	        <input type='hidden' id='po_number_item' name='po_number_item'>
-	        <input type='hidden' id='line_number' name='line_number'>
-	        <input type='hidden' id='gudang_item' name='gudang_item'>
-	        
-            <div class="easyui-tabs" >
-                <div title="Detail" style="padding:10px">
-	        
-				<table class='table2' style='width:100%;'>
-				 <tr><td >Kode Barang</td><td colspan='3'><input onblur='find()' id="item_number" style='width:180px' 
-					name="item_number"   class="easyui-validatebox" required="true">
-					<a href="#" class="easyui-linkbutton" iconCls="icon-search" data-options="plain:false" 
-					onclick="searchItem();return false;"></a>
-				 </td>
-				 
-				 </tr>
-				 <tr><td>Nama Barang</td><td colspan='3'><input id="description" name="description" style='width:300px'></td></tr>
-				 <tr><td>Quantity</td><td><input id="quantity"  style='width:60px'  
-				 		name="quantity" onblur="hitung()">
-				 Unit <input id="unit" name="unit"  style='width:60px' >
-					<a href="#" class="easyui-linkbutton" iconCls="icon-search" data-options="plain:false" 
-					onclick="searchUnit();return false;" 
-					style='display:none' id='cmdLovUnit'></a> 
-				</tr>
-				<tr>
-					<td colspan=3>
-					<span id='divMultiUnit' style='display:none'>
-						M_Qty <?=form_input("mu_qty","","id='mu_qty' style='width:60px'")?>
-						M_Unit <?=form_input("multi_unit","","id='multi_unit' style='width:60px' ")?>
-						M_Price <?=form_input("mu_harga","","id='mu_harga'")?>
-					</span>
-					</td>
-				</tr>
-				</td>
-				<tr>
-				 <td>	
-					Harga Beli <input id="price" name="price">
-				 </td>
-				 </tr>
-				 <tr><td colspan=3>
-				     <div  class='thumbnail'>
-                     <p>
-                         Hr Jual <input id="retail" name="retail" style='width:80px'>
-                         Margin% <input id="margin" name="margin" style='width:40px'>
-                      
-	                     Hr Jual Real <input id="retail_real" name="retail_real" style='width:80px'> 
-                         Margin Real <input id="margin_real" name="margin_real" style='width:40px'>
-                     </p>
-                     <p> <?=link_button("Hitung HJ", "calc_price(1);return false;","sum")?>
-                         <?=link_button("Hitung MG", "calc_price(2);return false;","sum")?>
-                         <?=link_button("Hitung HB", "calc_price(3);return false;","sum")?>
-                     </p>
-				     </div>
-				    </td>
-				 </tr>
-                 
-				 
-				 <tr><td>Disc%1</td><td><input id="discount" name="discount"  style='width:50px'   onblur="hitung();return false;" class="easyui-validatebox" validType="numeric">
-				 Disc%2 <input id="disc_2" name="disc_2"  style='width:50px'   onblur="hitung();return false;" class="easyui-validatebox" validType="numeric">
-				 Disc%3 <input id="disc_3" name="disc_3"  style='width:50px'   onblur="hitung();return false;" class="easyui-validatebox" validType="numeric"></td></tr>
-				 <tr><td>Jumlah</td><td colspan='3'><input id="amount" name="amount"  style='width:180px'  class="easyui-validatebox" validType="numeric"></td></tr>
-				 <tr>
-				     <td>
-				        Perkiraan
-				     </td>
-				     <td>
-                        <input type='text' name='inventory_account' id='inventory_account'>
-                        <?=link_button('','dlginventory_account_show()',"search","false");?>
-                        <input type='text' id='coa_inventory' name='coa_inventory' disabled style="width:200px">                                   
-                        <?=$lookup_coa_inventory?>
-				    </td>
-				 </tr>
-				 
-				</table>
-				</div>
-                
-                <div title="Qty Alloc" style="padding:10px">
+		style="width:680px;height:470px;padding:5px 5px;top:10px"
+		closed="true" buttons="#tbItemForm" >
+		<?php if (!$has_receive) { ?>
+			<form id="frmItem" method='post' >
+				<input type='hidden' id='po_number_item' name='po_number_item'>
+				<input type='hidden' id='line_number' name='line_number'>
+				<input type='hidden' id='gudang_item' name='gudang_item'>
 				
-				<table class='table2' style='width:100%'>
-					<p><strong>*Quantity allocation for warehouse</strong></p>
-					<thead><tr><th>Gudang</th><th>Qty</th><tr></thead>
-					 <tbody>
-					 <?php 
-						$i=0;
-						foreach($gdg->result() as $rGdg){
-							echo "<input type='hidden' name=gdg[] id='gdg$i' value='$rGdg->location_number'>";
-							echo "<tr><td>$rGdg->location_number</td>
-							<td>".form_input("qty_alloc[]","","id='qty_alloc_$i'   onblur='calc_qty_alloc();return false;'")."</td>
-							</tr>";		
-                            $i++;
-						}			
-						echo "<tr><td>Total</td><td>".form_input("total_qty_alloc",0," disabled id='total_qty_alloc'");
-						
-						echo "</td></tr>";
-						$gdg_count=$i;
-					?>
-					</tbody>				
-				</table>
-				</div>
-				<div title="Lainnya">
-				    <div class='thumbnail'>
-                    </div>
-                    
-                    
-				</div>
-			</div>	 
-	    </form>
-	<?php } ?>	
+				<div class="easyui-tabs" >
+					<div title="Detail" style="padding:10px">
+						<table class='table2' style='width:100%;'>
+						 <tr><td >Kode Barang</td><td colspan='3'><input onblur='find()' id="item_number" style='width:180px' 
+							name="item_number"   class="easyui-validatebox" required="true">
+							<a href="#" class="easyui-linkbutton" iconCls="icon-search" data-options="plain:false" 
+							onclick="dlginventory_show();return false;"></a>
+						 </td>
+						 
+						 </tr>
+						 <tr><td>Nama Barang</td><td colspan='3'><input id="description" name="description" style='width:300px'></td></tr>
+						 <tr><td>Quantity</td><td><input id="quantity"  style='width:60px'  
+								name="quantity" onblur="hitung()">
+							Unit <input id="unit" name="unit"  style='width:60px' >
+							<a href="#" class="easyui-linkbutton" iconCls="icon-search" data-options="plain:false" 
+							onclick="searchUnit();return false;" 
+							style='display:none' id='cmdLovUnit'></a> 
+							Price <input id="price" name="price">
+						</tr>
+						<tr>
+							<td colspan=3>
+							<span id='divMultiUnit' style='display:none'>
+								M_Qty <?=form_input("mu_qty","","id='mu_qty' style='width:60px'")?>
+								M_Unit <?=form_input("multi_unit","","id='multi_unit' style='width:60px' ")?>
+								M_Price <?=form_input("mu_harga","","id='mu_harga'")?>
+							</span>
+							</td>
+						</tr>
+						</td>
+						<tr>
+						 </tr>
+						 <tr><td colspan=3>
+							 <div  class='thumbnail'>
+							 <p>
+								 Hr Jual <input id="retail" name="retail" style='width:80px'>
+								 Margin% <input id="margin" name="margin" style='width:40px'>
+							  
+								 Hr Jual Real <input id="retail_real" name="retail_real" style='width:80px'> 
+								 Margin Real <input id="margin_real" name="margin_real" style='width:40px'>
+							 </p>
+							 <p> <?=link_button("Hitung HJ", "calc_price(1);return false;","sum")?>
+								 <?=link_button("Hitung MG", "calc_price(2);return false;","sum")?>
+								 <?=link_button("Hitung HB", "calc_price(3);return false;","sum")?>
+							 </p>
+							 </div>
+							</td>
+						 </tr>
+						 
+						 
+						 <tr><td>Disc%1</td><td><input id="discount" name="discount"  style='width:50px'   onblur="hitung();return false;" class="easyui-validatebox" validType="numeric">
+						 Disc%2 <input id="disc_2" name="disc_2"  style='width:50px'   onblur="hitung();return false;" class="easyui-validatebox" validType="numeric">
+						 Disc%3 <input id="disc_3" name="disc_3"  style='width:50px'   onblur="hitung();return false;" class="easyui-validatebox" validType="numeric"></td></tr>
+						 <tr><td><b>Jumlah</b></td><td colspan='3'><input id="amount" name="amount"  style='width:180px'  class="easyui-validatebox" validType="numeric"></td></tr>
+						 <tr>
+							 <td>
+								Perkiraan
+							 </td>
+							 <td>
+								<input type='text' name='inventory_account' id='inventory_account'>
+								<?=link_button('','dlginventory_account_show()',"search","false");?>
+								<input type='text' id='coa_inventory' name='coa_inventory' disabled style="width:200px">                                   
+								<?=$lookup_coa_inventory?>
+							</td>
+						 </tr>
+						 
+						</table>
+					</div>
+					<div title="Qty Alloc" style="padding:10px">
+						<table class='table2' style='width:100%'>
+							<p><strong>*Quantity allocation for warehouse</strong></p>
+							<thead><tr><th>Gudang</th><th>Qty</th><tr></thead>
+							 <tbody>
+							 <?php 
+								$i=0;
+								foreach($gdg->result() as $rGdg){
+									echo "<input type='hidden' name=gdg[] id='gdg$i' value='$rGdg->location_number'>";
+									echo "<tr><td>$rGdg->location_number</td>
+									<td>".form_input("qty_alloc[]","","id='qty_alloc_$i'   onblur='calc_qty_alloc();return false;'")."</td>
+									</tr>";		
+									$i++;
+								}			
+								echo "<tr><td>Total</td><td>".form_input("total_qty_alloc",0," disabled id='total_qty_alloc'");
+								
+								echo "</td></tr>";
+								$gdg_count=$i;
+							?>
+							</tbody>				
+						</table>
+					</div>
+					<div title="Lainnya">
+						<div class='thumbnail'></div>
+					</div>
+				</div>	 
+			
+			
+			</form>
+		<? } ?>
 	</div>
-	
 <? } ?>
-	
+ 
 <div id="tbItemForm">
 	<a href="#" class="easyui-linkbutton" data-options="plain:false,iconCls:'icon-cancel'"  
 		onclick='close_item();return false;' title='Close'>Cancel</a>
@@ -136,16 +126,17 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 		onclick='save_item();return false;' title='Save Item'>Submit</a>
 </div>
 <div id="tb" style="height:auto">
-<?php if (!$has_receive) { ?>	<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="false" onclick="addItem();return false;" data-options="plain:false">Add</a> <?php } ?>
-<?php if (!$has_receive) { ?>   <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="false" onclick="addItemAll();return false;" data-options="plain:false">Add Banyak</a> <?php } ?>
-<?=link_button("Add Retur Toko", "dlgretur_toko_show();","add")?>
-<?php if (!$has_receive) { ?>	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="false" onclick="editItem();return false;" data-options="plain:false">Edit</a> <?php } ?>    
-<?php if (!$has_receive) { ?>	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="false" onclick="deleteItem();return false;" data-options="plain:false">Delete</a>	 <?php } ?>
-<a href="#" class="easyui-linkbutton" iconCls="icon-reload" plain="false" onclick="reloadItem()" data-options="plain:false">Refresh</a>	
+	<?php if (!$has_receive) { ?>	<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="false" onclick="addItem();return false;" data-options="plain:false">Add</a> <?php } ?>
+	<?php if (!$has_receive) { ?>   <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="false" onclick="addItemAll();return false;" data-options="plain:false">Add Banyak</a> <?php } ?>
+	<?=link_button("Add Retur Toko", "dlgretur_toko_show();","add")?>
+	<?php if (!$has_receive) { ?>	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="false" onclick="editItem();return false;" data-options="plain:false">Edit</a> <?php } ?>    
+	<?php if (!$has_receive) { ?>	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="false" onclick="deleteItem();return false;" data-options="plain:false">Delete</a>	 <?php } ?>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-reload" plain="false" onclick="reloadItem()" data-options="plain:false">Refresh</a>	
 </div>
  
 <?php 
-	echo load_view("inventory/inventory_select");
+	echo $lookup_inventory;
+//	echo load_view("inventory/inventory_select");
 	echo load_view("inventory/select_unit");
 	echo load_view("inventory/inventory_select_checkbox");
 ?>
@@ -305,6 +296,7 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 		$("#gudang_item").val(gudang);			 
 		
 		loading();
+		$("#tbItemForm").hide();
 		
 		$('#frmItem').form('submit',{
 			url: url,
@@ -314,6 +306,9 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 			success: function(result){
 				var result = eval('('+result+')');
 				if (result.success){
+					
+					$("#tbItemForm").show();
+					
 					$('#dg').datagrid({url:'<?=base_url()?>index.php/purchase_order/items/'+po+'/json'});
 					//$('#dg').datagrid('reload');
 					
@@ -333,6 +328,7 @@ if(($mode=="add" or $mode=="edit" or $mode=="view")) { ?>
 						msg: result.msg
 					});
 					loading_close();
+					$("#tbItemForm").show();
 				}
 			}
 		});

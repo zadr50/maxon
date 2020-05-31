@@ -59,7 +59,7 @@
 			var item=$("#item_number").val();
 			if( item=="" || item=="undefined")return false;
 			var cust_no=$("#sold_to_customer").val();
-		    xurl=CI_ROOT+'inventory/find/'+$('#item_number').val()+'/'+cust_type ;
+		    xurl=CI_ROOT+'inventory/find/'+item+'/'+cust_type ;
 			var param={item_no:item,cust_type:cust_type,cust_no:cust_no};
 			
 			loading();
@@ -70,25 +70,28 @@
 				data: param,
 				success: function(msg){
 					var obj=jQuery.parseJSON(msg);
-					$('#item_number').val(obj.item_number);
-					$('#price').val(obj.retail);
-					$('#cost').val(obj.cost);
-					if(obj.cost)$("#cost").val(obj.cost_from_mfg);
-					
-					$('#unit').val(obj.unit_of_measure);
-					$('#description').val(obj.description);
-					$("#discount").val(obj.discount);
-					if(obj.discount==0) $("#discount").val(obj.disc_prc_1);
-					$("#disc_2").val(obj.disc_prc_2);
-					$("#disc_3").val(obj.disc_prc_3);
-					if(obj.multiple_pricing){
-						$("#cmdLovUnit").show();
-						$("#divMultiUnit").show();
-					} else {
-						$("#cmdLovUnit").hide();
-						$("#divMultiUnit").hide();
+					if(obj.success){
+						$('#item_number').val(obj.item_number);
+						$('#price').val(obj.retail);
+						$('#cost').val(obj.cost);
+						if(obj.cost)$("#cost").val(obj.cost_from_mfg);
+						
+						$('#unit').val(obj.unit_of_measure);
+						$('#description').val(obj.description);
+						$("#discount").val(obj.discount);
+						if(obj.discount==0) $("#discount").val(obj.disc_prc_1);
+						$("#disc_2").val(obj.disc_prc_2);
+						$("#disc_3").val(obj.disc_prc_3);
+						if(obj.multiple_pricing){
+							$("#cmdLovUnit").show();
+							$("#divMultiUnit").show();
+						} else {
+							$("#cmdLovUnit").hide();
+							$("#divMultiUnit").hide();
+						}
+						$("#quantity").val("1");
+						
 					}
-					$("#quantity").val("1");
 
 					loading_close();
 					

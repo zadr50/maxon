@@ -9,17 +9,6 @@ class Cart extends CI_Controller {
 	{
 		parent::__construct();
  		$this->load->helper(array('url','form'));
-        
-        
-        $multi_company=$this->config->item('multi_company');
-       if($multi_company){
-            $company_code=$this->session->userdata("company_code","");
-            if($company_code!=""){
-               $this->db = $this->load->database($company_code, TRUE);
-           }
-       }         
-        
-        
 		$this->load->library('template_eshop',"sysvar");
 	}
 	function index() {	
@@ -28,8 +17,8 @@ class Cart extends CI_Controller {
 		$data['caption']='CHECKOUT';
 		$data['content']=true;
 		$data['footer']='footer';
-		$data['sidebar']='category_list';
-		$this->template_eshop->display("cart",$data);
+		$data['sidebar']='eshop/items/category_list';
+		$this->template_eshop->display("sales/cart",$data);
 	}
 	function checkout_save() {
 		$cart=$this->session->userdata('cart');
@@ -69,8 +58,8 @@ class Cart extends CI_Controller {
 			}
 			
 		}
-		$data['sidebar']='category_list';
-		$this->template_eshop->display("checkout",$data);
+		$data['sidebar']='eshop/items/category_list';
+		$this->template_eshop->display("sales/checkout",$data);
 	}
 	function clear_cart(){
 		$this->session->unset_userdata("so_number");
@@ -124,8 +113,8 @@ class Cart extends CI_Controller {
 		$data['message']='';
 		$data['content']=true;
 		$data['footer']='footer';
-		$data['sidebar']='category_list';
-		$this->template_eshop->display("checkout",$data);
+		$data['sidebar']='eshop/items/category_list';
+		$this->template_eshop->display("sales/checkout",$data);
 	}
 	function checkout() {
 		$cust_login=$this->session->userdata('cust_login');
@@ -167,8 +156,8 @@ class Cart extends CI_Controller {
 		$data['caption']='KONFIRMASI';
 		$data['content']=true;
 		$data['footer']='footer';
-		$data['sidebar']='category_list';
-		$this->template_eshop->display("confirm",$data);
+		//$data['sidebar']='category_list';
+		$this->template_eshop->display("sales/confirm",$data);
 	}
 	function confirm_save(){
 		$so_number=$this->session->userdata("so_number");
@@ -186,6 +175,11 @@ class Cart extends CI_Controller {
 		$this->clear_cart();
 		
 		echo json_encode(array("success"=>$ok,$message="Finih"));
+	}
+	function confirm_json(){
+		$data=$this->input->get();
+		$this->session->set_userdata("ongkos",$data);
+		echo json_encode(array("success"=>true,"data"=>$data));
 	}
 	
 }

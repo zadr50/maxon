@@ -6,10 +6,12 @@ class Inventory_model extends CI_Model {
     private $zzz_item_count=0;
     private $date_from='', $date_to='';
     private $cost=0,$retail=0;
+    private $message="";
     
 	function __construct(){
 		parent::__construct();        
-      
+    	$this->load->model("inventory_assembly_model");
+    	$this->load->model("replicate_model");
 	}
 	function lov($bind_id,$other=""){
 		$this->load->library("list_of_values");
@@ -22,7 +24,7 @@ class Inventory_model extends CI_Model {
 					array("fieldname"=>"item_number","caption"=>"Kode","width"=>"80px"),
 					array("fieldname"=>"description","caption"=>"Nama Barang","width"=>"200px")
 				);			
-		$setting['dlgUrlQuery']=base_url()."index.php/inventory/browse_data/";
+		$setting['dlgUrlQuery']="inventory/browse_data";
 		return $this->list_of_values->render($setting);
 	}
 	
@@ -43,6 +45,66 @@ class Inventory_model extends CI_Model {
            return browse_select($sql,'Search','inventory/lookup'
                    ,'item_number',$offset,$limit,$order_column,$order_type);
         }
+    }
+    function lookup_by_class($param=null){
+    	$extra_ret_func="";
+		$class="";
+    	if(isset($param["dlgRetFunc"]))$extra_ret_func=$param["dlgRetFunc"];
+		if(isset($param['class']))$class=$param["class"];
+		
+        $lookup = $this->list_of_values->render(array(
+        	"dlgBindId"=>"inventory",
+        	"dlgUrlQuery"=>"inventory/browse_data",
+       		'show_checkbox'=>false,
+       		'show_check1'=>true,'check1_title'=>"Supplier",'check1_field'=>'supplier_number',
+        	"dlgRetFunc"=>"			
+				$('#item_number').val(row.item_number);
+				$('#description').val(row.description);
+				$('#retail').html(row.retail);
+				$('#price').html(row.cost_from_mfg);
+				$('#unit').html(row.unit_of_measure);
+				$('#cost').val(row.cost);
+				if(row.cost==0){
+					$('#cost').val(row.cost_from_mfg);
+				}
+				$extra_ret_func
+				find();
+        	",
+        	"dlgCols"=>array(
+                array("fieldname"=>"item_number","caption"=>"Kode","width"=>"80px"),
+                array("fieldname"=>"description","caption"=>"Nama Barang","width"=>"180px"),
+                array("fieldname"=>"quantity_in_stock","caption"=>"Qty","width"=>"80px"),
+                array("fieldname"=>"unit_of_measure","caption"=>"Unit","width"=>"80px"),
+                array("fieldname"=>"retail","caption"=>"H Jual","width"=>"80px"),
+                array("fieldname"=>"qty_last","caption"=>"Qty2","width"=>"80px"),
+                array("fieldname"=>"customer_pricing_code","caption"=>"Unit2","width"=>"80px"),
+                array("fieldname"=>"cost_from_mfg","caption"=>"H Beli","width"=>"80px"),        	        		
+                array("fieldname"=>"cost","caption"=>"H Pokok","width"=>"80px"),        	        		
+                array("fieldname"=>"category","caption"=>"Category","width"=>"80px"),
+                array("fieldname"=>"supplier_number","caption"=>"Supplier","width"=>"80px"),
+                array("fieldname"=>"supplier_name","caption"=>"Supplier Name","width"=>"80px"),
+                array("fieldname"=>"kode_lama","caption"=>"Kode Lama","width"=>"80px")
+        	)
+        ));
+		return $lookup;
+    }
+    function lookup_merk(){
+    	$extra_ret_func="";
+		$class="";		
+        $lookup = $this->list_of_values->render(array(
+        	"dlgBindId"=>"merk",
+        	"dlgUrlQuery"=>"inventory/manufacturer",
+       		'show_checkbox'=>false,
+       		'show_check1'=>true,'check1_title'=>"Supplier",'check1_field'=>'supplier_number',
+        	"dlgRetFunc"=>"			
+				$('#merk').val(row.manufacturer);
+				$extra_ret_func
+        	",
+        	"dlgCols"=>array(
+                array("fieldname"=>"manufacturer","caption"=>"Merk","width"=>"80px")
+        	)
+        ));
+		return $lookup;
     }
     
     function select_items($limit=10,$offset=0,$order_column='',$order_type='asc'){
@@ -83,14 +145,25 @@ class Inventory_model extends CI_Model {
     	return $this->db->count_all($this->table_name);
     }
     function get_by_id($id){
+    	
+		item_need_update($id);
+		
     	$this->db->where($this->primary_key,$id);
     	return $this->db->get($this->table_name);
+    }
+    function get_description($item_number){
+        if($q=$this->get_by_id($item_number)){
+            if($r=$q->row()){
+                return $r->description;
+            }
+        }
+        return "";
     }
     
     function exist($id){
        return $this->db->count_all($this->table_name." where item_number='".$id."'")>0;
     }
-    function save($data){
+    function save($data,$id=""){
     	if(isset($data['active']))$data['active']=='1'?$data['active']=true:$data['active']=false;
     	if(isset($data['serialized']))$data['serialized']=='1'?$data['serialized']=true:$data['serialized']=false;
     	if(isset($data['assembly']))$data['assembly']=='1'?$data['assembly']=true:$data['assembly']=false;
@@ -99,16 +172,29 @@ class Inventory_model extends CI_Model {
         if(isset($data['last_order_date']))if($data['last_order_date']=='')$data['last_order_date']='1900-01-01';
         if(isset($data['expected_delivery']))if($data['expected_delivery']=='')$data['expected_delivery']='1900-01-01';
         if(isset($data['last_inventory_date']))if($data['last_inventory_date']=='')$data['last_inventory_date']='1900-01-01';
-    
-    	$ok=$this->db->insert($this->table_name,$data);
-    	$id=$data['item_number'];
-    	$this->load->model("inventory_assembly_model");
-    	$this->inventory_assembly_model->recalc_cost($id);
-        $item_no=$data['item_number']; item_need_update($item_no);
+        if(isset($data['retail']))$data['retail']=c_($data['retail']);
+        if(isset($data['cost']))$data['cost']=c_($data['cost']);
+        if(isset($data['cost_from_mfg']))$data['cost_from_mfg']=c_($data['cost_from_mfg']);
+        if(isset($data['quantity_in_stock']))$data['quantity_in_stock']=c_($data['quantity_in_stock']);
+        if(isset($data['class']))if($data['class']=='')$data['class']='Stock Item';        
+        if(isset($data['unit_of_measure']))if($data['unit_of_measure']=='')$data['unit_of_measure']='PCS';        
+    	
+		if($id==""){
+	    	$ok=$this->db->insert($this->table_name,$data);
+	    	$id=$data['item_number'];			
+		} else {
+	    	$this->db->where($this->primary_key,$id);
+	    	$ok=$this->db->update($this->table_name,$data);			
+		}
+        item_need_update($id);
+//		$this->replicate_model->inventory($item_no);
     
     	return $ok;
     }
     function update($id,$data){
+    	$ok = $this->save($data,$id);
+		return $ok;
+		
     	if(isset($data['active']))$data['active']=='1'?$data['active']=true:$data['active']=false;
     	if(isset($data['serialized']))$data['serialized']=='1'?$data['serialized']=true:$data['serialized']=false;
     	if(isset($data['assembly']))$data['assembly']=='1'?$data['assembly']=true:$data['assembly']=false;
@@ -117,14 +203,14 @@ class Inventory_model extends CI_Model {
         if(isset($data['last_order_date']))if($data['last_order_date']=='')$data['last_order_date']='1900-01-01';
         if(isset($data['expected_delivery']))if($data['expected_delivery']=='')$data['expected_delivery']='1900-01-01';
         if(isset($data['last_inventory_date']))if($data['last_inventory_date']=='')$data['last_inventory_date']='1900-01-01';
+        if(isset($data['retail']))$data['retail']=c_($data['retail']);
+        if(isset($data['cost']))$data['cost']=c_($data['cost']);
+        if(isset($data['cost_from_mfg']))$data['cost_from_mfg']=c_($data['cost_from_mfg']);
+        if(isset($data['quantity_in_stock']))$data['quantity_in_stock']=c_($data['quantity_in_stock']);
+        if(isset($data['class']))if($data['class']=='')$data['class']='Stock';        
 
-    	$this->db->where($this->primary_key,$id);
-    	$ok=$this->db->update($this->table_name,$data);
         $item_no=$id; item_need_update($item_no);
-    
-    	$this->load->model("inventory_assembly_model");
-    	$this->inventory_assembly_model->recalc_cost($id);
-    
+        
     	return $ok;
     }
 	function exist_transaction($id){
@@ -154,6 +240,8 @@ class Inventory_model extends CI_Model {
 	}
 
 	function delete($id){
+		$id=urldecode($id);
+		item_need_update($id);
 		$ret=$this->exist_transaction($id);
 		if($ret==""){
 			$this->db->where($this->primary_key,$id);
@@ -264,7 +352,7 @@ class Inventory_model extends CI_Model {
 		limit 0,10";
 		$query=$this->db->query($sql);
 		foreach($query->result() as $row){
-			$item=$row->item_number;		//. ' - '.$row->description;
+			$item=$row->description; //$row->item_number;		//. ' - '.$row->description;
 			if($item=="")$item="Unknown";
 			$qty=$row->sum_qty;
 			if($qty==null)$qty=0;
@@ -346,7 +434,7 @@ class Inventory_model extends CI_Model {
 	{
 		$qty=0;
 		if($q=$this->db->select('quantity')->where('item_number',$item_number)
-		->where('warehouse_code',$gudang)->get('inventory_warehouse')
+			->where('warehouse_code',$gudang)->get('inventory_warehouse')
 		)
 		{
 			if($row=$q->row())$qty=$row->quantity;
@@ -436,18 +524,157 @@ class Inventory_model extends CI_Model {
         }
         return $ret;
     }
-    function recalc($item_number="",$tahun="",$bulan=""){
-        
+    function recalc($item_number="",$tahun="",$bulan="",$display_echo=false){
+    		
         if($item_number=="")$item_number=$this->next_item_recalc();
-        echo "<br>Recalc($item_number,$tahun,$bulan)";
-        
-        $this->recalc_stock_arsip($item_number,$tahun,$bulan);
-
-        if($item_number=="")return ", recalc_stock_gudang() is empty";
-        
+        if($item_number=="") return false;        
+		
+        $this->message.="\r Inventory_model->Recalc($item_number,$tahun,$bulan), ";        
+    	$this->inventory_assembly_model->recalc_cost($item_number);
+        $this->recalc_stock_arsip($item_number,$tahun,$bulan);        
         $this->recalc_stock_gudang($item_number,$tahun,$bulan);
-    
+        $this->recalc_stock_unit($item_number);    
+		//	$this->replicate_model->inventory($item_number);
+		if($display_echo) echo $this->message;
     }    
+	function convert_kode_lama(){
+		$cnt=0;
+		if($q=$this->db->query("select id,item_number,shipment_id from inventory_products 
+			where length(item_number)<11 and update_status!=2 and length(item_number)>2 limit 1")){
+				if($r=$q->row()){
+					$s="select item_number,description from inventory where kode_lama='$r->item_number' ";
+					//echo $s;
+					
+					if($q2=$this->db->query($s)){
+						if($r2=$q2->row()){
+							$this->db->where("item_number","".$r->item_number)->update("inventory_products",
+								array("item_number"=>$r2->item_number,
+								"description"=>$r2->description,"update_status"=>2));
+							$this->message.="\r convert_kode_lama($r->item_number,$r->shipment_id,$r2->item_number)";	
+							$cnt=1;
+						}	else {
+							//tidak ada konversinya
+							$this->message.="\r convert_kode_lama($r->item_number) not found !";
+							$this->db->where("item_number",''.$r->item_number)->update("inventory_products",array("update_status"=>2));						
+						}
+					} 
+				}
+		}
+		if($cnt==0){
+			if($q=$this->db->query("select line_number,item_number,invoice_number 
+				from invoice_lineitems 
+				where length(item_number)<11 and update_status!=2 
+				and length(item_number)>2 limit 1")){
+					if($r=$q->row()){
+						$s="select item_number,description from inventory where kode_lama='$r->item_number' ";
+						if($q2=$this->db->query($s)){
+							if($r2=$q2->row()){
+								$this->db->where("item_number","".$r->item_number)->update("invoice_lineitems",
+									array("item_number"=>$r2->item_number,
+									"update_status"=>2));
+								$this->message.="\r convert_kode_lama_invoice($r->item_number,$r->invoice_number,$r2->item_number)";	
+								$cnt=1;
+							} else {
+								//tidak ada konversinya
+								$this->message.="\r convert_kode_lama($r->item_number) not found !";
+								$this->db->where("item_number",''.$r->item_number)->update("invoice_lineitems",array("update_status"=>2));
+							}
+						}
+					}
+			}
+			
+		}
+		
+		
+	}
+    function show_message(){
+       echo $this->message; 
+    }
+    function message_text(){
+       return $this->message; 
+    }
+    function recalc_stock_arsip_gudang(){
+    	$item_no="";
+		if($q=$this->db->query("select * from zzz_item_need_update_arsip limit 1")){
+			if($r=$q->row()){
+				$item_no=$r->item_no;
+				$tanggal=$r->tanggal;
+				$gudang=$r->gudang;
+				$id=$r->id;
+			}
+		}
+		if($item_no=="")return false;
+		$this->db->query("delete from zzz_item_need_update_arsip where id='$id' ");
+		$this->recalc_stock_arsip_gudang_run($item_no, $gudang, $tanggal);
+		
+    }
+	function recalc_stock_arsip_gudang_run($item_number,$gudang,$tanggal){
+		$tanggal=date("Y-m-d",strtotime($tanggal));
+    	$tanggal2=date("Y-m-d 23:59:59",strtotime($tanggal));
+		$this->message.="\r recalc_stock_arsip_gudang_run($item_number,$gudang,$tanggal)";
+		
+		$s="select * from qry_kartustock_union where item_number='$item_number' 
+			and tanggal between '$tanggal' and '$tanggal2' ";
+        $data=null;    
+		if($qs=$this->db->query($s)){
+			foreach($qs->result() as $r){
+                $jenis=strtolower($r->jenis);
+				$gudang=$r->gudang;
+				$qty=$r->qty_masuk-$r->qty_keluar;
+                $field="";
+                if($jenis=="faktur jual kontan")$field="qty_jual";                
+                if($jenis=="po"){
+                	$field="qty_recv_po";
+				}
+                if($jenis=="purchase")$field="qty_po";
+                if($jenis=="qty_awal")$field=$jenis;
+                if($jenis=="qty_akhir")$field=$jenis;                
+                if($jenis=="qty_beli")$field="qty_beli";
+                if($jenis=="retur beli kredit")$field="qty_retur_beli";                
+                if($jenis=="etc_in")$field="qty_recv_etc";
+                if($jenis=="surat jalan")$field="qty_do";
+                if($jenis=="retur jual")$field="qty_retur_jual";
+                if($jenis=="etc_out")$field="qty_delivery_etc";
+                if($jenis=="adjustment")$field="qty_adjust";
+                if($jenis=="transfer")$field="qty_mutasi";
+                
+                if($field=="")$field=$jenis;
+                
+                if($jenis=="faktur beli kredit")$field="qty_beli";
+                
+                if($field==""){
+                    $this->message.= "<br>Unknown field [$jenis]";
+                } else {
+                	if(!isset($data[$gudang][$field])){
+			            $data[$gudang]['item_number']=$item_number;
+			            $data[$gudang]['tanggal']=$tanggal;
+                		$data[$gudang][$field]=0;
+                	}
+                    $data[$gudang][$field]+=$qty;
+                }                                    					
+			}
+			if($data){
+				foreach ($data as $key => $value){
+					$gdg=$key;
+					$data_stk=$value;
+					$data_stk['gudang']=$key;
+					$id=0;
+					if($qbb=$this->db->query("select id from inventory_beg_bal_gudang 
+						where item_number='$item_number' and gudang='$gdg' and tanggal='$tanggal' ")){
+						if($rbb=$qbb->row()){
+							$id=$rbb->id;
+						}
+					}	
+					if($id==0){
+						$this->db->insert("inventory_beg_bal_gudang",$data_stk);
+					} else {							
+						$this->db->where("id",$id)->update("inventory_beg_bal_gudang",$data_stk);
+					}
+				}
+			}
+			
+		}		
+	}
     function recalc_stock_arsip($item_number='',$tahun="",$bulan=""){
         if($tahun!=""){
             $item_no=$item_number;
@@ -475,8 +702,10 @@ class Inventory_model extends CI_Model {
         
     }
     function add_arsip($item_no,$tahun,$bulan){
+            
         $cnt=$this->db->query("select count(1) as cnt from zzz_stock_arsip")->row()->cnt;
-        echo "<br>recalc_stock_arsip($item_no,$tahun,$bulan), antrian: $cnt";        
+        
+        $this->message.= "\r recalc_stock_arsip($item_no,$tahun,$bulan), antrian: $cnt";        
         
         $tanggal=$tahun."-".$bulan."-1";
         $tgl_awal=date("Y-m-d", strtotime($tanggal)); 
@@ -524,9 +753,11 @@ class Inventory_model extends CI_Model {
             
         $qty_masuk=0;
         $qty_keluar=0;
-        if($rQty=$this->db->query($sql)->row()){
-            $qty_masuk=$rQty->z_qty_masuk;
-            $qty_keluar=$rQty->z_qty_keluar;
+        if($rQty=$this->db->query($sql)){
+            if($rQty2=$rQty->row()){
+                $qty_masuk=$rQty2->z_qty_masuk;
+                $qty_keluar=$rQty2->z_qty_keluar;                
+            }
         }
         $qty_trans=$qty_masuk-$qty_keluar;
         $qty_akhir=$qty_awal+$qty_trans;
@@ -605,9 +836,11 @@ class Inventory_model extends CI_Model {
     }
         
     function qty_po_tran($item_no,$tahun,$bulan){
+	    $potype=getvar("PoType","O");
+
         $s="select sum(il.quantity) as z_qty,il.warehouse_code from purchase_order_lineitems il 
         left join purchase_order i on i.purchase_order_number=il.purchase_order_number 
-        where year(po_date)='$tahun' and month(po_date)='$bulan' and potype='O' and il.item_number='$item_no'
+        where year(po_date)='$tahun' and month(po_date)='$bulan' and potype='$potype' and il.item_number='$item_no'
         group by il.warehouse_code";
         $data_tran=null;
         if($qpo=$this->db->query($s)){
@@ -625,8 +858,8 @@ class Inventory_model extends CI_Model {
         group by il.warehouse_code";
         $data_tran=null;
         if($qpo=$this->db->query($s)){
-            foreach($qpo->result() as $rpo){                $gudang=strtoupper($rpo->warehouse_code);
-                
+            foreach($qpo->result() as $rpo){
+            	$gudang=strtoupper($rpo->warehouse_code);
                 $data_tran[$gudang]=array("qty_so"=>$rpo->z_qty);
             }
         }
@@ -641,8 +874,8 @@ class Inventory_model extends CI_Model {
             group by ip.warehouse_code ";
         $data_tran=null;
         if($qpo=$this->db->query($s)){
-            foreach($qpo->result() as $rpo){                $gudang=strtoupper($rpo->warehouse_code);
-                
+            foreach($qpo->result() as $rpo){
+            	$gudang=strtoupper($rpo->warehouse_code);
                 $data_tran[$gudang]=array("qty_recv_toko"=>$rpo->z_qty);
             }
         }
@@ -658,8 +891,8 @@ class Inventory_model extends CI_Model {
             group by ip.warehouse_code ";
         $data_tran=null;
         if($qpo=$this->db->query($s)){
-            foreach($qpo->result() as $rpo){                $gudang=strtoupper($rpo->warehouse_code);
-                
+            foreach($qpo->result() as $rpo){
+            	$gudang=strtoupper($rpo->warehouse_code);                
                 $data_tran[$gudang]=array("qty_retur_toko"=>$rpo->z_qty);
             }
         }
@@ -697,7 +930,7 @@ class Inventory_model extends CI_Model {
     }
     function add_arsip_data_tran($item_no,$tahun,$bulan,$data_tran,$qty_awal,$qty_akhir){
         
-        echo ",add_arsip_data_tran(): save OK";
+        $this->message.=",add_arsip_data_tran(): save OK";
         
         $tanggal=$tahun."-".$bulan."-1";
         $tgl_awal=date("Y-m-d", strtotime($tanggal)); 
@@ -745,7 +978,7 @@ class Inventory_model extends CI_Model {
                 if($jenis=="faktur beli kredit")$field="qty_beli";
                 
                 if($field==""){
-                    echo "Unknown field [$jenis]";
+                    $this->message.= "<br>Unknown field [$jenis]";
                 } else {
                     $data[$field]=$qty;
                 }                                    
@@ -761,11 +994,11 @@ class Inventory_model extends CI_Model {
                     //unset($data['tanggal']);
                     if($ribbg=$qibbg->row()){
                         $id=$ribbg->id;
-                        $this->db->where("id",$id)->update("inventory_beg_bal_gudang",$data);
+                        //$this->db->where("id",$id)->update("inventory_beg_bal_gudang",$data);
                                                 
                     }
                 } else {
-                    $this->db->insert("inventory_beg_bal_gudang",$data);                    
+                    //$this->db->insert("inventory_beg_bal_gudang",$data);                    
                     
                 }
             }
@@ -808,11 +1041,39 @@ class Inventory_model extends CI_Model {
             }
         }           
     }
+
+    function recalc_stock_unit($item_number){
+    	
+		//return false;
+		$this->message.=", recalc_stock_unit()";
+				
+        $s="select unit,sum(qty) as z_qty from qs_stock_unit 
+        where item_number='$item_number' and tran_type in ('PO','I','ADJ') 
+        group by unit" ;
+        if($q=$this->db->query($s)){
+            foreach($q->result() as $r){
+                $data["qty_last"]=$r->z_qty;
+                $data["calc_date"]=date("Y-m-d H:i:s");
+                $data["update_date"]=$data["calc_date"];
+                $data["update_by"]=user_id();
+                $data["warehouse_code"]=current_gudang();
+                $this->db->where("item_number",$item_number)->where("customer_pricing_code",$r->unit)
+                    ->update("inventory_prices",$data);
+            }
+        }
+    }
+        
     function recalc_stock_gudang($item_number="",$tahun="",$bulan=""){
-        
-        $msg= "recalc(): $item_number, sisa: ".$this->zzz_item_count;
-        
+        	
+        ///return false;
+        if($item_number==""){
+            $this->message.= "<br> recalc_stock_gudang(): item_number is blank ";
+            return false;
+        }        
+        $this->message.= "\r recalc_stock_gudang(): antri: ".$this->zzz_item_count;
         $sql="select * from q_stock_gudang where item_number='$item_number' ";
+        
+
         $uid=user_id();
         $tgl=date("Y-m-d H:i:s");
         $description="";    
@@ -833,9 +1094,9 @@ class Inventory_model extends CI_Model {
             $sgdg="";
             foreach($q->result() as $r){
                 $sgdg.="'$r->gudang',";
-                $msg.= ",$r->gudang";
                 $qty=$r->qin-$r->qout;
                 $tot+=$qty;
+                $this->message.= ",".$r->gudang."=".$qty;
                 
                 $s="select id from inventory_warehouse 
                     where item_number='$item_number' and warehouse_code='$r->gudang'";
@@ -861,9 +1122,7 @@ class Inventory_model extends CI_Model {
             and warehouse_code not in ($sgdg)";
             $this->db->query($s);
                 
-        }
-        return $msg;
-        
+        }        
     }
     
    function qty_po($item_number="",$date1,$date2,$supplier="",$outlet="",$category="",$sistim=""){
@@ -877,6 +1136,7 @@ class Inventory_model extends CI_Model {
        if($supplier!="")$s.=" and p.supplier_number='$supplier'";
        if($category!="")$s.=" and i.category='$category'";
        if($outlet!="")$s.=" and pol.warehouse_code='$outlet'";
+       if($sistim!="")$s.=" and i.type_of_invoice='$sistim'";    
        if($q=$this->db->query($s)){
            if($row=$q->row()){
                $retval=$row->qty;
@@ -895,6 +1155,7 @@ class Inventory_model extends CI_Model {
        if($supplier!="")$s.=" and p.supplier_number='$supplier'";
        if($category!="")$s.=" and i.category='$category'";
        if($outlet!="")$s.=" and ip.warehouse_code='$outlet'";
+       if($sistim!="")$s.=" and i.type_of_invoice='$sistim'";    
        if($q=$this->db->query($s)){
            if($row=$q->row()){
                $retval=$row->qty;
@@ -914,6 +1175,7 @@ class Inventory_model extends CI_Model {
        if($supplier!="")$s.=" and i.supplier_number='$supplier'";
        if($category!="")$s.=" and i.category='$category'";
        if($outlet!="")$s.=" and ip.warehouse_code='$outlet'";
+       if($sistim!="")$s.=" and i.type_of_invoice='$sistim'";    
        if($q=$this->db->query($s)){
            if($row=$q->row()){
                $retval=$row->qty;
@@ -935,7 +1197,9 @@ class Inventory_model extends CI_Model {
        if($supplier!="")$s.=" and i.supplier_number='$supplier'";
        if($category!="")$s.=" and i.category='$category'";
        if($outlet!="")$s.=" and ip.warehouse_code='$outlet'";
-       if($q=$this->db->query($s)){
+       if($sistim!="")$s.=" and i.type_of_invoice='$sistim'";    
+
+      if($q=$this->db->query($s)){
            if($row=$q->row()){
                $retval['qty']=$row->qty;
                $retval['amount']=$row->amount;
@@ -956,6 +1220,8 @@ class Inventory_model extends CI_Model {
        if($supplier!="")$s.=" and i.supplier_number='$supplier'";
        if($category!="")$s.=" and i.category='$category'";
        if($outlet!="")$s.=" and ip.warehouse_code='$outlet'";
+       if($sistim!="")$s.=" and i.type_of_invoice='$sistim'";    
+       
        if($q=$this->db->query($s)){
            if($row=$q->row()){
                $retval=$row->qty;
@@ -979,6 +1245,8 @@ class Inventory_model extends CI_Model {
        if($supplier!="")$s.=" and i.supplier_number='$supplier'";
        if($category!="")$s.=" and i.category='$category'";
        if($outlet!="")$s.=" and ip.warehouse_code='$outlet'";
+       if($sistim!="")$s.=" and i.type_of_invoice='$sistim'";    
+
        if($q=$this->db->query($s)){
            if($row=$q->row()){
                $retval['qty']=$row->qty;
@@ -1000,7 +1268,10 @@ class Inventory_model extends CI_Model {
        if($supplier!="")$s.=" and i.supplier_number='$supplier'";
        if($category!="")$s.=" and i.category='$category'";
        if($outlet!="")$s.=" and ip.warehouse_code='$outlet'";
-       if($q=$this->db->query($s)){
+       if($sistim!="")$s.=" and i.type_of_invoice='$sistim'";    
+       
+       
+      if($q=$this->db->query($s)){
            if($row=$q->row()){
                $retval=$row->qty;
            }
@@ -1012,8 +1283,10 @@ class Inventory_model extends CI_Model {
       function qty_jual_gab($item_number="",$date1,$date2,$supplier="",$outlet="",$category="",$sistim=""){
        $retval['qty']=0;
        $retval['amount']=0;
+       
        $s="select sum(quantity) as qty,
-       sum(quantity*i.retail) as amount
+       sum(quantity*i.retail) as amount,
+       sum(quantity*i.cost_from_mfg) as amount_cost
         from invoice_lineitems ip
        inner join invoice inv on inv.invoice_number=ip.invoice_number
        inner join inventory i on i.item_number=ip.item_number
@@ -1023,10 +1296,14 @@ class Inventory_model extends CI_Model {
        if($supplier!="")$s.=" and i.supplier_number='$supplier'";
        if($category!="")$s.=" and i.category='$category'";
        if($outlet!="")$s.=" and ip.warehouse_code='$outlet'";
+       if($sistim!="")$s.=" and i.type_of_invoice='$sistim'";    
+       
+       
        if($q=$this->db->query($s)){
            if($row=$q->row()){
                $retval['qty']=$row->qty;
                $retval['amount']=$row->amount;
+               $retval['amount_cost']=$row->amount_cost;
            }
        }
        
@@ -1049,6 +1326,9 @@ class Inventory_model extends CI_Model {
        if($supplier!="")$s.=" and i.supplier_number='$supplier'";
        if($category!="")$s.=" and i.category='$category'";
        if($outlet!="")$s.=" and q.gudang='$outlet'";
+       if($sistim!="")$s.=" and i.type_of_invoice='$sistim'";    
+       
+       
        if($q=$this->db->query($s)){
            if($row=$q->row()){
                $retval=$row->q_in-$row->q_out;
@@ -1067,7 +1347,10 @@ class Inventory_model extends CI_Model {
        if($supplier!="")$s.=" and i.supplier_number='$supplier'";
        if($category!="")$s.=" and i.category='$category'";
        if($outlet!="")$s.=" and q.gudang='$outlet'";
-       if($q=$this->db->query($s)){
+       if($sistim!="")$s.=" and i.type_of_invoice='$sistim'";    
+       
+       
+      if($q=$this->db->query($s)){
            if($row=$q->row()){
                $retval=$row->q_in-$row->q_out;
            }
@@ -1093,11 +1376,14 @@ class Inventory_model extends CI_Model {
        from inventory_moving ip
        inner join inventory i on i.item_number=ip.item_number
        where ip.date_trans between '$date1' and '$date2' 
-       and ip.trans_type='ADJ'";
+       and ip.trans_type='ADJ' and ip.to_qty<0";
        if($item_number!="")$s.=" and ip.item_number='$item_number'";
        if($supplier!="")$s.=" and i.supplier_number='$supplier'";
        if($category!="")$s.=" and i.category='$category'";
        if($outlet!="")$s.=" and ip.from_location='$outlet'";
+       if($sistim!="")$s.=" and i.type_of_invoice='$sistim'";    
+       
+       
        if($q=$this->db->query($s)){
            if($row=$q->row()){
                $retval['qty']=$row->qty;
@@ -1107,6 +1393,57 @@ class Inventory_model extends CI_Model {
        
        return $retval;
   }
+   function qty_adj_plus_gab($item_number="",$date1,$date2,$supplier="",$outlet="",$category="",$sistim=""){
+       $retval['qty']=0;
+       $retval['amount']=0;
+       $s="select sum(to_qty) as qty,
+       sum(to_qty*i.cost_from_mfg) as amount 
+       from inventory_moving ip
+       inner join inventory i on i.item_number=ip.item_number
+       where ip.date_trans between '$date1' and '$date2' 
+       and ip.trans_type='ADJ' and ip.to_qty>0  and ip.doc_type<>'1'";
+       if($item_number!="")$s.=" and ip.item_number='$item_number'";
+       if($supplier!="")$s.=" and i.supplier_number='$supplier'";
+       if($category!="")$s.=" and i.category='$category'";
+       if($outlet!="")$s.=" and ip.from_location='$outlet'";
+       if($sistim!="")$s.=" and i.type_of_invoice='$sistim'";    
+              
+       
+       if($q=$this->db->query($s)){
+           if($row=$q->row()){
+               $retval['qty']=$row->qty;
+               $retval['amount']=$row->amount;
+           }
+       }
+       
+       return $retval;
+  }
+   function qty_adj_min_gab($item_number="",$date1,$date2,$supplier="",$outlet="",$category="",$sistim=""){
+       $retval['qty']=0;
+       $retval['amount']=0;
+       $s="select sum(to_qty) as qty,
+       sum(to_qty*i.cost_from_mfg) as amount 
+       from inventory_moving ip
+       inner join inventory i on i.item_number=ip.item_number
+       where ip.date_trans between '$date1' and '$date2' 
+       and ip.trans_type='ADJ' and ip.to_qty<0 and ip.doc_type<>'1' ";
+       if($item_number!="")$s.=" and ip.item_number='$item_number'";
+       if($supplier!="")$s.=" and i.supplier_number='$supplier'";
+       if($category!="")$s.=" and i.category='$category'";
+       if($outlet!="")$s.=" and ip.from_location='$outlet'";
+       if($sistim!="")$s.=" and i.type_of_invoice='$sistim'";    
+              
+       
+       if($q=$this->db->query($s)){
+           if($row=$q->row()){
+               $retval['qty']=$row->qty;
+               $retval['amount']=$row->amount;
+           }
+       }
+       
+       return $retval;
+  }
+   
       function qty_adjust($item_number="",$date1,$date2,$supplier="",$outlet="",$category="",$sistim=""){
            $retval=0;
            $s="select sum(to_qty) as qty from inventory_moving ip
@@ -1116,6 +1453,9 @@ class Inventory_model extends CI_Model {
            if($supplier!="")$s.=" and i.supplier_number='$supplier'";
            if($category!="")$s.=" and i.category='$category'";
            if($outlet!="")$s.=" and ip.from_location='$outlet'";
+           if($sistim!="")$s.=" and i.type_of_invoice='$sistim'";    
+           
+           
            if($q=$this->db->query($s)){
                if($row=$q->row()){
                    $retval=$row->qty;
@@ -1164,11 +1504,14 @@ class Inventory_model extends CI_Model {
            from inventory_products ip
            inner join inventory i on i.item_number=ip.item_number
            where ip.date_received between '$date1' and '$date2' 
-           and ip.receipt_type='ETC_OUT' and doc_type='2' ";
+           and ip.receipt_type='ETC_OUT' and doc_type in ('1','2') ";
            if($item_number!="")$s.=" and ip.item_number='$item_number'";       
            if($supplier!="")$s.=" and i.supplier_number='$supplier'";
            if($category!="")$s.=" and i.category='$category'";
            if($outlet!="")$s.=" and ip.warehouse_code='$outlet'";
+           if($sistim!="")$s.=" and i.type_of_invoice='$sistim'";    
+           
+           
            if($q=$this->db->query($s)){
                if($row=$q->row()){
                    $retval=$row->qty;
@@ -1184,11 +1527,14 @@ class Inventory_model extends CI_Model {
            from inventory_products ip
            inner join inventory i on i.item_number=ip.item_number
            where ip.date_received between '$date1' and '$date2' 
-           and ip.receipt_type='ETC_OUT' and doc_type='3' ";
+           and ip.receipt_type='ETC_OUT' and doc_type in ('1','2') ";
            if($item_number!="")$s.=" and ip.item_number='$item_number'";       
            if($supplier!="")$s.=" and i.supplier_number='$supplier'";
            if($category!="")$s.=" and i.category='$category'";
            if($outlet!="")$s.=" and ip.warehouse_code='$outlet'";
+       if($sistim!="")$s.=" and i.type_of_invoice='$sistim'";    
+           
+           
            if($q=$this->db->query($s)){
                if($row=$q->row()){
                    $retval=$row->qty;
@@ -1246,4 +1592,34 @@ class Inventory_model extends CI_Model {
 		}
 		return $msg;
 	}
+    function hpp_calc($item_number,$cost_new,$qty_new){
+        if($item_number=='' || c_($cost_new)==0 || c_($qty_new)==0) {
+            return false;
+        }
+        $cost_old=0;
+        $qty_old=0;
+        $cost_from_mfg=0;
+        if($q=$this->db->select("cost,cost_from_mfg,quantity_in_stock")
+            ->where("item_number",$item_number)->get("inventory")){
+            if($r=$q->row()){
+                $cost_old=$r->cost;
+                if($cost_old==0)$cost_old=$r->cost_from_mfg;
+                $qty_old=$r->quantity_in_stock;                
+                if($cost_old==0)$cost_old=$cost_new;
+                if($r->cost_from_mfg==0)$cost_from_mfg=$cost_old;
+            }    
+        }
+		$cost=0;
+        if($qty_old+$qty_new>0){
+        	if($qty_old==0)$qty_old=1;
+	        $cost=round((($cost_old*$qty_old)+($cost_new*$qty_new))/($qty_old+$qty_new),4);
+        	
+        }    
+        if($cost>0){
+//        	$dup['cost']=$cost;
+			
+            $this->db->where("item_number",$item_number)->update("inventory",
+                array("cost"=>$cost));
+        }
+    }
 }

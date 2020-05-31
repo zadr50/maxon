@@ -1,12 +1,3 @@
-<?php 
-echo $lookup_suppliers;
-echo $lookup_type_of_invoice;
-include_once 'faktur_select.php'; 
-echo $lookup_retur_toko;
-echo $lookup_warehouse;
-
-?>
-
 <div class="max-tool"> 
 <div class="thumbnail tool box-gradient">
 	<?php
@@ -87,27 +78,39 @@ echo $lookup_warehouse;
     </tr>
     <tr>
         <td>Nomor Faktur</td><td class='field'> 
-        	<?
+        	<?php
         	echo form_input("po_ref",$po_ref,"id='po_ref'");
         	echo link_button('','select_faktur();return false;',"search","false"); 
         	?>
         </td>
+        <td>Jenis Retur</td><td class='field'> 
+            <?php
+            echo form_input("doc_type",$doc_type,"id='doc_type'");
+            echo link_button('','dlgdoc_type_show();return false;',"search","false"); 
+            echo link_button('',"dlgdoc_type_list('doc_type_retur_beli');return false;","add","false"); 
+            ?>
+        </td>
+        
     </tr>
 	<tr>
-		<td>Gudang:</td><td><?php echo form_input('warehouse_code',$warehouse_code,"id='warehouse_code'");
+		<td>Gudang</td><td><?php echo form_input('warehouse_code',$warehouse_code,"id='warehouse_code'");
             echo link_button('','dlgwarehouse_show();',"search","false"); 
 			?>
 		</td>
         <td>Sistim</td><td class='field'> 
-            <?
+            <?php
             echo form_input("type_of_invoice",$type_of_invoice,"id='type_of_invoice'");
             echo link_button('','dlgtype_of_invoice_show();return false;',"search","false"); 
             ?>
         </td>
 	</tr>
+	<tr>
+		<td>Sumber Outlet</td><td><?=form_input("branch_code",$branch_code,"id='branch_code'")
+			.link_button('',"dlgsumber_outlet_show()","search")?></td>
+	</tr>
     <tr>
-        <td>Keterangan</td><td colspan="3" class='field'>
-        	<?php echo form_input('comments',$comments,'id=comments style="width:400px;height:50px"');?>
+        <td>Keterangan</td><td colspan="4" class='field'>
+        	<?php echo form_input('comments',$comments,'id=comments style="width:90%;height:50px"');?>
         </td>
     </tr>	  
 	<tr>
@@ -142,7 +145,7 @@ echo $lookup_warehouse;
 <!-- PURCASE_ORDER_LINEITEMS -->	
 	<div title="Items" style="padding:5px">
 			<div id='dgItem'>
-				<?php include_once "purchase_order_items.php"; ?>
+				<?php include_once "purchase_invoice_items.php"; ?>
 			</div>
 			<table id="dg" class="easyui-datagrid"  width="100%"
 				data-options="
@@ -196,6 +199,17 @@ echo $lookup_warehouse;
 	
 
 </div>
+<?php 
+echo $lookup_suppliers;
+echo $lookup_type_of_invoice;
+include_once 'faktur_select.php'; 
+echo $lookup_retur_toko;
+echo $lookup_warehouse;
+echo $lookup_doc_type;
+echo $lookup_sumber_outlet;
+
+?>
+
 
 <script type="text/javascript">
 	var url;	

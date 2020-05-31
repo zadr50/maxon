@@ -16,7 +16,7 @@ $sql="CREATE TABLE IF NOT EXISTS `chart_account_link` (
 
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 	
-$table="chart_bank_accounts";
+$table.=", chart_of_accounts";
 
 $sql="CREATE TABLE IF NOT EXISTS `chart_of_accounts` (
   `id` int(11) NOT NULL auto_increment,
@@ -45,8 +45,8 @@ $sql="CREATE TABLE IF NOT EXISTS `chart_of_accounts` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1505 ;
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
-	
-$table="chart_of_account_types";
+
+$table.=", chart_of_account_types";
 
 $sql="
 CREATE TABLE IF NOT EXISTS `chart_of_account_types` (

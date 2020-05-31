@@ -58,7 +58,15 @@ CREATE TABLE IF NOT EXISTS `customers` (
   `update_by` varchar(50) character set utf8 default NULL,
   `password` varchar(50) default NULL,
   `limi_date` datetime default NULL,
-  PRIMARY KEY  (`customer_number`)
+  `disc_min_qty` double DEFAULT NULL,
+  `markup_amount` double DEFAULT NULL,
+  `discount_amount` double DEFAULT NULL,
+  `disc_prc_2` double DEFAULT NULL,
+  `disc_prc_3` double DEFAULT NULL,
+  PRIMARY KEY (`customer_number`),
+  KEY `x1` (`company`),
+  KEY `x2` (`city`),
+  KEY `x3` (`type_of_customer`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
@@ -74,11 +82,10 @@ INSERT INTO `customers` (`customer_number`, `active`, `customer_record_type`, `t
 ('ANDRI', 1, '', '', '', '', '', '', '', 'ANDRI', 'JL. RAYA PURWAKARTA NO. 38', 'Gedung Indofood lantai 20', '', '', '', 'Indonesia', '62212002992', '0299200111', '', 'zadr50@yahoo.com', 0, '', '', 0, 0, 0, 0, '', '', 0, 'Kredit 30 Hari', 0, '', '', '', 0, '', b'1', '2013-07-19 00:00:00', 1373, 1396, '', 0, '', '', 0, '', '2013-07-19 00:00:00', '', '2013-07-19 00:00:00', '', '', NULL),
 ('CASH', 0, '', '', '', '', '', '', '', 'CASH', '', '', '', '', '', '', '', '', '', '', 0, '', '', 0, 0, 0, 0, '', '', 0, '', 0, '', '', '', 0, '', b'0', '2014-03-02 00:00:00', 1370, 0, '', 0, '', '', 0, '', '2014-03-02 00:00:00', '', '2014-03-02 00:00:00', '', '', '2014-03-02 00:00:00'),
 ('C1021', 1, '', '', '', '', '', '', '', 'ADI BIN SLAMET', 'Jl. Raya Serang Km. 200', '', 'Purwakarta', '', '', '', '0264-9399393', '0299200111', '', 'zadr50@yahoo.com', 0, '', '', 0, 0, 0, 0, '', '', 0, '60 Hari', 0, '', '', '', 0, '', b'0', '2014-03-02 00:00:00', 1373, 0, '', 0, '', '', 0, '', '2014-03-02 00:00:00', '', '2014-03-02 00:00:00', '', '', '2014-03-02 00:00:00'),
-('aaa', 1, '', '', '', '', '', '', '', 'dfasfs', 'dfasdf', 'dfasdf', 'Purwakarta', '', '', '', '', '', '', 'dfasd', 0, '', '', 0, 0, 0, 0, '', '', 0, 'Kredi 90 Hari', 0, '', '', '', 0, '', b'0', '2014-03-16 00:00:00', 1373, 0, '', 0, '', '', 0, '', '2014-03-16 00:00:00', '', '2014-03-16 00:00:00', '', '', '2014-03-16 00:00:00');
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$table="customers_other_info";
+$table.=", customers_other_info";
 
 $sql="
 
@@ -98,12 +105,12 @@ CREATE TABLE IF NOT EXISTS `customers_other_info` (
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
  
 
-$table="customer_beginning_balance";
+$table.=", customer_beginning_balance";
 
 $sql="
 
 CREATE TABLE IF NOT EXISTS `customer_beginning_balance` (
-  `tanggal` datetime NOT NULL default '0000-00-00 00:00:00',
+  `tanggal` datetime NOT NULL default '1970-01-01 00:00:00',
   `customer_number` varchar(50) character set utf8 NOT NULL default '',
   `piutang_awal` double default NULL,
   `piutang` double default NULL,
@@ -135,14 +142,15 @@ CREATE TABLE IF NOT EXISTS `customer_shipto` (
   `sourceautonumber` varchar(50) character set utf8 default NULL,
   `sourcefile` varchar(255) character set utf8 default NULL,
   `id` int(11) NOT NULL auto_increment,
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+  PRIMARY KEY (`id`),
+  KEY `x1` (`customer_code`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
 
-$table="customer_statement_defaults";
+$table.=", customer_statement_defaults";
  
 $sql="
 

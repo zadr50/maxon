@@ -1,4 +1,5 @@
 $(function() { 	
+	
 	    $("#account_number").autocomplete({
 	        url: CI_ROOT+"lookup/table/bank_accounts/bank_account_number/bank_name",
 	        onItemSelect: function(value){
@@ -6,23 +7,27 @@ $(function() {
 	            $("#bank_name").html(value.data[1]);
 	        }
 	    });
-	    $("#doc_status").autocomplete({
+	    $("#doc_status_x").autocomplete({
 	        url:CI_ROOT+"lookup/query_sysvar_lookup2/doc_status",
 	        onItemSelect: function(value){
 	            $("#doc_status").val(valud.data[0]);
 	        }
 	    });
-        $("#supplier_number").autocomplete({
-            url: CI_ROOT+"lookup/table/suppliers/supplier_number/supplier_name",
-            onItemSelect: function(value){
-                $("#supplier_number").val(value.data[0]);
-                $("#supplier_name").val(value.data[1]);
-                $("#supplier_name").html(value.data[1]);
-                $("#payee").val(value.data[1]);
-                $("#supplier_info").html(value.data[1]);
-                
-            }
-        });
+	    
+	    if($("#supplier_number").val()!=""){
+	        $("#supplier_number").autocomplete({
+	            url: CI_ROOT+"lookup/table/suppliers/supplier_number/supplier_name",
+	            onItemSelect: function(value){
+	                $("#supplier_number").val(value.data[0]);
+	                $("#supplier_name").val(value.data[1]);
+	                $("#supplier_name").html(value.data[1]);
+	                $("#payee").val(value.data[1]);
+	                $("#supplier_info").html(value.data[1]);
+	                
+	            }
+	        });
+	    	
+	    }
         $("#sold_to_customer").autocomplete({
             url: CI_ROOT+"lookup/table/customers/customer_number/company",
             onItemSelect: function(value){
@@ -39,7 +44,7 @@ $(function() {
                 $("#customer_info").html(value.data[1]);
             }
         });
-        $("#warehouse_code").autocomplete({
+        $("#warehouse_code_x").autocomplete({
             url: CI_ROOT+"lookup/table/shipping_locations/location_number/attention_name",
             onItemSelect: function(value){
                 $("#warehouse_code").val(value.data[0]);
@@ -60,7 +65,7 @@ $(function() {
                 $("#termin").html(value.data[1]);
             }
         });
-        $("#item_number").autocomplete({
+        $("#item_number_x").autocomplete({
             url: CI_ROOT+"lookup/table/inventory/item_number/description",
             onItemSelect: function(value){
                 $("#item_number").val(value.data[0]);
@@ -68,20 +73,47 @@ $(function() {
                 $("#nama_barang").html(value.data[1]);
             }
         });
-        $("#category").autocomplete({
+        $("#barcodexx").autocomplete({
+            url: CI_ROOT+"lookup/table/inventory/item_number/description/retail",
+            onItemSelect: function(value){
+                $("#item_number").val(value.data[0]);
+                $("#description").html(value.data[1]);
+                $("#nama_barang").html(value.data[1]);
+                
+                $("#barcode").val(value.data[0]);
+                $("#item_nama_barang").val(value.data[1]);
+                $("#itemp_price").val(value.data[2]);
+            }
+        });
+        $("#barcode_top").autocomplete({
+            url: CI_ROOT+"lookup/table/inventory/item_number/description/retail",
+            onItemSelect: function(value){
+                $("#item_number").val(value.data[0]);
+                $("#description").html(value.data[1]);
+                $("#nama_barang").html(value.data[1]);
+                
+                $("#barcode_top").val(value.data[0]);
+                $("#barcode").val(value.data[0]);
+                $("#item_nama_barang").val(value.data[1]);
+                $("#item_price").val(value.data[2]);
+                $("#qty").val($("#qty_top").val());
+            }
+        });
+        
+        $("#category_x").autocomplete({
             url: CI_ROOT+"lookup/table/inventory_categories/kode/category",
             onItemSelect: function(value){
                 $("#category").val(value.data[0]);
             }
         });
-        $("#account").autocomplete({
+        $("#account_x").autocomplete({
             url: CI_ROOT+"lookup/table/chart_of_accounts/account/account_description",
             onItemSelect: function(value){
                 $("#account").val(value.data[0]);
                 $("#description").val(value.data[1]);
             }
         });
-        $("#account_id").autocomplete({
+        $("#account_id_x").autocomplete({
             url: CI_ROOT+"lookup/table/chart_of_accounts/account/account_description",
             onItemSelect: function(value){
                 $("#account_id").val(value.data[0]+" - "+value.data[1]);

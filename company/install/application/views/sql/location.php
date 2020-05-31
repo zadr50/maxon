@@ -1,5 +1,5 @@
 <?php
-
+$table="shipping_locations";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `shipping_locations` (

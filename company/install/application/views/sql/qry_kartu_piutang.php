@@ -1,5 +1,5 @@
 <?php
- 
+ $msg="";
 	$table="qry_kartu_piutang";
 	
 $sql="CREATE  VIEW qry_kartu_piutang AS
@@ -32,6 +32,7 @@ $sql="CREATE  VIEW qry_kartu_piutang AS
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 	
+$table="q_all_trans";
 	
 $sql="CREATE  VIEW q_all_trans AS
 select `purchase_order`.`purchase_order_number` AS `nomor_bukti`,

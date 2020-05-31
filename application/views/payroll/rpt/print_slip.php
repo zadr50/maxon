@@ -1,21 +1,36 @@
+<?php
+     $CI =& get_instance();
+     $CI->load->model('company_model');
+     $com=$CI->company_model->get_by_id($CI->access->cid)->row();
+	$company="";
+	if($com){
+		$company=$com->company_name;
+	}
+
+
+?>
 <table > 
-<tr><td align='center'><h1>SLIP GAJI</h1></td><td></td>
-	<td></td><td></td>
+<tr>
+	<td align='center' colspan="4"><b><?=$company?></b></td>	
 </tr>
-<tr><td>Nomor</td><td><h3><?=$pay->pay_no?></h3></td>
-	<td><h2>NIP</h2></td><td><?=$emp->nip?></td>
+<tr>
+	<td align='center' colspan="4"><b>SLIP GAJI</b></td>
+	<td></td>
+</tr>
+<tr>
+	<td>Nomor</td><td><b><?=$pay->pay_no?></b></td>
+	<td>NIP</td><td><b><?=$emp->nip?></b></td>
 </tr>      	
-<tr><td>Tanggal</td><td><?=$pay->pay_date?></td>
-	<td>Nama</td><td><?=$emp->nama?></td>
+<tr>
+	<td>Tahun</td><td><b><?=date("Y",strtotime($pay->pay_date))?></b></td>
+	<td>Nama</td><td><b><?=$emp->nama?></b></td>
 </tr>
-<tr><td>Periode</td><td><?=$pay->pay_period?></td>
-	<td>Jabatan</td><td><?=$emp->position?></td>
+<tr><td>Bulan</td><td><b><?=date("M",strtotime($pay->pay_date))?></b></td>
+	<td>Jabatan</td><td><b><?=$emp->position?></b></td>
 </tr>
-<tr><td>From Date</td><td><?=$pay->from_date?></td>
-	<td>Departement</td><td><?=$emp->dept?></td>
-</tr>
-<tr><td>To Date</td><td><?=$pay->to_date?></td>
-	<td>Divisi</td><td><?=$emp->divisi?></td>
+<tr>
+	<td>Departement</td><td><b><?=$emp->dept?></b></td>
+	<td>Divisi</td><td><b><?=$emp->divisi?></b></td>
 </tr>
 </table>
  

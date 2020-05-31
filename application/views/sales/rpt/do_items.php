@@ -1,10 +1,13 @@
-<?
+<?php
      $CI =& get_instance();
      $CI->load->model('company_model');
      $model=$CI->company_model->get_by_id($CI->access->cid)->row();
 	$date1= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateFrom')));
 	$date2= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateTo')));
-    $CI->load->model('sales_order_model');
+	$customer=$CI->input->post("text1");
+	$salesman=$CI->input->post("text2");
+	$category=$CI->input->post("text3");
+	
 ?>
 <link href="<?php echo base_url();?>/themes/standard/style_print.css" rel="stylesheet">
 <table cellspacing="0" cellpadding="1" border="0" width='100%'> 
@@ -13,7 +16,8 @@
      </tr>
      <tr>
      	<td>
-     		Criteria: Dari Tanggal: <?=$date1?> s/d : <?=$date2?>
+     		Criteria: Dari Tanggal: <?=$date1?> s/d : <?=$date2?>, Customer: <?=$customer?>
+     		,Salesman: <?=$salesman?>, Category: <?=$category?>
      	</td>
      </tr>
      <tr>
@@ -26,19 +30,25 @@
 	     			</tr>
 	     		</thead>
 	     		<tbody>
-     			<?
+     			<?php
      			$sql="select i.invoice_date,i.invoice_number,i.sold_to_customer,
      			c.company,i.due_date,i.payment_terms,i.salesman,i.amount,i.sales_order_number,
 				il.item_number,il.description,il.quantity,il.unit
      			 from invoice i left join customers c on c.customer_number=i.sold_to_customer
 				left join invoice_lineitems il on il.invoice_number=i.invoice_number 
 				left join salesman s on s.salesman=i.salesman
+	            join inventory b on b.item_number=il.item_number
 	            where i.invoice_type='D' and i.invoice_date between '$date1' and '$date2'  ";
+				
 				
 				$logged_in=$this->session->userdata('logged_in');
 				if($logged_in['flag1']!=''){
 					$sql.=" and s.salesman='".$logged_in['username']."'";
 				}
+				if($salesman!="")$sql.=" and s.salesman='$salesman'";
+				if($customer!="")$sql.=" and s.sold_to_customer='$customer'";
+				if($category!="")$sql.=" and b.category='$category'";
+				
      			$rst_so=$CI->db->query($sql);
 				
      			$tbl="";

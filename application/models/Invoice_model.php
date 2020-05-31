@@ -5,8 +5,10 @@ private $primary_key='invoice_number';
 private $table_name='invoice';
 
 public $amount_paid=0;
+public $amount_paid_giro_belum_cair=0;
+public $amount_paid_giro_cair=0;
 public $retur_amount=0;
-public $crdb_amount=0;
+public $crdb_amount=0,	$cr_amount=0,	$db_amount=0;
 public $saldo=0;
 public $amount=0;
 public $sub_total=0;
@@ -16,11 +18,11 @@ public $tax=0;
 function __construct(){
 	parent::__construct();        
       
-        $this->load->model("periode_model");
-        $this->load->model('jurnal_model');
-        $this->load->model('chart_of_accounts_model');
-        $this->load->model('company_model');
-        $this->load->model('invoice_lineitems_model');
+    $this->load->model("periode_model");
+    $this->load->model('jurnal_model');
+    $this->load->model('chart_of_accounts_model');
+    $this->load->model('company_model');
+    $this->load->model('invoice_lineitems_model');
     $this->load->model('payment_model');
     $this->load->model('crdb_model');
     
@@ -42,12 +44,12 @@ function recalc($nomor){
 		if($inv->discount=='')$inv->discount=0;
 		if($inv->sales_tax_percent=='')$inv->sales_tax_percent=0;
 		
-		if($inv->discount>0)$inv->discount=$inv->discount/100;
+		if($inv->discount>1)$inv->discount=$inv->discount/100;
 		$this->disc_amount_1=$inv->discount*$this->sub_total;
 		
 	    $this->amount=$this->sub_total-$this->disc_amount_1;
 		
-		if($inv->sales_tax_percent>0)$inv->sales_tax_percent=$inv->sales_tax_percent/100;
+		if($inv->sales_tax_percent>1)$inv->sales_tax_percent=$inv->sales_tax_percent/100;
 		$this->tax=$inv->sales_tax_percent*$this->amount;
 		
 		$this->amount=$this->amount+$this->tax;
@@ -56,10 +58,17 @@ function recalc($nomor){
 		$this->amount=$this->amount+$inv->other;
 	
 	    $this->amount_paid=$this->payment_model->total_amount($nomor);
+        $this->amount_paid_giro_cair=$this->payment_model->total_amount_giro_cair($nomor);
+        $this->amount_paid_giro_belum_cair=$this->payment_model->total_amount_giro_belum_cair($nomor);
+        
 		$this->retur_amount=$this->total_retur($nomor);
-		$this->crdb_amount=$this->crdb_model->total_by_invoice($nomor);
+
+        $this->db_memo=$this->crdb_model->amount_sum($nomor,"SO-DEBIT MEMO");
+        $this->cr_memo=$this->crdb_model->amount_sum($nomor,"SO-CREDIT MEMO");
+        $this->crdb_amount = $this->db_memo-$this->cr_memo;
+
 		
-	    $this->saldo=$inv->amount-$this->amount_paid
+	    $this->saldo=$inv->amount-$this->amount_paid-$this->amount_paid_giro_cair
 			-$this->retur_amount
 			+$this->crdb_amount;
 		
@@ -91,15 +100,13 @@ function recalc($nomor){
 		}
 	}
 	function paid_amont($faktur){
-		$this->load->model('payment');
 		return $this->payment_model->total_amount($faktur);
 	}
 	function retur_amount($faktur){
 		return $this->total_retur($faktur);
 	}
 	function crdb_amount($faktur){
-		$this->load->model('crdb_model');
-		return $this->crdb_model->total_by_invoice($faktur);
+        return $this->crdb_amount;
 	}
 	
 function get_paged_list($limit=10,$offset=0,
@@ -167,8 +174,22 @@ function save($data){
 //	$this->db->insert($this->table_name,$data);
 //	echo $this->db->_error_message();
 //	return $this->db->insert_id();
-	return $this->db->insert($this->table_name,$data);
+
+	$ok = $this->db->insert($this->table_name,$data);
+
+        if(isset($data['sold_to_customer'])){
+        	customer_need_update($data['sold_to_customer']);
+        }
+	
+	
+	return $ok;
 }
+    function save_item($data){
+        $ok=$this->invoice_lineitems_model->save($data);
+        return $ok;
+    }
+
+    
 function update($id,$data){
 	
 	if(isset($data['warehouse_code'])){
@@ -183,10 +204,17 @@ function update($id,$data){
 			$data['warehouse_code']=$r_item->warehouse_code;
 		}
 	}
-	if(!isset($data['invoice_date']))$data['invoice_date']= date('Y-m-d H:i:s');
-	if(isset($data['invoice_date']))$data['invoice_date']= date('Y-m-d H:i:s', strtotime($data['invoice_date']));
-	if(isset($data['due_date']))$data['due_date']= date( 'Y-m-d H:i:s', strtotime($data['due_date']));
-    
+	if(!isset($data['invoice_date'])){
+		//what this? jadi ketiban tanggalnya kalo hanya simpan amount
+		$data['invoice_date']= date('Y-m-d H:i:s');
+		
+	}
+	if(isset($data['invoice_date'])) {
+		$data['invoice_date']= date('Y-m-d H:i:s', strtotime($data['invoice_date']));		
+	}
+	if(isset($data['due_date'])){
+		$data['due_date']= date( 'Y-m-d H:i:s', strtotime($data['due_date']));
+	}
     if(!isset($data['inv_amount']))$data["inv_amount"]=0;
 
 	if(!isset($data['due_date'])){
@@ -203,7 +231,14 @@ function update($id,$data){
 
     
 	$this->db->where($this->primary_key,$id);
-	return $this->db->update($this->table_name,$data);
+	$ok = $this->db->update($this->table_name,$data);
+	
+        if(isset($data['sold_to_customer'])){
+        	customer_need_update($data['sold_to_customer']);
+        }
+	
+		
+	return $ok;
 }
 function delete($id){
    	$this->db->where($this->primary_key,$id);
@@ -305,12 +340,11 @@ function delete($id){
 		}
 		// validate jurnal
 		$this->load->model('jurnal_model');
+		
 		if($this->jurnal_model->del_jurnal($nomor)) {
-			$data['posted']=false;
-		} else {
-			$data['posted']=true;
-		}
-		$this->invoice_model->update($nomor,$data);
+			$sql="update invoice set posted=false where invoice_number='$nomor'";
+			$this->db->query($sql);
+		} 
 	
 	}
 	function unposting_range_date($date_from,$date_to){
@@ -339,9 +373,9 @@ function delete($id){
         }
         
 	}
-	function posting($nomor) {
+	function posting($nomor,$recalc=true) {
 	 
-		$saldo=$this->recalc($nomor);
+		if($recalc) $saldo=$this->recalc($nomor);
 		$faktur=$this->get_by_id($nomor)->row();
 		$message="";
         if(!$faktur){
@@ -367,48 +401,111 @@ function delete($id){
 		$coa_sales=$set->inventory_sales;
 		$coa_stock=$set->inventory;
 		$coa_hpp=$set->inventory_cogs;
-
+		$coa_cash=$set->default_cash_payment_account;
+		$coa_komisi=$this->sysvar->getvar("COA Hutang Komisi");
+		if(c_($coa_cash)==0){
+			$coa_cash=$coa_ar;
+		}
 		$detail=$this->invoice_lineitems_model->get_by_nomor($nomor);
 		foreach($detail->result() as $item) {
+			$coa_stock_in=$coa_stock;
+			$coa_hpp_in=$coa_hpp;
+			$coa_sales_in=$coa_sales;
 			//-- posting invoice_lineitems
 			//-- ambil akun dari master barang
-			$r_stok=$this->db->query("select sales_account,inventory_account,cogs_account,cost,cost_from_mfg 
-				from inventory where item_number='".$item->item_number."'")->row();
+			$q_stok=$this->db->query("select i.sales_account, i.inventory_account, i.cogs_account, i.cost,
+				i.cost_from_mfg,c.inventory_account as inventory_account_cat,
+				c.cogs_account as cogs_account_cat,c.sales_account as sales_account_cat 
+				from inventory i 
+				left join inventory_categories c on c.kode=i.category
+				where i.item_number='".$item->item_number."'");
+			$r_stok=$q_stok->row();
 			if($r_stok){
-				$coa_sales=$item->revenue_acct_id>0?$item->revenue_acct_id:$r_stok->sales_account;
-				if($coa_sales=="" or $coa_sales=="0")	$coa_sales=$set->inventory_sales;
-				$coa_stock=$r_stok->inventory_account>0?$r_stok->inventory_account:$set->inventory;
-				$coa_hpp=$r_stok->cogs_account>0?$r_stok->cogs_account:$set->inventory_cogs;
+				//coa sales
+				$coa_sales2=c_($r_stok->sales_account_cat);	//akun dari categor				
+				if($coa_sales2>0){
+					if($this->jurnal_model->exist_account_id($coa_sales2)){
+						$coa_sales_in=$coa_sales2;
+					}
+				}
+				
+				$coa_sales2=c_($r_stok->sales_account);	//akun di set di barang
+				if($coa_sales2>0){
+					if($this->jurnal_model->exist_account_id($coa_sales2)){
+						$coa_sales_in=$coa_sales2;
+					}
+				}
+				$coa_sales2=c_($item->revenue_acct_id);	//akun di set faktur item line
+				if($coa_sales2>0){
+					if($this->jurnal_model->exist_account_id($coa_sales2)){
+						$coa_sales_in=$coa_sales2;
+					}
+				}
+				
+				//coa stock
+				$coa_stock2=c_($r_stok->inventory_account_cat);
+				if($coa_stock2>0){
+					$coa_stock_in=$coa_stock2;
+				}
+				$coa_stock2=c_($r_stok->inventory_account);
+				if($coa_stock2>0){
+					$coa_stock_in=$coa_stock2;
+				}
+				//coa hpp
+				$coa_hpp2=c_($r_stok->cogs_account_cat);
+				if($coa_hpp2>0){
+					$coa_hpp_in=$coa_hpp2;
+				}
+								
+				$coa_hpp2=c_($r_stok->cogs_account);
+				if($coa_hpp2>0){
+					$coa_hpp_in=$coa_hpp2;
+				}
+				
 				if($item->cost==0){
 					$item->cost=$r_stok->cost;
 					$this->db->query("update invoice_lineitems set cost=".floatval($item->cost)." where line_number=".$item->line_number);
 				}
 				if($item->cost==0){
 					$item->cost=$r_stok->cost_from_mfg;
-                    if($item->cost=="")$item->cost=0;
-					$this->db->query("update invoice_lineitems set cost=".$item->cost." where line_number=".$item->line_number);
+                    if(c_($item->cost)>0)$item->cost=0;
+					$this->db->query("update invoice_lineitems set cost=".c_($item->cost)." where line_number=".$item->line_number);
 				}
 			}
-			$coa_sales_line=$item->revenue_acct_id;
-			if($coa_sales_line!="")$coa_sales=$coa_sales_line;
-			$coa_inv_line=$item->coa2;
-			if($coa_inv_line!="")$coa_stock=$coa_inv_line;
-			$coa_cogs_line=$item->coa3;
-			if($coa_cogs_line!="")$coa_cogs=$coa_cogs_line;
+			$coa_sales_line=c_($item->revenue_acct_id);
+			if(c_($coa_sales_line)>0){
+				if($this->jurnal_model->exist_account_id($coa_sales_line)){
+					$coa_sales_in=$coa_sales_line;
+				}
+			}
+			$coa_inv_line=c_($item->coa2);
+			if(c_($coa_inv_line)>0)$coa_stock_in=$coa_inv_line;
+			
+			$coa_cogs_line=c_($item->coa3);
+			if(c_($coa_cogs_line)>0)$coa_cogs_in=$coa_cogs_line;
 			
 			$sales_amt=$item->price*$item->quantity;
 			$disc_amt=$item->discount_amount+$item->disc_amount_2+$item->disc_amount_3;
 			$hpp_amt=$item->cost*$item->quantity;
+			
 			if($hpp_amt>0){
 				//-- posting persediaan
-				$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_stock, 
+				$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_stock_in, 
 					$faktur->invoice_date,0,$hpp_amt,"Inventory",$faktur->comments,$cid,$item->item_number);
 				//-- posting hpp
-				$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_hpp, 
+				$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_hpp_in, 
 					$faktur->invoice_date,$hpp_amt,0,"Cogs",$faktur->comments,$cid,$item->item_number);
 			}
 			//-- posting penjualan
-			$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_sales, 
+			if(c_($item->coa1amt>0)){
+				if(c_($coa_komisi)>0){
+					$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_komisi, 
+					$faktur->invoice_date,0,$item->coa1amt,"Sales Komisi",$faktur->comments,$cid,$item->item_number);
+					$sales_amt-=$item->coa1amt;									
+					
+				}
+			}
+			$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_sales_in, 
 					$faktur->invoice_date,0,$sales_amt,"Sales",$faktur->comments,$cid,$item->item_number);
 
 			if($disc_amt>0){
@@ -418,8 +515,19 @@ function delete($id){
 			} 
 		}
 		//-- posting piutang
-		$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_ar, 
-			$faktur->invoice_date,$faktur->amount,0,"Account Receivable",$faktur->comments,$cid,$faktur->sold_to_customer);
+		$coa=$coa_ar;
+		$operation="Account Receivable";
+		if(strtoupper($faktur->payment_terms)=="CASH" || $faktur->payment_terms==""){
+			$coa=$coa_cash;
+			$operation="Cash Sales";
+			$s="update check_writer set posted=true where voucher in (select no_bukti from payments 
+				where invoice_number='$faktur->invoice_number')";
+			$this->db->query($s);
+		} 
+		$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa, 
+				$faktur->invoice_date,$faktur->amount,0,$operation,$faktur->comments,$cid,$faktur->sold_to_customer);
+			
+		
 		if($faktur->disc_amount!=0){
 			$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_disc, 
 				$faktur->invoice_date,$faktur->disc_amount,0,"Sales Discount",$faktur->comments,$cid,$faktur->sold_to_customer);
@@ -436,10 +544,14 @@ function delete($id){
 			$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_other, 
 				$faktur->invoice_date,0,$faktur->other,"Sales Other",$faktur->comments,$cid,$faktur->sold_to_customer);					
 		}
+		$msg="";
 		// validate jurnal
-		$msg="OK";
-		if($this->jurnal_model->validate($nomor)) {	$data['posted']=true;	} else {$data['posted']=false; $msg="Not Balance"; }
-		$this->invoice_model->update($nomor,$data);
+		if($this->jurnal_model->validate($nomor)) {
+			$sql="update invoice set posted=true where invoice_number='$nomor'";
+			$this->db->query($sql);
+		} else {
+			$msg="NOT_BALANCE";
+		}
 		
 	   return $msg;
        
@@ -499,30 +611,78 @@ function delete($id){
 		$coa_other=$set->so_other;
 		$coa_ar=$set->accounts_receivable;
 		$coa_disc=$set->so_discounts_given;
-
+		$coa_hpp=$set->inventory_cogs;
+		$coa_sales=$set->inventory_sales;
+		$coa_stock=$set->inventory;
+		$coa_hpp=$set->inventory_cogs;
+				
+		$coa_cash=$set->default_cash_payment_account;
+		$coa_komisi=$this->sysvar->getvar("COA Hutang Komisi");
+		if(c_($coa_cash)==0){
+			$coa_cash=$coa_ar;
+		}
+		
 		$detail=$this->invoice_lineitems_model->get_by_nomor($nomor);
 		foreach($detail->result() as $item) {
 			//-- posting invoice_lineitems
 			
+			$coa_stock_in=$coa_stock;
+			$coa_hpp_in=$coa_hpp;
+			$coa_sales_in=$coa_sales;
 			//-- ambil akun dari master barang
-			$r_stok=$this->db->query("select sales_account,inventory_account,cogs_account,cost,cost_from_mfg 
-				from inventory where item_number='".$item->item_number."'")->row();
+			$q_stok=$this->db->query("select i.sales_account, i.inventory_account, i.cogs_account, i.cost,
+				i.cost_from_mfg,c.inventory_account as inventory_account_cat,
+				c.cogs_account as cogs_account_cat,c.sales_account as sales_account_cat 
+				from inventory i 
+				left join inventory_categories c on c.kode=i.category
+				where i.item_number='".$item->item_number."'");
+			$r_stok=$q_stok->row();
+				
 			if($r_stok){
-				$coa_sales=$item->revenue_acct_id>0?$item->revenue_acct_id:$r_stok->sales_account;
-				if($coa_sales=="" or $coa_sales=="0")	$coa_sales=$set->inventory_sales;
-				$coa_stock=$r_stok->inventory_account>0?$r_stok->inventory_account:$set->inventory;
-				$coa_hpp=$r_stok->cogs_account>0?$r_stok->cogs_account:$set->inventory_cogs;
+				//coa sales
+				$coa_sales2=c_($r_stok->sales_account_cat);	//akun dari categor				
+				if($coa_sales2>0){
+					$coa_sales_in=$coa_sales2;
+				}
+				
+				$coa_sales2=c_($r_stok->sales_account);	//akun di set di barang
+				if($coa_sales2>0){
+					$coa_sales_in=$coa_sales2;
+				}
+				$coa_sales2=c_($item->revenue_acct_id);	//akun di set faktur item line
+				if($coa_sales2>0){
+					$coa_sales_in=$coa_sales2;
+				}
+				
+				//coa stock
+				$coa_stock2=c_($r_stok->inventory_account_cat);
+				if($coa_stock2>0){
+					$coa_stock_in=$coa_stock2;
+				}
+				$coa_stock2=c_($r_stok->inventory_account);
+				if($coa_stock2>0){
+					$coa_stock_in=$coa_stock2;
+				}
+				//coa hpp
+				$coa_hpp2=c_($r_stok->cogs_account_cat);
+				if($coa_hpp2>0){
+					$coa_hpp_in=$coa_hpp2;
+				}
+								
+				$coa_hpp2=c_($r_stok->cogs_account);
+				if($coa_hpp2>0){
+					$coa_hpp_in=$coa_hpp2;
+				}
 				
 				if($item->cost==0){
 					$item->cost=$r_stok->cost;
+					$this->db->query("update invoice_lineitems set cost=".floatval($item->cost)." where line_number=".$item->line_number);
 				}
 				if($item->cost==0){
 					$item->cost=$r_stok->cost_from_mfg;
+                    if(c_($item->cost)>0)$item->cost=0;
+					$this->db->query("update invoice_lineitems set cost=".c_($item->cost)." where line_number=".$item->line_number);
 				}
-				if($item->cost==0){
-					$item->cost=0;
-				}
-				$this->db->query("update invoice_lineitems set cost=".$item->cost." where line_number=".$item->line_number);
 			}
 			$coa_sales_line=$item->revenue_acct_id;
 			if($coa_sales_line!="")$coa_sales=$coa_sales_line;
@@ -531,20 +691,27 @@ function delete($id){
 			$coa_cogs_line=$item->coa3;
 			if($coa_cogs_line!="")$coa_cogs=$coa_cogs_line;
 			
+			//coa global
+			if($coa_stock==0){
+			    $coa_stock=$set->inventory;
+            }
+            if($coa_sales==0)$coa_sales=$set->inventory_sales;
+            if($coa_cogs==0)$coa_cogs=$set->inventory_cogs;
+            
 			$sales_amt=$item->price*$item->quantity;
 			$disc_amt=$item->discount*$sales_amt;
 			$hpp_amt=$item->cost*$item->quantity;
 			if($hpp_amt>0){
 				//-- posting persediaan
-				$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_stock, 
+				$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_stock_in, 
 					$faktur->invoice_date,$hpp_amt,0,"Inventory",$faktur->comments,$cid,$item->item_number);
 				//-- posting hpp
-				$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_hpp, 
+				$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_hpp_in, 
 					$faktur->invoice_date,0,$hpp_amt,"Cogs",$faktur->comments,$cid,$item->item_number);
 			}
 			//-- posting penjualan
 			if($sales_amt>0){
-				$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_sales, 
+				$this->jurnal_model->add_jurnal($faktur->invoice_number,$coa_sales_in, 
 					$faktur->invoice_date,$sales_amt,0,"Sales",$faktur->comments,$cid,$item->item_number);
 			}
 			//-- posting discount item
@@ -573,8 +740,16 @@ function delete($id){
 				$faktur->invoice_date,$faktur->other,0,"Sales Other",$faktur->comments,$cid,$faktur->sold_to_customer);					
 		}
 		// validate jurnal
-		if($this->jurnal_model->validate($nomor)) {	$data['posted']=true;	} else {$data['posted']=false;}
-		$this->invoice_model->update($nomor,$data);
+		
+		
+		if($this->jurnal_model->validate($nomor)) {
+			$sql="update invoice set posted=true where invoice_number='$nomor'";
+			$this->db->query($sql);
+		} else {
+			$msg="NOT_BALANCE";
+		}
+		
+		
 	}	
 	function posting_retur_range_date($date_from,$date_to){
 		$this->load->model('jurnal_model');

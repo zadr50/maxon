@@ -68,12 +68,37 @@ class Retur_toko extends CI_Controller {
                 $data['warehouse_code']=current_gudang();                
                 $data['doc_status']="OPEN";
 			}
-            
+            $data['other_doc_number']=$data['ref1'];
             $doc_status['dlgBindId']="doc_status";
             $doc_status['sysvar_lookup']='doc_status';
             $data['lookup_doc_status']=$this->list_of_values->render($doc_status);
             $dlgRetFunc="$('#other_doc_number').val(row.purchase_order_number);";
             $data['lookup_faktur']=$this->purchase_invoice_model->lookup('','purchase_invoice',$dlgRetFunc);
+			
+            $data['lookup_gudang1']=$this->list_of_values->lookup_gudang();
+            $data['lookup_gudang2']=$this->list_of_values->render(array(
+				'dlgBindId'=>"gudang",
+				"dlgRetFunc"=>"$('#supplier_number').val(row.location_number); ",
+				'dlgCols'=>
+				array( 
+                        array("fieldname"=>"location_number","caption"=>"Kode","width"=>"80px"),
+                        array("fieldname"=>"attention_name","caption"=>"Nama Toko","width"=>"180px"),
+                        array("fieldname"=>"company_name","caption"=>"Kode Pers","width"=>"50px"),
+                        array("fieldname"=>"company","caption"=>"Perusahaan","width"=>"200px")
+                   ),
+                'show_date_range'=>false
+			));            
+			$gudang_tujuan="";
+			$s="select location_number from shipping_locations where address_type='pusat' ";
+			if($q=$this->db->query($s)){
+				if($r=$q->row()){
+					$gudang_tujuan=$r->location_number;
+				}
+			}
+			$data['supplier_number']=$gudang_tujuan;
+			$data['lookup_inventory']=$this->list_of_values->lookup_inventory();
+	
+			
             return $data;
 	}
 	function index()
@@ -217,10 +242,13 @@ class Retur_toko extends CI_Controller {
 	function delete($id){
 		if(!allow_mod2('retur_toko_delete'))return false;   
 		$id=urldecode($id);
-	 	$this->inventory_products_model->delete($id);
+	 	$ok  = $this->inventory_products_model->delete($id);
 		$this->syslog_model->add($id,"retur_toko","delete");
-
-	 	$this->browse();
+		if ($ok){
+			echo json_encode(array('success'=>true));
+		} else {
+			echo json_encode(array('msg'=>'Some errors occured.'));
+		}
 	}
 	function detail(){
 		$data['shipment_id']=isset($_GET['shipment_id'])?$_GET['shipment_id']:'';
@@ -270,12 +298,21 @@ class Retur_toko extends CI_Controller {
             $id=$this->nomor_bukti();
             $this->nomor_bukti(true);
         }
-		$line=$this->input->post("line_number");
+		$line=$this->input->post("id");
         $data['item_number']=$item_no;
-        $data['quantity_received']=$this->input->post('quantity');
-        $item=$this->inventory_model->get_by_id($data['item_number'])->row();
-       	$cost=item_cost($item_no);
+        $data['quantity_received']=$this->input->post('quantity_received');
+        $item=$this->inventory_model->get_by_id($data['item_number'])->row();		
+		$data['cost']=$this->input->post("cost");
+		$cost=0;
+		if($data['cost']>0){
+			$cost=$data['cost'];
+		}
+		if($cost==0){
+	       	$cost=item_cost($data['item_number']);
+			
+		}
         $data['cost']=$cost;
+		
         $data['unit']=$this->input->post('unit');
         $data['shipment_id']=$id;
         $data['warehouse_code']=$this->input->post('warehouse_code');
@@ -285,19 +322,29 @@ class Retur_toko extends CI_Controller {
 		$data['comments']=$this->input->post('comments');;
 		$data['supplier_number']=$this->input->post('supplier_number');
         $data['ref1']=$this->input->post('ref1');
+		if($this->input->post('other_doc_number')){
+			$data['ref1']=$this->input->post('other_doc_number');
+		}
         $data['doc_type']=$this->doc_type;
-        $data['doc_status']=$this->input->post('doc_status');
+        $data['doc_status']=$this->input->post('doc_status');        
         $data['supplier_number']=$this->input->post('supplier_number');
-        
+        $message="Some error occured.";
+		
 		if($line>0){
 			$ok=$this->inventory_products_model->update($line,$data);
 		} else {
-			$ok=$this->inventory_products_model->save($data);			
+			$qty=$data['quantity_received'];
+			$qty_stock=qty_stock($data['item_number'],$data['warehouse_code']);
+			if($qty_stock<$qty){
+				$message="Qty stock barang tidak mencukupi !";
+			} else {
+				$ok=$this->inventory_products_model->save($data);							
+			}
 		}
 		if ($ok){
 			echo json_encode(array('success'=>true,'shipment_id'=>$id));
 		} else {
-			echo json_encode(array('msg'=>'Some errors occured.'));
+			echo json_encode(array('msg'=>$message));
 		}
 	}         
     function print_bukti($nomor){
@@ -316,8 +363,7 @@ class Retur_toko extends CI_Controller {
     function print_retur_toko($nomor){
         $this->print_bukti($nomor);
     }
-    function del_item(){
-    	$id=$this->input->post('line_number');
+    function del_item($id){
         $ok=$this->inventory_products_model->delete_item($id);
 		if ($ok){
 			echo json_encode(array('success'=>true));

@@ -1,7 +1,4 @@
-<?
-//var_dump($_POST);
-?>
-<?
+<?php
      $CI =& get_instance();
      
      
@@ -39,7 +36,7 @@
 <link href="<?php echo base_url();?>/themes/standard/style_print.css" rel="stylesheet">
 <table cellspacing="0" cellpadding="1" border="0" width='800px'> 
      <tr>
-        <td colspan='2'><h2><?=$model->company_name?></h2></td><td colspan='2'><h2>MUTASI TRANSAKSI REKENING</h2></td>      
+        <td colspan='2'><h2><?=$model->company_name?></h2></td><td colspan='2'><h2>TRANSAKSI PENERIMAAN </h2></td>      
      </tr>
      <tr>
         <td colspan='2'><?=$model->street?></td><td></td>       
@@ -88,7 +85,8 @@
                     i.deposit_amount,i.payment_amount,i.supplier_number,i.payee,i.memo
                      from check_writer i 
                     where i.trans_type in ('cash in') and account_number='".$r_bank->bank_account_number."' 
-                    and i.check_date between '$date1' and '$date2'  ";
+                    and i.check_date between '$date1' and '$date2'  
+                    order by i.check_date,i.voucher";
                     $rst_so=$CI->db->query($sql);
                     $tbl="";
                      foreach($rst_so->result() as $row){

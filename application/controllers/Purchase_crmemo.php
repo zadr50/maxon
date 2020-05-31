@@ -3,7 +3,7 @@
 class Purchase_CrMemo extends CI_Controller {
     private $limit=10;
     private $sql="select kodecrdb,tanggal,docnumber,amount,keterangan,c.account, 
-    c.account_description,cm.posted
+    c.account_description,cm.posted,cm.cust_supp
      from crdb_memo cm left join chart_of_accounts c on c.id=cm.accountid where transtype='PO-CREDIT MEMO'";
     private $controller='purchase_crmemo';
     private $primary_key='kodecrdb';
@@ -51,8 +51,8 @@ class Purchase_CrMemo extends CI_Controller {
 	}
     function browse($offset=0,$limit=50,$order_column='',$order_type='asc'){
 		$data['controller']=$this->controller;
-		$data['fields_caption']=array('Nomor Bukti','Tanggal','Faktur','Jumlah','Keterangan','Kode Akun','Perkiraan',"Posted");
-		$data['fields']=array('kodecrdb','tanggal','docnumber','amount','keterangan','account','account_description','posted');
+		$data['fields_caption']=array('Nomor Bukti','Tanggal','Faktur','Jumlah','Supplier','Keterangan','Kode Akun','Perkiraan',"Posted");
+		$data['fields']=array('kodecrdb','tanggal','docnumber','amount','cust_supp','keterangan','account','account_description','posted');
 					
 		if(!$data=set_show_columns($data['controller'],$data)) return false;
 			
@@ -104,6 +104,8 @@ class Purchase_CrMemo extends CI_Controller {
 		$data['amount']=0;
 		$data['keterangan']="";
 		$data['mode']='add';
+		$data['supplier_number']="";
+		
 		$this->template->display_form_input('purchase/credit_memo',$data,'');			
 		
 	}
@@ -121,6 +123,7 @@ class Purchase_CrMemo extends CI_Controller {
 			$data['keterangan']=$this->input->post('keterangan');
 			$data['transtype']=$this->input->post('transtype');
             $data['prc_value']=$this->input->post('prc_value');
+			$data['cust_supp']=$this->input->post("supplier_number");
             
 			$this->crdb_model->save($data);
 			$this->nomor_bukti(true);
@@ -136,29 +139,77 @@ class Purchase_CrMemo extends CI_Controller {
          $data['id']=$id;
          $model=$this->crdb_model->get_by_id($id)->result_array();
          $data=$this->set_defaults($model[0]);
+		 
          $data['mode']='view';
-         $q=$this->purchase_order_model->get_by_id($data['docnumber'])->row();
-         $data['supplier_number']=$q->supplier_number;
-         $data['faktur_info']=$q->po_date." Rp. ".number_format($q->amount);
-         $q=$this->supplier_model->get_by_id($data['supplier_number'])->row();
-         $data['supplier_name']=$q->supplier_name;
-         $data['supplier_info']=$q->supplier_name." ".$q->street." ".$q->city;
-         
+
+		 $docnumber=$data['docnumber'];
+		 
+		 $supplier_number=$data['cust_supp'];
+		 
+		 $faktur_amount=0;
+		 $po_date="";
+		 $street="";
+		 $city="";
+		 $supplier_name="";
+		 if($supplier_number==""){
+			 if($qs=$this->purchase_order_model->get_by_id($docnumber)){
+			 	if($q=$qs->row()){
+			 		$supplier_number=$q->supplier_number;
+					$po_date=$q->po_date;
+					$faktur_amount=$q->amount;
+			 	}	
+			 }		 	
+		 }
+		 $data['supplier_number']=$supplier_number;
+		 $data['faktur_info']=$po_date." Rp. ".number_format($faktur_amount,2);
+		 
+		 if($q1=$this->supplier_model->get_by_id($supplier_number)){
+		 	if($q=$q1->row()){
+		 		$supplier_name=$q->supplier_name;
+				$street=$q->street;
+				$city=$q->city;
+		 	}	
+		 };
+		 
+		 $data['supplier_name']=$supplier_name;
+		 $data['supplier_info']=$supplier_name." ".$street." ".$city;
+		 
+		          
          $this->template->display('purchase/credit_memo',$data);                 
 	}
    
 	function set_defaults($record=NULL){
-            $data=data_table($this->table_name,$record);
+        $data=data_table($this->table_name,$record);
+        
+        $data['mode']='';
+        $data['message']='';
+        $data['supplier_info']="";
+        $data['faktur_info']="";
+        if(!$record){
+            $data['supplier_number']="";        
             
-            $data['mode']='';
-            $data['message']='';
-            $data['supplier_info']="";
-            $data['faktur_info']="";
-            if(!$record){
-                $data['supplier_number']="";        
+        }
+        $data['lookup_suppliers']=$this->supplier_model->lookup();
+			
+		$data['lookup_faktur']=$this->list_of_values->render(
+			array("dlgBindId"=>'purchase_invoice',
+                'dlgCols'=>array(
+                    array("fieldname"=>"purchase_order_number","caption"=>"Faktur#","width"=>"80px"),
+                    array("fieldname"=>"po_date","caption"=>"Tanggal","width"=>"80px"),
+                    array("fieldname"=>"terms","caption"=>"Termin","width"=>"80px"),
+                    array("fieldname"=>"nomor_recv","caption"=>"Ref1","width"=>"80px"),
+                    array("fieldname"=>"nomor_po","caption"=>"Ref2","width"=>"80px"),
+                    array("fieldname"=>"warehouse_code","caption"=>"Gudang","width"=>"80px"),
+                    array("fieldname"=>"supplier_name","caption"=>"Supplier","width"=>"180px")
+                ),
+                "dlgRetFunc"=>"$('#docnumber').val(row.purchase_order_number); 
+                	find_faktur();",
+                "dlgBeforeLookup"=>"search_id=$('#supplier_number').val();"
                 
-            }
-            $data['lookup_suppliers']=$this->supplier_model->lookup();
+                				
+			)
+		);
+
             
 			return $data;
 	}

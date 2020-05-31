@@ -25,8 +25,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 $servername=filter_input(INPUT_SERVER, 'SERVER_NAME');
 $port=filter_input(INPUT_SERVER, 'SERVER_PORT');
-//$config['base_url'] = 'http://localhost/talagasoft/simak/v7.maxon';
-$config['base_url']="http://$servername/talagasoft/simak/v7.maxon";
+$config['base_url'] = 'http://'.$servername.'/talagasoft/simak/v7.maxon';
+//$config['base_url']="http://maxonerpserver.com/tulen/";
 /*
 |--------------------------------------------------------------------------
 | Index File
@@ -369,13 +369,15 @@ $config['encryption_key'] = '';
 | except for 'cookie_prefix' and 'cookie_httponly', which are ignored here.
 |
 */
-$config['sess_driver'] = 'files';
+$config['sess_driver'] = 'files';	//'database';	//'files';
 $config['sess_cookie_name'] = 'ci_session';
 $config['sess_expiration'] = 7200;
+//$config['sess_save_path'] = "ci_sessions";
 $config['sess_save_path'] = NULL;
 $config['sess_match_ip'] = FALSE;
 $config['sess_time_to_update'] = 3000;
 $config['sess_regenerate_destroy'] = FALSE;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -515,12 +517,12 @@ $config['rewrite_short_tags'] = FALSE;
 $config['proxy_ips'] = '';
 $config['google_ads_visible']=false;
 $config['donate_visible']=false;
-$config['multi_company']=true;
 $config['show_footer']=true;
 //$config['default_home']="courier\menu_dashboard.php";
 $config["show_header"]=true;
 $config["hide_menu_header"]=false;
 $config["show_sidebar"]=true;
 $config["tawk_visible"]=false;
-
-//$config['chatbox_visible']=true;
+$config['multi_company']=true;
+$config['check_outlet_active']=false;    //periksa apakah perlu pilih gudang dulu?
+$config['chatbox_visible']=true;

@@ -23,8 +23,23 @@ class Table_model extends CI_Model {
         $this->upgrade->add_field('employee',"is_resigned","int");
         $this->upgrade->add_field('employee',"resigned_date","datetime");
         $this->upgrade->add_field('employee_shift',"shift_group");
+        $this->create_table_hr_emp_loan_schedule();
         
 	}
+   
+    function create_table_hr_emp_loan_schedule(){
+        $fields[]="loan_number nvarchar(50)";
+        $fields[]="no_urut int";
+        $fields[]="tanggal_jth_tempo datetime";
+        $fields[]="awal double";
+        $fields[]="pokok double";
+        $fields[]="bunga double";
+        $fields[]="angsuran double";
+        $fields[]="akhir double";
+        $fields[]="keterangan nvarchar(250)";
+        
+        $this->upgrade->create_table("hr_emp_loan_schedule",$fields);
+    }
     
 	function create_table_hr_jenis_absensi(){
 		$fields[]="kode nvarchar(50)";

@@ -109,12 +109,11 @@ class Payment extends CI_Controller {
 		$this->load->model('bank_accounts_model');
    		$data['no_bukti']=$this->nomor_bukti();
 		$data['date_paid']=date('Y-m-d H:i:s');
-		$data['how_paid']='Cash';
+		$data['how_paid']='CASH';
 		$data['amount_paid']=0;
 		$data['mode']='add';
 		$data['customer_number']='';
 		$data['how_paid_acct_id']='';
-		$data['how_paid']='';
 		$data['customer_list']=$this->customer_model->customer_list();
 		$data['account_list']=$this->bank_accounts_model->account_number_list();
 		$data['credit_card_number']='';
@@ -123,13 +122,14 @@ class Payment extends CI_Controller {
         
         $data['lookup_rekening']=$this->list_of_values->render(
             array("dlgBindId"=>"bank_accounts",
+            "modules"=>"banks/banks",
             "dlgRetFunc"=>"$('#how_paid_acct_id').val(row.bank_account_number);",
             "dlgCols"=>array(array("fieldname"=>"bank_account_number","caption"=>"Rekening","width"=>"100px"),
             array("fieldname"=>"bank_name","caption"=>"Nama Bank","width"=>"250px"),
             array("fieldname"=>"org_id","caption"=>"Company","width"=>"80px"))));
 
         $data['lookup_customer']=$this->list_of_values->render(
-            array("dlgBindId"=>"customers",
+            array("dlgBindId"=>"customers","modules"=>"customer",
             "dlgRetFunc"=>"
             	$('#customer_number').val(row.customer_number);
                	$('#company').val(row.company);
@@ -138,6 +138,8 @@ class Payment extends CI_Controller {
             array("fieldname"=>"company","caption"=>"Nama Pelanggan","width"=>"250px"),
             array("fieldname"=>"city","caption"=>"Kota","width"=>"80px"))));
         
+        $data['lookup_how_paid']=$this->list_of_values->sysvar("how_paid");
+		
 		$this->template->display_form_input('sales/payment_multi',$data,'');			
 		
    }
@@ -283,10 +285,14 @@ class Payment extends CI_Controller {
 		
 		switch ($how_paid) {
 			case '2':
+			case "transfer":
 				$trtype='trans in';
+				$how_paid="TRANSFER";
 				break;
 			case '1':
+			case 'giro':
 				$trtype='cheque in';
+				$how_paid="GIRO";
 				//check witer
 				$rkas['check_number']=$this->input->post('credit_card_number');
 				$rkas['cleared_date']=$this->input->post('expiration_date');
@@ -441,10 +447,15 @@ class Payment extends CI_Controller {
 	function data($nomor)
 	{
 		$nomor=urldecode($nomor);
-		$sql="select p.no_bukti,p.date_paid,p.how_paid 
-		,p.amount_paid,p.line_number
+		$sql="select distinct p.no_bukti,p.date_paid,p.how_paid 
+		,p.amount_paid,p.line_number,p.credit_card_number,p.expiration_date,p.from_bank,
+		cw.cleared
 		from payments p
-		where invoice_number='$nomor'";
+		left join check_writer cw on cw.voucher=p.no_bukti
+		where p.invoice_number='$nomor'";
+		
+		//echo $sql;
+		
 		echo datasource($sql);
 	}
     function delete_payment($id=0){

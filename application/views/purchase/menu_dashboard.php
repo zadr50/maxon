@@ -2,10 +2,10 @@
 <div class="easyui-tabs" id="tt"  >	 
 	<div title="HOME"><? include_once __DIR__."/../home.php";?></div>
 	<div title="DASHBOARD" style="padding:10px">
-		<div class='col-xs-12'>
+		<div class='col-md-12'>
 			<div class="easyui-panel themes" data-options="iconCls:'icon-save',closable:true,
 					collapsible:true,minimizable:true,maximizable:true">
-				<div class='col-md-8'>
+				<div class='col-md-8 thumbnail'>
 					<img src="<?=base_url()?>images/purchase.png" usemap="#mapdata" class="map">
 					<map id="mapdata" name="mapdata">
 					<area shape="circle" alt="Supplier" coords="70,56,31" href="<?=base_url()?>index.php/supplier" class="info_link" title="Supplier" />
@@ -23,8 +23,16 @@
 					<area shape="default" nohref="nohref" alt="" />
 					</map>
 				</div>
+				
+            <div class="col-md-3  " style="margin-left:5px">
+                <div id='divGrafikSupplier' style="height:420px;width:250px">
+                     <img src="<?=base_url('images/loading.gif')?>">      
+                </div>              
+            </div>
+				
 			</div>
 		</div>	 
+		
 		<div class='col-xs-12'>
 			<div class="easyui-panel themes" title="Reports" 
 				data-options="iconCls:'icon-save',closable:true,
@@ -38,7 +46,7 @@
 				data-options="iconCls:'icon-help',closable:true,
 				collapsible:true,minimizable:true,maximizable:true">
 				<table id="dgRetur" class="easyui-datagrid"  
-					style="width:100%"
+					style="width:100%;height:300px"
 					data-options="title: '',
 							iconCls: 'icon-tip',
 							singleSelect: true,
@@ -65,7 +73,7 @@
 				data-options="iconCls:'icon-help',closable:true,
 				collapsible:true,minimizable:true,maximizable:true">
 				<table id="dgPoExpire" class="easyui-datagrid"  
-					style="width:100%"
+					style="width:100%;height:300px"
 					data-options="title: '',
 							iconCls: 'icon-tip',
 							singleSelect: true,
@@ -87,17 +95,14 @@
 			</div>
 		</div>
 		
-		<?php if($this->config->item('google_ads_visible')) $this->load->view('google_ads');?>
-		
-		
-		<div class="col-xs-12">
+		<div class="col-md-12">
 			<div id="p" class="easyui-panel themes" title="Saldo Hutang Supplier" 
 				data-options="iconCls:'icon-help',closable:true,
 				collapsible:true,minimizable:false,maximizable:false">
-				<div id='divSupplier'  style="width:500px;height:300px;padding:5px;"></div>
+				<div id='divSupplier'  style="width:90%;height:350px;padding:5px;"></div>
 			</div>                        
 			<div id="p" class="easyui-panel themes" title="Pembelian"> 
-				<div id='divPurchase'  style="width:500px;height:300px;padding:5px;"></div>
+				<div id='divPurchase'  style="width:90%;height:350px;padding:5px;"></div>
 				<!--
 				<div id='divFaktur'  style="width:600px;height:300px;padding:5px;"></div>
 				<div id='divUmurHutangSupp'  style="width:600px;height:300px;padding:5px;"></div>
@@ -114,6 +119,7 @@
 <script type="text/javascript" src="<?=base_url()?>assets/flot/excanvas.js"></script>
 <script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.js"></script>
 <script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.categories.js"></script>
+<script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.pie.js"></script>
 
 <script>$().ready(function(){$("#tt").tabs("select","DASHBOARD");});</script>
 
@@ -171,5 +177,37 @@ $().ready(function(){
         }
         $.plot("#divPurchase", data2,options2);
     }
+    
+    var data_grafik_supplier=[];
+    var alreadyFetched_supplier = {};
+    var idx_supplier=0;
+    
+        $.ajax({
+            url: CI_ROOT+'po/grafik/grafik_saldo_hutang',type: "GET",dataType: "json",
+            success: onDataReceived_supplier          
+        });
+        function onDataReceived_supplier(series) {
+            if (!alreadyFetched_supplier[series.label]) {
+                alreadyFetched_supplier[series.label] = true;
+                for(j=0;j<series.data.length;j++){
+                    data_grafik_supplier[idx_supplier]={
+                        label:series.data[j][0], 
+                        data:series.data[j][1]
+                    };
+                    idx_supplier++;
+                }
+            }
+            $.plot($('#divGrafikSupplier'), data_grafik_supplier, {
+                series: {
+                    pie: { show: true},
+                    show: true
+                },
+                legend: {
+                    show: false
+                }
+            });
+       }  
+        
+    
 </script>
 

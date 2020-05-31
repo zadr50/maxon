@@ -11,16 +11,6 @@ class Jenis_pinjaman extends CI_Controller {
 		parent::__construct();
 		if(!$this->access->is_login())header("location:".base_url());
  		$this->load->helper(array('url','form','browse_select','mylib_helper'));
-                
-        $multi_company=$this->config->item('multi_company');
-       if($multi_company){
-            $company_code=$this->session->userdata("company_code","");
-            if($company_code!=""){
-               $this->db = $this->load->database($company_code, TRUE);
-           }
-       }         
-        
-        
         $this->load->library('javascript');
         $this->load->library('template');
 		$this->load->library('form_validation');
@@ -122,8 +112,8 @@ class Jenis_pinjaman extends CI_Controller {
 	function browse($offset=0,$limit=10,$order_column='loan_number',$order_type='asc')	{
         $data['caption']='DAFTAR JENIS  PINJAMAN';
 		$data['controller']='koperasi/jenis_pinjaman';		
-		$data['fields_caption']=array('Nama','Jenis','Jangka Waktu','Keterangan');
-		$data['fields']=array('nama','periode','jenis_bunga','keterangan');
+		$data['fields_caption']=array('Nama','Jenis','Jangka Waktu');
+		$data['fields']=array('nama','periode','jenis_bunga');
 		$data['field_key']='nama';
 		$this->load->library('search_criteria');
 		
@@ -132,7 +122,7 @@ class Jenis_pinjaman extends CI_Controller {
         $this->template->display_browse2($data);            
     }
     function browse_data($offset=0,$limit=10,$nama=''){
-		$sql="select nama,periode,jenis_bunga,keterangan  from kop_jenis_pinjaman	
+		$sql="select nama,periode,jenis_bunga  from kop_jenis_pinjaman	
 		where 1=1";
 		$s=$this->input->get('sid_nama');		
 		if($s!=''){

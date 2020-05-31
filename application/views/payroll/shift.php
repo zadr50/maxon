@@ -1,30 +1,29 @@
 <div class="thumbnail box-gradient">
-	<?
+	<?php
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print_this()','print');		
 	echo link_button('Add','','add','false',base_url().'index.php/payroll/shift/add');		
 	echo link_button('Search','','search','false',base_url().'index.php/payroll/shift');		
 	
 	echo "<div style='float:right'>";
-	echo link_button('Help', 'load_help(\'shift\')','help');		
-	
-	?>
-	<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
-	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
-		<div>Update</div>
-		<div>MaxOn Forum</div>
-		<div>About</div>
+		echo link_button('Help', 'load_help(\'shift\')','help');		
+		
+		?>
+		<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+		<div id="mmOptions" style="width:200px;">
+			<div onclick="load_help()">Help</div>
+			<div>Update</div>
+			<div>MaxOn Forum</div>
+			<div>About</div>
+		</div>
+		<?=link_button('Close', 'remove_tab_parent()','cancel')?>		
 	</div>
-	
-	</div>
-	
 </div>
 <div class="thumbnail">	
 <form id="frmShift"  method="post">
 	<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
 	<?php echo validation_errors(); ?>
-   <table class='table2' width='100%'>
+   <table class='table2' width='90%'>
 	<tr>
 		<td>Kode</td>
 		<td><?php

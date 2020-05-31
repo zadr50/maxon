@@ -1,10 +1,8 @@
 <div class="thumbnail box-gradient">
-	<?
+	<?php
 	echo link_button(lang('save'), 'save();return false;','save');		
 	echo link_button(lang('print'), 'print_item();return false;','print');		
-	echo link_button(lang('add'),'','add','false',base_url().'index.php/inventory/add');		
 	if($mode=="view") echo link_button(lang('refresh'),'','reload','false',base_url().'index.php/inventory/view/'.$item_number);		
-	echo link_button(lang('picture'), 'upload_gambar();return false;','man');		
 //	echo link_button('Saldo', 'add_tab_parent(\'saldo_stock\',\''.base_url('index.php/inventory/saldo_stock').'\');','lock');		
 	echo link_button('Barcode', 'print_barcode();return false;','print');		
 	echo "<div style='float:right'>";
@@ -13,11 +11,8 @@
 	<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">
 		<?=lang('options')?></a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="add_supplier()">Add Supplier</div>
-		<div onclick="add_category()">Add Category</div>
 		<div onclick="load_help()">Help</div>
 		<div onclick="show_syslog('inventory','<?=$item_number?>')">Log Aktifitas</div>
-
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
@@ -41,11 +36,11 @@
 	            <?php
 	            if($mode=='add'){
 	                $item_number="AUTO";                    
-                    echo form_input('item_number',$item_number,"id=item_number");
-	            } else { 
-	                    echo "<strong>".$item_number."</strong>";
-	                    echo "<input type='hidden' name='item_number' id='item_number' value='".$item_number."'>";
+                    $readonly="";
+	            } else {
+	                $readonly="readonly"; 
 	            }		
+	            echo form_input('item_number',$item_number,"id='item_number' $readonly");
                 echo " Category : ";
                 echo form_input('category',$category," id='category' style='width:80px'");
                 echo link_button('','dlginventory_categories_show()','search');
@@ -59,9 +54,7 @@
                 
                 ?>        
 	            
-	       </td>        
-	
-			
+	       </td>       
 	      </tr>
 	     <tr><td>Description</td>
 	       <td>:</td>
@@ -77,8 +70,6 @@
 			echo " ".form_input('supplier_name',$supplier_name," id='supplier_name' disabled style='width:50%'");
 			echo link_button(lang('add'),'add_supplier();return false;','add');			
 		   ?> </td>
-	
-	
 	      </tr>
 		  <tr>
 	       <td>Active </td><td>:</td><td> <?=form_radio('active',1,$active=='1'?TRUE:FALSE,"style='width:30px'");?>&nbsp&nbsp
@@ -107,7 +98,7 @@
 		  </tr>
 	</table>	
 			<div>
-			<div  class="easyui-tabs" style="width:auto;height:auto;min-height: 500px">
+			<div id="main-tab"  class="easyui-tabs" style="width:auto;height:auto;min-height: 500px">
 				<div title="Umum" id="box_section" style="padding:10px">
 					<table class='table2' width='100%'>
 				     <tr>
@@ -115,10 +106,7 @@
 					       <td>:</td>
 					       <td><?php echo form_input('retail',$retail,"id='retail'");
                               echo link_button('','dlgJualShow()','sum',"title='Hitungan harga jual beli margin'");
-					           
-					           
-					           ?> </td>
-					
+					       ?> </td>
 					       <td>Harga Beli</td>
 					       <td>:</td>
 					       <td><?php echo form_input('cost_from_mfg',$cost_from_mfg,"id='cost_from_mfg'");?> </td>
@@ -163,11 +151,11 @@
 					       <td><?php echo form_input('reorder_quantity',$reorder_quantity);?> </td>
 				      </tr>
 				     <tr>
-					       <td>Quantity saat ini</td>
+					       <td>Qty Semua Gudang</td>
 					       <td>:</td>
 					       <td><?php echo form_input('quantity_in_stock',$quantity_in_stock);?> </td>
 					
-					       <td>Quantity dalam pesanan</td>
+					       <td>Qty dlm pesanan</td>
 					       <td>:</td>
 					       <td><?php echo form_input('quantity_on_order',$quantity_on_order);?> </td>
 				      </tr>
@@ -186,6 +174,30 @@
 
 					</table>
 				</div>
+				<!-- TODAY PROMOTION -->				
+				<div title="Active Promo" style="padding:5px">
+					<table id="dgPromo" class="easyui-datagrid"  width='100%' height="300px"
+                        data-options="
+                            iconCls: 'icon-edit', fitColumns: true, 
+                            singleSelect: true,  
+                            toolbar:'',
+                        ">
+                        <thead>
+                            <tr>
+                                <th data-options="field:'promosi_code',width:70">Promo Code</th>
+                                <th data-options="field:'description',width:180">Keterangan Promo</th>
+                                <th data-options="field:'category',width:30">Category</th>
+                                <th data-options="field:'tipe',width:30">Type</th>
+								<th data-options="field:'nilai',width:50,align:'right',
+									editor:{type:'numberbox',options:{precision:2}}">Nilai %/Rp</th>
+                                <th data-options="field:'date_from',width:80">Date From</th>
+                                <th data-options="field:'date_to',width:80">Date To</th>
+                            </tr>
+                        </thead>
+                    </table>
+
+				</div>
+
 				<div title="Akuntansi" id='box_section' style="padding:10px;" class='section_hide'>
 				     <table class='table2' width='100%'>
 			       <tr>
@@ -246,14 +258,15 @@
 					   <td><?php echo form_input('item_picture',$item_picture,"style='width:200px' id='item_picture'");?></td>
 					   <td rowspan="8">
 							<img id="imgBarang" src="<?=base_url()."/tmp/".$item_picture?>" style="width:200px;height:200px;border:1px solid lightgray">
+                            </br><?=link_button(lang('picture'), 'upload_gambar();return false;','man')?>                               
 					   </td>  
 					  </tr>
 					
 					 <tr>
 					   <td>Pakai Nomor Serial </td>
 					   <td>:</td>
-					   <td><?=form_radio('serialized',1,$serialized=='1'?TRUE:FALSE);?>
-						 Yes <?php echo form_radio('serialized',0,$serialized=='0'?TRUE:FALSE);?>No </td>
+					   <td><?=form_radio('serialized',1,$serialized=='1'?TRUE:FALSE,"style='width:30px'");?>
+						 Yes <?php echo form_radio('serialized',0,$serialized=='0'?TRUE:FALSE,"style='width:30px'");?>No </td>
 						 
 					  </tr>
 					  
@@ -279,13 +292,12 @@
 					  </tr>
 				   </table>
 				</div>
-			<!-- QUANTITY -->				
-				<div title="Quantity" style="padding:10px">
-					<table id="dgGudang" class="easyui-datagrid"  width='100%'
+				<!-- QUANTITY -->				
+				<div title="Qty Tiap Gudang" style="padding:10px">
+					<table id="dgGudang" class="easyui-datagrid"  width='100%' height="300px"
                         data-options="
                             iconCls: 'icon-edit', fitColumns: true, 
-                            singleSelect: true,  
-                            url: '<?=base_url("inventory/qty_gudang2/".$item_number)?>',toolbar:'',
+                            singleSelect: true,  toolbar: '#tbQtyGudang',                            
                         ">
                         <thead>
                             <tr>
@@ -315,17 +327,18 @@
 						<td><?=form_input('date_to',date("Y-m-d 23:59:59"),'id=date_to  
 							data-options="formatter:format_date,parser:parse_date"
 							class="easyui-datetimebox" ');?></td>
-						<td><?=form_input('gudang','','id=gudang');?></td>
+						<td>Gudang: <?=form_input('gudang','','id=gudang');?></td>
 						<td><?=link_button('Search','search_cards()','search');?></td>
 						</tr>
 						</table>
 						 
 					</div>
-					<table id="dgCard" class="easyui-datagrid"  width='100%'
+					<table id="dgCard" class="easyui-datagrid"  width='100%' height="300px"
 						data-options="
 							iconCls: 'icon-edit', fitColumns: true, 
 							singleSelect: true,  
-							url: '',toolbar:'',
+							url: '',
+							toolbar:'',
 						">
 						<thead>
 							<tr>
@@ -351,9 +364,9 @@
 						data-options="
 							iconCls: 'icon-edit', fitColumns: true,
 							singleSelect: true,  
-							url: '<?=base_url()?>index.php/inventory/unit_price_list/<?=$item_number?>',
+							
 							toolbar:'#dgUnitPrice_Tool',
-						" width="100%">
+						" width="100%" height="300px">
 						<thead>
 							<tr>
 								<th data-options="field:'customer_pricing_code',width:80">Satuan</th>
@@ -363,22 +376,25 @@
 								<th data-options="field:'cost',width:80,align:'right'">Harga Beli</th>
 								<th data-options="field:'date_from',width:80">Date From</th>
 								<th data-options="field:'date_to',width:80">Date To</th>
+                                <th data-options="field:'qty_last',width:80">Qty Last</th>
+                                <th data-options="field:'calc_date',width:80">Calc Update</th>
+                                <th data-options="field:'date_to',width:80">Date To</th>
 							</tr>
 						</thead>
 					</table>
 				</div>
 				<div title='Assembly'>
-					<div class='thumbnail box-gradient'>
-						<p>Item Assembly atau Paket &nbsp &nbsp<?=form_radio('assembly',1,$assembly=='1'?TRUE:FALSE);?>
-							 Yes <?php echo form_radio('assembly',0,$assembly=='0'?TRUE:FALSE);?>No 
+					<div class='thumbnail'>
+						<p>Item Assembly atau Paket &nbsp &nbsp
+							<?=form_radio('assembly',1,$assembly=='1'?TRUE:FALSE," style='width:30px' ");?>
+							 Yes <?php echo form_radio('assembly',0,$assembly=='0'?TRUE:FALSE," style='width:30px' ");?>No 
 						</p>
 					</div>
-					<table id='dgAsm' name='dgAsm' class="easyui-datagrid"  width='100%'
+					<table id='dgAsm' name='dgAsm' class="easyui-datagrid"  width='100%' height="300px"
 						data-options="
 							iconCls: 'icon-edit', fitColumns: true,
 							singleSelect: true,  
-							url: '<?=base_url()?>index.php/inventory/assembly_list/<?=$item_number?>',
-							toolbar:'#dgAsm_Tool'," width="100%">
+							toolbar:'#dgAsm_Tool',">
 						<thead>
 							<tr>
 								<th data-options="field:'assembly_item_number',width:80">Item Number</th>
@@ -391,11 +407,10 @@
 					</table>
 				</div>
 				<div title='Suppliers'>
-					<table id='dgSupp' name='dgSupp' class="easyui-datagrid"  
+					<table id='dgSupp' name='dgSupp' class="easyui-datagrid"  width="100%" height="300px"
 						data-options="
 							iconCls: 'icon-edit', fitColumns: true, 
 							singleSelect: true,  
-							url: '<?=base_url()?>index.php/inventory/supplier_list/<?=$item_number?>',
 							toolbar:'#dgSupp_Tool'," width="100%">
 						<thead>
 							<tr>
@@ -427,6 +442,16 @@
 		echo link_button('Print','print_barcode_action()','print');
 	?>
 </div>
+<div id='tbQtyGudang'>
+	<?php
+		echo link_button('Refresh','refresh_qty_gudang()','reload');						
+	?>
+	<script>
+		function refresh_qty_gudang(){
+			$("#dgGudang").datagrid("reload");
+		}
+	</script>
+</div>
 
 
 <?php 
@@ -438,11 +463,69 @@ echo $lookup_size;
 
  <script language='javascript'>
 	var url="";	
- 
+	var _item_number=$("#item_number").val();
+
+
+	$(document).ready(function(){
+		$('#main-tab').tabs({
+			border:true,
+			onSelect:function(title){
+				if(title=="Active Promo"){
+					load_promo();
+				}
+				if(title=="Qty Tiap Gudang"){
+					load_qty_gudang();
+				}
+				if(title=="Assembly"){
+					load_assembly();
+				}
+				if(title=="Satuan"){
+					load_unit_price();
+				}
+				if(title=="Suppliers"){
+					load_supplier();
+				}
+			}
+		}); 
+	});
+	function load_supplier(){
+		var vUrl=CI_ROOT+"inventory/supplier_list/"+_item_number;
+		$('#dgSupp').datagrid({url:vUrl});
+	}
+
+	function load_unit_price(){
+		var vUrl=CI_ROOT+"inventory/unit_price_list/"+_item_number;
+		$('#dgUnitPrice').datagrid({url:vUrl});
+	}
+	function load_qty_gudang(){
+		var vUrl=CI_ROOT+"inventory/qty_gudang2/"+_item_number;
+		$('#dgGudang').datagrid({url:vUrl});
+	}
+
+	function load_promo(){
+		var vUrl=CI_ROOT+"inventory/promo/"+_item_number;
+		$('#dgPromo').datagrid({url:vUrl});
+	}
+	function load_assembly(){
+		var vUrl=CI_ROOT+"inventory/assembly_list/"+_item_number;
+		$('#dgAsm').datagrid({url:vUrl});
+	}
+
+	function dlginventory_sub_categories_ex_show() {
+		cat=$("#category").val();
+		if(cat==""){
+			alert("Pilih kategori terlebih dahulu !");return false;
+		}
+		$('#dlginventory_sub_categories').dialog('open').dialog('setTitle','Daftar Pilihan');
+		search_id=$('#dlginventory_sub_categories_search_id').val();
+		$('#dginventory_sub_categories').datagrid({url:'<?=base_url()?>index.php/lookup/query/inventory_sub_categories/'+search_id+'?parent_id='+cat});
+		$('#dginventory_sub_categories').datagrid('reload');
+	}
+
   	function save(){
-  		if($('#item_number').val()==''){alert('Isi kode barang !');return false;}
-  		if($('#frmBarang input[name=description]').val()==''){alert('Isi nama barang !');return false;}
-  		if($('#unit_of_measure').val()==''){alert('Isi satuan !');return false;}
+  		if($('#item_number').val()==''){log_err('Isi kode barang !');return false;}
+  		if($('#frmBarang input[name=description]').val()==''){log_err('Isi nama barang !');return false;}
+  		if($('#unit_of_measure').val()==''){log_err('Isi satuan !');return false;}
 		url='<?=base_url()?>index.php/inventory/save';
 			$('#frmBarang').form('submit',{
 				url: url,
@@ -521,12 +604,11 @@ echo $lookup_size;
 	{
 		var d1=$("#date_from").datebox('getValue');
 		var d2=$("#date_to").datebox('getValue');
-		var gudang=$("#gudang").val();
-		
+		var gudang=$("#gudang").val();		
 		var xurl='<?=base_url()?>index.php/inventory/kartu_stock/<?=$item_number?>?d1='+d1+'&d2='+d2+"&gudang="+gudang;
-		console.log(xurl);
+		///console.log(xurl);
 		$('#dgCard').datagrid({url:xurl});
-		$('#dgCard').datagrid('reload');
+		//$('#dgCard').datagrid('reload');
 	}
 	function dgUnitPrice_Refresh(){
 		var url='<?=base_url()?>index.php/inventory/unit_price_list/<?=$item_number?>'
@@ -603,9 +685,9 @@ echo $lookup_size;
  style="width:300px;height:200px;padding:5px 5px;left:100px;top:20px" closed="true" >
 	<div class="thumbnail">
 	<?php 
-		echo form_open_multipart(base_url()."index.php/inventory/do_upload_picture","id='frmUpload'");
+		echo form_open_multipart(base_url()."index.php/inventory/do_upload_picture","id='frmUpload' ");
 	?>
-		<input type="file" name="userfile" id="userfile" size="20" title="Pilih Gambar" stye="float:left" />
+		<input type="file" name="userfile" id="userfile" size="20" title="Pilih Gambar" stye="float:left;width:300px" />
 		<input type="button" value="Submit" onclick="do_upload()">  
 		</form>
 	</div>
@@ -630,7 +712,7 @@ echo $lookup_size;
 	<?=link_button('Refresh', 'dgSupp_Refresh()','reload');?>
 </div>
 
-<?
+<?php
 echo load_view("inventory/unit_price");
 echo load_view("inventory/assembly");
 echo load_view("inventory/supplier");
@@ -654,15 +736,3 @@ echo $lookup_suppliers;
 	</div>
 	<div id='dlgExcelInfo'></div>
 </div>
-<script language='JavaScript'>
-function dlginventory_sub_categories_ex_show() {
-    cat=$("#category").val();
-    if(cat==""){
-        alert("Pilih kategori terlebih dahulu !");return false;
-    }
-    $('#dlginventory_sub_categories').dialog('open').dialog('setTitle','Daftar Pilihan');
-    search_id=$('#dlginventory_sub_categories_search_id').val();
-    $('#dginventory_sub_categories').datagrid({url:'<?=base_url()?>index.php/lookup/query/inventory_sub_categories/'+search_id+'?parent_id='+cat});
-    $('#dginventory_sub_categories').datagrid('reload');
-}
-</script>

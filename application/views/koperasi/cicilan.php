@@ -4,11 +4,11 @@
 	<thead>
 		<tr>
 			<th data-options="field:'tanggal_jth_tempo', width:'80'">Tanggal</th>
-			<th data-options="field:'awal', width:'80'">Awal</th>
-			<th data-options="field:'pokok', width:'80'">Pokok</th>
-			<th data-options="field:'bunga', width:'80'">Bunga</th>
-			<th data-options="field:'angsuran', width:'80'">Angsuran</th>
-			<th data-options="field:'akhir', width:'80'">Akhir</th>
+			<th data-options="<?=col_number("awal")?>">Awal</th>
+			<th data-options="<?=col_number("pokok")?>">Pokok</th>
+			<th data-options="<?=col_number("bunga")?>">Bunga</th>
+			<th data-options="<?=col_number("angsuran")?>">Angsuran</th>
+			<th data-options="<?=col_number("akhir")?>">Akhir</th>
 			<th data-options="field:'payment_no', width:'80'">Nomor Bayar</th>
 			<th data-options="field:'comments', width:'80'">Catatan</th>
 			<th data-options="field:'no_pinjaman', width:'80'">Nomor Pinjaman</th>

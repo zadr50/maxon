@@ -9,16 +9,6 @@ class Login extends CI_Controller {
 	{
 		parent::__construct();
  		$this->load->helper(array('url','form'));
-                
-        $multi_company=$this->config->item('multi_company');
-       if($multi_company){
-            $company_code=$this->session->userdata("company_code","");
-            if($company_code!=""){
-               $this->db = $this->load->database($company_code, TRUE);
-           }
-       }         
-        
-        
 		$this->load->library('template_eshop');
 		 
 	}
@@ -27,8 +17,8 @@ class Login extends CI_Controller {
 		$data['content']=true;
 		$data['slider']=true;
 		$data['footer']='footer';
-		$data['sidebar']='category_list';
-		$this->template_eshop->display("home",$data);
+		//$data['sidebar']='category_list';
+		$this->template_eshop->display_main("home",$data);
 	}
 	function start() {	
 		$data['caption']="Login";
@@ -37,6 +27,7 @@ class Login extends CI_Controller {
 		$this->template_eshop->display("login",$data);
 	}
 	function verify() {
+		//untuk akses admin bikin customer kode [admin]
 		$cust_id=$this->input->post('cust_id');
 		$cust_pass=$this->input->post('cust_pass');
 		$ok=false;

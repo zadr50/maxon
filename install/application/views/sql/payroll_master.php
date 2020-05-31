@@ -1,6 +1,6 @@
 <?php
  
-$table="payroll";
+$table="jenis_tunjangan";
 $sql=" 
 CREATE TABLE jenis_tunjangan (
 	kode varchar (50) character set utf8 NOT NULL ,
@@ -24,6 +24,8 @@ CREATE TABLE jenis_potongan (
 	PRIMARY KEY  (`kode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
+$table.=", employee_type";
 
 $sql=" 
 
@@ -54,6 +56,8 @@ CREATE TABLE employee_status (
 	PRIMARY KEY  (`status`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
+$table.=", employee_level";
 
 $sql=" 
 

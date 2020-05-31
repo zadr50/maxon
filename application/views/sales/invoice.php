@@ -65,7 +65,7 @@
 	<tr>
 		<td>Nomor</td>
         <td>  			
-            <? 
+            <?php 
             	echo form_input('invoice_number',$invoice_number,'id=invoice_number');
             ?>
         </td>
@@ -162,7 +162,7 @@
 				<td>&nbsp</td><td>&nbsp</td>
 				<td>JUMLAH: </td><td><input id='total' name='amount' value='<?=number_format($amount)?>' style='width:100px;'>
 					 <a id='divHitung' href="#" class="easyui-linkbutton" data-options="iconCls:'icon-sum'"  
-					   plain='true' title='Hitung ulang' onclick='hitung_jumlah();return false;'></a>
+					   plain='false' title='Hitung ulang' onclick='hitung_jumlah();return false;'></a>
 					
 				</td>
 			</tr>
@@ -179,12 +179,12 @@
 			<? include_once "invoice_add_item_simple.php"; ?>
 		</div>
 		
-		<table id="dg" class="easyui-datagrid"  width='800px' style="width:800px;min-height:400px"			 
+		<table id="dg" class="easyui-datagrid"  width='1000px'  			 
 			data-options="
-				iconCls: 'icon-edit', fitColumns: false, 
+				iconCls: 'icon-edit', fitColumns: true, 
 				singleSelect: true,
 				toolbar: '#tb',
-				url: '<?=base_url()?>index.php/invoice/items/<?=$invoice_number?>/json'
+				url: ''
 			">
 			<thead>
 				<tr>
@@ -210,8 +210,11 @@
 							return number_format(value,2,'.',',');}">Cost</th>
 					<th data-options="field:'mu_qty',align:'right',editor:{type:'numberbox',options:{precision:2}}">M Qty</th>
 					<th data-options="field:'multi_unit',align:'left',editor:'text'">M Unit</th>
+					<th data-options="field:'from_line_type',align:'left',editor:'text'">RefType</th>
+					<th data-options="field:'from_line_doc',align:'left',editor:'text'">Ref</th>
 						
-					<th data-options="field:'line_number',align:'right'">Line</th>
+					<th data-options="field:'no_urut',width:30,align:'right'">NoUrut</th>
+					<th data-options="field:'line_number',width:30,align:'right'">Line</th>
 				</tr>
 			</thead>
 		</table>
@@ -221,7 +224,7 @@
 	</div>
 
 	<div id='divPay' title="Payments"  >
-	<?
+	<?php
 		include_once "payment_list.php";
 	?>
 	</div>
@@ -270,36 +273,9 @@
 	</DIV>
 	
 <!-- JURNAL -->
-	<DIV title="Jurnal" style="padding:10px"  style="min-height:350px">
-		<div id='divJurnal' class='thumbnail'>
-		<table id="dgCrdb" class="easyui-datagrid"  width='100%'
-			data-options="
-				iconCls: 'icon-edit', fitColumns: true,
-				singleSelect: true,toolbar:'#tbJurnal',
-				url: '<?=base_url()?>index.php/jurnal/items/<?=$invoice_number?>'
-			">
-			<thead>
-				<tr>
-					<th data-options="field:'account',width:80">Akun</th>
-					<th data-options="field:'account_description',width:150">Nama Akun</th>
-					<th data-options="field:'debit',width:80,align:'right'">Debit</th>
-					<th data-options="field:'credit',width:80,align:'right'">Credit</th>
-					<th data-options="field:'custsuppbank',width:50">Ref</th>
-					<th data-options="field:'operation',width:50">Operasi</th>
-					<th data-options="field:'source',width:50">Keterangan</th>
-					<th data-options="field:'transaction_id',width:50">Id</th>
-				</tr>
-			</thead>
-		</table>
-		<?php
-		  $row=$this->db->query("select sum(debit) as db,sum(credit) as cr 
-		      from gl_transactions where gl_id='$invoice_number'")->row();
-		  echo "<p>Total Debit: ".number_format($row->db).", Total Credit: ".number_format($row->cr).", 
-		      Saldo: ".number_format($row->db-$row->cr)."</p>";
-		?>
-		</div>
-			
-	</DIV>	
+	<?php 
+		echo load_view("gl/jurnal_view",array("gl_id"=>$invoice_number));
+	?>
 <!-- SUMMARY -->
 	<DIV title="Summary" style="padding:10px"  style="min-height:350px">
 		<div id='divSum' class='thumbnail'>		

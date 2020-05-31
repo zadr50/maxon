@@ -47,6 +47,11 @@ function save($data){
 	
 	if(!isset($data['price']))$data['price']=0;
 	if($data['price']=='')$data['price']=0;
+    
+    //cek inputan
+    if(!isset($data['multi_unit']))$data['multi_unit']=$data['unit'];
+    if(!isset($data['mu_harga']))$data['mu_harga']=$data['price'];
+    if(!isset($data['mu_qty']))$data['mu_qty']=$data['quantity'];
 
 	// apabila default satuan tidak sama dg inputan 
 	$lFoundOnPrice=false;
@@ -58,9 +63,6 @@ function save($data){
 				 
 				$lFoundOnPrice=true;
 				if($unit_price->quantity_high>0) $data['mu_qty']=$data['quantity']*$unit_price->quantity_high;
-				$data['mu_harga']=$item->cost_from_mfg;
-				if($data['mu_harga']==0)$data['mu_harga']=$item->cost;			
-				$data['multi_unit']=$item->unit_of_measure;			
 			}
 		}
 	}
@@ -85,10 +87,12 @@ function save($data){
 		
 	} 
 	if(!$lFoundOnPrice){
-		$data['mu_qty']=$data['quantity'];
-		$data['mu_harga']=$data['price'];
-		$data['multi_unit']=$data['unit'];
+		//$data['mu_qty']=$data['quantity'];		// di rudy mu_qty hanya display saja
+		//$data['mu_harga']=$data['price'];
+		//$data['multi_unit']=$data['unit'];
 	}	
+    //cek lagi
+    if($data['mu_harga']==0)$data['mu_harga']=$data['price'];
 	if($item){
 		if($data['description']=="") $data['description']=$item->description;
 		if(trim($data['unit'])=="") $data['unit']=$item->unit_of_measure;
@@ -120,24 +124,47 @@ function save($data){
     
 	$data['amount']=$gross;
 	if(!isset($data['warehouse_code']))$data["warehouse_code"]="";
-    if($data['warehouse_code']=="")$data['warehouse_code']=$this->session->set_userdata("session_outlet","");
-    if($data["warehouse_code"]=="")$data['warehouse_code']=$this->session->userdata("default_warehouse");
-	if($data['warehouse_code']=="")$data['warehouse_code']="Gudang";
+	$gudang=current_gudang();
+    if($data['warehouse_code']=="")$data['warehouse_code']=$gudang;
+    //$this->session->set_userdata("session_outlet","");
+    //if($data["warehouse_code"]=="")$data['warehouse_code']=$this->session->userdata("default_warehouse");
+	//if($data['warehouse_code']=="")$data['warehouse_code']="Gudang";
 	
-    $item_no=$data['item_number']; item_need_update($item_no);
+    $item_no=$data['item_number']; 
+    item_need_update($item_no);
+	$tanggal="";
+	if($qinv=$this->db->select("invoice_date")
+		->where("invoice_number",$data["invoice_number"])->get("invoice")){
+			if($rinv=$qinv->row()){
+				$tanggal=$rinv->invoice_date;
+			}
+		}
+    
 		
-	if($id!=""){
-		unset($data['line_number']);
-		$this->db->where($this->primary_key,$id);
-		return $this->db->update($this->table_name,$data);
+	if($id==0 || $id==""){
+        if(isset($data['line_number']))unset($data['line_number']);
+        $this->db->insert($this->table_name,$data);
 	} else {
-		$this->db->insert($this->table_name,$data);
+        unset($data['line_number']);
+        $this->db->where($this->primary_key,$id);
+        return $this->db->update($this->table_name,$data);
 	}
 	return $this->db->insert_id();
 }
 function update($id,$data){
     
-    $item_no=$data['item_number']; item_need_update($item_no);
+    $item_no=$data['item_number']; 
+    item_need_update($item_no);
+	$tanggal="";
+	$gudang=current_gudang();
+	if(isset($data['warehouse_code']))$gudang=$data['warehouse_code'];
+	if($qinv=$this->db->select("invoice_date")
+		->where("invoice_number",$data["invoice_number"])->get("invoice")){
+			if($rinv=$qinv->row()){
+				$tanggal=$rinv->invoice_date;
+			}
+		}
+	item_need_update_arsip($item_no, $gudang, $tanggal);
     
 	if($data['discount']=='')$data['discount']=0;
 	if($data['quantity']=='')$data['quantity']=0;

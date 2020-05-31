@@ -80,7 +80,7 @@ INSERT INTO `credit_card_type` (`id`, `card_type`, `update_status`, `sourceauton
 (3, 'Mandiri Master', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (8, 'Amex', NULL, NULL, NULL, 'Amex Card', '2010-02-11 00:00:00', '2009-07-24 00:00:00', 10);
 ";
-if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+//if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
 $table="currencies";
 $sql="
@@ -101,6 +101,6 @@ INSERT INTO `currencies` (`currency_code`, `description`, `update_status`) VALUE
 ('USD', 'Dollar', NULL);
 ";
 
-if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+//if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 	
 ?>

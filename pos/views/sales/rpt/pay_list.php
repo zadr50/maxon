@@ -83,9 +83,11 @@
                     if($rekening!=""){
                         $sql.=" and p.account_number='$rekening'";
                     }
-                    
-                    $sql.=" order by p.invoice_number";
-                    
+					if ($rpay->how_paid=='CARD'){                                        
+	                    $sql.=" order by p.account_number";
+					} else {
+	                    $sql.=" order by i.invoice_number";						
+					}
                     //echo "<br>$sql";
                     
                     $rst_so=$CI->db->query($sql);
@@ -93,12 +95,18 @@
                     
                     
                     $sub_total=0;
-                    
+                    $acc_old="";
+					$acc_new="";
+					$acc_subttl=0;
+					$acc_no="";
                      foreach($rst_so->result() as $row){
+                        	
+                        $acc_old=$acc_new;	
                         $warehouse_code=$CI->invoice_model->warehouse($row->invoice_number);
                         $account_number=$row->account_number;
                          
                         $rek="";
+						$acc_no="";
                         if($account_number==""){
                             //kalau gak ada di payment cari di kas masuk
                             $s="select cw.account_number,b.bank_name,coa.account_description 
@@ -109,6 +117,7 @@
                             if($qcw=$CI->db->query($s)){
                                 if($rcw=$qcw->row()){
                                     $account_number=$rcw->account_number.'-'.$rcw->bank_name;
+									$acc_no=$rcw->account_number;
                                 }
                             }
                         } else {
@@ -119,11 +128,10 @@
                                     $account_number.=" - $rbank->bank_name";
                                 }
                             }
+                            $acc_no=$account_number;
                         }
-    
-                        
-                                                 
-                        if($outlet==$warehouse_code || $outlet==''){                     
+                        if($outlet==$warehouse_code || $outlet==''){
+                        	
                      
                             $tbl.="<tr>";
                             $tbl.="<td>".$row->no_bukti."</td>";
@@ -136,10 +144,40 @@
                             
                             $sub_total+=$row->amount_paid;
                             $total+=$row->amount_paid;
+
+							if($rpay->how_paid=="CARD"){
+		   						$acc_subttl+=$row->amount_paid;
+		 						if($acc_old!=$acc_no ){
+		 							$acc_new=$acc_no;
+		                            $tbl.="<tr>";
+		                            $tbl.="<td></td>";
+		                            $tbl.="<td><b>Sub Total [$acc_no]</b></td>";
+		                            $tbl.="<td align='right'><b>".number_format($acc_subttl)."</b></td>";
+		                            $tbl.="<td></td>";
+		                            $tbl.="<td></td>";
+		                            $tbl.="<td></td>";
+		                            $tbl.="</tr>";
+		 							$acc_subttl=0; 							
+		 						}
+								
+							}
                         
                         }
                    };
                    $how_paid=$rpay->how_paid;
+                   
+							if($rpay->how_paid=="CARD"){
+		                            $tbl.="<tr>";
+		                            $tbl.="<td></td>";
+		                            $tbl.="<td><b>Sub Total [$acc_no]</b></td>";
+		                            $tbl.="<td align='right'><b>".number_format($acc_subttl)."</b></td>";
+		                            $tbl.="<td></td>";
+		                            $tbl.="<td></td>";
+		                            $tbl.="<td></td>";
+		                            $tbl.="</tr>";
+		 							$acc_subttl=0; 							
+								
+							}
                    
                    $tbl.= "<tr><td><strong>Sub Total $how_paid</strong></td>
                    <td></td>

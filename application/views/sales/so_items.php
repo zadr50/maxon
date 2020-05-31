@@ -1,5 +1,5 @@
 <div id='divItem' title="Items"  >
-	<table id="dg" class="easyui-datagrid"  width='1200'
+	<table id="dg" class="easyui-datagrid"  width='1200' height="300"
 		data-options="
 			iconCls: 'icon-edit',fitColumns: true, 
 			singleSelect: true,
@@ -25,6 +25,10 @@
 				<th data-options="field:'ship_date',width:50">Ship Date</th>
 				<th data-options="field:'mu_qty',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">M Qty</th>
 				<th data-options="field:'multi_unit',width:50,align:'left',editor:'text'">M Unit</th>
+				<th data-options="field:'no_urut',width:30,align:'right'">NoUrut</th>
+				<th data-options="field:'warehouse_code',width:30,align:'right'">Gudang</th>
+				<th data-options="field:'from_line_doc',width:30,align:'right'">Ref</th>
+				<th data-options="field:'from_line_type',width:30,align:'right'">RefType</th>
 				<th data-options="field:'line_number',width:30,align:'right'">Line</th>
 			</tr>
 		</thead>

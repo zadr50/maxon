@@ -22,7 +22,7 @@
      	<table cellpadding="3" border="1" width='100%'>
      		<thead>
      			<tr><th>Kode Barang</th><th>Nama Barang</th><th>Qty</th>
-     			    <th>Unit</td><th>Harga Beli</th><th>No.Ref#</th>
+     			    <th>Unit</td><th>No.Ref#</th>
      			</tr>
      		</thead>
      		<tbody>
@@ -40,7 +40,6 @@
                     $tbl.="<td>".$row->description."</td>";
                     $tbl.="<td align='right'>".number_format($row->quantity_received)."</td>";
                     $tbl.="<td>".$row->unit."</td>";
-                    $tbl.="<td align='right'>".number_format($row->cost)."</td>";
                     $tbl.="<td>".$row->ref1."</td>";
                     $tbl.="</tr>";
                     $qty+=$row->quantity_received;
@@ -48,7 +47,7 @@
                 };
                 $tbl.="<tr><td><strong>Total</strong></td><td></td>
                     <td align='right'><strong>".number_format($qty)."</strong></td>
-                    <td></td><td align='right'><strong>".number_format($amt)."</strong></td>
+                    <td></td> 
                     <td></td></tr>";
 			    echo $tbl;
     			

@@ -53,4 +53,22 @@ function __construct(){
         foreach ($query->result() as $row){$ret[$row->salesman]=$row->salesman;}		 
         return $ret;
 	}	
+	
+    function lookup(){        
+        $lookup = $this->list_of_values->render(array(
+        	"dlgBindId"=>"salesman","modules"=>"salesman",
+        	"dlgRetFunc"=>"			
+				$('#salesman').val(row.salesman);
+                $('#collector').val(row.collector);
+        	",
+        	"dlgCols"=>array(
+                array("fieldname"=>"salesman","caption"=>"Salesman","width"=>"180px")
+        	)
+        ));
+		return $lookup;
+        
+    }	
+
+
+	
 }

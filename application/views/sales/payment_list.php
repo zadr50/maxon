@@ -1,5 +1,5 @@
 		 
-	<table id="dgPay" class="easyui-datagrid"    width='90%'
+	<table id="dgPay" class="easyui-datagrid"    width='100%'
 		data-options="
 			iconCls: 'icon-edit', fitColumns: true,
 			singleSelect: true,
@@ -10,11 +10,15 @@
 			<tr>
 				<th data-options="field:'no_bukti',width:80">Nomor Bukti</th>
 				<th data-options="field:'date_paid',width:80">Tanggal Bayar</th>
-				<th data-options="field:'how_paid',width:150,align:'left',editor:'text'">Cara Bayar</th>
+				<th data-options="field:'how_paid',width:50,align:'left',editor:'text'">Cara Bayar</th>
 				<th data-options="field:'amount_paid',width:60,align:'right',editor:'numberbox',
 					formatter: function(value,row,index){
 						return number_format(value,2,'.',',');}">Jumlah</th>
 
+                <th data-options="field:'credit_card_number',width:80">Giro</th>
+                <th data-options="field:'expiration_date',width:80">G Jth Tempo</th>
+                <th data-options="field:'from_bank',width:50">G Bank</th>
+                <th data-options="field:'cleared',width:50">Cair?</th>
 				<th data-options="field:'line_number',width:30,align:'right'">Line</th>
 			</tr>
 		</thead>
@@ -41,9 +45,13 @@
 	<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="false" onclick="add_pay()">Add</a>
 	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="false" onclick="edit_pay()">Edit</a>
 	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="false" onclick="del_pay()">Delete</a>	
+	<a href="#" class="easyui-linkbutton" iconCls="icon-reload" plain="false" onclick="load_pay()">Reload</a>	
 </div>
 
 <script languange="javascript">
+	function load_pay(){
+		$('#dgPay').datagrid('reload');
+	}
 		function selectSearchItem()
 		{
 			var row = $('#dgItemSearch').datagrid('getSelected');

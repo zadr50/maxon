@@ -1,4 +1,4 @@
-<?
+<?php
          $CI =& get_instance();
          $CI->load->model('inventory_model');
 ?>
@@ -35,7 +35,7 @@
      		</thead>
      		<tbody>
      			<?
-		       $sql="select i.item_number,s.description,i.from_qty,i.unit 
+		       $sql="select i.item_number,s.description,i.to_qty,i.unit 
 		                from inventory_moving i left join inventory s on s.item_number=i.item_number
 		                where i.transfer_id='".$transfer_id."'";
 		        $query=$CI->db->query($sql);
@@ -45,7 +45,7 @@
                     $tbl.="<tr>";
                     $tbl.="<td>".$row->item_number."</td>";
                     $tbl.="<td>".$row->description."</td>";
-                    $tbl.="<td align=\"center\">".number_format($row->from_qty)."</td>";
+                    $tbl.="<td align=right>".number_format($row->to_qty)."</td>";
                     $tbl.="<td>".$row->unit."</td>";
                     $tbl.="</tr>";
                };

@@ -31,12 +31,12 @@
      	<td colspan="8">
      	<table border="1" cellpadding="3">
      		<thead>
-     			<tr><td>Kode Barang</td><td width="200">Nama Barang</td>
+     			<tr><td width="100">Kode Barang</td><td width="200">Nama Barang</td>
 				<td width="30">Qty</td><td width="30">Unit</td>
      			</tr>
      		</thead>
      		<tbody>
-     			<?
+     			<?php
 		       $sql="select item_number,description,quantity,unit,discount,price,amount 
 		                from invoice_lineitems i
 		                where invoice_number='".$invoice_number."'";
@@ -46,7 +46,7 @@
                  foreach($query->result() as $row){
                     $tbl.="<tr>";
                     $tbl.="<td>".$row->item_number."</td>";
-                    $tbl.="<td width=\"200\">".$row->description."</td>";
+                    $tbl.="<td >".$row->description."</td>";
                     $tbl.="<td width=\"30\" align=\"right\">".number_format($row->quantity)."</td>";
                     $tbl.="<td>".$row->unit."</td>";
                     $tbl.="</tr>";

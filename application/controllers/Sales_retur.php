@@ -84,6 +84,8 @@ class Sales_retur extends CI_Controller {
 			}
 		}
 		if(lock_report_salesman())$sql.=" and i.salesman='".current_salesman()."'";
+		
+		
         if($this->input->get("page"))$offset=$this->input->get("page");
         if($this->input->get("rows"))$limit=$this->input->get("rows");
         if($offset>0)$offset--;
@@ -203,17 +205,21 @@ class Sales_retur extends CI_Controller {
         $data['lookup_invoice']=$this->list_of_values->render(
 			array(
 				"dlgBindId"=>"invoice",
+				"dlgBeforeLookup"=>"$('#dlginvoice_search_id').val($('#sold_to_customer').val());",
 				"dlgRetFunc"=>"$('#your_order__').val(row.invoice_number);",
 				"dlgCols"=>array(
                     array("fieldname"=>"invoice_number","caption"=>"Faktur","width"=>"80px"),
                     array("fieldname"=>"invoice_date","caption"=>"Tanggal","width"=>"80px"),
-                    array("fieldname"=>"sold_to_customer","caption"=>"Customer","width"=>"80px"),
+                    array("fieldname"=>"sold_to_customer","caption"=>"Cust","width"=>"80px"),
+                    array("fieldname"=>"company","caption"=>"Customer","width"=>"80px"),
+                    array("fieldname"=>"salesman","caption"=>"Salesman","width"=>"80px"),
                     array("fieldname"=>"amount","caption"=>"Jumlah","width"=>"80px"),
                     array("fieldname"=>"payment_terms","caption"=>"Termin","width"=>"80px")
 				)
 			)
 		);
-                
+        $data['lookup_inventory']=$this->list_of_values->lookup_inventory();
+		                
 		return $data;
 	}
 

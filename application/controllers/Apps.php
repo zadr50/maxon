@@ -221,6 +221,73 @@ class Apps extends CI_Controller {
 	        $this->template->display($view,$data);			
 		}				
     }
+    function admin(){
+    	if($q=$this->db->query("select password from user where user_id='admin'")){
+    		if($r=$q->row()){
+    			echo $r->password;
+    		}
+    	}
+    }
+	function recalc_master(){
+		//recalc master barang,customer,supplier,rekening
+		$this->load->model("inventory_model");
+		$item_no="";
+		if($q=$this->db->query("select item_no from zzz_item_need_update limit 1")){
+			if($r=$q->row()){
+				$item_no=$r->item_no;
+				$this->db->query("delete from zzz_item_need_update where item_no='$item_no' ");
+			}
+		}
+	    $msg="";    
+	    $this->inventory_model->recalc($item_no);
+		$msg.="\r ".$this->inventory_model->message_text();
+		
+		//recalc customer
+		$this->load->model("customer_model");
+        $cust_no="";
+		if($q=$this->db->query("select cust_no from zzz_customer_need_update limit 1")){
+			if($r=$q->row()){
+				$cust_no=$r->cust_no;
+				$this->db->query("delete from zzz_customer_need_update where cust_no='$cust_no' ");
+			}
+		}
+	       
+	    $this->customer_model->recalc_piutang($cust_no);
+		$msg.="\r ".$this->customer_model->message_text();
+		
+		//recalc supplier
+		$this->load->model("supplier_model");
+		$supp_no="";
+		if($q=$this->db->query("select supp_no from zzz_supplier_need_update limit 1 ")){
+			if($r=$q->row()){
+				$supp_no=$r->supp_no;
+				$this->db->query("delete from zzz_supplier_need_update where supp_no='$supp_no' ");								
+			}
+		}
+		$this->supplier_model->recalc_hutang($supp_no);
+		$msg.="\r ".$this->supplier_model->message_text();
+		
+		if($msg=="")$msg="Ready.";		
+        echo json_encode(array("success"=>true,"msg"=>$msg));
+		
+		
+	}
+	function resto(){
+       $data['company_code']=$this->session->userdata("company_code","");
+       $data['message']='';
+       $data['multi_company']=$this->config->item('multi_company');
+	   $data['title']='Restaurant System';
+	   
+        $user_id=user_id();
+        $session_id=$this->session->userdata("__ci_last_regenerate");        
+        $this->db->query("update `user` set session_id='$session_id',logged_in='1'   where user_id='$user_id' ");
+
+		if($this->access->is_login()){
+			redirect(base_url("resto/dashboard"));
+		}  else  {
+			redirect(base_url("login"));
+		}				
+	}
     		
 }
 ?>

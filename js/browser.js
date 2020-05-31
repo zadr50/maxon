@@ -20,7 +20,6 @@ function add_item() {
 	var url=M_CONTROL+"/add";
 	window.open(url,"_self");
 }
- 
 $(document).ready(function() {
 	$("#"+M_ID_TABLE+" .deleteLink").on("click",function() {
 		var kode=$(this).attr("value");

@@ -29,6 +29,9 @@ function __construct(){
 		return $this->db->count_all($this->table_name);
 	}
 	function get_by_id($id){
+		$id=urldecode($id);
+		rekening_need_update($id);
+		
 		$this->db->where($this->primary_key,$id);
 		return $this->db->get($this->table_name);
 	}
@@ -46,11 +49,16 @@ function __construct(){
         return $ret;
     }
 	function save($data){
+		$id=$data[$this->primary_key];
+		rekening_need_update($id);
 	    $data=$this->cek_setting_no_bukti($data);
 		$this->db->insert($this->table_name,$data);
 		return $this->db->insert_id();
 	}
 	function update($id,$data){
+			
+		rekening_need_update($id);
+		
         $data=$this->cek_setting_no_bukti($data);
 		$this->db->where($this->primary_key,$id);
 		$this->db->update($this->table_name,$data);
@@ -83,6 +91,11 @@ function __construct(){
         return $data;
     }
 	function delete($id){
+		
+		$id=urldecode($id);
+		
+		rekening_need_update($id);
+		
 		$this->db->where($this->primary_key,$id);
 		$this->db->delete($this->table_name);
 	}
@@ -135,8 +148,9 @@ function __construct(){
 	function account_id($id) {
 		$ret=0;
 		if($q=$this->get_by_id($id)){
-			$q2=$q->row();
-			$ret=intval($q2->account_id);
+			if($q2=$q->row()){
+				$ret=intval($q2->account_id);				
+			}
 		}
 		return $ret;
 	}
@@ -162,7 +176,9 @@ function __construct(){
         }
         return $ret;
     }
-    
+    function next_bank_recalc(){
+    	
+    }
 	
 }
 ?>

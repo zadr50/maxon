@@ -51,10 +51,23 @@ CREATE TABLE IF NOT EXISTS `purchase_order` (
   `currency_code` varchar(50) default NULL,
   `currency_rate` double default NULL,
   `subtotal` double default NULL,
-  PRIMARY KEY  (`purchase_order_number`)
+  `branch_code` varchar(50) DEFAULT NULL,
+  `division_code` varchar(50) DEFAULT NULL,
+  `dept_code` varchar(50) DEFAULT NULL,
+  `doc_status` varchar(50) DEFAULT NULL,
+  `project_code` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`purchase_order_number`),
+  KEY `x1` (`po_date`),
+  KEY `x2` (`supplier_number`),
+  KEY `x3` (`potype`),
+  KEY `x4` (`warehouse_code`),
+  KEY `x5` (`branch_code`),
+  KEY `x6` (`project_code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
+$table.=", purchase_order_lineitems";
 
 $sql="
 
@@ -105,8 +118,13 @@ CREATE TABLE IF NOT EXISTS `purchase_order_lineitems` (
   `dept_sub` varchar(50) character set utf8 default NULL,
   `price_margin` int(11) default NULL,
   `warehouse_code` varchar(50) default NULL,
-  PRIMARY KEY  (`line_number`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=313 ;
+  `selected` tinyint(4) DEFAULT NULL,
+  PRIMARY KEY (`line_number`),
+  KEY `x1` (`purchase_order_number`),
+  KEY `x2` (`warehouse_code`),
+  KEY `x3` (`item_number`),
+  KEY `x4` (`description`)
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 

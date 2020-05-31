@@ -3,31 +3,22 @@
 class Rekening extends CI_Controller {
     private $limit=10;
     private $offset=0;
-    private $table_name='kop_tabungan';
-	private $sql="select t.no_simpanan, t.no_anggota,a.nama, t.tanggal, t.jenis 
-	 from kop_tabungan t left join kop_anggota a on a.no_anggota=t.no_anggota ";
+    private $table_name='kop_simpanan';
+	private $sql="select t.nomor, t.kode_anggota,a.nama, t.tanggal_daftar, t.jenis_simpanan 
+	 from kop_simpanan t left join kop_anggota a on a.no_anggota=t.kode_anggota ";
 
 	function __construct()
 	{
 		parent::__construct();
 		if(!$this->access->is_login())header("location:".base_url());
  		$this->load->helper(array('url','form','browse_select','mylib_helper'));
-                
-        $multi_company=$this->config->item('multi_company');
-       if($multi_company){
-            $company_code=$this->session->userdata("company_code","");
-            if($company_code!=""){
-               $this->db = $this->load->database($company_code, TRUE);
-           }
-       }         
-        
-        
         $this->load->library('javascript');
         $this->load->library('template');
 		$this->load->library('form_validation');
         $this->load->library('sysvar');
 	 	$this->load->model("koperasi/rekening_model");
 	 	$this->load->model("koperasi/jenis_simpanan_model");
+		$this->load->model("koperasi/anggota_model");
 		
 	}
 	function nomor_bukti($add=false)
@@ -54,10 +45,15 @@ class Rekening extends CI_Controller {
 		$data=data_table($this->table_name,$record);
         $data['mode']='';
         $data['message']='';
-		$data['tanggal']= date("Y-m-d H:i:s");
-		$data['anggota']='';
-		$data['jenis_list']=$this->jenis_simpanan_model->item_list();
-		if($record==NULL)$data['no_simpanan']=$this->nomor_bukti();
+		if($record==NULL){
+			$data['nomor']=$this->nomor_bukti();
+			$data['tanggal_daftar']= date("Y-m-d H:i:s");
+			$data['anggota']='';
+			$data['jenis_simpanan']='';			
+		} else {
+			$this->anggota_model->get_by_id($data['kode_anggota']);
+			$data['anggota']=$this->anggota_model->get_info();
+		}
         return $data;
 	}
 	function index(){$this->browse();}
@@ -70,17 +66,17 @@ class Rekening extends CI_Controller {
 	}
 	function save(){
 			$data=$this->input->post();
-			$id=$this->input->post("no_simpanan");
+			$id=$this->input->post("nomor");
 			$mode=$data["mode"];
 		 	unset($data['mode']);
 			if($mode=="add"){ 
 				$id=$this->nomor_bukti();
-				$data['no_simpanan']=$id;
+				$data['nomor']=$id;
 				$ok=$this->rekening_model->save($data);
 			} else {
 				$ok=$this->rekening_model->update($id,$data);				
 			}
-			if($ok){echo json_encode(array("success"=>true,"no_simpanan"=>$id));} 
+			if($ok){echo json_encode(array("success"=>true,"nomor"=>$id));} 
 			else {echo json_encode(array("msg"=>"Error ".mysql_error()));}
 		    
 		  
@@ -96,17 +92,17 @@ class Rekening extends CI_Controller {
 		 $this->template->display_form_input('koperasi/rekening',$data);
 	}
 	function _set_rules(){	
-		 $this->form_validation->set_rules('no_anggota','Isi nomor anggota', 'required');
-		 $this->form_validation->set_rules('no_simpanan','Isi nomor rekening simpanan', 'required|trim');
+		 $this->form_validation->set_rules('kode_anggota','Isi nomor anggota', 'required');
+		 $this->form_validation->set_rules('nomor','Isi nomor rekening simpanan', 'required|trim');
 	}
  	function search(){$this->browse();}
  	       
 	function browse($offset=0,$limit=10,$order_column='loan_number',$order_type='asc')	{
         $data['caption']='DAFTAR REKENING';
 		$data['controller']='koperasi/rekening';		
-		$data['fields_caption']=array('Nomor','Tanggal','Nama Anggota','Kelompok','Alamat','Kota');
-		$data['fields']=array('no_simpanan','tanggal','nama','group_type','street','city');
-		$data['field_key']='no_simpanan';
+		$data['fields_caption']=array('Nomor','Tanggal','Nama Anggota','Jenis','Alamat','Kota');
+		$data['fields']=array('nomor','tanggal_daftar','nama','jenis_simpanan','street','city');
+		$data['field_key']='nomor';
 		$this->load->library('search_criteria');
 		
 		$faa[]=criteria("Nomor","sid_nomor");
@@ -118,7 +114,7 @@ class Rekening extends CI_Controller {
 		$sql=$this->sql. " where 1=1";
 		$s=$this->input->get('sid_nomor');		
 		if($s!=''){
-			$sql.=" and no_simpan='$s'";
+			$sql.=" and nomor='$s'";
 		} else {
 			$s=$this->input->get('sid_nama');if($s!='')$sql.=" and nama like '$s%'";
 		}			

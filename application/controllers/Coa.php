@@ -340,7 +340,8 @@ class Coa extends CI_Controller {
                         ->order_by("account")->get("chart_of_accounts");
                     foreach($qcoa1->result() as $rcoa1){
                         $rgrp3_dat[]=array('id'=>"A_".$rcoa1->account,
-                            'text'=>"$rcoa1->account - $rcoa1->account_description - (A),  ".number_format($rcoa1->beginning_balance));
+                            'text'=>"$rcoa1->account - $rcoa1->account_description - (A)
+                            (Saldo: ".number_format($rcoa1->beginning_balance).",Id: $rcoa1->id) ");
                         $acc_exist[]=$rcoa1->account;
                     }
                     
@@ -355,7 +356,8 @@ class Coa extends CI_Controller {
                 
                 foreach($qcoa1->result() as $rcoa1){
                     $rgrp2_dat[]=array('id'=>"A_".$rcoa1->account,
-                        'text'=>"$rcoa1->account - $rcoa1->account_description - (A), ".number_format($rcoa1->beginning_balance));
+                        'text'=>"$rcoa1->account - $rcoa1->account_description - (A)
+                        (Saldo: ".number_format($rcoa1->beginning_balance).",Id: $rcoa1->id) ");
                         $acc_exist[]=$rcoa1->account;
                 }
                 
@@ -384,14 +386,15 @@ class Coa extends CI_Controller {
             }
         }
         if($s2!=""){
-            $s="select account,account_description,id from chart_of_accounts  
+            $s="select account,account_description,id,beginning_balance from chart_of_accounts  
                 where account not in ($s2) and account_type<>'$coa_type'
                 order by account";
             $coa_invalid=array();
             $qcoa=$this->db->query($s);
             foreach($qcoa->result() as $rcoa){
                $coa_invalid[]=array("id"=>"A_".$rcoa->account,
-                    "text"=>"$rcoa->account - $rcoa->account_description - (A)");
+                    "text"=>"$rcoa->account - $rcoa->account_description - (A)
+                    (Saldo: ".number_format($rcoa->beginning_balance).",Id:$rcoa->id)");
             }
             
             

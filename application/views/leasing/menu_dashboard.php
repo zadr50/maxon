@@ -14,15 +14,15 @@
 			include_once "kolektor_widget.php";
 		?>
 			<?
-			if (allow_mod('_18000.001'))	add_button_menu("1. Debitur","leasing/cust_master","ico_payroll.png",
+			if (allow_mod('_18000.001'))	add_button_menu("Debitur","leasing/cust_master","ico_payroll.png",
 					"Pendaftar nama debitur atau data master pelanggan leasing");
-			if (allow_mod('_18000.003'))	add_button_menu("2. Pengajuan","leasing/app_master","ico_sales.png",
+			if (allow_mod('_18000.003'))	add_button_menu("Pengajuan","leasing/app_master","ico_sales.png",
 					"Pencatatan formulir pengajuan kredit pelanggan.");
-			if (allow_mod('_18000.006'))	add_button_menu("3. Survey","leasing/survey","rocket.png",
+			if (allow_mod('_18000.006'))	add_button_menu("Survey","leasing/survey","rocket.png",
 					"Pencatatan data kunjungan survey aplikasi kredit.");
-			if (allow_mod('_18000.004'))	add_button_menu("4. Phone Verify","leasing/verify","ico_koperasi.png",
+			if (allow_mod('_18000.004'))	add_button_menu("Phone Verify","leasing/verify","ico_koperasi.png",
 					"Pencatatan formulir phone verification pelanggan.");
-			if (allow_mod('_18000.005'))	add_button_menu("5. Scoring","leasing/scoring","ico_manuf.png",
+			if (allow_mod('_18000.005'))	add_button_menu("Scoring","leasing/scoring","ico_manuf.png",
 					"Proses pembuatan score aplikasi kredit dan verificator.");
 					/*
 			if (allow_mod('_18000.015'))	add_button_menu("Recomend To Survey","leasing/scoring/recomend","rocket.png",
@@ -31,21 +31,21 @@
 					"Proses analysa risk/resiko pengajuaan aplikasi.");
 					
 					*/
-			if (allow_mod('_18000.014'))	add_button_menu("6. Proses Approval","leasing/approve","rocket.png",
+			if (allow_mod('_18000.014'))	add_button_menu("Proses Approval","leasing/approve","rocket.png",
 					"Proses approval pengajuaan aplikasi.");
-			if (allow_mod('_18000.008'))	add_button_menu("7. Kontrak Kredit","leasing/loan","frames.png",
+			if (allow_mod('_18000.008'))	add_button_menu("Kontrak Kredit","leasing/loan","frames.png",
 					"Pencatatan formulir kredit pelanggan dan schedule cicilan kredit dan agunan.");
 
-			if (allow_mod('_18000.008'))	add_button_menu("8. Print PO/DO/TRX","leasing/loan/print_new_doc","frames.png",
+			if (allow_mod('_18000.008'))	add_button_menu("Print PO/DO/TRX","leasing/loan/print_new_doc","frames.png",
 					"Lihat dokumen terbaru otomatis buat dicetak.");
 
-			if (allow_mod('_18000.023'))	add_button_menu("9. Tanda Terima Barang","leasing/delivery/add","rocket.png",
+			if (allow_mod('_18000.023'))	add_button_menu("Tanda Terima Barang","leasing/delivery/add","rocket.png",
 					"Proses tanda terima barang.");
 					
-			if (allow_mod('_18000.009'))	add_button_menu("10. Billing","leasing/billing","rocket.png",
+			if (allow_mod('_18000.009'))	add_button_menu("Billing","leasing/billing","rocket.png",
 					"Proses billing penagihan.");
 					
-			if (allow_mod('_18000.010'))	add_button_menu("11. Bayar Cicilan","leasing/payment","gazpacho.png",
+			if (allow_mod('_18000.010'))	add_button_menu("Bayar Cicilan","leasing/payment","gazpacho.png",
 					"Pembayaran cicilan kredit oleh pelanggan");
 			if (allow_mod('_18000.011'))	add_button_menu("Kolektor","leasing/kolektor","rocket.png",
 					"Pencatatan jadwal kolektor penagihan.");

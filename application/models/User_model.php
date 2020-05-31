@@ -65,9 +65,9 @@ function __construct(){
 	}
 	 function get_login_info($user_id)
 	 {
-		 $this->db->where('$user_id', $user_id);
+		 $this->db->where('user_id', $user_id);
 		 $this->db->limit(1);
-		 $query = $this->db->get($this->table);
+		 $query = $this->db->get($this->table_name);
 		 return ($query->num_rows() > 0) ? $query->row() : FALSE;
 	 }
 	 function list_user_by_group($group_id){

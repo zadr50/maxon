@@ -3,9 +3,12 @@ class Invoice_lineitems_model extends CI_Model {
 
 private $primary_key='line_number';
 private $table_name='invoice_lineitems';
+private $invoice_number='';
 
 function __construct(){
 	parent::__construct();        
+	$this->load->model('inventory_model');
+	$this->load->model("inventory_prices_model");
       
 }
   
@@ -22,8 +25,8 @@ function get_by_nomor($nomor){
 }
 
 function save($data){
-	$this->load->model('inventory_model');
-	$this->load->model("inventory_prices_model");
+	$this->invoice_number=$data['invoice_number'];
+	
 	$id=0;
 	if(isset($data['line_number']))$id=$data['line_number'];
 	$item=$this->inventory_model->get_by_id($data['item_number'])->row();
@@ -46,6 +49,10 @@ function save($data){
 	
 	if(!isset($data['price']))$data['price']=0;
 	if($data['price']=='')$data['price']=0;
+    if(!isset($data['unit']))$data['unit']="Pcs";
+	if(!isset($data['mu_qty']))$data['mu_qty']=$data['quantity'];
+	if(!isset($data['mu_harga']))$data['mu_harga']=$data['price'];
+	if(!isset($data['multi_unit']))$data['multi_unit']=$data['unit'];			
 
 	// apabila default satuan tidak sama dg inputan 
 	$lFoundOnPrice=false;
@@ -83,16 +90,30 @@ function save($data){
 		$data['multi_unit']=$unit['from_unit'];		
 		
 	} 
-	if(!$lFoundOnPrice){
-		$data['mu_qty']=$data['quantity'];
-		$data['mu_harga']=$data['price'];
-		$data['multi_unit']=$data['unit'];
+	if(!$lFoundOnPrice ){
+		if( $data['unit']==$data['multi_unit']){
+			$data['mu_qty']=$data['quantity'];
+			$data['mu_harga']=$data['price'];
+			$data['multi_unit']=$data['unit'];			
+		}
 	}	
+	if($data['mu_qty']=='')$data['mu_qty']=$data['quantity'];
+	if($data['mu_harga']=='')$data['mu_harga']=$data['price'];
+	if($data['multi_unit']=='')$data['multi_unit']=$data['unit'];			
+
 	if($item){
 		if($data['description']=="") $data['description']=$item->description;
 		if(trim($data['unit'])=="") $data['unit']=$item->unit_of_measure;
 		$data['cost']=$item->cost;
 	}
+	if($qinv=$this->db->select("invoice_date")
+		->where("invoice_number",$data["invoice_number"])->get("invoice")){
+			if($rinv=$qinv->row()){
+				$tanggal=$rinv->invoice_date;
+			}
+		}
+	
+	
 	//echo "Unit: ".$data['unit'].",Qty: ".$data['quantity'].", Price: ".$data['price'];
 	//echo ", MUnit: ".$data['multi_unit'].",MQty: ".$data['mu_qty'].", MPrice: ".$data['mu_harga'];
 	
@@ -113,12 +134,28 @@ function save($data){
 	$data['disc_amount_3']=$disc_amount_3;
 	$data['amount']=$gross;
     
-    if(!isset($data['warehouse_code']))$data["warehouse_code"]="";
-    if($data['warehouse_code']=="")$data['warehouse_code']=$this->session->userdata("session_outlet","");
-    if($data["warehouse_code"]=="")$data['warehouse_code']=$this->session->userdata("default_warehouse");
-    if($data['warehouse_code']=="")$data['warehouse_code']="Gudang";
+	if(!isset($data['warehouse_code'])) {
+		$data["warehouse_code"]="";
+		$gudang=$data['warehouse_code'];
+	} else {
+		$gudang=$data['warehouse_code'];
+	}
+    if($gudang)$gudang=$this->session->userdata("session_outlet","");
+    if($gudang=="")$gudang=$this->session->userdata("default_warehouse");
+    if($gudang=="")$gudang="Gudang";
 	
-    $item_no=$data['item_number']; item_need_update($item_no);
+	$s2="select warehouse_code from invoice_lineitems where invoice_number='$this->invoice_number' and warehouse_code<>''";
+	if($s2=$this->db->query($s2)){
+		if($r2=$s2->row()){
+			$gudang=$r2->warehouse_code;
+		}
+	}
+	$data["warehouse_code"]=$gudang;
+
+    $item_no=$data['item_number']; 
+
+    item_need_update($item_no);
+	item_need_update_arsip($item_no, $gudang, $tanggal);
 
 	if(isset($data["coa1"])){
 		$data["coa1"]=account_id($data["coa1"]);
@@ -135,8 +172,24 @@ function save($data){
 	} else {
 		$this->db->insert($this->table_name,$data);
 	}
-	return $this->db->insert_id();
+	$line_number = $this->db->insert_id();
+	$this->set_no_urut();
+		
+	return $line_number;
 }
+	function set_no_urut(){
+		$no_urut=0;
+		$s="select line_number,no_urut from invoice_lineitems where invoice_number='$this->invoice_number' ";
+		if($q=$this->db->query($s)){
+			foreach($q->result() as $r){
+				$no_urut++;
+				if($r->no_urut==''){
+					$s="update invoice_lineitems set no_urut='$no_urut' where line_number='$r->line_number' ";
+					$this->db->query($s);
+				}
+			}
+		}
+	}
 function update($id,$data){
 	if($data['discount']=='')$data['discount']=0;
 	if($data['quantity']=='')$data['quantity']=0;
@@ -151,7 +204,19 @@ function update($id,$data){
 		$data['mu_harga']=$data['price'];
 		$data['multi_unit']=$data['unit'];
 	}
-    $item_no=$data['item_number']; item_need_update($item_no);
+    $item_no=$data['item_number']; 
+    item_need_update($item_no);
+	
+	$tanggal="";
+	$gudang=$data['warehouse_code'];
+	if($qinv=$this->db->select("invoice_date")
+		->where("invoice_number",$data["invoice_number"])->get("invoice")){
+			if($rinv=$qinv->row()){
+				$tanggal=$rinv->invoice_date;
+			}
+		}
+	item_need_update_arsip($item_no, $gudang, $tanggal);
+	
 	if($data['quantity']>"0"){
 		$this->db->where($this->primary_key,$id);
 		return $this->db->update($this->table_name,$data);

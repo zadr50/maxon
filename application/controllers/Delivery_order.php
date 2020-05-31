@@ -76,7 +76,9 @@ class Delivery_order extends CI_Controller {
             );          
         
         $data['lookup_gudang']=$this->list_of_values->render($setwh);
-        
+        $data['lookup_customers']=$this->list_of_values->lookup_customers();
+		$data['lookup_inventory']=$this->list_of_values->lookup_inventory();
+                
         $setwh['dlgBindId']="salesman";
         $setwh['dlgRetFunc']="$('#salesman').val(row.salesman);";
         $setwh['dlgCols']=array( 
@@ -86,10 +88,21 @@ class Delivery_order extends CI_Controller {
 
         $data['lookup_so_open']=$this->list_of_values->render(array(
         	"dlgBindId"=>"sales_order_open",
-        	"dlgRetFunc"=>"			
-        		$('#sales_order_number').val(row.sales_order_number);
+        	"dlgBeforeLookup"=>"
+        		 var mode=$('#mode').val();
+        		if(mode=='add'){
+        			log_err('Simpan dulu nomor !');return false;
+        		}			
+        	        	
+        	",
+        	"dlgRetFunc"=>"
+        		if($('#sales_order_number').val()!=''){
+        			$('#sales_order_number').val('MULTI');
+        		} else {
+	        		$('#sales_order_number').val(row.sales_order_number);
+        		}
 				$('#sold_to_customer').val(row.sold_to_customer);
-        		selected_so_number2();
+        		selected_so_number2(row.sales_order_number);
         	",
         	"dlgCols"=>array(
                 array("fieldname"=>"sales_order_number","caption"=>"Nomor SO","width"=>"80px"),
@@ -99,8 +112,6 @@ class Delivery_order extends CI_Controller {
         	)
         ));
         
-        $data['lookup_customers']=$this->list_of_values->lookup_customers();
-		$data['lookup_inventory']=$this->list_of_values->lookup_inventory();
                 
         		
 		return $data;
@@ -281,7 +292,22 @@ class Delivery_order extends CI_Controller {
 		$id=urldecode($id);
         $this->load->model('invoice_lineitems_model');
         return $this->invoice_lineitems_model->delete($id);
-    }        
+	}        
+	function get_warehouse_code($id){
+		$ret=$this->invoice_model->warehouse_code;
+		if($ret==""){
+			if($q=$this->db->query("select warehouse_code from invoice_lineitems 
+				where invoice_number='$id' and warehouse_code<>''")){
+					if($r=$q->row()){
+						$ret=$r->warehouse_code;
+						if($ret<>''){
+							$this->db->query("update invoice set warehouse_code='$ret' where invoice_number='$id'");
+						}
+					}
+				}
+		}
+		return $ret;
+	}
 	function view($id,$message=null){
 		if(!allow_mod2('_80060'))return false;   
 		$id=urldecode($id);
@@ -291,7 +317,7 @@ class Delivery_order extends CI_Controller {
 		 $data['id']=$id;
 		 $model=$this->invoice_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
-		 $data['warehouse_code']=$this->invoice_model->warehouse_code;
+		 $data['warehouse_code']=$this->get_warehouse_code($id);
 		 $data['mode']='view';
          $data['message']=$message;
 		 $cst=$this->invoice_model->get_by_id($data['sold_to_customer'])->row();
@@ -439,7 +465,8 @@ class Delivery_order extends CI_Controller {
 		$nomor=urldecode($nomor);
 		$sql="select p.item_number,i.description,p.quantity 
 		,p.unit,p.price,p.discount,p.amount,p.line_number,
-		p.discount,p.disc_2,p.disc_3,p.multi_unit,p.mu_qty
+		p.discount,p.disc_2,p.disc_3,p.multi_unit,p.mu_qty,p.no_urut,
+		p.from_line_type,p.from_line_doc,p.warehouse_code
 		from invoice_lineitems p
 		left join inventory i on i.item_number=p.item_number
 		where invoice_number='$nomor'";
@@ -625,6 +652,76 @@ class Delivery_order extends CI_Controller {
 		} else {
 			echo json_encode(array('success'=>false));
 		}
-	}		
+	}	
+	function save_items_so(){
+		$this->load->model("sales_order_lineitems_model");
+		$this->load->model("sales_order_model");
+		
+		$data=$this->input->post();
+		$nomor_do=$this->input->get('nomor_do');
+		$warehouse_code=current_gudang();
+		$currency_code="IDR";
+		$currency_rate=1;
+		$s="select i.warehouse_code,i.currency_code,i.currency_rate,i.sales_order_number 
+		from invoice_lineitems il left join invoice i on i.invoice_number=il.invoice_number 
+		where il.invoice_number='$nomor_do' ";
+		$ref_so="";
+		$so_no="";
+		if($q=$this->db->query($s)){
+			if($r=$q->row()){
+				if($r->warehouse_code!="") $warehouse_code=$r->warehouse_code;
+				if($r->currency_code!="") $currency_code=$r->currency_code;
+				if(c_($r->currency_rate)>0) $currency_rate=$r->currency_rate;
+				$so_no=$r->sales_order_number;
+			}
+		}
+		if($so_no!="")$ref_so="MULTI";
+		
+		$q_kirim=$data['q_sisa'];
+		$line_number=$data['line_number'];
+		$from_so_number="";
+		for($i=0;$i<count($line_number);$i++){
+			$line_number_so=$line_number[$i];
+			$qty_kirim_now=$q_kirim[$i];
+			if($q=$this->sales_order_lineitems_model->get_by_id($line_number_so)){
+				if($row=$q->row() ){
+					if($from_so_number=="")$from_so_number=$row->sales_order_number;
+					if($qty_kirim_now>0){
+						$items["invoice_number"]=$nomor_do;
+						$items["item_number"]=$row->item_number;
+						$items["description"]=$row->description;
+						$items["quantity"]=$qty_kirim_now;
+						$items["unit"]=$row->unit;
+						$items["price"]=$row->price;
+						$items["discount"]=$row->discount;
+						$items["disc_2"]=$row->disc_2;
+						$items["disc_3"]=$row->disc_3;
+						$items["discount_amount"]=$row->discount_amount;
+						$items["disc_amount_2"]=$row->disc_amount_2;
+						$items["disc_amount_3"]=$row->disc_amount_3;
+						$items["amount"]=$row->amount;
+						$items["multi_unit"]=$row->multi_unit;
+						$items["mu_qty"]=$qty_kirim_now;
+						$items["mu_harga"]=$row->mu_harga;
+						$items["from_line_number"]=$row->line_number;
+						$items["from_line_type"]="SO";
+						$items["from_line_doc"]=$row->sales_order_number;
+						$items["cost"]=$row->cost;
+						$items["warehouse_code"]=$warehouse_code;
+						$items["currency_code"]=$currency_code;
+						$items["currency_rate"]=$currency_rate;
+						$this->db->insert("invoice_lineitems",$items);
+						if($ref_so=="")$ref_so=$row->sales_order_number;
+					}
+				}
+			}
+		}
+		$s="update invoice set sales_order_number='$ref_so' where invoice_number='$nomor_do' ";
+		$this->db->query($s);
+		
+		$this->sales_order_model->recalc_ship_qty($from_so_number);
+		
+		echo json_encode(array("success"=>true,"msg"=>"Success"));
+	}	
 }
 ?>

@@ -9,9 +9,9 @@
  <body>
  	<div id='hd' >
 	   	<div id='hd_left'  >
-	    	<? 
+	    	<?php 
 			if( !isset($header)) $header="";
-			echo $header;
+				echo $header;
 			?> 
 	    </div>
 	    <div id='hd_right' >

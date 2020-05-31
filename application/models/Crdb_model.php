@@ -6,17 +6,15 @@ private $table_name='crdb_memo';
 public $show_finish_message=true;
 
 	function __construct(){
-		parent::__construct();        
-       
-	}
-	function total_by_invoice($faktur)
-	{
-		$q=$this->db->query("select sum(amount) as sum_amt from crdb_memo where docnumber='$faktur'")->row();
-		if($q){
-			return $q->sum_amt;
-		} else {
-			return 0;
-		}
+		parent::__construct();     
+		$this->load->model('company_model');
+		$this->load->model("periode_model");
+		$this->load->model('chart_of_accounts_model');
+		$this->load->model('customer_model');
+		$this->load->model('supplier_model');
+		$this->load->model('purchase_order_model');
+		$this->load->model('invoice_model');
+		$this->load->model('jurnal_model');
 	}
     function amount_sum($faktur_ref,$transtype='PO-DEBIT MEMO'){
         $sql="select sum(amount) as z_amount 
@@ -25,7 +23,7 @@ public $show_finish_message=true;
         $retval=0;
         if($q=$this->db->query($sql)){
             if($r=$q->row()){
-                $retval=$r->z_amount;
+                $retval=c_($r->z_amount);
             }
         }
         return $retval;
@@ -43,9 +41,14 @@ public $show_finish_message=true;
         $data['amount']=c_($data['amount']);
 		$ok=$this->db->insert($this->table_name,$data);
 //		$id=$this->db->insert_id();
-		$faktur=$data['docnumber'];
-		$this->load->model('invoice_model');
+		$faktur=$data['docnumber'];		
 		$this->invoice_model->recalc($faktur);
+		
+        if(isset($data['cust_supp'])){
+        	customer_need_update($data['cust_supp']);
+			supplier_need_update($data['cust_supp']);
+        }
+		
 		return $ok;
 	}
 	function update($id,$data){
@@ -54,21 +57,25 @@ public $show_finish_message=true;
 		$ok=$this->db->update($this->table_name,$data);
 		
 		if(isset($data['docnumber'])){
-			$faktur=$data['docnumber'];
-			$this->load->model('invoice_model');
+			$faktur=$data['docnumber'];						
 			$this->invoice_model->recalc($faktur);
 		}
+		
+        if(isset($data['cust_supp'])){
+        	customer_need_update($data['cust_supp']);
+			supplier_need_update($data['cust_supp']);
+        }
+		
 		return $ok;
 	}
 	function delete($id){
-		$this->load->model('jurnal_model');
+		
 		if ($q=$this->jurnal_model->get_by_gl_id($id)->result()){
 				echo json_encode(array("success"=>false,"msg"=>"Gagal hapus nomor ini. <br>Karena sudah ada jurnal."));
 				return false;
 		}
 
 		if(isset($data['docnumber'])){
-			$this->load->model('invoice_model');
 			$faktur=$data['docnumber'];
 			$this->invoice_model->recalc($faktur);
 		}
@@ -108,13 +115,11 @@ public $show_finish_message=true;
 	function unposting($nomor) {
 		$this->recalc($nomor);
 		$crdb=$this->get_by_id($nomor)->row();
-
-		$this->load->model("periode_model");
+		
 		if($this->periode_model->closed($crdb->tanggal)){
 			echo "ERR_PERIOD";
 			return false;
 		}
-		$this->load->model('jurnal_model');
 		if($this->jurnal_model->del_jurnal($nomor)) {
 			$data['posted']=false;
 		} else {
@@ -130,9 +135,10 @@ public $show_finish_message=true;
 
 		$this->recalc($nomor);
 		$crdb=$this->get_by_id($nomor)->row();
-		 
-		
-		$this->load->model("periode_model");
+		if (!$crdb ) {
+			echo "Nomor tidak ada $nomor";
+			return false;
+		} 		
 		if($this->periode_model->closed($crdb->tanggal)){
 			echo "ERR_PERIOD";
 			return false;
@@ -142,34 +148,40 @@ public $show_finish_message=true;
 		$accountid=$crdb->accountid;
 		$amount=$crdb->amount;
 		$date=$crdb->tanggal;
+		$custsuppbank=$crdb->cust_supp;
 		
-		$this->load->model('jurnal_model');
-		$this->load->model('chart_of_accounts_model');
-		$this->load->model('company_model');
+		
 		if($type=="SO-CREDIT MEMO" or $type=="SO-DEBIT MEMO") {
-			$this->load->model('customer_model');
-			$this->load->model('invoice_model');
-			$faktur=$this->invoice_model->get_by_id($docnumber)->row();
-			if(invalid_account($accountid))$accountid=$faktur->account_id;
-			if(invalid_account($accountid)) {
-				$accountid=$this->company_model->setting("accounts_receivable");
-				$this->db->query("update invoice set account_id='".$accountid."' 
-					where invoice_number='".$docnumber."'");
-			}
-			$custsuppbank=$faktur->sold_to_customer;
-		} else {
-			$this->load->model('supplier_model');
-			$this->load->model('purchase_order_model');
-			if($faktur=$this->purchase_order_model->get_by_id($docnumber)->row()){
-				if(invalid_account($accountid))$accountid=$faktur->account_id;
-				if(invalid_account($accountid)){
-					$accountid=$this->company_model->setting("accounts_payable");
-					$this->db->query("update purchase_order set account_id='".$accountid."' 
-						where purchase_order_number='".$docnumber."'");
-					$this->db->query("update payables set account_id='".$accountid."' 
-						where purchase_order_number='".$docnumber."'");
+			
+			if($fakturq=$this->invoice_model->get_by_id($docnumber)){
+				if($faktur=$fakturq->row()){
+					if(invalid_account($accountid))$accountid=$faktur->account_id;
+					$custsuppbank=$faktur->sold_to_customer;
+			
+					if(invalid_account($accountid)) {
+						$accountid=$this->company_model->setting("accounts_receivable");
+						$this->db->query("update invoice set account_id='".$accountid."' 
+							where invoice_number='".$docnumber."'");
+					}
+					
 				}
-				$custsuppbank=$faktur->supplier_number;
+			}
+			
+		} else {
+			
+			if($fakturq=$this->purchase_order_model->get_by_id($docnumber)){
+				if($faktur=$fakturq->row()){
+					if(invalid_account($accountid))$accountid=$faktur->account_id;					
+					$custsuppbank=$faktur->supplier_number;
+					if(invalid_account($accountid)){
+						$accountid=$this->company_model->setting("accounts_payable");
+						$this->db->query("update purchase_order set account_id='".$accountid."' 
+							where purchase_order_number='".$docnumber."'");
+						$this->db->query("update payables set account_id='".$accountid."' 
+							where purchase_order_number='".$docnumber."'");
+					}
+					
+				}
 			}
 		}
 		
@@ -204,9 +216,8 @@ public $show_finish_message=true;
 		
 	}
 	function posting_range_date($date_from,$date_to,$type=0){
-		$this->load->model('jurnal_model');
-		$this->load->model('chart_of_accounts_model');
-		$this->load->model('company_model');
+			
+		
 		$date_from=date('Y-m-d H:i:s', strtotime($date_from));
 		$date_to=date('Y-m-d H:i:s', strtotime($date_to));
 		$where="where transtype in ('SO-CREDIT MEMO','SO-DEBIT MEMO')";
@@ -236,8 +247,7 @@ public $show_finish_message=true;
 		</div>"; 
 		}	
 	} // posting	
-	function unposting_range_date($date_from,$date_to,$type=0){
-		$this->load->model('jurnal_model');
+	function unposting_range_date($date_from,$date_to,$type=0){		
 		$date_from=date('Y-m-d H:i:s', strtotime($date_from));
 		$date_to=date('Y-m-d H:i:s', strtotime($date_to));
 		$where="where transtype in ('SO-CREDIT MEMO','SO-DEBIT MEMO')";

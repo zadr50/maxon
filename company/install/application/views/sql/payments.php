@@ -1,7 +1,7 @@
 <?php
 
 $table="payments";
-
+$msg="";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `payments` (

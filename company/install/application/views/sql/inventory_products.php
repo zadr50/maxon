@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS `inventory_products` (
   `update_date` datetime default NULL,
   `update_by` varchar(50) character set utf8 default NULL,
   `retail` double default NULL,
+  `posted` int default 0,
   PRIMARY KEY  (`id`),
   KEY `x1` (`item_number`,`shipment_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=467 ;

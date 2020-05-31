@@ -53,6 +53,7 @@ class Tour extends CI_Controller {
             } else {
                     $data['mode']='add';
                     $data['message']='';
+                    $this->template->dont_load_js=true;
                     $this->template->display_form_input($this->file_view,$data);			
             }
     }
@@ -126,6 +127,7 @@ class Tour extends CI_Controller {
 		$faa[]=criteria("S/d","date_to","easyui-datetimebox");
 		$faa[]=criteria("Nama Tour","sid_nama");
 		$data['criteria']=$faa;
+        $this->template->dont_load_js=true;
         $this->template->display_browse2($data);            
     }
     function browse_data($offset=0,$limit=100,$nama=''){

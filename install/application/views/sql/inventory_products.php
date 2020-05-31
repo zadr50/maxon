@@ -1,6 +1,6 @@
 <?php
 
-	$table="inventory_products";
+$table="inventory_products";
 
 $sql="
 
@@ -45,31 +45,20 @@ CREATE TABLE IF NOT EXISTS `inventory_products` (
   `update_date` datetime default NULL,
   `update_by` varchar(50) character set utf8 default NULL,
   `retail` double default NULL,
-  PRIMARY KEY  (`id`),
-  KEY `x1` (`item_number`,`shipment_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=467 ;
-";
-if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
-
-$sql="
-
-INSERT INTO `inventory_products` (`id`, `item_number`, `shipment_id`, `date_received`, `cost`, `supplier_number`, `warehouse_code`, `color`, `size`, `purchase_order_number`, `quantity_in_stock`, `quantity_received`, `total_amount`, `selected`, `other_doc_number`, `receipt_type`, `receipt_by`, `comments`, `production_code`, `unit`, `multi_unit`, `mu_qty`, `mu_price`, `new_cost`, `from_line_number`, `tanggal_jual`, `no_faktur_beli`, `no_faktur_jual`, `no_do_jual`, `tanggal_beli`, `no_retur_jual`, `update_status`, `sourceautonumber`, `sourcefile`, `serial_number`, `create_date`, `create_by`, `update_date`, `update_by`, `retail`) VALUES
-(334, 'ABC', 'EIN00001', '2013-09-07 14:03:00', 900, 'test', NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, 'etc_in', NULL, 'test', NULL, 'pcs', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(332, 'Palu', 'EIN00001', '2013-09-07 14:01:38', 20000, 'ANDRI', NULL, NULL, NULL, NULL, NULL, 2, NULL, NULL, NULL, 'etc_in', NULL, 'TEST', NULL, 'pcs', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(335, 'CD', 'EIN00002', '2013-09-07 14:06:34', 1000, 'test', NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, 'etc_in', NULL, 'test', NULL, 'pcs', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(310, 'SAMP', 'TRM00207', '2013-08-16 00:00:00', 7000, 'ALFAMART', 'Purwakarta', NULL, NULL, 'PO00108', NULL, 100, 700000, NULL, NULL, 'PO', '', '', NULL, 'Bks', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(374, 'KOREK', 'TRM00219', '2014-03-16 07:00:00', 2000, 'ALFAMART', 'Ambon', NULL, NULL, 'PO00108', NULL, 20, 40000, NULL, NULL, 'PO', '', '', NULL, 'Pcs', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(375, 'Palu', 'TRM00219', '2014-03-16 07:00:00', 20000, 'ALFAMART', 'Ambon', NULL, NULL, 'PO00108', NULL, 1, 20000, NULL, NULL, 'PO', '', '', NULL, 'Pcs', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(376, 'ABC', 'EIN00005', '2014-03-16 08:46:51', 900, '', NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'etc_in', NULL, '', NULL, 'pcs', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(464, 'CD', 'DOX00012', '2014-03-26 09:39:47', 1000, NULL, 'Surabaya', NULL, NULL, NULL, NULL, 1, 1000, NULL, NULL, 'ETC_OUT', NULL, 'Keluar barang bonus', NULL, 'Pcs', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(465, 'KOREK', 'DOX00012', '2014-03-26 09:39:47', 2000, NULL, 'Surabaya', NULL, NULL, NULL, NULL, 1, 2000, NULL, NULL, 'ETC_OUT', NULL, 'Keluar barang bonus', NULL, 'Pcs', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(466, 'DJISAMSU', 'DOX00012', '2014-03-26 09:39:47', 10000, NULL, 'Surabaya', NULL, NULL, NULL, NULL, 1, 10000, NULL, NULL, 'ETC_OUT', NULL, 'Keluar barang bonus', NULL, 'Bks', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-
+  PRIMARY KEY (`id`),
+  KEY `x1` (`item_number`,`shipment_id`),
+  KEY `x2` (`shipment_id`),
+  KEY `x3` (`receipt_type`),
+  KEY `x4` (`warehouse_code`),
+  KEY `x6` (`purchase_order_number`),
+  KEY `x7` (`purchase_order_number`,`from_line_number`),
+  KEY `x5` (`date_received`)
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
 
-	$table="inventory_promotion";
+$table.=", inventory_promotion";
 
 $sql="
 
@@ -96,7 +85,7 @@ CREATE TABLE IF NOT EXISTS `inventory_promotion` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-	$table="inventory_sales_disc";
+$table.=", inventory_sales_disc";
 
 $sql="
 
@@ -118,7 +107,7 @@ CREATE TABLE IF NOT EXISTS `inventory_sales_disc` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-	$table="inventory_serialized_items";
+$table.=", inventory_serialized_items";
 
 $sql="
 
@@ -150,7 +139,7 @@ CREATE TABLE IF NOT EXISTS `inventory_serialized_items` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-	$table="inventory_suppliers";
+$table.=", inventory_suppliers";
 
 $sql="
 
@@ -167,7 +156,7 @@ CREATE TABLE IF NOT EXISTS `inventory_suppliers` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-	$table="inventory_warehouse";
+$table.=", inventory_warehouse";
 
 $sql="
 
@@ -209,9 +198,11 @@ CREATE TABLE IF NOT EXISTS `inventory_warehouse` (
   `create_by` varchar(50) character set utf8 default NULL,
   `update_date` datetime default NULL,
   `update_by` varchar(50) character set utf8 default NULL,
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `x1` (`item_number`,`warehouse_code`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `x1` (`item_number`,`warehouse_code`),
+  KEY `x2` (`item_number`),
+  KEY `x3` (`warehouse_code`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);

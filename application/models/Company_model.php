@@ -104,7 +104,8 @@ function __construct(){
         $data['default_credit_card_account']=account($set->default_credit_card_account);
 
         $data['txtUangMukaBeli']=account($this->sysvar->getvar('COA Uang Muka Pembelian'));
-        $data['txtReturJual']=account($this->sysvar->getvar('COA Retur Penjualan'));
+        $data['txtReturJual']=account($this->sysvar->getvar('COA Retur Penjualan',"0"));
+        $data['txtReturBeli']=account($this->sysvar->getvar('COA Retur Pembelian',"0"));
         $data['txtCoaItemOut']=account($this->sysvar->getvar('COA Item Out Others'));
         $data['txtCoaItemIn']=account($this->sysvar->getvar('COA Item In Others'));
         $data['txtCoaItemAdj']=account($this->sysvar->getvar('COA Item Adjustment'));
@@ -112,6 +113,7 @@ function __construct(){
         $data['txtChargeCC']=account($this->sysvar->getvar('CoaChargeCreditCard'));
         $data['txtPromo']=account($this->sysvar->getvar('CoaPromo'));
         $data['txtGift']=account($this->sysvar->getvar('CoaGift'));        
+        $data['txtHutangKomisi']=account($this->sysvar->getvar('COA Hutang Komisi'));        
         
         return $data;
     }

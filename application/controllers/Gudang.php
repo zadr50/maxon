@@ -115,12 +115,20 @@ class Gudang extends CI_Controller {
             $this->template->display_browse2($data);
     }
     function browse_data($offset=0,$limit=10,$nama=''){
+
         $sql=$this->sql." where location_number like '".$nama."%'";
+				
         if($this->input->get("page"))$offset=$this->input->get("page");
         if($this->input->get("rows"))$limit=$this->input->get("rows");
+		
+        if($this->input->post("page"))$offset=$this->input->post("page");
+        if($this->input->post("rows"))$limit=$this->input->post("rows");
+		
         if($offset>0)$offset--;
         $offset=$limit*$offset;
+
         $sql.=" limit $offset,$limit";
+		
         echo datasource($sql);      
        
     }

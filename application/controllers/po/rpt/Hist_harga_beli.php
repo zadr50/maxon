@@ -50,7 +50,7 @@ class Hist_harga_beli extends CI_Controller {
 		if($this->input->post('cmdPrint')){
             $date1= date('Y-m-d H:i:s', strtotime($this->input->post('txtDateFrom')));
             $date2= date('Y-m-d H:i:s', strtotime($this->input->post('txtDateTo')));
-		    
+		    $potype=getvar("PoType","O");
             $sql="select po.po_date,po.supplier_number,s.supplier_name,
                 pod.item_number,pod.description,i.category,
                 pod.quantity,pod.price,pod.total_price
@@ -58,7 +58,7 @@ class Hist_harga_beli extends CI_Controller {
                 left join purchase_order po on po.purchase_order_number=pod.purchase_order_number 
                 left join inventory i on i.item_number=pod.item_number 
                 left join suppliers s on s.supplier_number=po.supplier_number
-                where po.potype='O' ";
+                where po.potype='$potype' ";
             $sql.=" and po.po_date between  '$date1' and '$date2'";
                 
                 

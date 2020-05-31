@@ -32,7 +32,7 @@ class Delivery_gudang extends CI_Controller {
                 from inventory_products ip 
                 where receipt_type='$this->receipt_type' and doc_type='$this->doc_type'
         ";
-        
+        $this->load->model("replicate_model");
         
 	}
 	function nomor_bukti($add=false)
@@ -94,8 +94,23 @@ class Delivery_gudang extends CI_Controller {
              ";
             $data['lookup_recv_po']=$this->list_of_values->render($setting);
             
+            $data['lookup_gudang1']=$this->list_of_values->lookup_gudang();
+            $data['lookup_gudang2']=$this->list_of_values->render(array(
+				'dlgBindId'=>"gudang",
+				"dlgRetFunc"=>"$('#supplier_number').val(row.location_number); ",
+				'dlgCols'=>
+				array( 
+                        array("fieldname"=>"location_number","caption"=>"Kode","width"=>"80px"),
+                        array("fieldname"=>"attention_name","caption"=>"Nama Toko","width"=>"180px"),
+                        array("fieldname"=>"company_name","caption"=>"Kode Pers","width"=>"50px"),
+                        array("fieldname"=>"company","caption"=>"Perusahaan","width"=>"200px")
+                   ),
+                'show_date_range'=>false
+			));
+			$data['lookup_inventory']=$this->list_of_values->lookup_inventory();            
+
             
-            
+			            
             return $data;
 	}
 	function index()
@@ -194,6 +209,8 @@ class Delivery_gudang extends CI_Controller {
 		$faa[]=criteria("S/d","sid_date_to","easyui-datetimebox");
 		$faa[]=criteria("Nomor","sid_nomor");
 		$faa[]=criteria("Supplier","sid_supplier");
+		$faa[]=criteria("Gudang Asal","sid_gudang_from");
+		$faa[]=criteria("Gudang Tujuan","sid_gudang_to");
 		$data['criteria']=$faa;
         $this->template->display_browse2($data);            
     }
@@ -220,7 +237,17 @@ class Delivery_gudang extends CI_Controller {
 		        
 		        
 		    }
+			
 		}
+		if($gudang_from = $this->input->get("sid_gudang_from")){
+			$sql.=" and ip.warehouse_code='$gudang_from' ";
+		}
+		if($gudang_to = $this->input->get("sid_gudang_to")){
+			$sql.=" and ip.supplier_number='$gudang_to' ";
+		}
+		
+		$sql.=" order by ip.shipment_id";
+		
         if($this->input->get("page"))$offset=$this->input->get("page");
         if($this->input->get("rows"))$limit=$this->input->get("rows");
         if($offset>0)$offset--;
@@ -293,9 +320,18 @@ class Delivery_gudang extends CI_Controller {
                 $data2['from_line_number']=$data["id"];
                 $data2["receipt_type"]="ETC_OUT";
                 $data2['doc_type']=$this->doc_type;
-                $item=$this->inventory_model->get_by_id($data['item_number'])->row();
-                $multi_unit=$item->unit_of_measure;
-                $price=$item->cost;
+				$unit="Pcs";
+				$cost=0;
+				$item_no="";
+                if($qitem=$this->inventory_model->get_by_id($data['item_number'])){
+                	if($item=$qitem->row()){
+						$unit=$item->unit_of_measure;
+                		$cost=$item->cost;
+		                $item_no=$item->item_number; 
+                	}	
+                }
+                $multi_unit=$unit;
+                $price=$cost;
                 $data2['multi_unit']=$multi_unit;
                 $data2['mu_price']=$price;
                 $data2['mu_qty']=$data['mu_qty'];
@@ -315,10 +351,12 @@ class Delivery_gudang extends CI_Controller {
                 $data['create_by']=user_id();
                 $data['create_date']=date( 'Y-m-d H:i:s');
 
-                $item_no=$item->item_number; 
                 item_need_update($item_no);
-                
+                item_need_update_arsip($item_no, $data2['warehouse_code'], $data2['date_received']);
+				
                 $ok=$this->db->insert("inventory_products",$data2);
+				
+				$this->replicate_model->stock_mutasi($data2,$data2['supplier_number'],0);
                                                 
             }
         }

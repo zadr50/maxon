@@ -1,6 +1,6 @@
 <?php
 $table='time_card_detail';
- 
+$msg=""; 
 $sql=" 
 
 CREATE TABLE time_card_detail (
@@ -35,7 +35,7 @@ CREATE TABLE time_card_detail (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$table='time_card';
+$table='qry_payroll_component';
 
 $sql=" 
 
@@ -45,7 +45,7 @@ union all
 select  'deduct' as jenis,  kode,keterangan,sifat,is_variable,ref_column from jenis_potongan;";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$table='time_card';
+$table='sys_log_run';
 
 $sql=" 
 

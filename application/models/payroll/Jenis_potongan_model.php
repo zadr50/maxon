@@ -35,11 +35,11 @@ function delete($id){
 	return $this->db->delete($this->table_name);
 }
 function dropdown(){
-	$query=$this->db->query("select kode,keterangan from ".$this->table_name);
+	$query=$this->db->query("select kode,keterangan from ".$this->table_name." order by keterangan");
 	$ret=array();
 	$ret['']='- Select -';
 	foreach ($query->result() as $row) {
-			$ret[$row->kode]=$row->keterangan;
+			$ret[$row->kode]=$row->keterangan." - [$row->kode]";
 	}		 
 	return $ret;
 }

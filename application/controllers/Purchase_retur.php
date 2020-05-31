@@ -3,7 +3,7 @@
 class Purchase_retur extends CI_Controller {
         private $limit=10;
         private $sql="select purchase_order_number,po_date,amount,i.posted, i.po_ref,
-                i.supplier_number,c.supplier_name,c.city,i.warehouse_code
+                i.supplier_number,c.supplier_name,c.city,i.warehouse_code,i.comments,i.doc_type
                 from purchase_order i
                 left join suppliers c on c.supplier_number=i.supplier_number
                 where i.potype='R'";
@@ -33,7 +33,7 @@ class Purchase_retur extends CI_Controller {
         $this->load->model('jurnal_model');
         $this->load->model('purchase_retur_model');
         $this->load->model('periode_model');
-        $this->load->model('inventory_products_model');
+        $this->load->model(array("sysvar_model",'inventory_products_model'));
         
 	}
 	function set_defaults($record=NULL){
@@ -49,6 +49,10 @@ class Purchase_retur extends CI_Controller {
                 $data['type_of_invoice']="1";
                 $data['warehouse_code']=current_gudang();
             }
+			$data['lookup_doc_type']=$this->sysvar_model->lookup(array(
+				"dlgBindId"=>"doc_type","dlgId"=>"doc_type_retur_beli"
+			));
+
 			$data['warehouse_list']=$this->shipping_locations_model->select_list();
             
             $setting['dlgBindId']="type_of_invoice";
@@ -87,7 +91,20 @@ class Purchase_retur extends CI_Controller {
                     array("fieldname"=>"account_description","caption"=>"Account Description","width"=>"300px")                    
                 ))
             );
-                        
+            $data['lookup_inventory']=$this->list_of_values->lookup_inventory();
+            $data['lookup_sumber_outlet']=$this->list_of_values->render(
+				array(
+					"dlgBindId"=>"sumber_outlet",
+					"dlgId"=>"sumber_outlet",
+					"dlgUrlQuery"=>"gudang/browse_data",
+					"dlgCols"=>array(
+						array("fieldname"=>"location_number","caption"=>"Oulet","width"=>"80px"),
+						array("fieldname"=>"attention_name","caption"=>"Keterangan")
+					),
+					"dlgRetFunc"=>"$('#branch_code').val(row.location_number);"
+				)
+			);
+                                    
 			return $data;
 	}
 	function nomor_bukti($add=false)
@@ -262,9 +279,9 @@ class Purchase_retur extends CI_Controller {
     function browse($offset=0,$limit=50,$order_column='purchase_order_number',$order_type='asc'){
 		$data['controller']=$this->controller;
 		$data['fields_caption']=array('Nomor Bukti','Tanggal','Jumlah','Posted','Faktur','Kode Supplier',
-		'Nama Supplier','Kota','Gudang');
+		'Nama Supplier','DocType','Kota','Gudang','Keterangan');
 		$data['fields']=array('purchase_order_number','po_date','amount','posted','po_ref', 
-                'supplier_number','supplier_name','city','warehouse_code');
+                'supplier_number','supplier_name','doc_type','city','warehouse_code','comments');
 					
 		if(!$data=set_show_columns($data['controller'],$data)) return false;
 			
@@ -387,6 +404,7 @@ class Purchase_retur extends CI_Controller {
 			$data['tax']=$invoice->tax;
 			$data['tax_amount']=$invoice->tax*($data['sub_total']-$data['disc_amount']);
 			$data['comments']=$invoice->comments;
+			$data['invoice']=$invoice;
 			$this->load->view('purchase/print_retur',$data);
         }
 		function posting($nomor)	{

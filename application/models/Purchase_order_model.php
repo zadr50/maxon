@@ -137,10 +137,19 @@ public $sub_total=0;
         if(!isset($data['currency_code']))$data['currency_code']="IDR";
         if($data['currency_code']=="")$data["currency_code"]="IDR";
         if(!isset($data['currency_rate']))$data['currency_rate']=1;
-        if($data['currency_rate']=="")$data["currency_rate"]=1;
-        
-		return $this->db->insert($this->table_name,$data);
+		if($data['currency_rate']=="")$data["currency_rate"]=1;
+		
+        if(isset($data['terms'])){
+			$data['due_date']=due_date($data['po_date'],$data['terms']);
+		}
+
+		$ok = $this->db->insert($this->table_name,$data);
 //		return $this->db->insert_id();
+
+		if(isset($data['supplier_number'])){
+			supplier_need_update($data['supplier_number']);
+		}
+		return $ok;
 	}
 	function update($id,$data){
         
@@ -154,14 +163,24 @@ public $sub_total=0;
 					where purchase_order_number='$id'");
 			}
 		} 
-        if(!isset($data['tax']))$data['tax']=0;
-        if($data['tax']>1)$data['tax']=$data['tax']/100;
-        if(!isset($data['discount']))$data['discount']=0;
-        if($data['discount']>1)$data['discount']=$data['discount']/100;
-        
+        if(isset($data['tax'])){
+	        if($data['tax']>1)$data['tax']=$data['tax']/100;        	
+        }
+        if(isset($data['discount'])){
+	        if($data['discount']>1)$data['discount']=$data['discount']/100;
+		}
+        if(isset($data['terms'])){
+			$data['due_date']=due_date($data['po_date'],$data['terms']);
+		}
+
 		$this->db->where($this->primary_key,$id);
 		$ok=$this->db->update($this->table_name,$data);
 		$this->recalc($id);
+		
+		if(isset($data['supplier_number'])){
+			supplier_need_update($data['supplier_number']);
+		}
+		
 		return $ok;
 	}
 	function validate_delete_po($po_number)
@@ -174,12 +193,23 @@ public $sub_total=0;
 		return true;
 	}
 	function delete($id){
-	
+		$supp_no="";
+		if($q=$this->db->query("select supplier_number from purchase_order 
+			where purchase_order_number='$id' ")){
+			if($r=$q->row()){
+				$supp_no=$r->supplier_number;
+			}
+		}
 		$this->db->where($this->primary_key,$id);
 		$this->db->delete('purchase_order_lineitems'); 
        
 		$this->db->where($this->primary_key,$id);
-		return $this->db->delete($this->table_name);
+		$ok = $this->db->delete($this->table_name);
+		
+		supplier_need_update($supp_no);
+		
+		return $ok;
+		
 	}
      function add_item($id,$item,$qty){
         $sql="select description,retail,cost,unit_of_measure
@@ -319,13 +349,15 @@ public $sub_total=0;
 		return $new_po;
 	}
 		function list_po_new($d1,$d2){
+		    $potype=getvar("PoType","O");
+
 		$sql="select po.purchase_order_number,po.po_date,po.supplier_number,
 			s.supplier_name,pol.item_number,pol.description,pol.quantity
 			from purchase_order po 
 			left join purchase_order_lineitems pol
 			on po.purchase_order_number=pol.purchase_order_number 
 			left join suppliers s on s.supplier_number=po.supplier_number
-			where po.potype='O' and po.po_date between '$d1' and '$d2' 
+			where po.potype='$potype' and po.po_date between '$d1' and '$d2' 
 			and (po.status is null  or po.status=0)";
 		return $this->db->query($sql);
 	}

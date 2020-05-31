@@ -9,15 +9,15 @@
 	<button onclick="list_item(<?=$page+1?>);return false;" title='Next page'
 	type="button" class="btn btn-default glyphicon glyphicon-forward"></button>
 	<button onclick="list_item(<?=$item_page_max-10?>);return false;" title='Move to last record'
-	type="button" class="btn btn-default glyphicon glyphicon-step-forward"></button>
+	type="button" class="btn btn-primary glyphicon glyphicon-step-forward"></button>
 	<button onclick="add_item();return false;" title='Addnew Record'
 	type="button" class="btn btn-default glyphicon glyphicon-plus"></button>
 	<button onclick="list_item(0);return false;" title='View as table'
-	type="button" class="btn btn-default glyphicon glyphicon-list glyphicon "></button>
+	type="button" class="btn btn-warning glyphicon glyphicon-list glyphicon "></button>
 	<button onclick="list_detail();return false;" title='View as detail'
 	type="button" class="btn btn-default glyphicon glyphicon-th-large"></button>
-	<button onclik='search_item();return false;' class="btn btn-default glyphicon glyphicon-filter" 
-	type="button" title='Search record by text'></button>	
+	<button onclik='search_item();return false;' class="btn btn-primary glyphicon glyphicon-filter" 
+	type="button" title='Search record by textzz'></button>	
 </div>
 <div class='btn-group col-md-6' role='group' aria-label='Record'>
   <div class="col-md-4">

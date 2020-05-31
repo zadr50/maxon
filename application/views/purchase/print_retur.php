@@ -1,4 +1,4 @@
-<?
+<?php
          $CI =& get_instance();
          $CI->load->model('company_model');
          $model=$CI->company_model->get_by_id($CI->access->cid)->row();
@@ -15,7 +15,7 @@
      	<td colspan='2'><?=$model->street?></td><td>Nomor: <?=$po_number?></td>     	
      </tr>
      <tr>
-     	<td colspan='2'><?=$model->suite?></td>     	
+     	<td colspan='2'><?=$model->suite?></td><td>Outlet: <b><?=$invoice->warehouse_code?></b></td>     	
      </tr>
      <tr>
      	<td colspan=4 style='border-bottom: black solid 1px'><?=$model->city_state_zip_code?> - Phone: <?=$model->phone_number?>
@@ -46,20 +46,22 @@
      	<td colspan="8">
      	<table class='titem'>
      		<thead>
-     			<tr><td>Kode Barang</td><td>Nama Barang</td><td>Qty</td><td>Unit</td><td>Harga</td>
+     			<tr><td width='10'>No</td><td>Kode Barang</td><td>Nama Barang</td><td>Qty</td><td>Unit</td><td>Harga</td>
      				<td>Disc%</td><td>Jumlah</td>
      			</tr>
      		</theadx>
      		<tbody>
-     			<?
+     			<?php
 		       $sql="select item_number,description,quantity,unit,discount,price,total_price 
 		                from purchase_order_lineitems i
 		                where purchase_order_number='".$po_number."'";
 		        $query=$CI->db->query($sql);
 
      			$tbl="";
+				$no=0;
                  foreach($query->result() as $row){
-                    $tbl.="<tr>";
+                 	$no++;
+                    $tbl.="<tr><td>$no</td>";
                     $tbl.="<td>".$row->item_number."</td>";
                     $tbl.="<td>".$row->description."</td>";
                     $tbl.="<td align='right'>".number_format($row->quantity)."</td>";

@@ -1,38 +1,37 @@
 <table class='table2' width='100%'>
 	<tr>
 		<td>Kode Barang</td><td>Nama Barang</td><td>Qty</td><td>Unit</td>
-		<td>Line</td><td>Action</td>
+		<td>Action</td>
 	</tr>
 	<tr>
-	         <td><input onblur='find()' id="item_number" style='width:80px' 
-	         	name="item_number"   class="easyui-validatebox" required="true">
-				<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-				onclick="searchItem();return false;"></a>
-	         </td>
-	         <td><input id="description" name="description" style='width:280px'></td>
-	         <td><input id="quantity"  style='width:30px'  name="quantity"  ></td>
-	         <td><input id="unit" name="unit"  style='width:30px' ></td>
+		<td><input onblur='find()' id="item_number" style='width:90px' 
+			name="item_number"   class="easyui-validatebox" required="true">
+			<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" 
+			onclick="dlginventory_show();return false;"></a>
+		</td>
+		<td><input id="description" name="description" style='width:280px'></td>
+		<td><input id="quantity"  style='width:60px'  name="quantity"  ></td>
+		<td><input id="unit" name="unit"  style='width:60px' ></td>
 
-	         <td><input id="wo_line"  style='width:30px'  name="wo_line"  ></td>
-
-	        <td><a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  
-     		   plain='true'	onclick='save_item();return false;'>Add Item</a>
-			</td>
-	        <input type='hidden' id='ref_number' name='ref_number'>
-	        <input type='hidden' id='line_number' name='line_number'>
+		<td><input type="hidden" id="wo_line"  style='width:30px'  name="wo_line"  >
+			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  
+			plain='false'	onclick='save_item();return false;'>Save Item</a>
+		</td>
+		<input type='hidden' id='ref_number' name='ref_number'>
+		<input type='hidden' id='line_number' name='line_number'>
 	</tr>
 </table>
 <div id="tb" style="height:auto">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editItem()">Edit</a>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteItem()">Delete</a>	
+	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="false" onclick="editItem()">Edit</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="false" onclick="deleteItem()">Delete</a>	
 </div>
 
 <div id="tb_search" style="height:auto">
 	Enter Text: <input  id="search_item" style='width:180px' 
  	name="search_item">
-	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
+	<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" 
 	onclick="searchItem();return false;"></a>        
-	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="true" 
+	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" plain="false" 
 	onclick="selectSearchItem();return false;">Select</a>
 </div>
 
@@ -100,8 +99,10 @@ padding:10px 20px;left:100px;top:20px"
 				},
 				success: function(result){
 					var result = eval('('+result+')');
+
 					if (result.success){
-						$('#'+grid_output).datagrid({url:url_load_item});
+						$("#shipment_id").val(result.shipment_id);
+						$('#'+grid_output).datagrid({url:CI_BASE+"index.php/manuf/receive_prod/items/"+result.shipment_id+"/json"});
 						$('#'+grid_output).datagrid('reload');
 						$('#item_number').val('');
 						$('#unit').val('Pcs');

@@ -23,6 +23,43 @@ class Category extends CI_Controller {
             $data=data_table($this->table_name,$record);
             $data['mode']='';
             $data['message']='';
+            $data['lookup_cost_account']=$this->list_of_values->render(
+                array("dlgBindId"=>"cost_account",
+                    "dlgRetFunc"=>"$('#cogs_account').val(row.account+' - '+row.account_description);",
+                    "dlgCols"=>array(
+                        array("fieldname"=>"account","caption"=>"Kode","width"=>"80px"),
+                        array("fieldname"=>"account_description","caption"=>"Perkiraan","width"=>"200px")
+                    )    
+                )
+            );
+            $data['lookup_inventory_account']=$this->list_of_values->render(
+                array("dlgBindId"=>"inventory_account",
+                    "dlgRetFunc"=>"$('#inventory_account').val(row.account+' - '+row.account_description);",
+                    "dlgCols"=>array(
+                        array("fieldname"=>"account","caption"=>"Kode","width"=>"80px"),
+                        array("fieldname"=>"account_description","caption"=>"Perkiraan","width"=>"200px")
+                    )    
+                )
+            );
+            $data['lookup_sales_account']=$this->list_of_values->render(
+                array("dlgBindId"=>"sales_account","dlgId"=>"chart_of_accounts",
+                    "dlgRetFunc"=>"$('#sales_account').val(row.account+' - '+row.account_description);",
+                    "dlgCols"=>array(
+                        array("fieldname"=>"account","caption"=>"Kode","width"=>"80px"),
+                        array("fieldname"=>"account_description","caption"=>"Perkiraan","width"=>"200px")
+                    )    
+                )
+            );
+            $data['lookup_tax_account']=$this->list_of_values->render(
+                array("dlgBindId"=>"tax_account","dlgId"=>"chart_of_accounts",
+                    "dlgRetFunc"=>"$('#tax_account').val(row.account+' - '+row.account_description);",
+                    "dlgCols"=>array(
+                        array("fieldname"=>"account","caption"=>"Kode","width"=>"80px"),
+                        array("fieldname"=>"account_description","caption"=>"Perkiraan","width"=>"200px")
+                    )    
+                )
+            );
+                        
             return $data;
 	}
 	function index()
@@ -144,6 +181,10 @@ class Category extends CI_Controller {
 		 $data=$this->set_defaults($model);
 		 $data['mode']='view';
          $data['message']=$message;
+         $data["inventory_account"]=account($data["inventory_account"]);
+         $data["cogs_account"]=account($data["cogs_account"]);
+         $data["sales_account"]=account($data["sales_account"]);
+         $data["tax_account"]=account($data["tax_account"]);
          $this->template->display_form_input('inventory/category',$data,'');
 	}
 	 // validation rules
@@ -186,11 +227,26 @@ class Category extends CI_Controller {
     }
     function browse_data($offset=0,$limit=10,$nama=''){
 		$sql=$this->sql." where 1=1";
+		
+		if($this->input->get("tb_search")){
+		    $search=$this->input->get("tb_search");
+			$sql.=" and (kode='$search'  or category like '$search%')";
+		}
+		
 		if(!is_numeric($offset)){
 			$sql.=" and (kode='$offset'  or category like '$offset%')";
 		}  else {
 			if($this->input->get('sid_nama')!='')$sql.=" and category like '".$this->input->get('sid_nama')."%'";
 		}
+		
+		$sql.=" order by kode ";
+		
+        if($this->input->get("page"))$offset=$this->input->get("page");
+        if($this->input->get("rows"))$limit=$this->input->get("rows");
+        if($offset>0)$offset--;
+        $offset=$limit*$offset;
+        $sql.=" limit $offset,$limit";
+		
         echo datasource($sql);		
     }
 	function browse_json($offset=0,$limit=10,$nama=''){
@@ -296,5 +352,25 @@ class Category extends CI_Controller {
 			->delete('inventory_categories_sub');
 		if ($ok){echo json_encode(array('success'=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   					
 	}
+    function grafik(){
+        $sql="select c.category,sum(i.quantity_in_stock*i.cost) as amount
+        from inventory i 
+        left join inventory_categories c on c.kode=i.category
+        group by c.category
+        limit 5";
+        $data=null;
+        $query=$this->db->query($sql);
+        foreach($query->result() as $row){
+            $amount=$row->amount;    
+            if($amount>0)$amount=round($amount/1000);
+            $data[]=array(substr($row->category,0,10),$amount);
+        }
+        if(!$data)$data[]=array("0",0);
+        $data2['label']="Grafik Category";
+        $data2['data']=$data;
+        header('Content-type: application/json');
+        echo json_encode($data2);
+    
+    }
 	
 }

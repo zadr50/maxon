@@ -25,9 +25,7 @@ CREATE TABLE IF NOT EXISTS `org_struct` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$table="org_struct";
-
-
+$table.=", user";
 
 $sql="
 
@@ -48,8 +46,6 @@ CREATE TABLE IF NOT EXISTS `user` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
-
-$table="org_struct";
 
 $sql="
 
@@ -85,7 +81,6 @@ CREATE TABLE IF NOT EXISTS `user_group_modules` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$table="org_struct";
 	
 $sql="
 
@@ -158,6 +153,7 @@ INSERT INTO `user_group_modules` (`id`, `group_id`, `module_id`, `permission`, `
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 	
+$table.=", user_job";
 
 $sql="
 
@@ -174,7 +170,7 @@ CREATE TABLE IF NOT EXISTS `user_job` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$table="branch";
+$table.=", branch";
 $sql="
 CREATE TABLE IF NOT EXISTS `branch` (
   `branch_code` varchar(15) CHARACTER SET utf8 NOT NULL,

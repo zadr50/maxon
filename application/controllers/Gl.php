@@ -7,7 +7,8 @@
  */
 class Gl extends CI_Controller {
                 
-
+	private $message="";
+	
 	function __construct()
 	{
 		parent::__construct();        
@@ -20,10 +21,18 @@ class Gl extends CI_Controller {
 		$this->load->library('form_validation');
 		$this->load->model('syslog_model');
 	}
+	
     function index(){	
+	}
+	function message_text(){
+		return $this->message;
 	}
     function rpt($id){
     	 switch ($id) {
+		 	case 'coa':
+				$data['select_date']=false;
+				break;
+				
 			 case 'cards':
 				 $data['date_from']=date('Y-m-d 00:00:00');
 				 $data['date_to']=date('Y-m-d 23:59:59');
@@ -81,6 +90,28 @@ class Gl extends CI_Controller {
 		echo '<img src="'.base_url().'/'.$file.'"/>';
 		echo '';
 	}
+    function grafik_biaya(){
+        $sql="select c.account_description,g.ending_balance 
+        from gl_beginning_balance_archive g 
+        left join chart_of_accounts c on c.id=g.account_id
+        where c.account_type=6 
+        and year(g.year)=".date("Y")." and month(g.year)=".date("m")."
+        order by g.ending_balance desc limit 5";
+        $data=null;
+        $query=$this->db->query($sql);
+        foreach($query->result() as $row){
+            $amount=$row->ending_balance;    
+            if($amount>0)$amount=round($amount/1000);
+            $data[]=array(substr($row->account_description,0,10),$amount);
+        }
+        if(!$data)$data[]=array("0",0);
+        $data2['label']="Grafik Biaya";
+        $data2['data']=$data;
+        header('Content-type: application/json');
+        echo json_encode($data2);
+    
+    }
+		
 	function saldo_akun()
 	{
        $sql="select account,account_description,sum(g.debit)-sum(g.credit) as saldo 
@@ -103,6 +134,6 @@ class Gl extends CI_Controller {
 	function reports(){
 		$this->template->display('gl/menu_reports');
 	}
- 	
+	
 }
 ?>

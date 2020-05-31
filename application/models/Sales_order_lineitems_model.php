@@ -3,6 +3,8 @@ class Sales_order_lineitems_model extends CI_Model {
 
 private $primary_key='line_number';
 private $table_name='sales_order_lineitems';
+private $sales_order_number=0;
+private $line_number=0;
 
 function __construct(){
 	parent::__construct();        
@@ -16,17 +18,66 @@ function get_by_id($id){
 	$this->db->where($this->primary_key,$id);
 	return $this->db->get($this->table_name);
 }
+	function set_no_urut(){
+		$no_urut=0;
+		$s="select line_number,no_urut from sales_order_lineitems where sales_order_number='$this->sales_order_number' ";
+		if($q=$this->db->query($s)){
+			foreach($q->result() as $r){
+				$no_urut++;
+				if($r->no_urut==''){
+					$s="update sales_order_lineitems set no_urut='$no_urut' where line_number='$r->line_number' ";
+					$this->db->query($s);
+				}
+			}
+		}
+	}
+
 function save($data){
     
-    $item_no=$data['item_number']; item_need_update($item_no);
+    $item_no=$data['item_number']; 
+    item_need_update($item_no);
+    
     if(!isset($data['warehouse_code']))$data['warehouse_code']=current_gudang();
     
+	$tanggal="";
+	$gudang="";
+	$sales_order_number=$data['sales_order_number'];
+	
+    $this->sales_order_number=$sales_order_number;
+	
+	if($qinv=$this->db->query("select p.sales_date,pl.warehouse_code from sales_order p 
+		left join sales_order_lineitems pl on pl.sales_order_number=p.sales_order_number 
+		where p.sales_order_number='$sales_order_number' ")){
+			if($rinv=$qinv->row()){
+				$tanggal=$rinv->sales_date;
+				$gudang=$rinv->warehouse_code;
+			}
+		}
+	item_need_update_arsip($item_no, $gudang, $tanggal);
+	
 	$this->db->insert($this->table_name,$data);
-	return $this->db->insert_id();	 
+	$line_number = $this->db->insert_id();	 
+	$this->line_number=$line_number;
+	$this->set_no_urut();
+	return $line_number;
+	
 }
 function update($id,$data){
-     $item_no=$data['item_number']; item_need_update($item_no);
+     $item_no=$data['item_number']; 
+     item_need_update($item_no);
     if(!isset($data['warehouse_code']))$data['warehouse_code']=current_gudang();
+	$tanggal="";
+	$gudang="";
+	$sales_order_number=$data['sales_order_number'];
+	if($qinv=$this->db->query("select p.sales_date,pl.warehouse_code from sales_order p 
+		left join sales_order_lineitems pl on pl.sales_order_number=p.sales_order_number
+			where p.sales_order_number='$sales_order_number' ")){
+			if($rinv=$qinv->row()){
+				$tanggal=$rinv->sales_date;
+				$gudang=$rinv->warehouse_code;
+			}
+		}
+	item_need_update_arsip($item_no, $gudang, $tanggal);
      
 	$this->db->where($this->primary_key,$id);
 	return $this->db->update($this->table_name,$data);

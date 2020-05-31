@@ -3,51 +3,53 @@
 if($type_id==""){
 	echo "<p class='alert alert-warning'>Kode kelompok pelanggan belum dipilih</p>";	
 } else {
-	if($item_prices){
+	//if($item_prices){
 		echo "<p class='alert alert-info'>Isi harga jual barang dan discount untuk kelompok pelanggan 
 		<strong>$type_id</strong> pada daftar tabel dibawah ini, 
-		kemudian tekan tombol submit paling bawah: </p>";
-		$s1="<table class='table' width='100%'>
-		<thead><th>Item Description</th><th>Item No</th>
-		<th>Sales Std Price</th><th>Sales Type Price</th>
-		<th>Min Qty Sales</th><th>Disc From (%)</th><th>Disc To (%)</th>
-		</thead><tbody>";
-		$s="";
-		for($i=0;$i<count($item_prices);$i++){
-			$item=$item_prices[$i];
-			$price=$item_prices[$i]['prices'];
-			if($price){
-				$sales_price=$price->sales_price;
-				$min_qty=$price->min_qty;
-				$disc_prc_from=$price->disc_prc_from;
-				$disc_prc_to=$price->disc_prc_to;
-				$id=$price->id;				
-			} else {
-				$sales_price=0;
-				$min_qty=0;
-				$disc_prc_from=0;
-				$disc_prc_to=0;
-				$id=0;
-			}
-			$no=$item['item_no'];
-			$s.= "<tr><td>".$item['description']."</td>";
-			$s.= "<td>$no</td><td>".$item['retail']."</td>";
-			$s.=  "<td><input type='text' id='p_$no' value='$sales_price' style='width:90px'></td>
-				<td><input type='text' id='q_$no' value='$min_qty' style='width:50px'></td>
-				<td><input type='text' id='d1_$no' value='$disc_prc_from' style='width:50px'></td>
-				<td><input type='text' id='d2_$no' value='$disc_prc_to' style='width:50px'></td>
-				<td><input type='hidden' id='i_$no' value='$id' style='width:50px'></td>
-				<td><input type='button' value='Save' class='btn btn-default' onclick=\"save_item('$no');return false;\"></td>
-				</tr>";
-		}
-		echo $s1 . $s . "</tbody></table>";
-	} else {
-		echo "<p class='alert alert-warning'>Sales price not defined !</p>";			
-	}
+		tekan tombol [Add] dibawah ini 	: </p>";
+		
+		$sql="select i.item_number,i.description,i.retail,ipc.sales_price,
+			ipc.min_qty,ipc.disc_prc_from,ipc.disc_prc_to,ipc.id
+			from inventory i join inventory_price_customers ipc 
+			on i.item_number=ipc.item_no where ipc.cust_type='$type_id'";
+		$this->session->set_userdata("cust_type_price",$type_id);	
+		echo browse2(array("sql"=>$sql,
+		"controller"=>"customer_type",
+		"toolbar"=>"tb_price",
+		"fields_numeric"=>array("retail","sales_price")));
+		
+
 }
+echo $lookup_inventory;
+include_once "cust_type_price_input.php";
+
 ?>
+<div id='tb_price'>
+	<?=link_button("Add", "dlgItem_add();return false","add")?>
+	<?=link_button("Edit", "edit_item();return false","edit")?>
+	<?=link_button("Delete", "del_item();return false","remove")?>
+	<?=link_button("Refresh", "refresh_item();return false","reload")?>
+</div>
 <script>
 var cust_type='<?=$type_id?>';
+
+function edit_item(){
+	dlgItem_clear();
+	var row = $('#dg').datagrid('getSelected');
+	if (row){
+		$('#item_number').val(row.item_number);
+		$('#description').val(row.description);
+		$('#min_qty').val(row.min_qty);
+		$('#disc_prc_from').val(row.disc_prc_from);
+		$('#disc_prc_to').val(row.disc_prc_to);
+		$('#id').val(row.id);
+		$("#sales_price").val(row.sales_price);
+		$("#dlgItem").dialog("open").dialog("setTitle","Input Price");
+	}	
+}
+function refresh_item(){
+	$("#dg").datagrid("reload");
+}
 function save_item(item_no){
 	var param={cust_type:cust_type,item_no:item_no, 
 		p:$('#p_'+item_no).val(), 
@@ -75,5 +77,33 @@ function save_item(item_no){
 			},
 			error: function(msg){log_err('Unknown');}
 	}); 	
+}
+function del_item(){
+	var cust_type='<?=$type_id?>';
+	
+	var row = $('#dg').datagrid('getSelected');
+	if (row){
+		var _url = CI_ROOT+'customer_type/delete_item_price/'+row.id;
+		$.messager.confirm('Confirm','Are you sure you want to remove this line?',function(r){
+			if (r){
+				$.ajax({
+						type: "GET",url: _url,
+						success: function(msg){
+							var retval = eval('('+msg+')');
+							if(retval.success){
+								log_msg(retval.msg);
+								$("#dg").datagrid("reload");
+							} 
+							log_err(retval.msg);
+							return true;
+						},
+						error: function(msg){log_err('Unknown');}
+				}) 	
+				
+				
+			}
+		})
+	}
+	
 }
 </script>

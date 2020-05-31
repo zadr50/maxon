@@ -107,13 +107,27 @@ CREATE TABLE IF NOT EXISTS `inventory` (
   `update_date` datetime default NULL,
   `update_by` varchar(50) character set utf8 default NULL,
   `tax_account` int(11) default NULL,
-  PRIMARY KEY  (`item_number`),
-  UNIQUE KEY `ix_item` (`item_number`)
+  `item_picture2` varchar(50) DEFAULT NULL,
+  `item_picture3` varchar(50) DEFAULT NULL,
+  `item_picture4` varchar(50) DEFAULT NULL,
+  `view_count` int(11) DEFAULT NULL,
+  `sales_count` int(11) DEFAULT NULL,
+  `condition` varchar(50) DEFAULT NULL,
+  `insr_name` varchar(50) DEFAULT NULL,
+  `sales_min` int(11) DEFAULT NULL,
+  `delivery_by` varchar(150) DEFAULT NULL,
+  `division` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`item_number`),
+  KEY `x1` (`description`),
+  KEY `x2` (`category`),
+  KEY `x3` (`class`),
+  KEY `x4` (`manufacturer`),
+  KEY `x5` (`model`),
+  KEY `x6` (`supplier_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-	$table="inventory";
 
 $sql="
 
@@ -133,7 +147,7 @@ INSERT INTO `inventory` (`item_number`, `active`, `class`, `category`, `sub_cate
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-	$table="inventory_assembly";
+$table.=", inventory_assembly";
 
 $sql="
 
@@ -148,8 +162,6 @@ CREATE TABLE IF NOT EXISTS `inventorysource` (
 
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
-
-	$table="inventory_assembly";
 
 $sql="
 
@@ -170,7 +182,64 @@ CREATE TABLE IF NOT EXISTS `inventory_assembly` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-	$table="inventory_categories";
+$table.=",inventory_beginning_balance";
+
+$sql="
+CREATE TABLE IF NOT EXISTS `inventory_beginning_balance` (
+  `item_number` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
+  `tanggal` datetime DEFAULT NULL,
+  `amount_awal` double DEFAULT NULL,
+  `amount_trans` double DEFAULT NULL,
+  `amount_akhir` double DEFAULT NULL,
+  `qty_awal_gd1` int(11) DEFAULT NULL,
+  `qty_trans_gd1` int(11) DEFAULT NULL,
+  `qty_akhir_gd1` int(11) DEFAULT NULL,
+  `qty_awal_gd2` int(11) DEFAULT NULL,
+  `qty_trans_gd2` int(11) DEFAULT NULL,
+  `qty_akhir_gd2` int(11) DEFAULT NULL,
+  `qty_awal_gd3` int(11) DEFAULT NULL,
+  `qty_trans_gd3` int(11) DEFAULT NULL,
+  `qty_akhir_gd3` int(11) DEFAULT NULL,
+  `qty_awal_gd4` int(11) DEFAULT NULL,
+  `qty_trans_gd4` int(11) DEFAULT NULL,
+  `qty_akhir_gd4` int(11) DEFAULT NULL,
+  `qty_awal_gd5` int(11) DEFAULT NULL,
+  `qty_trans_gd5` int(11) DEFAULT NULL,
+  `qty_akhir_gd5` int(11) DEFAULT NULL,
+  `qty_awal_gd6` int(11) DEFAULT NULL,
+  `qty_trans_gd6` int(11) DEFAULT NULL,
+  `qty_akhir_gd6` int(11) DEFAULT NULL,
+  `qty_awal_gd7` int(11) DEFAULT NULL,
+  `qty_trans_gd7` int(11) DEFAULT NULL,
+  `qty_akhir_gd7` int(11) DEFAULT NULL,
+  `qty_awal_gd8` int(11) DEFAULT NULL,
+  `qty_trans_gd8` int(11) DEFAULT NULL,
+  `qty_akhir_gd8` int(11) DEFAULT NULL,
+  `qty_awal_gd9` int(11) DEFAULT NULL,
+  `qty_trans_gd9` int(11) DEFAULT NULL,
+  `qty_akhir_gd9` int(11) DEFAULT NULL,
+  `qty_awal_gd10` int(11) DEFAULT NULL,
+  `qty_trans_gd10` int(11) DEFAULT NULL,
+  `qty_akhir_gd10` int(11) DEFAULT NULL,
+  `ttlqty_awal` int(11) DEFAULT NULL,
+  `ttlqty_trans` int(11) DEFAULT NULL,
+  `ttlqty_akhir` int(11) DEFAULT NULL,
+  `qtyin` int(11) DEFAULT NULL,
+  `qtyout` int(11) DEFAULT NULL,
+  `amountin` double DEFAULT NULL,
+  `amountout` double DEFAULT NULL,
+  `flagawal` int DEFAULT NULL,
+  `hpp_awal` double DEFAULT NULL,
+  `hpp_akhir` double DEFAULT NULL,
+  `harga` double DEFAULT NULL,
+  `qty` double DEFAULT NULL,
+  `update_status` int(11) DEFAULT NULL,
+  UNIQUE KEY `x1` (`item_number`,`tanggal`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+";
+if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
+$table.=", inventory_categories";
 
 $sql="
 
@@ -195,12 +264,15 @@ CREATE TABLE IF NOT EXISTS `inventory_categories` (
   `create_by` varchar(50) character set utf8 default NULL,
   `update_date` datetime default NULL,
   `update_by` varchar(50) character set utf8 default NULL,
-  PRIMARY KEY  (`kode`)
+  `item_picture` varchar(150) DEFAULT NULL,
+  `description` varchar(350) DEFAULT NULL,
+  `icon_picture` varchar(150) DEFAULT NULL,
+  `sales_disc_prc` double DEFAULT NULL,
+  PRIMARY KEY (`kode`),
+  KEY `x1` (`category`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
-
-	$table="inventory_categories";
 
 $sql="
 
@@ -218,7 +290,7 @@ INSERT INTO `inventory_categories` (`kode`, `category`, `update_status`, `custom
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-	$table="inventory_class";
+$table.=", inventory_class";
 
 $sql="
 
@@ -235,9 +307,6 @@ CREATE TABLE IF NOT EXISTS `inventory_class` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-	$table="inventory_class";
-
- 
 $sql="
 INSERT INTO `inventory_class` (`kode`, `class`, `id`, `update_status`, `sourceautonumber`, `sourcefile`) VALUES
 ('Stock Item', 'Stock Item', 6, NULL, NULL, NULL),
@@ -249,7 +318,7 @@ INSERT INTO `inventory_class` (`kode`, `class`, `id`, `update_status`, `sourceau
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-	$table="inventory_moving";
+$table.=", inventory_moving";
 
 $sql="
 
@@ -269,13 +338,18 @@ CREATE TABLE IF NOT EXISTS `inventory_moving` (
   `trans_type` varchar(10) default NULL,
   `total_amount` double default NULL,
   `unit` varchar(50) default NULL,
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `x1` (`transfer_id`,`item_number`,`date_trans`,`from_location`,`to_location`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=34 ;
+  `status` varchar(50) DEFAULT NULL,
+  `verify_by` varchar(50) DEFAULT NULL,
+  `verify_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `x1` (`transfer_id`,`item_number`,`date_trans`,`from_location`,`to_location`),
+  KEY `x2` (`transfer_id`),
+  KEY `x3` (`trans_type`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-	$table="inventory_prices";
+$table.=", inventory_prices";
 
 $sql="
 
@@ -298,14 +372,36 @@ CREATE TABLE IF NOT EXISTS `inventory_prices` (
   `date_from` datetime default NULL,
   `date_to` datetime default NULL,
   `update_status` int(11) default NULL,
-  UNIQUE KEY `x1` (`item_number`,`customer_pricing_code`)
+  UNIQUE KEY `x1` (`item_number`,`customer_pricing_code`),
+  KEY `x2` (`item_number`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-	$table="inventory_price_history";
+$table.=",inventory_price_customer";
+$sql="CREATE TABLE IF NOT EXISTS `inventory_price_customers` (
+  `item_no` varchar(50) DEFAULT NULL,
+  `cust_type` varchar(50) DEFAULT NULL,
+  `sales_price` double DEFAULT NULL,
+  `disc_prc_from` double DEFAULT NULL,
+  `min_qty` double DEFAULT NULL,
+  `disc_prc_to` double DEFAULT NULL,
+  `description` varchar(200) DEFAULT NULL,
+  `id` int(9) NOT NULL AUTO_INCREMENT,
+  `cust_no` varchar(50) DEFAULT NULL,
+  `category` varchar(50) DEFAULT NULL,
+  `disc_amount` double DEFAULT NULL,
+  `disc_prc_2` double DEFAULT NULL,
+  `disc_prc_3` double DEFAULT NULL,
+  `min_qty_sold` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `x1` (`item_no`)
+) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
+";
+if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table.=",inventory_price_history";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `inventory_price_history` (

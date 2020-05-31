@@ -216,6 +216,7 @@ class Jurnal extends CI_Controller {
 		$data['caption']='DAFTAR TRANSAKSI JURNAL';
 		$data['export_visible']=true;
         $data['fields_format_numeric']=array("debit","credit");
+		$data['row_count']=5000;
 
 		$this->load->library('search_criteria');
 		
@@ -225,9 +226,11 @@ class Jurnal extends CI_Controller {
 		$faa[]=criteria("Jenis","sid_opr");
 		$faa[]=criteria("Only Not Balance","sid_balance","checkbox");
 		$data['criteria']=$faa;
+		
+		
         $this->template->display_browse2($data);            
     }
-    function browse_data($offset=0,$limit=100,$nama=''){
+    function browse_data($offset=0,$limit=5000,$nama='',$row_count=0){
 
 		$sql=$this->build_sql();
 		
@@ -237,7 +240,8 @@ class Jurnal extends CI_Controller {
         $offset=$limit*$offset;
         $sql.=" limit $offset,$limit";
 		
-        echo datasource($sql);
+		
+        echo datasource($sql,false,"",$row_count);
     }	      
 	function build_sql(){
 		$no=$this->input->get('sid_number');
@@ -337,7 +341,7 @@ class Jurnal extends CI_Controller {
 	function items($kode){
 		$kode=urldecode($kode);
 		$sql="select c.account,c.account_description,g.debit,g.credit,
-		g.source,g.operation,g.transaction_id,g.custsuppbank
+		g.source,g.operation,g.transaction_id,g.custsuppbank,g.date,g.gl_id,g.account_id
 		from gl_transactions g left join chart_of_accounts c 
 		on c.id=g.account_id
 		 where gl_id='$kode' order by transaction_id";

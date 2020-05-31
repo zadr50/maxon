@@ -28,7 +28,14 @@ function __construct(){
 		return $this->db->get($this->table_name);
 	}
 	function save($data){
-		$data['date_trans']= date( 'Y-m-d H:i:s', strtotime($data['date_trans']));
+		$id=0;
+		if(isset($data['id'])){
+			$id=$data['id'];
+			unset($data['id']);
+			
+		}
+		
+		if(isset($data['date_trans'])) $data['date_trans']= date( 'Y-m-d H:i:s', strtotime($data['date_trans']));
 	// apabila default satuan tidak sama dg inputan 
 		$lFoundOnPrice=false;
 		$item=null;
@@ -43,61 +50,76 @@ function __construct(){
 				{
 					 
 					$lFoundOnPrice=true;
-					if($unit_price->quantity_high>0) $data['mu_qty']=$data['to_qty']*$unit_price->quantity_high;
-					$data['mu_price']=$item->cost_from_mfg;
-					if($data['mu_price']==0)$data['mu_price']=$item->cost;			
-					$data['multi_unit']=$item->unit_of_measure;			
+					//if($unit_price->quantity_high>0) $data['mu_qty']=$data['to_qty']*$unit_price->quantity_high;
+					//$data['mu_price']=$item->cost_from_mfg;
+					//if($data['mu_price']==0)$data['mu_price']=$item->cost;			
+					//$data['multi_unit']=$item->unit_of_measure;			
 				}
 			}
 		}
 		if($unit=exist_unit($data['unit']) && !$lFoundOnPrice ){
 			$lFoundOnPrice=true;
-			$data['mu_qty']=$data['to_qty']*$unit['unit_value'];
-			$data['mu_price']=item_cost($data['item_number']);
-			$data['multi_unit']=$unit['from_unit'];					
+			//$data['mu_qty']=$data['to_qty']*$unit['unit_value'];
+			//$data['mu_price']=item_cost($data['item_number']);
+			//$data['multi_unit']=$unit['from_unit'];					
 		} 
 		if(!$lFoundOnPrice || !isset($data["mu_qty"])){
-			$data['mu_qty']=$data['to_qty'];
-			$data['mu_price']=$data['cost'];
-			$data['multi_unit']=$data['unit'];
+			//$data['mu_qty']=$data['to_qty'];
+			//$data['mu_price']=$data['cost'];
+			//$data['multi_unit']=$data['unit'];
 		}	
-
+		if(!isset($data['to_qty']))$data['to_qty']=$data['from_qty'];
 		$data['total_amount']=floatval($data['to_qty'])*floatval($data['cost']);
-        $data['create_by']=user_id();
-        $data['create_date']=date( 'Y-m-d H:i:s');
-		
+				
+		if($id==0){
+
+	        $data['create_by']=user_id();
+	        $data['create_date']=date( 'Y-m-d H:i:s');
+			
+			$ok = $this->db->insert($this->table_name,$data);
+    	
+		} else {
+			unset($data['id']);
+			$ok = $this->db->where("id",$id)->update($this->table_name,$data);
+			
+		}		
 				
 		
-		$ok=$this->db->insert($this->table_name,$data);
-        $item_no=$data['item_number']; item_need_update($item_no);
+	    $item_no=$data['item_number']; 
+        item_need_update($item_no);
+		//item_need_update_arsip($item_no, $data['from_location'], $data['date_trans']);
+		//item_need_update_arsip($item_no, $data['to_location'], $data['date_trans']);
+		
 		return $ok;
 		//$this->db->insert_id();
 	}
 	function update($id,$data){
-		$data['date_trans']= date( 'Y-m-d H:i:s', strtotime($data['date_trans']));
-		$this->db->where("id",$id);
-        $item_no=$data['item_number']; item_need_update($item_no);
-		if($data['mu_qty']==""){
-			$data['mu_qty']=$data["to_qty"];
-			$data['multi_unit']=$data['unit'];	
-			if($data['mu_qty']==0)$data['mu_qty']=1;
-		}
-		return $this->db->where("id",$id)->update($this->table_name,$data);
+		if(!isset($data['id'])) $data['id']=$id;
+		return $this->save($data);		
+	}
+	function update_bukti($transfer_id,$data){
+		if(isset($data['transfer_id']))unset($data['transfer_id']);
+		return $this->db->where("transfer_id",$transfer_id)->update("inventory_moving",$data);
 	}
 	function delete($id){
+		
 	    $id=urldecode($id);
+	    
 	    $this->db->query("insert into zzz_item_need_update(item_no) 
 	       select item_number from inventory_moving where transfer_id='$id'");
-		$this->db->where($this->primary_key,$id);
-		$this->db->delete($this->table_name);
-		$this->db->where('transfer_id',$id);
-		$this->db->delete('inventory_moving');
+		
+		$this->db->where('transfer_id',$id)->delete('inventory_moving');
         
 	}
 
 	function add_item($data){
-            $this->db->insert('inventory_moving',$data);
-            return $this->db->insert_id();
+		
+		item_need_update($data['item_number']);
+		item_need_update_arsip($data['item_number'], $data['from_location'], $data['date_trans']);
+		item_need_update_arsip($data['item_number'], $data['to_location'], $data['date_trans']);
+		
+        $this->db->insert('inventory_moving',$data);
+        return $this->db->insert_id();
     } 			
 	function nomor_bukti($add=false)
 	{
@@ -128,6 +150,8 @@ function __construct(){
 		return $this->db->query($sql);
 	}
 	function delete_item($id){
+	    $this->db->query("insert into zzz_item_need_update(item_no) 
+	       select item_number from inventory_moving where id='$id'");
 		$this->db->where('id',$id);
 		return $this->db->delete($this->table_name);
 	}

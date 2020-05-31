@@ -5,9 +5,9 @@ class Workorder extends CI_Controller {
 	private $limit=10;
     private $file_view='manuf/work_order';
     private $table_name='work_order';
-    private $sql="select work_order_no,start_date,expected_date,customer_number,comments,wo_status,special_order
-            from work_order
-                ";
+	private $sql="select work_order_no,start_date,expected_date,customer_number,comments,
+		wo_status,special_order
+        from work_order";
     private $primary_key='work_order_no';
     private $controller='manuf/workorder';
 
@@ -21,8 +21,7 @@ class Workorder extends CI_Controller {
 		$this->load->library('template');
 		$this->load->library('form_validation');
 		$this->load->model('manuf/workorder_model');
-		$this->load->model('inventory_model');
-		$this->load->model('customer_model');
+		$this->load->model(array('inventory_model','customer_model','sales_order_model'));
 	}
 	function nomor_bukti($add=false)
 	{
@@ -49,12 +48,15 @@ class Workorder extends CI_Controller {
 		$data['mode']='';
 		$data['message']='';
 		$data['company']='';
-		if($record==NULL)$data['work_order_no']=$this->nomor_bukti();
+		if($record==NULL)$data['work_order_no']="AUTO";//$this->nomor_bukti();
 		if($data['start_date']=='')$data['start_date']= date("Y-m-d H:i:s");
 		if($data['expected_date']=='')$data['expected_date']= date("Y-m-d H:i:s");			
 		$data['street']='';
 		$data['wo_status_list']=array("0"=>"Draft","1"=>"Open",
 		"2"=>"Close","3"=>"Canceled","4"=>"Pending","5"=>"Auto Close");
+		$data['customer_lookup']=$this->customer_model->lookup();
+		$data['so_lookup']=$this->sales_order_model->lookup();
+		$data['inventory_lookup']=$this->inventory_model->lookup_by_class();
 		return $data;
 	}
 	function index()
@@ -96,23 +98,24 @@ class Workorder extends CI_Controller {
 	}
 	function save()
 	{
-		$mode=$this->input->post('mode');
-		if($mode=="add"){
-	        $id=$this->nomor_bukti();
-		} else {
-			$id=$this->input->post('work_order_no');			
-		}
 		$data=$this->input->post();
+		$mode=$data['mode'];
+		$id=$data['work_order_no'];			
+		if($mode=="add" || $id=="AUTO"){
+	        $id=$this->nomor_bukti();
+			$this->nomor_bukti(true);
+		} 
+		$data["work_order_no"]=$id;
 		unset($data['mode']);
 		unset($data['company']);
 		
 		if($mode=="add"){
 			$ok=$this->workorder_model->save($data);
 		} else {
+			unset($data['work_order_no']);
 			$ok=$this->workorder_model->update($id,$data);			
 		}
 		if ($ok){
-			if($mode=="add") $this->nomor_bukti(true);
 			echo json_encode(array('success'=>true,'work_order_no'=>$id));
 		} else {
 			echo json_encode(array('msg'=>'Some errors occured.'));
@@ -206,6 +209,12 @@ class Workorder extends CI_Controller {
 			if($this->input->get('sid_number')!='')$sql.=" and customer_number='".$this->input->get('sid_number')."%'";
 		}
 		
+        if($this->input->get("page"))$offset=$this->input->get("page");
+        if($this->input->get("rows"))$limit=$this->input->get("rows");
+        if($this->input->post("page"))$offset=$this->input->post("page");
+        if($this->input->post("rows"))$limit=$this->input->post("rows");
+        if($offset>0)$offset--;
+        $offset=$limit*$offset;
         $sql.=" limit $offset,$limit";
 		
         echo datasource($sql);
@@ -290,7 +299,7 @@ class Workorder extends CI_Controller {
 		if ($ok){
 			echo json_encode(array('success'=>true));
 		} else {
-			echo json_encode(array('msg'=>mysql_error()));
+			echo json_encode(array('msg'=>$this->db->display_error()));
 		}
     }        
 	
@@ -373,8 +382,15 @@ class Workorder extends CI_Controller {
 		if ($ok){
 			echo json_encode($data);
 		} else {
-			echo json_encode(array('msg'=>mysql_error()));
+			echo json_encode(array('msg'=>$this->db->display_error()));
 		}
+	}
+	function print_bukti($nomor){
+		$nomor=urldecode($nomor);
+        $data=$this->workorder_model->get_by_id($nomor)->row_array();
+		$data['content']=load_view('manuf/rpt/work_order',$data);
+        $this->load->view('pdf_print',$data);                
+
 	}
 }
 ?>

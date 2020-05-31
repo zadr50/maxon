@@ -1,14 +1,21 @@
 <div class="row-fluid" >
-	<?
+	<?php
 	if(!isset($message))$message='';
 	if(!isset($controller)) $controller=base_url()."index.php/eshop_admin/items";
 	if(!isset($cmd))$cmd='view';
 	if($cmd=="list") {
 		$this->load->library("browser");
 		$browse=new browser();
+		$config['page']=$page;
 		$config['tablename']='inventory';
 		//$config['sql']="select item_number,description,unit_of_measure,retail,cost_from_mfg from inventory";
 		$config['sql']='';
+		
+		$search=$this->input->get("q");
+		if($search!=""){
+			$config["where"]=" and (item_number='$search' or description like '%$search%')";
+		}
+		
 		$config['primary_key']="item_number";
 		$config['order_by']="item_number";
 		//$config['where']="where create_by='".cust_id()."'";
@@ -49,25 +56,35 @@
 				?>
 			</div>
 		</div>
-		<script language='javascript'>
-		function save_item(){
-			var item_no=$("#item_number").val();
-			var item_name=$("#description").val();
-			if(item_no==""){alert("Isi kode barang !");return false}
-			if(item_name==""){alert("Isi nama barang !");return false}
-			var url="<?=$controller?>/save";
-			var next_url='<?=$controller?>/browse';
-			//need repopulate before ajax submit for ckeditor
-			for (instance in CKEDITOR.instances) {
-                CKEDITOR.instances[instance].updateElement();
-            }
-			$('#frmBarang').ajax_post(url,'undefined',next_url); 
-			
-		};
-
-		</script>
-	
 	<?php } ?>
 </div>
-<link rel="stylesheet" type="text/css" href="<?=base_url()?>assets/eshop/eshop.css">
 
+<script language='javascript'>
+	function save_item(){
+		var item_no=$("#item_number").val();
+		var item_name=$("#description").val();
+		if(item_no==""){alert("Isi kode barang !");return false}
+		if(item_name==""){alert("Isi nama barang !");return false}
+		var url="<?=$controller?>/save";
+		var next_url='<?=$controller?>/browse';
+		//need repopulate before ajax submit for ckeditor
+		for (instance in CKEDITOR.instances) {
+            CKEDITOR.instances[instance].updateElement();
+        }
+		$('#frmBarang').ajax_post(url,'undefined',next_url); 
+		
+	};
+		
+	function search_item(){
+		var search=$("#txtSearch").val();
+		var url=M_CONTROL+"/browse?q="+search;
+		window.open(url,"_self");
+	}
+		
+
+</script>
+	
+
+
+
+<link rel="stylesheet" type="text/css" href="<?=base_url()?>assets/eshop/eshop.css">

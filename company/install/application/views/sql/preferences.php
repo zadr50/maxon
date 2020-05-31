@@ -1,8 +1,7 @@
 <?php
+$msg="";
 $table="preferences";
-
 $sql="
--- Dumping structure for table simak.preferences
 CREATE TABLE IF NOT EXISTS `preferences` (
   `company_code` varchar(15) CHARACTER SET utf8 NOT NULL,
   `company_name` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
@@ -122,9 +121,9 @@ $sql="
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="toko_master";
 
-$sql="
-CREATE TABLE IF NOT EXISTS  `toko_master` (
+$sql="CREATE TABLE `toko_master` (
   `code` varchar(50) DEFAULT NULL,
   `code_company` varchar(50) DEFAULT NULL,
   `toko_name` varchar(250) DEFAULT NULL,
@@ -140,38 +139,9 @@ CREATE TABLE IF NOT EXISTS  `toko_master` (
   `id` int(9) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8;
-
-INSERT INTO `toko_master` VALUES ('T01', 'C01', 'Nama toko 1', null, null, null, null, 'jalan aldkjfadsfk', 'kjdlfajsd', 'ldkjfaklsfjs', null, null, '1');
-
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$sql="
-CREATE TABLE IF NOT EXISTS  `branch` (
-  `branch_code` varchar(15) CHARACTER SET utf8 NOT NULL,
-  `branch_name` varchar(50) DEFAULT NULL,
-  `address_type` varchar(15) CHARACTER SET utf8 DEFAULT NULL,
-  `attention_name` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
-  `company_name` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
-  `street` varchar(250) CHARACTER SET utf8 DEFAULT NULL,
-  `suite` varchar(250) CHARACTER SET utf8 DEFAULT NULL,
-  `city` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
-  `state` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
-  `zip` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
-  `country` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
-  `phone` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
-  `fax` varchar(20) CHARACTER SET utf8 DEFAULT NULL,
-  `other_phone` varchar(20) CHARACTER SET utf8 DEFAULT NULL,
-  `comments` double DEFAULT NULL,
-  `update_status` int(11) DEFAULT NULL,
-  PRIMARY KEY (`branch_code`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
-
-INSERT INTO `branch` VALUES ('T10', 'Action City', null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-INSERT INTO `branch` VALUES ('PST', 'PUSAT', null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-
-";
-if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
 
 ?>

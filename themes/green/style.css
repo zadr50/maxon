@@ -6,16 +6,12 @@
 a.l-btn span.l-btn-left {
   height: 24px;
 }
-body {
+.body-maxon {
     font-family:helvetica,tahoma,verdana,sans-serif;
     padding:5px;
     margin:0 auto;
 	--width: auto; 
-<<<<<<< HEAD
 	background-color: #ffffff;
-=======
-	background-color: #2F6E2C;
->>>>>>> 8f07a81... Update Versi 7
 }
 input,select {
 	padding:3px;
@@ -569,14 +565,14 @@ padding-left: 5px;
 	border: 1px solid transparent;
 	border-radius: 4px;
 }
-.info {
+.info-maxon {
 	width:200px;height:100px;float:left;font-size:9px;margin:5px;
 	background: linear-gradient(to top,#F7F8EF 0,#89C284 100%);
 }
-.info .photo img {
+.info-maxon .photo img {
 	width:50px;height:50px;float:left;margin:5px;
 }
-.info:hover {
+.info-maxon:hover {
 	cursor:pointer;
 	border: 1px solid #aaa;
 	-webkit-border-radius: 5px;

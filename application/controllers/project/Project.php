@@ -30,6 +30,18 @@ class Project extends CI_Controller {
 		$data['message']='';
         $data['termin_list']=$this->type_of_payment_model->select_list();
 		$data['salesman_list']=$this->salesman_model->select_list();
+		
+		$data['lookup_status_project']=$this->list_of_values->render(
+			array(
+				'dlgBindId'=>'status_project',
+				'sysvar_lookup'=>'status_project'
+			));		
+		$data['lookup_category_project']=$this->list_of_values->render(
+			array(
+				'dlgBindId'=>'category_project',
+				'sysvar_lookup'=>'category_project'
+			));		
+			
 		return $data;
 	}
 	function index()

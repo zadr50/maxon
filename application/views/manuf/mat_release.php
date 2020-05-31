@@ -1,21 +1,14 @@
-<legend>MATERIAL RELEASE</legend>
 <div class="thumbnail box-gradient">
 	<?php
-	   $min_date=$this->session->userdata("min_date","");
-	
-	echo link_button('Save', 'save_this()','save');		
-	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','false',base_url().'index.php/manuf/mat_release/add');		
-	echo link_button('Search','','search','false',base_url().'index.php/manuf/mat_release');		
-	echo link_button('Refresh','','reload','false',base_url().'index.php/manuf/mat_release/view/'.$mat_rel_no);		
-	echo "<div style='float:right'>";
-	
+ 	   	$min_date=$this->session->userdata("min_date","");
+		echo link_button('Save', 'save_this()','save');		
+		echo link_button('Print', 'on_print()','print');		
+		echo "<div style='float:right'>";	
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help('mat_release)">Help</div>
+		<div onclick="load_help('mat_release')">Help</div>
 		<div onclick="show_syslog('mat_release','<?=$mat_rel_no?>')">Log Aktifitas</div>
-
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
@@ -32,7 +25,7 @@
 	</div>
 <?php } ?>
  <?php if($message!="") { ?>
-<div class="alert alert-success"><? echo $message;?></div>
+	<div class="alert alert-success"><? echo $message;?></div>
 <? } ?>
 
 
@@ -42,7 +35,9 @@
 		<tbody>
 			<tr><td>Release Number</td>
 				<td><?=form_input("mat_rel_no",$mat_rel_no,"id='mat_rel_no'")?></td>
-				<td>Warehouse</td><td><?=form_dropdown("warehouse",$warehouse_list,$warehouse,"id='warehouse'")?></td>
+				<td>Warehouse</td><td><?=form_input("warehouse",$warehouse,"id='warehouse_code'")?>
+					<?=link_button('','dlgwarehouse_show()','search');?>
+				</td>
 			</tr>
 			<tr><td>Date</td>
 				<td><?=form_input("date_rel",$date_rel,"id='date_rel' 
@@ -53,7 +48,7 @@
 				<td>Person</td><td><?=form_input("person",$person,"id='person'")?></td>
 			</tr>
 			<tr><td>Work Exec Number</td><td><?=form_input("exec_number",$exec_number,"id='exec_number'")?>
-				<?=link_button('','lookup_exec()','search');?>
+				<?=link_button('','dlgwork_exec_show()','search');?>
 				<?=link_button('View','wo_exec_view()','tip');?>
 			</td>
 			<td>Work Order Number</td><td><?=form_input("wo_number",$wo_number,"id='wo_number'")?>
@@ -104,10 +99,15 @@ padding:10px 20px;left:100px;top:20px"
 		</thead>
 	</table>
 </div>
- 
+<?php 
+	echo $warehouse_list;
+	echo $work_exec_list;
+
+?>
 <script type="text/javascript">
+
     function save_this(){
-                var valid_date=true;
+        var valid_date=true;
         var min_date='<?=$min_date?>';
         var tanggal=$('#date_rel').datetimebox('getValue'); 
         if(tanggal<min_date){
@@ -118,7 +118,8 @@ padding:10px 20px;left:100px;top:20px"
   		if($('#mat_rel_no').val()==''){alert('Isi nomor bukti !');return false;}
   		if($('#exec_number').val()==''){alert('Pilih nomor work exec !');return false;}
 		url='<?=base_url()?>index.php/manuf/mat_release/save';
-			$('#frmExec').form('submit',{
+	
+		$('#frmExec').form('submit',{
 				url: url,
 				onSubmit: function(){
 					return $(this).form('validate');
@@ -137,7 +138,7 @@ padding:10px 20px;left:100px;top:20px"
 						log_err(result.msg);
 					}
 				}
-			});
+		});
     }
 	function deleteItem()
 	{
@@ -160,21 +161,7 @@ padding:10px 20px;left:100px;top:20px"
 			});
 		}
 	}
-	function lookup_exec()
-	{
-		$('#dlgExec').dialog('open').dialog('setTitle','Cari nomor work execute');
-		$('#dgExec').datagrid({url:'<?=base_url()?>index.php/manuf/work_exec/select'});
-		$('#dgExec').datagrid('reload');
-	}
-	function select_exec()
-	{
-		var row = $('#dgExec').datagrid('getSelected');
-		if (row){
-			$('#exec_number').val(row.work_exec_no);
-			$('#wo_number').val(row.wo_number);
-			$('#dlgExec').dialog('close');
-		}
-	}
+ 
 	function clear_item_release() {
 		var no=$('#mat_rel_no').val();
   		if(no==''){alert('Pilih nomor release !');return false;}
@@ -200,7 +187,23 @@ padding:10px 20px;left:100px;top:20px"
 		if(exec_no==""){alert("Kode WorkExec belum dipilih !");return false;}
 		add_tab_parent("view_exec",url);
 	}
-		
+	function dlgwarehouse_find(){
+
+	}	
+	function dlgwork_exec_find(){
+	 
+	}
+	function on_print(){
+			var no=$("#mat_rel_no").val(); 
+			if(no=="" || no=="AUTO"){
+				log_msg("Pilih nomor material release");
+				return false;
+			}
+	        window.open(CI_BASE+"index.php/manuf/mat_release/print_bukti/"+no,"new");  		
+
+
+		}
+
 </script>
 
  

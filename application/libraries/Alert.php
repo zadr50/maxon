@@ -2,15 +2,22 @@
 
 class Alert
 {
+	private $message="";
  function __construct()
  {
      $this->CI =& get_instance();             
+	 
+  }
+  function message_text(){
+  	return $this->message;
   }
  function process(){
      $this->po_expired();
      $this->faktur_beli_jatuh_tempo();
  }
  function faktur_beli_jatuh_tempo(){
+ 	 $this->message.="\r start: faktur_beli_jatuh_tempo()";
+	 
      $today=date("Y-m-d");
      $s="select purchase_order_number,po_date,due_date,supplier_number 
      from purchase_order 
@@ -43,13 +50,16 @@ class Alert
          }
          
      }
-     
+     $this->message.="--stop";
  }
  function po_expired(){
+    $potype=getvar("PoType","O");
+
+ 	$this->message.="start: po_expired()";
      $today=date("Y-m-d");
      $s="select purchase_order_number,po_date,po_expire_date,doc_status 
      from purchase_order 
-     where potype='O' and po_expire_date<'$today' order by po_expire_date limit 100";
+     where potype='$potype' and po_expire_date<'$today' order by po_expire_date limit 100";
      $q=$this->CI->db->query($s);
      foreach($q->result() as $row){
          $nDay=my_date_diff($row->po_expire_date,date("Y-m-d"));
@@ -64,6 +74,7 @@ class Alert
          $row->purchase_order_number,'PO');
          
      }
+     $this->message.="--stop";
  }
  
 }

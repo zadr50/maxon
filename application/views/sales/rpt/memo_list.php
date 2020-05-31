@@ -40,20 +40,21 @@
 	     			</tr>
 	     		</thead>
 	     		<tbody>
-     			<?
+     			<?php
      			$sql="select i.tanggal,i.kodecrdb,c.customer_number,
      			c.company,i.docnumber,i.amount,i.keterangan,i.amount,i.transtype
      			 from crdb_memo i 
 				 left join invoice inv on inv.invoice_number=i.docnumber
 				 left join customers c on c.customer_number=inv.sold_to_customer
 	            where i.tanggal between '$date1' and '$date2'  ";
+				
      			$rst_so=$CI->db->query($sql);
      			$tbl="";
                  foreach($rst_so->result() as $row){
                     $tbl.="<tr>";
                     $tbl.="<td>".$row->tanggal."</td>";
                     $tbl.="<td>".$row->kodecrdb."</td>";
-                    $tbl.="<td>".($row->customer_customer)."</td>";
+                    $tbl.="<td>".($row->customer_number)."</td>";
                     $tbl.="<td>".$row->company."</td>";
                     $tbl.="<td>".$row->docnumber."</td>";
                     $tbl.="<td>".$row->amount."</td>";

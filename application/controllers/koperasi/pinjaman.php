@@ -11,15 +11,6 @@ class Pinjaman extends CI_Controller {
 		parent::__construct();
 		if(!$this->access->is_login())header("location:".base_url());
  		$this->load->helper(array('url','form','browse_select','mylib_helper'));
-                
-        $multi_company=$this->config->item('multi_company');
-       if($multi_company){
-            $company_code=$this->session->userdata("company_code","");
-            if($company_code!=""){
-               $this->db = $this->load->database($company_code, TRUE);
-           }
-       }         
-        
         
         $this->load->library('javascript');
         $this->load->library('template');
@@ -55,10 +46,12 @@ class Pinjaman extends CI_Controller {
         $data['mode']='';
         $data['message']='';
 		$data['nama']='';
-		$data['tanggal']= date("Y-m-d H:i:s");
-		$data['tanggal_tempo']=$data['tanggal'];
-		$data['jenis_pinjaman_list']=$this->jenis_pinjaman_model->item_list();
-		if($record==NULL)$data['no_pinjaman']=$this->nomor_bukti();
+//		$data['jenis_pinjaman_list']=$this->jenis_pinjaman_model->item_list();
+		if($record==NULL){
+			$data['no_pinjaman']=$this->nomor_bukti();
+			$data['tanggal']= date("Y-m-d H:i:s");
+			$data['tanggal_tempo']=$data['tanggal'];
+		}
         return $data;
 	}
 	function index(){$this->browse();}
@@ -108,9 +101,12 @@ class Pinjaman extends CI_Controller {
 	function browse($offset=0,$limit=10,$order_column='loan_number',$order_type='asc')	{
         $data['caption']='DAFTAR PINJAMAN  ANGGOTA';
 		$data['controller']='koperasi/pinjaman';		
-		$data['fields_caption']=array('Nomor','No Anggota','Nama','Jenis','Tanggal','Jml Pinjaman');
-		$data['fields']=array('no_pinjaman','no_anggota','nama','jenis_pinjaman','tanggal','jumlah');
+		$data['fields_caption']=array('Nomor','No Anggota','Nama','Jenis','Tanggal','Jml Pinjaman',
+		'Jml Bulan','Id');
+		$data['fields']=array('no_pinjaman','no_anggota','nama','jenis_pinjaman','tanggal','jumlah',
+		'jangka_waktu','id');
 		$data['field_key']='no_pinjaman';
+		$data['fields_format_numeric']=array("jumlah");
 		$this->load->library('search_criteria');
 		
 		$faa[]=criteria("Nomor","sid_nomor");
@@ -119,7 +115,8 @@ class Pinjaman extends CI_Controller {
         $this->template->display_browse2($data);            
     }
     function browse_data($offset=0,$limit=10,$nama=''){
-		$sql="select l.no_pinjaman,l.no_anggota,e.nama, l.jenis_pinjaman,l.tanggal,l.jumlah 
+		$sql="select l.no_pinjaman,l.no_anggota,e.nama, l.jenis_pinjaman,l.tanggal,l.jumlah,
+		l.jangka_waktu,l.id 
 		from kop_pinjaman l
 		left join kop_anggota e on e.no_anggota=l.no_anggota 
 		where 1=1";
@@ -135,8 +132,9 @@ class Pinjaman extends CI_Controller {
 	function delete($id){
 		$id=urldecode($id);
 	 	$this->load->model("pinjaman_model");
-	 	$this->pinjaman_model->delete($id);
-	 	$this->browse();
+	 	$ok = $this->pinjaman_model->delete($id);
+		echo json_encode(array("success"=>$ok,"msg"=>"Nomor berhasil dihapus"));
+		
 	}
 	function select($search=''){
 		$search=urldecode($search);

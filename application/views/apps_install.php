@@ -12,18 +12,14 @@ echo $library_src;
 echo $script_head;
 $controller_name=str_replace("/","_",$controller);
 ?>
-<div class='thumbnail'>
-	<div class="col-lg-12 clearfix">
-		<h2>MaxOn Market</h2> 
-		<p>	You can download free application or paid application from publisher. 
-			<?=anchor("market/apss","Download")?>
-		</p>
-	</div>
-	<div id='isi' class='col-lg-12 thumbnail ' ">
-		
-		
-	</div>
+<div class="col-md-12">
+	<h2>MaxOn Market</h2> 
+	<p>	You can download free application or paid application from publisher. 
+		<?=anchor("market/apps","Download")?>
+	</p>
 </div>
+<div id='divLoading'><img src="<?=base_url("images/loading_little.gif")?>"></div>
+<div id='isi' class='col-lg-12 '></div>
 
 <script type="text/javascript">
 function view_url(){
@@ -43,12 +39,12 @@ $(document).ready(function(){
 					var html='';
 					for(i=0;i<result.rows.length;i++){
 						app=result.rows[i];
-						html=html+'<div class="col-md-5"> ';
+						html=html+'<div class="col-md-6 col-sm-6	"> ';
 						html=html+'<div class="panel panel-info info2 ">';
 						html=html+"<div class='panel-heading '><div class='glyphicon glyphicon-list'>";
 						html=html+"<strong> "+app.app_name+"</strong> &nbsp [AppId: <i>"+app.app_id+"</i>]";
 						html=html+"</div>";
-						html=html+"<div class='top-legend'>Created By: "+app.app_create_by+"</div>";
+						html=html+"<div class='top-legend'>By: "+app.app_create_by+"</div>";
 						html=html+"</div>";
 						html=html+"<div class='panel-body'>";
 						html=html+"<div class='photo'><img src='"+CI_BASE+"images/"+app.app_ico+"'></div>";
@@ -64,7 +60,8 @@ $(document).ready(function(){
 						html=html+"</div>";
 						html=html+"</div>"
 					}
-					$('#isi').html(html);	 
+					$('#isi').html(html);
+					$("#divLoading").hide();	 
 				} else {
 					$.messager.show({
 						title:'Error',msg:result.msg

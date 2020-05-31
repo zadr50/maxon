@@ -1,7 +1,4 @@
-<?
-//var_dump($_POST);
-?>
-<?
+<?php
      $CI =& get_instance();
      $CI->load->model('company_model');
  
@@ -37,8 +34,8 @@
      <tr><td colspan=4 style='border-bottom: black solid 1px'></td></tr>
      <tr>
      	<td colspan="8">
-     			<?
-     			$sql="select account,account_description,id from chart_of_accounts 
+     			<?php
+     			$sql="select account,account_description,id,account_type from chart_of_accounts 
      			where account";
                 if($account_from!="")$sql.=" between '$account_from' and '$account_to' ";
      			$sql.=" order by account";
@@ -80,7 +77,14 @@
 	                $tbl.="<td></td>";
 	                $tbl.="</tr>";
 	                 foreach($query->result() as $row){
-	                 	$saldo=$saldo+($row->debit-$row->credit);
+	                    if($row_coa->account_type<3){
+                            $saldo=$saldo+($row->debit-$row->credit);
+	                        
+	                    } else  {
+                            $saldo=$saldo+($row->credit-$row->debit);
+	                        
+	                        
+	                    }
 	                    $tbl.="<tr>";
 	                    $tbl.="<td>".$row->date."</td>";
 	                    $tbl.="<td>".$row->gl_id."</td>";

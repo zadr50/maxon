@@ -2,10 +2,14 @@
 
 class Purchase_invoice extends CI_Controller {
     private $limit=10;
-    private $sql="select purchase_order_number,i.terms,po_date,amount,i.posted, 
-            i.supplier_number,c.supplier_name,c.city,i.warehouse_code,i.po_ref
+    private $sql="select i.purchase_order_number,i.terms,i.po_date,i.amount,i.posted, 
+            i.supplier_number,c.supplier_name,c.city,i.warehouse_code,i.po_ref,
+            (i.amount-coalesce(p.sum_paid,0)) as saldo,i.type_of_invoice
             from purchase_order i
             left join suppliers c on c.supplier_number=i.supplier_number
+            left join (select purchase_order_number,sum(amount_paid) as sum_paid 
+                from payables_payments group by purchase_order_number
+                ) p on p.purchase_order_number=i.purchase_order_number
             where i.potype='I'";
     private $controller='purchase_invoice';
     private $primary_key='purchase_order_number';
@@ -39,9 +43,24 @@ class Purchase_invoice extends CI_Controller {
     			$data['summary_info']='';
     			$data['gdg']=null;
                 $data['terms']="KREDIT";
+				$data['warehouse_code']=current_gudang();
             }
+            
+            $setwh['dlgBindId']="warehouse";
+            $setwh['dlgRetFunc']="$('#warehouse_code').val(row.location_number);
+            $('#bill_to_contact').val(row.company_name);";
+            $setwh['dlgCols']=array( 
+                        array("fieldname"=>"location_number","caption"=>"Kode","width"=>"80px"),
+                        array("fieldname"=>"attention_name","caption"=>"Nama Toko","width"=>"180px"),
+                        array("fieldname"=>"company_name","caption"=>"Kode Pers","width"=>"50px"),
+                        array("fieldname"=>"company","caption"=>"Perusahaan","width"=>"200px")
+                    );          
+            $setwh['show_date_range']=false;
+            $data['lookup_gudang']=$this->list_of_values->render($setwh);
+
+            
             $data['lookup_rekening']=$this->list_of_values->render(
-                array("dlgBindId"=>"bank_accounts_bank",
+                array("dlgBindId"=>"bank_accounts_bank","modules"=>"banks/banks",
                 "dlgRetFunc"=>"$('#rekening').val(row.bank_account_number);",
                 "dlgCols"=>array(array("fieldname"=>"bank_account_number","caption"=>"Rekening","width"=>"100px"),
                 array("fieldname"=>"bank_name","caption"=>"Nama Bank","width"=>"250px"),
@@ -50,7 +69,7 @@ class Purchase_invoice extends CI_Controller {
             
             $setsupp['dlgBindId']="suppliers";
             $setsupp['dlgRetFunc']="$('#supplier_number').val(row.supplier_number);
-            $('#supplier_name').html(row.supplier_name);
+                $('#supplier_name').html(row.supplier_name);
             ";
             $setsupp['dlgCols']=array( 
                         array("fieldname"=>"supplier_name","caption"=>"Nama Supplier","width"=>"180px"),
@@ -58,28 +77,13 @@ class Purchase_invoice extends CI_Controller {
                         array("fieldname"=>"first_name","caption"=>"Kontak","width"=>"50px"),
                         array("fieldname"=>"city","caption"=>"Kota","width"=>"200px")
                     );          
+            $setsupp['modules']="supplier";
             $data['lookup_suppliers']=$this->list_of_values->render($setsupp);
 
-            $data['lookup_po']=$this->list_of_values->render(
-                array("dlgBindId"=>"purchase_order",
-                
-                "dlgRetFunc"=>"
-                	$('#po_ref').val(row.purchase_order_number);
-                	add_item_with_po();",
-                	
-                "dlgBeforeLookup"=>"
-			    	if($('#purchase_order_number').val()=='AUTO'){
-			    		log_err('Simpan terlebih dahulu nomor ini');
-			    		return false;
-			    	}
-                	",
-                "dlgCols"=>array(array("fieldname"=>"purchase_order_number","caption"=>"Nomor PO","width"=>"100px"),
-	                array("fieldname"=>"supplier_number","caption"=>"Supplier","width"=>"50px"),
-	                array("fieldname"=>"supplier_name","caption"=>"Supplier Name","width"=>"280px"))));
             
             $data['lookup_project']=$this->list_of_values->render(
                 array(
-                    "dlgBindId"=>"gl_projects",
+                    "dlgBindId"=>"gl_projects","modules"=>"project/project",                    
                     "dlgRetFunc"=>"$('#org_id').val(row.kode);$('#project_name').val(row.keterangan);",
                     "dlgCols"=>array(
                         array("fieldname"=>"kode","caption"=>"Kode","width"=>"80px"),
@@ -88,6 +92,35 @@ class Purchase_invoice extends CI_Controller {
                 )
             );
             $data['lookup_terms']=$this->type_of_payment_model->lookup();
+
+            $data['lookup_po']=$this->list_of_values->render(
+                array("dlgBindId"=>"purchase_order",
+                
+                "dlgRetFunc"=>"
+                    $('#po_ref').val(row.purchase_order_number);
+                    add_item_with_po();",
+                    
+                "dlgBeforeLookup"=>"
+                    if($('#purchase_order_number').val()=='AUTO'){
+                        log_err('Simpan terlebih dahulu nomor ini');
+                        return false;
+                    }
+                    ",
+                "dlgCols"=>array(array("fieldname"=>"purchase_order_number","caption"=>"Nomor PO","width"=>"100px"),
+                    array("fieldname"=>"supplier_number","caption"=>"Supplier","width"=>"50px"),
+                    array("fieldname"=>"supplier_name","caption"=>"Supplier Name","width"=>"280px"))));
+
+            $data['lookup_inventory']=$this->list_of_values->lookup_inventory();
+            if($data['type_of_invoice']=='')$data['type_of_invoice']="1";
+            if($data['terms']=='')$data['terms']="KREDIT";
+            
+			$setting['dlgBindId']="type_of_invoice";
+			$setting['dlgRetFunc']="$('#type_of_invoice').val(row.varvalue);";
+			$setting['dlgCols']=array( 
+						array("fieldname"=>"varvalue","caption"=>"Kode","width"=>"80px"),
+						array("fieldname"=>"keterangan","caption"=>"Keterangan","width"=>"200px")
+					);			
+			$data['lookup_po_type']=$this->list_of_values->render($setting);
             
             return $data;
 	}
@@ -139,6 +172,8 @@ class Purchase_invoice extends CI_Controller {
         $data['comments']=$this->input->post('comments');
         $data['rekening']=$this->input->post('rekening');
         $data['org_id']=$this->input->post('org_id');
+        $data['warehouse_code']=$this->input->post('warehouse_code');
+		$data['type_of_invoice']=$this->input->post('type_of_invoice');
 		if($mode=="add"){
 			$ok=$this->purchase_invoice_model->save($data);
 			$this->syslog_model->add($id,"purchase_invoice","add");
@@ -157,12 +192,12 @@ class Purchase_invoice extends CI_Controller {
 	function items($nomor,$type='')
 	{
 		$nomor=urldecode($nomor);
-		$sql="select p.item_number,i.description,p.quantity 
+		$sql="select p.item_number,p.description,p.quantity 
 		,p.unit,p.price,p.discount,p.total_price,p.line_number,
-		p.disc_2,p.disc_3,p.mu_qty,p.multi_unit,p.mu_harga
+		p.disc_2,p.disc_3,p.mu_qty,p.multi_unit,p.mu_harga,p.no_urut
 		from purchase_order_lineitems p
 		left join inventory i on i.item_number=p.item_number
-		where purchase_order_number='$nomor'";
+		where purchase_order_number='$nomor' order by p.no_urut";
 		 
 		echo datasource($sql);
 	}
@@ -248,16 +283,16 @@ class Purchase_invoice extends CI_Controller {
 	}
     function browse($offset=0,$limit=50,$order_column='purchase_order_number',$order_type='asc'){
 		$data['controller']=$this->controller;
-		$data['fields_caption']=array('Nomor Faktur','Tanggal','Jumlah','Posted','Kode Supplier',
-		  'Nama Supplier','Kota','Gudang','Recv No');
-		$data['fields']=array('purchase_order_number','po_date','amount','posted', 
-                'supplier_number','supplier_name','city','warehouse_code','po_ref');
+		$data['fields_caption']=array('Nomor Faktur','Tanggal','Jumlah','Saldo','Termin','Posted','Kode Supplier',
+		  'Nama Supplier','Kota','Gudang','Recv No','Sistim');
+		$data['fields']=array('purchase_order_number','po_date','amount','saldo','terms','posted', 
+                'supplier_number','supplier_name','city','warehouse_code','po_ref','type_of_invoice');
 					
 		if(!$data=set_show_columns($data['controller'],$data)) return false;
 			
 		$data['field_key']='purchase_order_number';
 		$data['caption']='DAFTAR FAKTUR PEMBELIAN';
-        $data['fields_format_numeric']=array("amount");
+        $data['fields_format_numeric']=array("amount","saldo");
 		$data['posting_visible']=true;
 
 		$this->load->library('search_criteria');
@@ -268,6 +303,7 @@ class Purchase_invoice extends CI_Controller {
 		$faa[]=criteria("Supplier","sid_supplier");
         $faa[]=criteria("Nomor Receipt","sid_recv_no");
 		$faa[]=criteria("Posted","sid_posted");
+		$faa[]=criteria("Sistim","sid_sistim");
 
 		$data['criteria']=$faa;
         $this->template->display_browse2($data);            
@@ -280,30 +316,36 @@ class Purchase_invoice extends CI_Controller {
         }
         
     	if($this->input->get('sid_po_number')!=''){
-    		$sql=$this->sql." and purchase_order_number='".$this->input->get('sid_po_number')."'";
+    		$sql=$this->sql." and i.purchase_order_number='".$this->input->get('sid_po_number')."'";
 		} else {
 			$d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));
 			$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
-			$sql=$this->sql." and po_date between '".$d1."' and '".$d2."'";
+			$sql=$this->sql." and i.po_date between '".$d1."' and '".$d2."'";
             $supp=$this->input->get('sid_supplier');
 			if($supp!='')$sql.=" and (supplier_name like '$supp%' or i.supplier_number='$supp')";
 			if($this->input->get('sid_posted')!=''){
 				if($this->input->get('sid_posted')=='1'){
-					$sql.=" and posted=true";
+					$sql.=" and i.posted=true";
 				} else {
-					$sql.=" and (posted=false or posted is null)";				
+					$sql.=" and (i.posted=false or i.posted is null)";				
 				}
 			}
             $recv=$this->input->get("sid_recv_no");
             if($recv!="")$sql.=" and i.po_ref like '%$recv%'";
+			$sistim=$this->input->get("sid_sistim");
+			if($sistim!="")$sql.=" and i.type_of_invoice='$sistim' ";
 		}
-        if($search!="")$sql.=" or purchase_order_number like '$search%'";
+        if($search!="")$sql.=" or i.purchase_order_number like '$search%'";
+        
+        $sql.=" order by i.purchase_order_number";
         
         if($this->input->get("page"))$offset=$this->input->get("page");
         if($this->input->get("rows"))$limit=$this->input->get("rows");
         if($offset>0)$offset--;
         $offset=$limit*$offset;
         $sql.=" limit $offset,$limit";
+        
+        
         echo datasource($sql);
     }	 
 	function delete($id){
@@ -324,7 +366,7 @@ class Purchase_invoice extends CI_Controller {
 		} elseif ($this->amount_crdb($id)>0){
 			$success=false;
 			$msg="Gagal hapus nomor ini. <br>Karena masih ada nota kredit.";
-		} elseif ($q=$this->jurnal_model->get_by_id($id)){
+		} elseif ($q=$this->jurnal_model->get_by_gl_id($id)){
 		    if($q->num_rows()>0){
                $success=false;
                $msg="Gagal hapus nomor ini. <br>Karena sudah ada jurnal.";
@@ -378,6 +420,9 @@ class Purchase_invoice extends CI_Controller {
             $data['price']=$this->input->post('price');
             $data['total_price']=$data['quantity']*$data['price'];
             $this->purchase_order_lineitems_model->save($data);
+			
+			$this->inventory_model->hpp_calc($data['item_number'],$data['price'],$data['quantity']);
+			
         }        
         function delete_item($id){
 			$id=urldecode($id);
@@ -455,7 +500,11 @@ class Purchase_invoice extends CI_Controller {
 			
 			$purchase_order_number=urldecode($purchase_order_number);
 			$bill=$this->purchase_invoice_model->get_bill_id($purchase_order_number);
-			$sql="select * from payables_payments where bill_id=".$bill;
+            if($bill!=0){
+                $sql="select * from payables_payments where bill_id='$bill'";
+            } else {
+                $sql="select * from payables_payments where purchase_order_number='$purhase_order_number'";
+            }
 			 
 			echo datasource($sql);
 

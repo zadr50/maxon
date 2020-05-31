@@ -1,4 +1,5 @@
 <?php
+if(!isset($caption))$caption="Dialog";
 if(!isset($id_modal))$id_modal="myModal";
 if(!isset($fnc_save))$fnc_save="save_item";
 ?>
@@ -19,9 +20,9 @@ if(!isset($fnc_save))$fnc_save="save_item";
 			if(isset($form_input)){
 				include_once $form_input; 
 			}
-			if(isset($form_input_html)){
+			//if(isset($form_input_html)){
 				echo $form_input_html;
-			}
+			//}
 			?>
 			</div>
       </div>

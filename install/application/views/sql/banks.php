@@ -1,7 +1,7 @@
 <?php
 
-	$table="bank_accounts";
-	$sql="CREATE TABLE IF NOT EXISTS `bank_accounts` (
+$table="bank_accounts";
+$sql="CREATE TABLE IF NOT EXISTS `bank_accounts` (
 	  `bank_account_number` varchar(50) character set utf8 NOT NULL default '',
 	  `type_bank` varchar(50) character set utf8 default NULL,
 	  `bank_name` varchar(50) character set utf8 default NULL,

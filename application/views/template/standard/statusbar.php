@@ -12,22 +12,35 @@
 		?>	
 	</div>
 	<div id='panel1' >
-		<div id='msg-box-wrap' class="msg-border-1" style="width:50%">
+		<!--status-->		
+		<div id='msg-box-wrap' class="msg-border-1" style="width:40%">
+			Ready.
 		</div>
 	</div>
 	<div id="panel2" class="msg-border-1 msg-inbox" style="width:10%">
-		<div id='panel2-msg' class='info_link' href='<?=base_url()?>index.php/maxon_inbox/list_msg'></div>
+		<!--notify inbox-->
+		<div id='panel2-msg' class='info_link' href='<?=base_url()?>index.php/maxon_inbox/list_msg'>
+			ActiveInbox
+		</div>
 	</div>
 	<div id="panel3" class="msg-border-1" style="width:10%">
+		<!--curent user-->	
+		ActiveUser
+	</div>
+	<div id="panel3a" class="msg-border-1" style="width:100px">
+		<!--curent database-->	
+		ActiveDb
+	</div>
+	
+	<div id="panel4" class="msg-border-1" style="width:100px" textalign="right">
+		<!--date-->
 	
 	</div>
-	<div id="panel4" class="msg-border-1" style="width:100px" align="right">
-	
+	<div id="panel5" class="msg-border-1" style="width:60px" textalign="right">
+		<!--time-->
 	</div>
-	<div id="panel5" class="msg-border-1" style="width:60px" align="right">
-	
-	</div>
-	<div id="panel6" class="msg-border-1" style="width:30px" align="right">
+	<div id="panel6" class="msg-border-1" style="width:30px" textalign="right">
+		<!--sidebar on/off-->
 		<?php
 			echo "<a href='".base_url()."index.php/sessionset/save/sidebar_show'>
 			<img src='".base_url()."images/sort_desc.png' title='Hide/Show Sidebar'></a>";
@@ -35,44 +48,3 @@
 	</div>
 	
 </div>
-
-<script type="text/javascript" charset="utf-8" src="<?=base_url()?>js/offline.js"></script>
-
-<script language="JavaScript">
-    var trun=0;
-    
-    $().ready(function(){    
-        //hidupkan apabila dihosting
-        run_timer();
-        //run_timer2();
-    });
-    
-    function run_timer() {
-        $('#msg-box-wrap').html("Loading...");     
-        trun=setTimeout(function(){run_timer()}, 68000);
-        $.ajax({
-                type: "GET",
-                url: '<?=base_url();?>index.php/inventory/recalc',
-                contentType: 'application/json; charset=utf-8',
-                success: function(msg){
-                    console.log(msg);
-                    $("#msg-box-wrap").html("Ready.");
-                }
-        });
-    }
-    function run_timer2() {
-        $('#msg-box-wrap').html("Loading...");     
-        trun=setTimeout(function(){run_timer()}, 168000);
-        $.ajax({
-                type: "GET",
-                url: '<?=base_url();?>index.php/notify/process',
-                contentType: 'application/json; charset=utf-8',
-                success: function(msg){
-                    console.log(msg);
-                    $("#msg-box-wrap").html("Ready.");
-                }
-        });
-    }
-    
-    
-</script>

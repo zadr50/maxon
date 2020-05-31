@@ -8,16 +8,6 @@ class Home extends CI_Controller {
 	{
 		parent::__construct();
  		$this->load->helper(array('url','form'));
-                
-        $multi_company=$this->config->item('multi_company');
-       if($multi_company){
-            $company_code=$this->session->userdata("company_code","");
-            if($company_code!=""){
-               $this->db = $this->load->database($company_code, TRUE);
-           }
-       }         
-        
-        
 		$this->load->library('template_eshop');
 	}
 	function index() {	
@@ -28,7 +18,7 @@ class Home extends CI_Controller {
 		$data['footer']='footer';
 		$data['sidebar']='eshop/category_list';
 		
-		$this->template_eshop->display('home',$data);
+		$this->template_eshop->display_main('home',$data);
 	}
 	function popular() {	
 		$data['message']='';

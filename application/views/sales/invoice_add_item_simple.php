@@ -11,7 +11,7 @@ closed="true" buttons="#btnItem" >
 					<td><input onblur='find();return false;' id="item_number" style='width:150px' 
 			         	name="item_number"  >
 						<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" 
-						onclick="searchItem();return false;"></a>
+						onclick="dlginventory_show();return false;"></a>
 			         </td>
 				</tr>
 				<tr>
@@ -24,9 +24,10 @@ closed="true" buttons="#btnItem" >
 					
 						<a href="#" class="easyui-linkbutton" iconCls="icon-search" data-options="plain:false" 
 						onclick="searchUnit();return false;" 
-						style='display:none' id='cmdLovUnit'>
+						style='display:none' id='cmdLovUnit'></a>
 									 
-					 
+					 Harga <input id="price" name="price" onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>
+				
 					 </td>
 				</tr>
 				<tr>
@@ -36,10 +37,6 @@ closed="true" buttons="#btnItem" >
 							M_Unit <?=form_input("multi_unit","","id='multi_unit' style='width:60px' ")?>
 							M_Price <?=form_input("mu_harga","","id='mu_harga'")?>					</span>
 					</td>
-				</tr>
-				<tr>
-					<td>Harga</td>
-			        <td><input id="price" name="price"  style='width:180px'   onblur="hitung()" class="easyui-validatebox" validType="numeric"></td>
 				</tr>
 				<tr>
 					<td>Disc%1</td>
@@ -92,10 +89,16 @@ closed="true" buttons="#btnItem" >
 		<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="false" onclick="editItem();return false;">Edit</a>
 		<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="false" onclick="deleteItem(); return false;">Delete</a>	
 		<a href="#" class="easyui-linkbutton" iconCls="icon-reload" plain="false" onclick="loadItem(); return false;">Refresh</a>	
+		<?=link_button("Add Nomor DO", "add_item_do();return false;","add")?>
 	</div>
 <?php } ?>
 
-<?=load_view("inventory/select_unit_jual")?>
+<?php 
+
+echo load_view("inventory/select_unit_jual");
+echo $lookup_inventory;
+
+?>
 
 <script language="JavaScript">
 	
@@ -107,6 +110,7 @@ closed="true" buttons="#btnItem" >
             	editItem();
             }
         });        
+        loadItem();
     });
  
  	
@@ -114,7 +118,9 @@ closed="true" buttons="#btnItem" >
 		$("#dgItemInv").dialog("close");
 	}
 	function loadItem(){
-		$('#dg').datagrid('reload');		
+	    var no=$("#invoice_number").val();
+	    var _url=CI_ROOT+"invoice/items/"+no+"/json";
+		$('#dg').datagrid({url:_url});		
 	}
 	function addItem(){
 		var mode=$('#mode').val();
@@ -129,6 +135,40 @@ closed="true" buttons="#btnItem" >
 	function close_item(){
 		clear_input();
 		$("#dgItemInv").dialog("close");	
+	}
+	function add_item_do(){
+		var cust=$("#sold_to_customer").val();
+		var mode=$('#mode').val();
+		if(mode=="add"){
+			log_err("Simpan dulu sebelum tambah item barang !");
+			return false;
+		}
+		if(cust==""){
+			log_err("Pilih kode pelanggan !");return false;
+		}
+		lookup1({id:"list_nomor_do", 
+			url:CI_ROOT+"delivery_order/select_do_open/"+cust,
+			fields: [[
+		        {field:'invoice_number',title:'Nomor DO',width:100},
+		        {field:'invoice_date',title:'Tanggal',width:180},
+		        {field:'shipped_via',title:'Jasa Kirim',width:80},
+		        {field:'warehouse_code',title:'Outlet',width:180,align:'left'}
+    		]],
+    		result: function result(){
+    			//console.log(r);
+    			if(r.success){
+					var nomor_sj=$("#sales_order_number").val();
+					if(nomor_sj==""){
+						$('#sales_order_number').val(r.data.invoice_number);
+					} else {
+						$("#sales_order_number").val("MULTI DO");
+					}
+	    			
+	    			load_do_items(r.data.invoice_number);
+    				
+    			}
+    		}
+		});
 	}
  
 	function find(){
@@ -177,7 +217,7 @@ function calc_qty_unit(){
 	if(qty_conv=="0")qty_conv=1;
 	qty=$("#quantity").val();
 	qty=qty*qty_conv;
-	$("#mu_qty").val(qty);
+	//$("#mu_qty").val(qty);
 }
 	
 	function save_item(){

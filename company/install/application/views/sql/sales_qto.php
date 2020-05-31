@@ -1,5 +1,5 @@
 <?php
-
+$table="quotation";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `quotation` (
@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS `quotation` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table.=",quotation_lineitems";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `quotation_lineitems` (

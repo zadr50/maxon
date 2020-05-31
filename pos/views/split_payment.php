@@ -4,12 +4,12 @@
         <label>Isi daftar dibawah ini dengan jumlah pembayaran dan jenis pembayaran</label>
         <table class='table'>
             <tr>
-                <td>Tagihan</td><td>Bayar</td><td>Sisa</td>
+                <td align='right'><b>Tagihan</b></td><td align='right'><b>Bayar</b></td><td align='right'><b>Sisa</b></td>
             </tr>
             <tr>
-                <td><?=form_input('',0,"id='dlgPaySplit_Tagih' disabled align='right'")?></td>                
-                <td><?=form_input('',0,"id='dlgPaySplit_Bayar' disabled align='right'")?></td>                
-                <td><?=form_input('',0,"id='dlgPaySplit_Sisa' disabled align='right'")?></td>                
+                <td align="right"><?=form_input('',0,"id='dlgPaySplit_Tagih' disabled style='text-align:right'")?></td>                
+                <td align="right"><?=form_input('',0,"id='dlgPaySplit_Bayar' disabled style='text-align:right'")?></td>                
+                <td align="right"><?=form_input('',0,"id='dlgPaySplit_Sisa' disabled style='text-align:right'")?></td>                
             </tr>
             <tr><td colspan=4>
                 <?=link_button("Cash","dlgPaySplit_Cash()","sum");?>                
@@ -18,14 +18,16 @@
                 <!--
                 <?=link_button("Other","dlgPaySplit_Other()","sum");?>                
                 -->
+                <?=link_button("Go Pay","dlgPaySplit_Gopay()","sum");?>                
                 
             </td></tr>
             <tr>
                 <td colspan=4>
                     <table class='table' id='dlgPaySplit_Table' border="1" cellpadding="2">
                         <tr>
-                            <td>Cara Bayar</td><td align='right'>Bayar</td><td>Rekening</td><td>Card No/Voucher</td>
-                            <td>Card Author</td><td>Card Expire</td>
+                            <td><b>Cara Bayar</b></td><td align='right'><b>Bayar</b></td>
+                            <td><b>Rekening</b></td><td><b>Card No/Voucher</b></td>
+                            <td><b>Card Author</b></td><td><b>Card Expire</b></td>
                         </tr>
                     </table>
                     
@@ -39,7 +41,9 @@
         <?=link_button("Submit","dlgPaySplit_Submit()","save","false");?>                
 </div>
 <script type='text/javascript' language="JavaScript">   
-
+	
+	var has_voucher=false;
+	
 	function calc_ttl_bayar_split(){
 		
 		var ttl_tagih=cval("#dlgPaySplit_Tagih");
@@ -79,7 +83,8 @@
         
     }
     function dlgPaySplit_Cash_Submit(){
-    	var cash=cval("#dlgPayCash_Bayar");
+    	//var cash=cval("#dlgPayCash_Bayar");
+    	var cash=cval("#dlgPayCash_Alokasi");
         $("#dlgPaySplit_Table").append("  "
         +"<tr> "
         +"<td>CASH</td>"
@@ -106,6 +111,7 @@
     	}
     	$("#voucher_no").val("");
         $("#voucher_amount").val(formatNumber(ttl_sisa_split));
+        $("#voucher_alloc").val(formatNumber(ttl_sisa_split));
         $("#dlgVoucher_flag").val("9");
         $("#dlgVoucher").dialog("open").dialog('setTitle','Info Voucher');
         
@@ -119,6 +125,7 @@
         if(voucher_no==""){
         	log_err("Nomor voucher belum diisi !"); return false;
         }
+        var voucher_alloc=cval("#voucher_alloc");
         
     	
         $("#dlgPaySplit_Table").append("  "
@@ -127,7 +134,7 @@
         +"<td align='right'>"+formatNumber(voucher_amount)+"</td>"
         +"<td></td>"
         +"<td>"+voucher_no+"</td>"
-        +"<td></td>"
+        +"<td>"+voucher_alloc+"</td>"
         +"<td></td>"
         +"</tr>");
         $("dlgVoucher").dialog("close");
@@ -171,7 +178,11 @@
     	
     }
     function dlgPaySplit_Cancel(){
-    	$("#dlgPaySplit_Table").html("");
+    	var head="<tr><td><b>Cara Bayar</b></td><td align='right'><b>Bayar</b></td>"+
+            "<td><b>Rekening</b></td><td><b>Card No/Voucher</b></td>"+
+            "<td><b>Card Author</b></td><td><b>Card Expire</b></td>"+
+	        "</tr>";
+    	$("#dlgPaySplit_Table").html(head);
         $("#dlgPaySplit").dialog("close");
     }
     function dlgPaySplit_Submit(){
@@ -182,9 +193,12 @@
 		var i=0;
 		var arPay=[];
     	
-    	if (ttl_sisa_split!=0){
-    		log_err("Masih ada sisa tidak bisa diteruskan !");
-    		return false;
+    	if (!has_voucher){
+    		//apabila ada voucher boleh bayar lebih???
+	    	if (ttl_sisa_split!=0){
+	    		log_err("Masih ada sisa tidak bisa diteruskan !");
+	    		return false;
+	    	}    		
     	}
 		$("#dlgPaySplit_Table tr").each(function(){
 			if(i>0){
@@ -225,6 +239,44 @@
 		
 		    	
         
+    }
+    function dlgPaySplit_Gopay(){
+    	calc_ttl_bayar_split();
+    	var ttl_sisa_split=cval("#dlgPaySplit_Sisa");
+    	
+    	if (ttl_sisa_split==0){
+    		log_err("Sisa=0 tidak bisa dibayar lagi !");
+    		return false;
+    	}
+    	$("#gopay_no").val("");
+        $("#gopay_amount").val(formatNumber(ttl_sisa_split));
+        $("#dlgGopay").dialog("open").dialog('setTitle','Info Gopay');
+        
+    }
+    function dlgPaySplit_Gopay_Submit(){
+    	var gopay_amount=cval("#gopay_amount");
+        var gopay_no=$("#gopay_no").val();
+        if(gopay_amount==0){
+        	log_err("Jumlah Go Pay belum diisi !"); return false;
+        }
+        if(gopay_no==""){
+        	log_err("Nomor Ref belum diisi !"); return false;
+        }
+        
+    	
+        $("#dlgPaySplit_Table").append("  "
+        +"<tr> "
+        +"<td>GOPAY</td>"
+        +"<td align='right'>"+formatNumber(gopay_amount)+"</td>"
+        +"<td></td>"
+        +"<td>"+gopay_no+"</td>"
+        +"<td></td>"
+        +"<td></td>"
+        +"</tr>");
+        $("dlgGopay").dialog("close");
+        
+		calc_ttl_bayar_split();        
+    	
     }
 
 </script>

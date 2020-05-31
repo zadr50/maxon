@@ -1,45 +1,45 @@
 <div class='thumbnail'>
-	<?
-	echo link_button('Print', 'print_item()','print');		
+	<?php
+//	echo link_button('Print', 'print_item()','print');		
 	echo link_button('Add','append()','add');		
-	echo link_button('Search', 'search_mod()','search');		
+//	echo link_button('Search', 'search_mod()','search');		
+//    echo link_button("Browse","","more","false",base_url('index.php/modules/browse'));
 	echo link_button('Refresh','','reload','false',base_url().'index.php/modules');		
-	echo link_button('Help', 'load_help()','help');		
-	
+    echo "<label>&nbsp Group: </label>";
+    echo form_dropdown("txtKelompok",$parent_id_list,$parent_id,"id='txtKelompok' style='width:320px' onchange='load_tree();return false;'");
 	?>
-	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',
-	   plain:false, iconCls:'icon-tip'">Options</a>
-	<div id="mmOptions" style="width:200px;">
-		<div onclick="load_help()">Help</div>
-		<div>Update</div>
-		<div>MaxOn Forum</div>
-		<div>About</div>
-	</div>
-	<script type="text/javascript">
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/modules");
-		}
-	</script>
-	
+	<div style="float:right">
+        <?=link_button('Help', 'load_help()','help')?>     
+    	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',
+    	   plain:false, iconCls:'icon-tip'">Options</a>
+    	<div id="mmOptions" style="width:200px;">
+    		<div onclick="load_help()">Help</div>
+    		<div>Update</div>
+    		<div>MaxOn Forum</div>
+    		<div>About</div>
+    	</div>
+        <?=link_button('Close', 'remove_tab_parent()','cancel')?>     
+    </div>
 </div>
-	<div class="thumbnail" style="max-height:450px">
-		<ul id='tt' class="easyui-tree" style="max-height:400px;" 
-			data-options="url:'<?=base_url()?>index.php/modules/list_json',
-			animate:true, height:300,
-			onContextMenu: function(e,node){
-				e.preventDefault();
-				pageX=e.pageX;
-				pageY=e.pageY;
-				$(this).tree('select',node.target);
-				$('#mm').menu('show',{
-					left: e.pageX,
-					top: e.pageY
-				});
-			}
-			
-			">
-		</ul>
-	</div>
+    <div class="easyui-panel box2" title="Daftar Module"  style="max-height:470px;width:95%" 
+        data-options="iconCls:'icon-help'" >
+        <ul id='tt' class="easyui-tree" 
+            data-options="url:'',
+            animate:true, height:300,
+            onContextMenu: function(e,node){
+                e.preventDefault();
+                pageX=e.pageX;
+                pageY=e.pageY;
+                $(this).tree('select',node.target);
+                $('#mm').menu('show',{
+                    left: e.pageX,
+                    top: e.pageY
+                });
+            }
+            
+            ">
+        </ul>        
+    </div>
 
 	<div id="mm" class="easyui-menu" style="width:120px;">
 		<div onclick="change()" data-options="iconCls:'icon-edit'">Change</div>
@@ -49,10 +49,25 @@
 	</div>
 
 <?php include_once "modules.php"; ?>
+<script type="text/javascript">
+    function load_help() {
+        window.parent.$("#help").load("<?=base_url()?>index.php/help/load/modules");
+    }
+</script>
+
 
 <script language="javascript">
     pageX=0;
     pageY=0;
+    $(document).ready(function(){
+         load_tree();        
+    });
+    function load_tree(){
+        var search=$("#txtKelompok").val();
+        var xurl=CI_ROOT+"modules/list_json/"+search;
+        loading();
+        $("#tt").tree({url:xurl});
+    }
     function reload(){
         url="<?=base_url()?>index.php/modules";
         window.open(url,"_self");
@@ -74,9 +89,10 @@
 		var node = $('#tt').tree('getSelected');
 		$("#module_id").val(node.id);
 		$("#mode").val('view');
-        $('#dlgMod').window({left:pageX,top:pageY-50});
-        $('#dlgMod').dialog('open').dialog('setTitle','Add / Edit Module Name');        
+        $('#dlgEditBox_modules').window({left:10,top:10});
+        $('#dlgEditBox_modules').dialog('open').dialog('setTitle','Add / Edit Module Name');        
 		xurl=CI_ROOT+'modules/find/'+$('#module_id').val();
+		loading();
 		$.ajax({
 					type: "GET",
 					url: xurl,
@@ -89,14 +105,17 @@
 						$('#form_name').val(obj.form_name);
 						$('#parentid').val(obj.parentid);
 						$('#sequnce').val(obj.sequence);
+						loading_close();
 					},
-					error: function(msg){alert(msg);}
+					error: function(msg){
+						log_err(msg);loading_close();
+					}
 		});		
 	}
 	function append(){
 		$("#mode").val('add');
-        $('#dlgMod').window({left:pageX,top:pageY-50});
-		$('#dlgMod').dialog('open').dialog('setTitle','Add / Edit Module Name');		
+        $('#dlgEditBox_modules').window({left:100,top:100});
+		$('#dlgEditBox_modules').dialog('open').dialog('setTitle','Add / Edit Module Name');		
 	}
 	function remove() {
 	

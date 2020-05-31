@@ -6,7 +6,7 @@
 </tr>
 <tr>
     <td>
-        <?php echo form_input("barcode","","id='barcode' style='width:150px' 
+        <?php echo form_input("barcode","","id='barcode' style='width:60%' onblur='find_barcode();return false;'
             title='Silahkan isi atau scan nama barang di kotak bawah ini'" );
             echo link_button('Find','dlginventory_show();return false;','search','false');
         ?>  
@@ -14,13 +14,13 @@
 </tr>    
 <tr>
     <td>
-    <?php echo form_input("item_nama_barang","","id='item_nama_barang' title='Nama Barang' style='width:200px'");?>    
+    <?php echo form_input("item_nama_barang","","id='item_nama_barang' title='Nama Barang' style='width:60%'");?>    
     </td>    
 </tr>
 <tr>
     <td>
-        Qty : <?=form_input("qty","0","id='qty' class='calc_input' style='width:50px'")?>
-        Unit : <?=form_input("unit","","id='unit' class='calc_input' style='width: 50px'")?>
+        Qty : <?=form_input("qty","0","id='qty' class='calc_input' style='width:40px'")?>
+        Unit : <?=form_input("unit","","id='unit' class='calc_input' style='width: 40px'")?>
         <span id='cmdLovUnit' style="display:none">
             <?=link_button("", "searchUnit();return false","search")?>            
         </span>
@@ -34,9 +34,9 @@
 <tr>
     <td colspan="2">
         <div id="divMultiUnit" style="display:none">
-            M Qty : <?=form_input("m_qty","0","id='m_qty' class='calc_input' style='width:50px'")?>
-            M Unit : <?=form_input("m_unit","","id='m_unit' class='calc_input' style='width: 50px'")?>
-            <br>M Price : <?=form_input("m_price","","id='m_price' class='calc_input' style='width: 100px'")?>
+            M Qty : <?=form_input("m_qty","0","id='m_qty' class='calc_input_m' style='width:50px'")?>
+            M Unit : <?=form_input("m_unit","","id='m_unit' class='calc_input_m' style='width: 50px'")?>
+            <br>M Price : <?=form_input("m_price","","id='m_price' class='calc_input_m' style='width: 100px'")?>
         </div>
     </td>
     
@@ -73,7 +73,7 @@
 </tr>
 <tr>
     <td>
-        TourGd Rp.: <?=form_input("item_komisi_tour","0","id='item_komisi_tour' style='width:100px'")?>
+        Komisi Rp.: <?=form_input("item_komisi","0","id='item_komisi' style='width:100px'")?>
     </td>
 </tr>
 <tr>
@@ -92,6 +92,8 @@
 <tr>
     <td>
         <?=link_button('Add Item','add_row_sales()','save','false')?>
+        QtySld <b><span id='qty_saldo'>0</span></b>
+        QtyMin <b><span id='qty_min'>0</span></b>
     </td>
 </tr>
 
@@ -100,12 +102,12 @@
 <script language="JavaScript">
     
     function calc_qty_unit(){
-        console.log("calc_qty_unit");
+        //console.log("calc_qty_unit");
         if(qty_conv=="")qty_conv=1;
         if(qty_conv=="0")qty_conv=1;
         qty2=$("#qty").val();
         qty2=qty2*qty_conv;
-        $("#m_qty").val(qty2);
+        //$("#m_qty").val(qty2);
     }
 
 

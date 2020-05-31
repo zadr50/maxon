@@ -1,9 +1,9 @@
 <div style="margin:10px 0;"></div>
 	<ul class="easyui-tree">
 		<li>
-			<span>Sekolah Modules</span>
+			<span><b>Sekolah Modules</b></span>
 			<ul>
-				<li>
+				<li data-options="state:'closed'">
 					<span>Operation</span>
 					<ul>
 						<?php echo info_link("sekolah/jadwal_belajar","Jadwal Belajar");

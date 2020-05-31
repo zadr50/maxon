@@ -3,10 +3,11 @@ var index = 0;
 var STR_PAD_LEFT = 1;
 var STR_PAD_RIGHT = 2;
 var STR_PAD_BOTH = 3;
+var _title_tab="";
+
 
 $(document).ready(function(){
 	
-	$('.datepicker').datepicker();
 	$(".dialog_print").click(function(event){
 		event.preventDefault(); 
 		var url = $(this).attr('href');
@@ -51,6 +52,27 @@ $(document).ready(function(){
 			add_tab_parent(title,url);
 		}
 	});
+    $(".info_link_no_frame").click(function(event){
+        event.preventDefault(); 
+        var url = $(this).attr('href');
+        console.log(url);
+        var n = url.lastIndexOf("/");
+        var j=url.lastIndexOf("#");
+        if(j>0){
+            var title=url.substr(j+1);
+        } else {
+            var title=url.substr(n+1);
+        }
+        if(title=='reports'){
+            title=url.substr(n-10);
+            title=title.substr(title.indexOf("/"));
+        }
+        if(url.indexOf("/menu")>5){
+            window.open(url,"_self");
+        } else {
+            add_tab_parent(title,url);
+        }
+    });
 	
 	$(".info_linkx").click(function(event){
 		event.preventDefault(); 
@@ -130,11 +152,11 @@ function alertMX(t){
 };
 
 $("<style type='text/css'>"+
-"#boxLoading{opacity: 0.8;display:none;background: gray;padding: 10px;border: 2px solid black;"+
+"#boxLoading{display:none;background:white;padding: 10px;border: 1px solid gray;"+
 "float: left;font-size: 1.2em;position: fixed;top: 50%; left: 50%;z-index: 99999;"+
 "-moz-box-shadow: 0px 0px 20px #999;-moz-border-radius: 6px; -webkit-border-radius: 6px; "+
-"background: url('"+CI_BASE+"images/loading.gif') norepeat;"+
-"font:13px Arial, Helvetica, sans-serif; padding:6px 6px 4px;height:100px;width:200px; color: white;"+
+""+
+"font:13px Arial, Helvetica, sans-serif; padding:6px 6px 4px;height:80px;width:200px; color: black;"+
 "}</style>").appendTo("head");
 
 function loading()
@@ -142,10 +164,11 @@ function loading()
 	var img=CI_BASE+"images/loading.gif";
 	$( "body" ).append( $( "<div id='boxLoading' style='text-align:center'><img src='"+img+"'><p class='msgLoading'></p></div>" ) );
 	$('.msgLoading').text('Please Wait...'); 
-	var popMargTop = ($('#boxLoading').height() + 24) / 2, 
+	var popMargTop = ($('#boxLoading').height() + 24)/2, 
 	popMargLeft = ($('#boxLoading').width() + 24) / 2; 
-	$('#boxLoading').css({ 'margin-top' : -popMargTop-70,
+	$('#boxLoading').css({ 'margin-top' : -popMargTop-100,
 	'margin-left' : -popMargLeft}).fadeIn(100);
+	setTimeout(function(){loading_close()},9000);
 }
 function loading_close()
 {
@@ -156,6 +179,50 @@ function loading_close()
 	   return ($a != array_keys($a));
 	}
 
+    function add_tab_parent_ajax(title,url){
+        
+        _title_tab=title;
+        
+        if ($('#tt').tabs('exists', title)){ 
+            $('#tt').tabs('select', title); 
+        } else {            
+            index++;
+            var img=CI_BASE+"images/loading.gif";
+            var content = "<div id='tab"+title+"'><img src='"+img+"'>Loading...</div>"; 
+            $('#tt').tabs('add',{
+                title: title,
+                content: content,
+                closable: true
+            });
+            $('#tt').tabs('select', title); 
+            get_this2(url,'','tab'+title);
+        }   
+         window.top.scrollTo(0,0);
+    }
+
+	function get_this2(xurl,param,divout){
+	    if(divout!=''){
+	        $('#'+divout).html("<img src='"+CI_BASE+"images/loading.gif'>");
+	        event.preventDefault();
+	        $.ajax({ type: "GET", url: xurl, data: param,
+	            success: function(msg){
+	                if(divout!="") {
+	                    $('#'+divout).html(msg);
+	                };
+	                $('#tt').tabs('select', _title_tab); 
+	
+	                return true;
+	            },
+	            error: function(msg){
+	                console.log(msg);
+	            }
+	        }); 
+	        return false;
+	    } else {
+	        window.open(xurl,'_self');
+	        return false;
+	    }
+	}
 	
 	function add_tab_parent(title,url){
 		if ( window.parent.$('#tt').length ){
@@ -163,7 +230,8 @@ function loading_close()
 				window.parent.$('#tt').tabs('select', title); 
 			} else { 			
 				index++;
-				var content = '<iframe id="frTab" scrolling="auto" frameborder="0" src="'+url+'" style=";width:99%;height:900px;"></iframe>'; 
+				var content = '<iframe src="'+url+'" id="frTab" scrolling="auto" frameborder="0" style=";width:99%;height:900px;">' +
+				'</iframe>'; 
 				window.parent.$('#tt').tabs('add',{
 					title: title,
 					content: content,
@@ -175,6 +243,7 @@ function loading_close()
 			window.open(url,"_blank");
 		}
 	}
+		     
 	function refresh_tab_parent(){
 		window.parent.$('IFRAME#frTab').get(0).contentDocument.location.reload();
 	}
@@ -346,6 +415,7 @@ function get_this(xurl,param,divout){
                     // $("#"+divout).get(0).innerHTML = msg;
                     //parseScript(msg);
                     $('#'+divout).html(msg);
+
                 };
                 //errmsg("Ready.");
                 return true;
@@ -610,12 +680,12 @@ $.fn.ajax_post = function(url,divModal,next_url) {
 					}
 				} else {
 					loading_close();
-					alert(result.message);
+					log_err(result.message);
 				}
 			} else { 
 				console.log(result);
 				loading_close();
-				alert("Unknown Error"); 
+				log_err("Unknown Error"); 
 			}
 		}
 	});
@@ -742,16 +812,6 @@ function show_syslog(module,nomor){
 	
 }
 	
- function load_menu(path){
-	 xurl=CI_BASE+'index.php/menu/load/'+path;
-	 if(path=="courier"){
-		add_tab_parent(path,xurl); 	
-	 } else {
-		 window.open(xurl,'_self');
-	 	
-	 }
-	 return false;
- }
 //Finds y value of given object
 function findPos(obj) {
     var curtop = 0;
@@ -786,7 +846,7 @@ $(document).ready(function(){
 		if(! $("#"+dlg).html() ){
 			var tbl="<div id='"+dlg+"' ><table id='"+table+"' width=660 height=300  > \r </table>  \r </div>" +
 			"<div id='toolbar_"+id+"' class='box-gradient'>  \r" +
-				" Find: <input id='search_"+id+"' style='width:180' onchange='on_search_"+id+"();return false;' \r" +
+				" <b>Find:</b> <input id='search_"+id+"' style='width:180' onchange='on_search_"+id+"();return false;' \r" +
 				" name='search_"+id+"'>" + btn_ok + btn_save + btn_cancel +
 			"</div>" + 
 			"<script> \r"+ "var r=null; \r " + result2 +  "\r" +
@@ -811,12 +871,13 @@ $(document).ready(function(){
 		}
 		$("#"+dlg).dialog({title: 'Pilih baris.', toolbar: '#toolbar_'+id,
 			top:50,left:50,width: 700, height: 400, closed: false, cache: false,
+			fitColumns:true,pagination:true,
 			modal: true});		 
 		$("#"+dlg).dialog("open").dialog("setTitle","Lookup: "+id);
 		
 		var _url=url;
 
-		$('#'+table).datagrid({url:_url,columns:fields});
+		$('#'+table).datagrid({url:_url,columns:fields,pagination:true,fitColumns:true});
 		
 		$('.lbtn_search').linkbutton({iconCls:'icon-search'});
 		$('.lbtn_save').linkbutton({iconCls:'icon-save'});
@@ -827,65 +888,16 @@ $(document).ready(function(){
 		});
 		
 	}
-	function pagerFilter(data){
-		if ($.isArray(data)){	// is array
-			data = {
-				total: data.length,
-				rows: data
-			}
-		}
-		var dg = $(this);
-		var state = dg.data('datagrid');
-		var opts = dg.datagrid('options');
-		if (!state.allRows){
-			state.allRows = (data.rows);
-		}
-		var start = (opts.pageNumber-1)*parseInt(opts.pageSize);
-		var end = start + parseInt(opts.pageSize);
-		data.rows = $.extend(true,[],state.allRows.slice(start, end));
-		return data;
-	}
-
-	var loadDataMethod = $.fn.datagrid.methods.loadData;
-	$.extend($.fn.datagrid.methods, {
-		clientPaging: function(jq){
-			return jq.each(function(){
-				var dg = $(this);
-                var state = dg.data('datagrid');
-                var opts = state.options;
-                opts.loadFilter = pagerFilter;
-                var onBeforeLoad = opts.onBeforeLoad;
-                opts.onBeforeLoad = function(param){
-                    state.allRows = null;
-                    return onBeforeLoad.call(this, param);
-                }
-				dg.datagrid('getPager').pagination({
-					onSelectPage:function(pageNum, pageSize){
-						opts.pageNumber = pageNum;
-						opts.pageSize = pageSize;
-						$(this).pagination('refresh',{
-							pageNumber:pageNum,
-							pageSize:pageSize
-						});
-						dg.datagrid('loadData',state.allRows);
-					}
-				});
-                $(this).datagrid('loadData', state.data);
-                if (opts.url){
-                	$(this).datagrid('reload');
-                }
-			});
-		},
-        loadData: function(jq, data){
-            jq.each(function(){
-                $(this).data('datagrid').allRows = null;
-            });
-            return loadDataMethod.call($.fn.datagrid.methods, jq, data);
-        },
-        getAllRows: function(jq){
-        	return jq.data('datagrid').allRows;
-        }
-	})
 								
+ function load_menu(path){
+	 xurl=CI_BASE+'index.php/menu/load/'+path;
+	 if(path=="courier"){
+		add_tab_parent(path,xurl); 	
+	 } else {
+		 window.open(xurl,'_self');
+	 	
+	 }
+	 return false;
+ }
 
 	

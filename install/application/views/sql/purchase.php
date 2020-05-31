@@ -72,7 +72,9 @@ CREATE TABLE IF NOT EXISTS `suppliers` (
   `update_date` datetime default NULL,
   `update_by` varchar(50) character set utf8 default NULL,
   `acc_biaya` int(11) default NULL,
-  PRIMARY KEY  (`supplier_number`)
+  PRIMARY KEY (`supplier_number`),
+  KEY `x1` (`supplier_name`),
+  KEY `x2` (`city`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
@@ -86,6 +88,8 @@ INSERT INTO `suppliers` (`supplier_number`, `active`, `supplier_other_vendor`, `
 ('YOGYA', 1, '', '1393', '', 'YOGYA Dept Store', '', '', '', '', 'Jl. Jend. Sudirman', 'Purwakarta', '', '', '', '', '', '', 'yogya@localhost', '60 Hari', 0, '', '', 0, 0, b'0', 0, 0, 0, b'0', '', 0, '', 0, '2014-03-24 00:00:00', '', '2014-03-24 00:00:00', '', 1423);
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
+$table.=", supplier_beginning_balance";
 
 $sql="
 

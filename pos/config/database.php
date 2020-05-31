@@ -91,18 +91,48 @@ if($multi_company){
 for($i=0;$i<20;$i++){
     if($i<10){
         $c="C0".$i;
+        $dbc="kagum_".$c;
     } else {
         $c="C".$i;
+        $dbc="kagum_".$c;
+    }
+    if($i==6){
+        //untuk testing localhost apabila pilihan C06 dan outlet T33
+        $dbc="rudy_grafika";
+    
     }   
+    
     $db[$c] = array(
     'dsn'   => '',
     'hostname' => 'localhost',
     'username' => 'root',
-    'password' => '',
-    'database' => "kagum_".$c,
+    'password' => 'atl24nta',
+    'database' => $dbc,
     'dbdriver' => 'mysqli',
     'dbprefix' => '',
     'pconnect' => FALSE,
+    'db_debug' => (ENVIRONMENT !== 'production'),
+    'cache_on' => TRUE,
+    'cachedir' => '',
+    'char_set' => 'utf8',
+    'dbcollat' => 'utf8_general_ci',
+    'swap_pre' => 'atl24nta',
+    'encrypt' => FALSE,
+    'compress' => FALSE,
+    'stricton' => FALSE,
+    'failover' => array(),
+    'save_queries' => FALSE
+    );
+}
+$db["simak"] = array(
+    'dsn'   => '',
+    'hostname' => 'localhost',
+    'username' => 'root',
+    'password' => 'atl24nta',
+    'database' => "simak",
+    'dbdriver' => 'mysqli',
+    'dbprefix' => '',
+    'pconnect' => false,
     'db_debug' => (ENVIRONMENT !== 'production'),
     'cache_on' => TRUE,
     'cachedir' => '',
@@ -115,5 +145,91 @@ for($i=0;$i<20;$i++){
     'failover' => array(),
     'save_queries' => FALSE
     );
-}
+$db["rudy"] = array(
+    'dsn'   => '',
+    'hostname' => 'localhost',
+    'username' => 'root',
+    'password' => '',
+    'database' => "rudy_c01",
+    'dbdriver' => 'mysqli',
+    'dbprefix' => '',
+    'pconnect' => false,
+    'db_debug' => (ENVIRONMENT !== 'production'),
+    'cache_on' => TRUE,
+    'cachedir' => '',
+    'char_set' => 'utf8',
+    'dbcollat' => 'utf8_general_ci',
+    'swap_pre' => '',
+    'encrypt' => FALSE,
+    'compress' => FALSE,
+    'stricton' => FALSE,
+    'failover' => array(),
+    'save_queries' => FALSE
+    );
+$db["megatex"] = array(
+    'dsn'   => '',
+    'hostname' => '127.0.0.1',
+    'username' => 'root',
+    'password' => '',
+    'database' => "megatex",
+    'dbdriver' => 'mysqli',
+    'dbprefix' => '',
+    'pconnect' => false,
+    'db_debug' => (ENVIRONMENT !== 'production'),
+    'cache_on' => '',
+    'cachedir' => '',
+    'char_set' => 'utf8',
+    'dbcollat' => 'utf8_general_ci',
+    'swap_pre' => '',
+    'encrypt' => FALSE,
+    'compress' => FALSE,
+    'stricton' => FALSE,
+    'failover' => array(),
+    'save_queries' => FALSE
+    );
+$db["megatex"] = array(
+    'dsn'   => '',
+    'hostname' => '127.0.0.1',
+    'username' => 'root',
+    'password' => '',
+    'database' => "megatex",
+    'dbdriver' => 'mysqli',
+    'dbprefix' => '',
+    'pconnect' => false,
+    'db_debug' => (ENVIRONMENT !== 'production'),
+    'cache_on' => '',
+    'cachedir' => '',
+    'char_set' => 'utf8',
+    'dbcollat' => 'utf8_general_ci',
+    'swap_pre' => '',
+    'encrypt' => FALSE,
+    'compress' => FALSE,
+    'stricton' => FALSE,
+    'failover' => array(),
+    'save_queries' => FALSE
+    );
+$db["wiselpink"] = array(
+    'dsn'   => '',
+    'hostname' => '127.0.0.1',
+    'username' => 'root',
+    'password' => '',
+    'database' => "wiselpink",
+    'dbdriver' => 'mysqli',
+    'dbprefix' => '',
+    'pconnect' => false,
+    'db_debug' => (ENVIRONMENT !== 'production'),
+    'cache_on' => '',
+    'cachedir' => '',
+    'char_set' => 'utf8',
+    'dbcollat' => 'utf8_general_ci',
+    'swap_pre' => '',
+    'encrypt' => FALSE,
+    'compress' => FALSE,
+    'stricton' => FALSE,
+    'failover' => array(),
+    'save_queries' => FALSE
+    );
+
+//$active_group = 'wiselpink';
+$active_group = 'simak';
 

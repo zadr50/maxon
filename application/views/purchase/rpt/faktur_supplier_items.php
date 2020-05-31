@@ -36,7 +36,7 @@
 		from purchase_order p 
 		left join suppliers s on s.supplier_number=p.supplier_number
 		left join purchase_order_lineitems i on i.purchase_order_number=p.purchase_order_number
-		where p.po_date between '$date1' and '$date2' and potype='I'	
+		where p.potype='I' and  p.po_date between '$date1' and '$date2' and potype='I'	
 		order by s.supplier_name";
         $q=$CI->db->query($sql);
 		$tbl="";

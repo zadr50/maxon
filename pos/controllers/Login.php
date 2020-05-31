@@ -42,6 +42,7 @@ function verify(){
 }
 function welcome(){
     $this->load->library('list_of_values');
+    $this->load->model('type_of_payment_model');
 	$data=$this->session->userdata('logged_in');
 	$data['message']='welcome';
 	$data['_content']='';
@@ -62,11 +63,26 @@ function welcome(){
     $set_cust['dlgCols']=array( 
         array("fieldname"=>"customer_number","caption"=>"Kode","width"=>"150px"),
         array("fieldname"=>"company","caption"=>"Customer","width"=>"200px"),
+        array("fieldname"=>"payment_terms","caption"=>"Termin","width"=>"90px"),
+        array("fieldname"=>"credit_limit","caption"=>"Plafon","width"=>"90px"),
+        array("fieldname"=>"credit_balance","caption"=>"Plafon Sisa","width"=>"90px"),
         array("fieldname"=>"city","caption"=>"Kota","width"=>"200px"),
         array("fieldname"=>"phone","caption"=>"Phone","width"=>"200px")
     );
     $set_cust['dlgRetFunc']="$('#cust').html(row.customer_number);
-        $('#cust_name').html(row.company);";
+        $('#cust_name').html(row.company);
+        if(row.payment_terms==''){
+            $('#payment_terms').val('CASH');
+        }  else {
+            $('#payment_terms').val(row.payment_terms);
+            
+        }
+        credit_limit=row.creadit_limit;
+        credit_balance=row.credit_balance;
+        if(cek_credit_limit()){
+            log_err('Plafon kredit untuk customer tidak tersedia ! Sisa: '+formatNumber(credit_balance));
+        };
+        ";
     $data['lov_customers']= $this->list_of_values->render($set_cust);
     //lookup barang
     $set_item['dlgBindId']="inventory";
@@ -76,7 +92,10 @@ function welcome(){
         array("fieldname"=>"category","caption"=>"Category","width"=>"100px"),
         array("fieldname"=>"retail","caption"=>"Price","width"=>"100px"),
         array("fieldname"=>"quantity_in_stock","caption"=>"Qty","width"=>"80px"),
-        array("fieldname"=>"unit_of_measure","caption"=>"Unit","width"=>"80px")
+        array("fieldname"=>"unit_of_measure","caption"=>"Unit","width"=>"80px"),
+        array("fieldname"=>"qty_last","caption"=>"Qty2","width"=>"80px"),
+        array("fieldname"=>"customer_pricing_code","caption"=>"Unit2","width"=>"80px"),
+        array("fieldname"=>"supplier_number","caption"=>"Supplier","width"=>"80px")
             );
     $set_item['dlgRetFunc']="$('#barcode').val(row.item_number);
         $('#item_nama_barang').val(row.description);
@@ -85,8 +104,11 @@ function welcome(){
         find_barcode();";
     $data['lov_inventory']=$this->list_of_values->render($set_item);
     $data['pembulatan']=getvar("pembulatan",0);
+    $data['payment_terms_list']=$this->type_of_payment_model->select_list();
     
-	$this->template->display_main('menu_dashboard',$data);
+    $this->template->display_main('menu_dashboard',$data);
+//    $this->template->display_main('tagihan',$data);
+    
 }
 	
  function logout(){

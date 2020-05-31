@@ -87,18 +87,21 @@
                         } else {
                             $amt_aktiva+=$amt_mtd;
                         }
+                        $amt_mtd_text=$coa_type>2?-1*$amt_mtd:$amt_mtd;
                         //if($amt_mtd!=0 || $amt_ytd!=0 || $type=="T"){
                             echo "<tr><td>$coa</td><td>$coa_name</td>
-                                <td align='right'>".number_format(($amt_mtd),2)."</td></tr>";
+                                <td align='right'>".number_format(($amt_mtd_text),2)."</td></tr>";
                             
                         //}
                         
                         //if next row
                         if($i+1<count($qcoa)){
                             if($qcoa[$i+1]["row_type"]=="T"){
+        
+                                $amt_mtd_tot_text=$coa_type>2?-1*$amt_mtd_tot:$amt_mtd_tot;
                                 
                                 echo "<tr><td>$coa_old</td><td>TOTAL: $coa_name_old</td>
-                                    <td align='right'>".number_format(($amt_mtd_tot),2)."</td></tr>";
+                                    <td align='right'>".number_format(($amt_mtd_tot_text),2)."</td></tr>";
                                     
                                 echo "<tr><td colspan=5>&nbsp</td></tr>";
                                     
@@ -109,8 +112,9 @@
                             
                     }
                 }
+                $amt_mtd_tot_text=$coa_type>2?-1*$amt_mtd_tot:$amt_mtd_tot;
                 echo "<tr><td>$coa_old</td><td>TOTAL: $coa_name_old</td>
-                        <td align='right'>".number_format(($amt_mtd_tot),2)."</td></tr>";
+                        <td align='right'>".number_format(($amt_mtd_tot_text),2)."</td></tr>";
                 
                 echo "<tr><td>SALDO</td><td></td>
                         <td align='right'>".number_format($amt_aktiva+$amt_pasiva,2)."</td></tr>";

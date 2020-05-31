@@ -9,7 +9,7 @@
 	         <td><input onblur='find()' id="item_number" style='width:80' 
 	         	name="item_number"   class="easyui-validatebox" required="true">
 				<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" 
-				onclick="searchItem()"></a>
+				onclick="dlginventory_show();return false;"></a>
 	         </td>
 	         <td><input id="description" name="description" style='width:280'></td>
 	         <td><input id="quantity"  style='width:30'  name="quantity" onblur="hitung()"></td>

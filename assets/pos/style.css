@@ -87,9 +87,7 @@
 	background: rgba(17, 16, 17, 0.06);
 	overflow: hidden;
 	overflow-y: auto;
-	min-height:400px;
-	max-height:420px;
-	
+	min-height:280px;
 }
 .pos .nota table{
 	font-size:small;
@@ -166,4 +164,42 @@
 	cursor: pointer;
 	background-color: rgb(141, 160, 235);
 	text-align:center;
+}
+.calc_total {
+    width: 100px;
+}
+
+p {
+    padding: 0 0 2px;
+}
+.gradient {
+    background:#448;
+    background-image: linear-gradient(to right, rgba(255,0,0,0), #eff5ff);
+}
+.sidebar {
+	overflow-y:scroll;
+    background:#448;
+    height:650px;
+    padding-left:2px;
+    background-image: linear-gradient(to right, rgba(255,0,0,0), #eff5ff);
+}
+.sidebar-menu h1 {
+	font-size: x-large;
+	color:black;
+}
+.sidebar ul li a {
+    background: #444488;
+    padding-top: 3px;
+	margin-left: -40px;
+	margin-bottom: 2px;
+    padding-bottom: 3px;
+    padding-left: 5px;
+    width: auto;
+	display: block;
+	color:white;
+	list-style-type: none;
+}
+.sidebar ul li a:hover {
+    color: yellow;
+    background: #333;
 }

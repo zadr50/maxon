@@ -18,6 +18,7 @@
 	} else {
 		$date_from=$CI->input->post("txtDateFrom");
 		$date_to=$CI->input->post("txtDateTo");
+		$supplier=$CI->input->post("text1");
 		
 		$sql="select p.no_bukti,p.date_paid,p.purchase_order_number as invoice,
 		p.amount_paid,i.amount as amount_invoice,
@@ -30,7 +31,7 @@
 		left join chart_of_accounts c on c.id=p.how_paid_account_id
 		where p.date_paid between '$date_from' and '$date_to' ";
 		
-		if($supplier=$CI->input->post("text1"))$sql.=" and p.supplier_number='$supplier'";
+		if($supplier!="")$sql.=" and i.supplier_number='$supplier'";
 		$sql.=" order by p.date_paid";
 		
 		

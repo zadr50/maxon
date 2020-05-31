@@ -75,6 +75,7 @@ if ( ! function_exists('browse_select'))
 				for($j=0;$j<count($hidden);$j++){
 					if(strcasecmp($hidden[$j], $fld)==0 ){
 						$lhide=true;
+						break;
 					}
 				}
 			}
@@ -129,7 +130,12 @@ if ( ! function_exists('browse_select'))
 		$rows=$query->result_array();
 
 		//echo $sql;exit;
-
+		$count_colspan=$count;
+		if(isset($hidden)){
+			if(is_array($hidden)){
+				$count_colspan-=count($hidden);
+			}
+		}
 
 		$k=0;
 		$old_val="";$new_val="";
@@ -151,7 +157,7 @@ if ( ! function_exists('browse_select'))
 				$new_val="";
 				$old_val="";
 				if($group_by1){
-					$new_val=$row[$group_by1];
+					$new_val=strtoupper($row[$group_by1]);
 					$old_val=$new_val;
                     $new_val2=$new_val;
                     if($group_section_fields){
@@ -167,7 +173,7 @@ if ( ! function_exists('browse_select'))
                         
                         
                     }
-                    $sgrp="<tr><td colspan=$count><h2>$new_val2 </h2></td>";
+                    $sgrp="<tr><td colspan=$count_colspan><h2>$new_val2 </h2></td>";
                     $sgrp.="</tr>";
 					$CI->table->add_row($sgrp);
 				}
@@ -185,13 +191,18 @@ if ( ! function_exists('browse_select'))
 							}
 						}
 						if(!$lhide){
-							if($type[$i]=='real' || $type[$i]=='5' || $type[$i]=="double" || $type[$i]=="int" || $type[$i]==3){
+							if($fld=="ttc_1x"){
+								//echo 1;
+							}
+							if($type[$i]==5 || $type[$i]=='real' || $type[$i]=='5' || $type[$i]=="double" 
+							|| $type[$i]=="int" ){
+								//|| $type[$i]==3
 								$val=$row[$fld];
-								if($val>0 and $val<1){
+//								if($val>0 and $val<1){
 									$val=number_format($val,2);
-								} else {
-									$val=number_format($val);
-								}
+//								} else {
+//									$val=number_format($val);
+//								}
 								$newrow[$i]= '<div align="right">'.$val.'</div>';
 							} else {
 								$newrow[$i]=$row[$fld];
@@ -242,7 +253,7 @@ if ( ! function_exists('browse_select'))
 					}
 					if($row){
 						if($group_by1){
-							$new_val=$row[$group_by1];
+							$new_val=strtoupper($row[$group_by1]);
 						}
 					}
 					
@@ -251,13 +262,28 @@ if ( ! function_exists('browse_select'))
 				if($group_by1){
 					if(isset($fields_sum[0])){
 //						$CI->table->add_row("<strong>Sub total  $group_by1 : $old_val Rp. ".$sub_ttl[$fields_sum[0]]."</strong>");
-						$s2="";
+						$s2=null;
 						for($ik=0;$ik<$count;$ik++){
 							$fld=$flds[$ik];
+							$s2[$ik]="";							
 							if(isset($fields_sum_value[$fld])){
-								$s2[$ik]='<div align="right"><strong>'.number_format($sub_ttl[$fld]).'</strong></div>';
+								if(is_array($s2))$s2[count($s2)-2]='<div align="right"><strong>'.number_format($sub_ttl[$fld],2).'</strong></div>';
 							} else {
-								$s2[$ik]="";
+								
+								$lhide=false;
+								if(is_array($hidden)){
+									for($j=0;$j<count($hidden);$j++){
+										if(strcasecmp($hidden[$j], $fld)==0 ){
+											$lhide=true;
+											break;
+										}
+									}
+								}
+								if(!$lhide){
+									if($ik==1){
+										if(is_array($s2))$s2[count($s2)-1]="<b>SUB TOTAL</b>";										
+									} 									
+								}
 							}
 						}
 						$CI->table->add_row($s2);						
@@ -268,17 +294,28 @@ if ( ! function_exists('browse_select'))
 			}
         };
 		}
-		$s="";
+		$s3=null;
 		for($i=0;$i<$count;$i++){
 			$fld=$flds[$i];
-			if(isset($fields_sum_value[$fld])){
-				$s[$i]='<div align="right"><strong>'.number_format($fields_sum_value[$fld]).'</strong></div>';
-			} else {
-				$s[$i]="";
+			$lhide=false;
+			if(is_array($hidden)){
+				for($j=0;$j<count($hidden);$j++){
+					if(strcasecmp($hidden[$j], $fld)==0 ){
+						$lhide=true;
+						break;
+					}
+				}
 			}
-			$s[0]="<strong>GRAND TOTAL</strong>";
+			if(isset($fields_sum_value[$fld])){				
+				if(is_array($s3))$s3[count($s3)]='<div align="right"><strong>'.number_format($fields_sum_value[$fld],2).'</strong></div>';
+			} else {
+				if(!$lhide){
+					$s3[]="";				
+				}
+			}
+			//if(is_array($s3))$s3[count($s3)]="<strong>GRAND TOTAL</strong>";
 		}
-        $CI->table->add_row($s);
+        $CI->table->add_row($s3);
 		if($class=="")$class="titem";
 		
         $tmpl=$CI->template->template_table($class);

@@ -1,4 +1,4 @@
-<nav class="navbar  bg-banner" role="navigation" >
+<nav class="navbar  bg-banner well well-sm" role="navigation" >
     <div class="navbar-header">
 		<a class="border-hover" href="<?=base_url()?>index.php/eshop_admin/dashboard">		
 			<div class='logo-wrapper logo-maxon' style='float:left'></div>
@@ -47,19 +47,19 @@
 </nav>
 
 <?
-	function menu($title,$url,$func=false){
+	function menu_ex($title,$url,$func=false){
 		if(!$func){
 			echo "<div><a href='".base_url()."index.php/".$url."' class='easyui-linkbutton' data-options='plain:true'>".$title."</a></div>";	
 		} else {
 			echo "<div><a href='#' onclick=\"load_menu('$url')\"  class='easyui-linkbutton' data-options='plain:true'>".$title."</a></div>";
 		}
 	}
-	function add_menu_drop($menu_id,$caption,$mod_id) {
+	function add_menu_drop_ex($menu_id,$caption,$mod_id) {
 		if(allow_mod($mod_id)){
 			echo "<li><a onclick=load_menu('$menu_id') href='#'>$caption</a></li>";
 		}
 	}
-	function add_menu_drop_2($menu_id,$caption,$mod_id) {
+	function add_menu_drop_2ex($menu_id,$caption,$mod_id) {
 		if(allow_mod($mod_id)){
 			echo "<li><a href='".base_url()."index.php/$menu_id'
 			class='info_link' >$caption</a></li>";

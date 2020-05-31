@@ -17,7 +17,7 @@ class Banks extends CI_Controller {
         
 		if(!$this->access->is_login())redirect(base_url());
 		
- 		$this->load->helper(array('url','form','mylib_helper'));
+ 		$this->load->helper(array('url','form','mylib_helper','browse_select_helper'));
 		$this->load->library('template');
 		$this->load->library('form_validation');
 		$this->load->model('bank_accounts_model');
@@ -216,7 +216,7 @@ class Banks extends CI_Controller {
 		echo browse_data($data,$flds);
 		
 	}
-    function rpt($id,$d1="",$d2="",$rek=""){
+    function rpt($id="",$d1="",$d2="",$rek=""){
 		 $data['date_from']=date('Y-m-d 00:00:00');
          if($d1!="")$data["date_from"]=$d1;
 		 $data['date_to']=date('Y-m-d 23:59:59');

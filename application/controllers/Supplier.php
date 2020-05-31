@@ -13,7 +13,7 @@ class Supplier extends CI_Controller {
 		parent::__construct();        
         
         
-		if(!$this->access->is_login())redirect(base_url());
+		//if(!$this->access->is_login())redirect(base_url());
 		
  		$this->load->helper(array('url','form','browse_select','mylib_helper'));
 		$this->load->library('template');
@@ -103,6 +103,11 @@ class Supplier extends CI_Controller {
                     array("fieldname"=>"keterangan","caption"=>"Keterangan","width"=>"200px")
                 );          
         $data['lookup_po_type']=$this->list_of_values->render($setting);
+        
+		$data["lookup_jenis_partisipasi"]=$this->list_of_values->render(array(
+			'dlgBindId'=>'jenis_partisipasi','sysvar_lookup'=>'jenis_partisipasi',
+			'dlgRetFunc'=>"$('#jenis_partisipasi').val(row.varvalue);"
+		));
 
 		
 		return $data;
@@ -168,12 +173,13 @@ class Supplier extends CI_Controller {
             $data['supplier_number']=$id;
         }
 		$mode=$data["mode"];
-		$data['supplier_account_number']=account_id($data['supplier_account_number']);
-		$data['acc_biaya']=account_id($data['acc_biaya']);		 
+		if(isset($data['supplier_account_number']))$data['supplier_account_number']=account_id($data['supplier_account_number']);
+		if(isset($data['acc_biaya']))$data['acc_biaya']=account_id($data['acc_biaya']);		 
 		
 	 	unset($data['mode']);
 	 	if(isset($data['d1']))unset($data['d1']);
         if(isset($data['d2']))unset($data['d2']);
+		if(!isset($data['show_only_item']))$data['show_only_item']=0;
         
 		if($mode=="add"){ 
 			$ok=$this->supplier_model->save($data);
@@ -200,7 +206,11 @@ class Supplier extends CI_Controller {
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();
 			$data['supplier_account_number']=account_id($data['supplier_account_number']);
-			$data['acc_biaya']=account_id($data['acc_biaya']);		 
+			$data['acc_biaya']=account_id($data['acc_biaya']);
+			
+			if(!isset($data['show_only_item']))$data['show_only_item']=0;
+			if($data['show_only_item']=='')$data['show_only_item']=1;
+					 
 			$this->supplier_model->update($id,$data);
             $message='Update Success';
 			$this->syslog_model->add($id,"supplier","edit");
@@ -260,6 +270,7 @@ class Supplier extends CI_Controller {
         $this->template->display_browse2($data);            
     }
     function browse_data($offset=0,$limit=100,$nama=''){
+    	
         $limit=getvar("max_row");
         if($limit=="")$limit=20;        
         if($limit<10)$limit=20;
@@ -284,8 +295,8 @@ class Supplier extends CI_Controller {
 	function delete($id){
 		$id=urldecode($id);
 		if(!allow_mod('_40013')){
-			echo json_encode(array("success"=>false,"msg"=>"Anda tidak diijinkan menjalankan proses module ini."));
-			return false;
+			//echo json_encode(array("success"=>false,"msg"=>"Anda tidak diijinkan menjalankan proses module ini."));
+			//return false;
 		};			
 	 	$cnt=$this->supplier_model->delete($id);
 		if($cnt){
@@ -461,9 +472,13 @@ class Supplier extends CI_Controller {
         $c_hp=$this->input_col('hp');
         $c_salesman=$this->input_col('salesman');
         $c_kelompok=$this->input_col('kelompok');
-        $c_kontak=$this->input_col('kontak');
+        $c_kontak=$this->input_col('first_name');
         $c_email=$this->input_col('email');
         $c_no_telp2=$this->input_col('no_telp2');
+        $c_saldo=$this->input_col('saldo');
+        $c_credit_limit=$this->input_col('credit_limit');
+        $c_payment_terms=$this->input_col('payment_terms');
+        $c_tgl_tagih=$this->input_col('tgl_tagih');
 
         $filename=$_FILES["file_excel"]["tmp_name"];
         if($_FILES["file_excel"]["size"] > 0)
@@ -471,6 +486,7 @@ class Supplier extends CI_Controller {
             $file = fopen($filename, "r");
             $i=0;
             $ok=false;
+            $total_hutang=0;
             $this->db->trans_begin();
             ($emapData = fgetcsv($file, 10000, chr(9)));    //header
             while (($emapData = fgetcsv($file, 10000, chr(9))) !== FALSE)
@@ -480,6 +496,7 @@ class Supplier extends CI_Controller {
                 $kode=$emapData[$c_kode];
                 if(! ($kode == null or $kode == "" or $kode == "kode" ) ) {
                     $i=1;
+                    $data=null;;;
                     $data["supplier_number"]=$kode;
                     if($c_nama>0)$data["supplier_name"]=$emapData[$c_nama];
                     if($c_alamat1>0)$data["street"]=$emapData[$c_alamat1];
@@ -495,6 +512,17 @@ class Supplier extends CI_Controller {
                     if($c_kontak>0)$data["first_name"]=$emapData[$c_kontak];
                     if($c_email>0)$data["email"]=$emapData[$c_email];
                     if($c_no_telp2>0)$data["no_telp2"]=$emapData[$c_no_telp2];
+                    if($c_saldo>0){
+                        $data['credit_balance']=c_($emapData[$c_saldo]);
+                        $data['current_balance']=c_($emapData[$c_saldo]);
+                        $total_hutang+=c_($emapData[$c_saldo]);                        
+                    }
+                    if($c_credit_limit>0){
+                        $data['credit_limit']=c_($emapData[$c_credit_limit]);
+                        $data['plafon_hutang']=c_($emapData[$c_credit_limit]);   
+                    }
+                    if($c_kelompok>0)$data['type_of_vendor']=$emapData[$c_kelompok];
+                    if($c_payment_terms>0)$data['payment_terms']=$emapData[$c_payment_terms];
                     
                     $data["create_by"]=user_id();
                     $data['active']="1";
@@ -506,6 +534,10 @@ class Supplier extends CI_Controller {
                         $ok=$this->supplier_model->save($data)==1;
                         echo "Insert: ".$kode."</br>";
                     }
+                    if($c_saldo>0){
+                        $this->create_saldo_awal($kode,c_($emapData[$c_saldo]));
+                    }
+                    
                 }
             }
             if ($this->db->trans_status() === FALSE)
@@ -517,8 +549,92 @@ class Supplier extends CI_Controller {
                 $this->db->trans_commit();
             }           
             fclose($file);
+            
+            if($this->input->post("chkUpdateCoaHutang")){
+                $this->update_saldo_coa($total_hutang);
+            }
+            
+            
             if ($ok){echo json_encode(array("success"=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}      
         }
+    
         echo "<div class='alert alert-success'>FINISH.</div>";
     }    
+    function create_saldo_awal($supplier_number,$saldo){
+        $this->load->model("purchase_invoice_model");
+        $coa_hutang=0;
+        if($qpref=$this->db->select("accounts_payable")->get("preferences")){
+            if($rpref=$qpref->row()){
+                $coa_hutang=$rpref->accounts_payable;
+            }
+        }
+        if($qsupp=$this->db->select("default_account")->where("supplier_number",$supplier_number)->get("suppliers")){
+            if($rsupp=$qsupp->row()){
+                if($rsupp->default_account>0){
+                    $coa_hutang=$rsupp->default_account;
+                }
+            }
+        }
+        $nomor_bukti="SALDO-$supplier_number";
+        $data['po_date']=date("Y-m-1");
+        $data['purchase_order_number']=$nomor_bukti;
+        $data['potype']='I';
+        $data['supplier_number']=$supplier_number;
+        $data['terms']="KREDIT";
+        $data['due_date']=$data['po_date'];
+        $data['comments']="SALDO AWAL";
+        $data['account_id']=$coa_hutang;
+        $data['amount']=$saldo;
+        $data['saldo_invoice']=$saldo;
+        $data['warehouse_code']=current_gudang();
+        
+        $this->purchase_invoice_model->save($data);
+        
+        $detail['purchase_order_number']=$nomor_bukti;
+        $detail['item_number']="SALDO";
+        $detail['description']="SALDO";
+        $detail['quantity']=1;
+        $detail["price"]=$saldo;
+        $detail['total_price']=$saldo;
+        $detail['sub_total']=$saldo;
+        $detail['warehouse_code']=current_gudang();
+        
+        $this->purchase_invoice_model->save_item($detail);
+    }
+    function update_saldo_coa($amount){
+        $coa_hutang=0;
+        if($qpref=$this->db->select("accounts_payable")->get("preferences")){
+            if($rpref=$qpref->row()){
+                $coa_hutang=$rpref->accounts_payable;
+            }
+        }
+        $s="update chart_of_accounts set beginning_balance='$amount' where id='$coa_hutang'";
+        $this->db->query($s);
+    }
+    function rpt($id="",$d1="",$d2="",$rek=""){
+		 $data['date_from']=date('Y-m-d 00:00:00');
+         if($d1!="")$data["date_from"]=$d1;
+		 $data['date_to']=date('Y-m-d 23:59:59');
+         if($d2!="")$data["date_to"]=$d2;
+		 $data['select_date']=true;
+    	 switch ($id) {
+			 case 'mutasi':
+				 $data['criteria1']=true;
+				 $data['label1']='Rekening';
+				 $data['text1']='';
+				 break;			 
+			 default:
+				 break;
+		 }
+		 $rpt='supplier/rpt/'.$id;
+		 $data['rpt_controller']=$rpt;
+		 
+		if(!$this->input->post('cmdPrint')){
+			$this->template->display_form_input('criteria',$data,'');
+		} else {
+			$this->load->view('purchase/rpt/'.$id);
+		}
+   }	
+
+
 }

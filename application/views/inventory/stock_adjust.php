@@ -2,7 +2,7 @@
 	<?php
 	   $min_date=$this->session->userdata("min_date","");
 	if($mode!=="add"){
-//	    echo link_button('Save','save_bukti()','save');       
+	    echo link_button('Save','save_bukti()','save');       
 		echo link_button('Delete','','remove','false',base_url().'index.php/stock_adjust/delete/'.$transfer_id);		
 	    if($posted){
 	        echo link_button('UnPosting','unposting()','save');     
@@ -51,33 +51,38 @@
 		<td>Tanggal</td><td><?php  
                 echo form_input('date_trans',$date_trans
 				,"id='date_trans' class='easyui-datetimebox' required 
-				data-options='formatter:format_date,parser:parse_date'");
-                
-        ?></td>
-        
-        <td>Create By</td><td><?=form_input("trans_by",$trans_by,"id='trans_by'")?></td>
-        
+				data-options='formatter:format_date,parser:parse_date' style='width:180px'");                
+        ?></td>        
+        <td>Create By</td><td><?=form_input("trans_by",$trans_by,"id='trans_by'")?></td>        
        </tr>
 	<tr>
-		<td>Gudang</td><td><?php 
+		<td>Gudang</td>
+        <td><?php 
             echo form_input('from_location',$from_location,'id=from_location');
-            echo link_button('','dlgwarehouse_show()',"search","false");  
-                                    
-                ?></td>
+            echo link_button('','dlgwarehouse_show()',"search","false");                                     
+            ?>
+        </td>                
+        <td>Doc Type</td><td class='field'> 
+            <?php
+            echo form_input("doc_type",$doc_type,"id='doc_type'");
+            echo link_button('','dlgdoc_type_show();return false;',"search","false"); 
+            echo link_button('',"dlgdoc_type_list('doc_type_adjust_stock');return false;","add","false"); 
+            ?>
+        </td>
 	</tr>
     <tr>
 		<td>Catatan</td>
 		<td><?php 
-                	echo form_input('comments',$comments,'id=comments style="width:400px"');
+            echo form_input('comments',$comments,'id=comments style="width:300px"');
         ?></td>
+        <td>Ref1</td><td><?=form_input("ref1",$ref1,"id='ref1'")?></td>
      </tr>
-	 <tr><td>&nbsp</td><td>&nbsp</td></tr>
    </table>
 <!-- LINEITEMS -->	
 
 
-<div id='divItem' style='display:<?=$mode=="add"?"":""?>'>
-	<table id="dg" class="easyui-datagrid"  width="100%"
+<div id='divItem' style='display:<?=$mode=="add"?"":""?>;'>
+	<table id="dg" class="easyui-datagrid"  style="min-height:300px"
 		data-options="
 			iconCls: 'icon-edit',fitColumns:true,
 			singleSelect: true,
@@ -95,6 +100,7 @@
 				<th data-options="field:'multi_unit',width:50,align:'left',editor:'text'">M Unit</th>
                 <th data-options="field:'from_location',width:50,align:'left',editor:'text'">Gudang</th>
 				<th data-options="field:'line_number',width:30,align:'right'">Line</th>
+                <th data-options="field:'date_trans',width:50,align:'left',editor:'text'">Date</th>
 			</tr>
 		</thead>
 	</table>
@@ -106,19 +112,24 @@
 
 </div>
 <div id="tb_item" class='thumbnail'>
-    <a href="#" class="easyui-linkbutton" iconCls="icon-save"  onclick="addItem();return false;">Add Item</a>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-edit"  onclick="editItem();return false;">Edit</a>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-remove"   onclick="deleteItem();return false;">Delete</a>	
-    <?php echo link_button('Refresh','load_items()','reload');      ?>
+    <?php 
+        echo link_button('Add Item','addItem()','add');      
+        echo link_button('Edit','editItem()','edit');      
+        echo link_button('Delete','deleteItem()','remove');           
+        echo link_button('Refresh','load_items()','reload');          
+    ?>
 </div> 
 
 <?php 
     echo $lookup_gudang;
     echo $lookup_stock_opname;
-    echo load_view('inventory/inventory_select'); 
+	echo $lookup_inventory;
+//    echo load_view('inventory/inventory_select'); 
     echo load_view('inventory/input_qty'); 
     echo load_view("inventory/select_unit");
     echo load_view("inventory/inventory_select_checkbox");
+	echo $lookup_doc_type;
+	
 	
     
 ?>
@@ -147,13 +158,13 @@
 	}
     function selected_doc(){        
         var nomor=$('#transfer_id').val();
-        var _url='<?=base_url()?>index.php/stock_adjust/items/'+nomor;
-        $("#dg").datagrid({url:_url});
+        loading();
+        url="<?=base_url()?>index.php/stock_adjust/view/"+nomor;
+        window.open(url,"_self");
     }
-
-		function load_help() {
-			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/stock_adjust");
-		}
+	function load_help() {
+		window.parent.$("#help").load("<?=base_url()?>index.php/help/load/stock_adjust");
+	}
     function pilih_stock_opname(){
         dlgstock_opname_show();
     }
@@ -173,7 +184,7 @@
 			if($("#multi_unit").val()!=$("#unit").val()){
 				$("#divMultiUnit").show();
 			} else {
-				$("#divMultiUnit").hide();
+				//$("#divMultiUnit").hide();
 			}
 			
 			show_input_item(); 
@@ -214,6 +225,7 @@
                     $("#transfer_id").val(result.transfer_id);
                     load_items();
                     $.messager.show({title: 'Success',msg: 'Success'});
+                    log_msg("Success");
                     close_item();                    
                     loading_close();
                 } else {
@@ -222,7 +234,7 @@
                     $.messager.show({title: 'Error',msg: result.msg });
                 }
             },
-            error: function(result){alert("Some error !");}
+            error: function(result){log_err(result);}
         });
     }
     
@@ -278,9 +290,9 @@
             item_number:$("#item_number").val(),
             unit:$("#unit").val(),
             description:$("#description").val(),
-            quantity:$("#quantity").val(),
-            mu_qty:$("#mu_qty").val(),
-            multi_unit:$("#multi_unit").val(),
+            quantity:$("#quantity").val(),          ref1:$("#ref1").val(),
+            mu_qty:$("#mu_qty").val(),				doc_type:$("#doc_type").val(),
+            multi_unit:$("#multi_unit").val(),		status:$("#status").val(),
             id:$("#id").val()};
        return _param; 
     }
@@ -289,15 +301,10 @@
     	var url="<?=base_url('stock_mutasi/view/'.$transfer_id)?>";
     	window.open(url,'_self');
     }
-
-
-    
     function addItem(){
-        if (!valid()) return false;
-        
+        if (!valid()) return false;        
         clear_input();
-        qty_conv=0;
-        
+        qty_conv=0;        
         show_input_item();
     }
     
@@ -336,5 +343,8 @@
         var nomor=$('#transfer_id').val();
         $('#dg').datagrid({url: url_detail()});
     }    
+    $().ready(function(){
+        load_items();
+    })
     
 </script>

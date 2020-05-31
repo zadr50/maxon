@@ -78,18 +78,25 @@ class Sales_order_model extends CI_Model
 		return $salesman;
 	}
 	function save($data){
-		$data['delivered']=='1'?$data['delivered']=true:$data['delivered']=false;
+		if(isset($data['delivered']))$data['delivered']=='1'?$data['delivered']=true:$data['delivered']=false;
 		$data['sales_date']= date( 'Y-m-d H:i:s', strtotime($data['sales_date']));
-		$data['due_date']= date( 'Y-m-d H:i:s', strtotime($data['due_date']));
-        if(!isset($data['warehouse_code']))$data['warehouse_code']=current_gudang();
+		if(isset($data['due_date']))$data['due_date']= date( 'Y-m-d H:i:s', strtotime($data['due_date']));
+		if(!isset($data['warehouse_code']))$data['warehouse_code']=current_gudang();
+		if(!isset($data['ship_to_customer']))$data['ship_to_customer']=$data['sold_to_customer'];
+		if(!isset($data['salesman']))$data['salesman']='OFFICE';
+		if(!isset($data['create_date']))$data['create_date']=date( 'Y-m-d H:i:s', now());
         
 		return $this->db->insert($this->table_name,$data);
 		//return $this->db->insert_id();
 	}
 	function update($id,$data){
-		$data['delivered']=='1'?$data['delivered']=true:$data['delivered']=false;
+		if(isset($data['delivered'])){
+			$data['delivered']=='1'?$data['delivered']=true:$data['delivered']=false;
+		}
 		$data['sales_date']= date( 'Y-m-d H:i:s', strtotime($data['sales_date']));
-		$data['due_date']= date( 'Y-m-d H:i:s', strtotime($data['due_date']));
+		if(isset($data['due_date'])){
+			$data['due_date']= date( 'Y-m-d H:i:s', strtotime($data['due_date']));
+		}
         if(!isset($data['warehouse_code']))$data['warehouse_code']=current_gudang();
 
 		$this->db->where($this->primary_key,$id);
@@ -169,22 +176,32 @@ class Sales_order_model extends CI_Model
 		} else {
 			$status="0";
 		}
+		$has_item=$this->has_item($nomor_so);
 		if ($q=$this->db->select("sum(quantity) as z_qty,
 		sum(ship_qty) as z_ship_qty")->where("sales_order_number",$nomor_so)
 		->get("sales_order_lineitems")) {
 			if($r=$q->row()){
-				if($r->z_ship_qty>=$r->z_qty){
+				if($r->z_ship_qty>=$r->z_qty && $has_item){
 					$delivered=1;
 					$status="2";
 				}
 			}
 		}
+		if($status=="")$status=0;
 		$s="update sales_order set delivered='$delivered',
 		ship_date='$ship_date',status='$status' 
 		where  sales_order_number='$nomor_so'";
 		
 		$this->db->query($s);
 		
+	}
+	function has_item($nomor_so){
+		$cnt=0;
+		if($q=$this->db->query("select count(1) as cnt from sales_order_lineitems 
+			where sales_order_number='$nomor_so' ")){
+			$cnt=$q->row()->cnt;
+		}
+		return $cnt>0;
 	}
 	function nomor_bukti($add=false)
 	{
@@ -215,5 +232,33 @@ class Sales_order_model extends CI_Model
 			and (so.status is null  or so.status=0)";
 		return $this->db->query($sql);
 	}
-	
+	function lookup($param=null){
+    	$extra_ret_func="";
+		$class="";
+    	if(isset($param["dlgRetFunc"]))$extra_ret_func=$param["dlgRetFunc"];
+		
+        $lookup = $this->list_of_values->render(array(
+        	"dlgBindId"=>"sales_order",
+        	"dlgUrlQuery"=>"sales_order/browse_data",
+       		'show_checkbox'=>false,
+       		'show_check1'=>false,'check1_title'=>"Supplier",'check1_field'=>'supplier_number',
+        	"dlgRetFunc"=>"			
+				$('#sales_order_number').val(row.sales_order_number);
+				$extra_ret_func
+				find_sales_order();
+        	",
+        	"dlgCols"=>array(
+                array("fieldname"=>"sales_order_number","caption"=>"Kode SO","width"=>"80px"),
+                array("fieldname"=>"sales_date","caption"=>"Tanggal","width"=>"180px"),
+                array("fieldname"=>"sold_to_customer","caption"=>"Cust No","width"=>"80px"),
+                array("fieldname"=>"company","caption"=>"Pelanggan","width"=>"280px"),
+                array("fieldname"=>"salesman","caption"=>"Salesman","width"=>"80px"),
+                array("fieldname"=>"amount","caption"=>"Amount","width"=>"80px"),
+                array("fieldname"=>"comments","caption"=>"Comments","width"=>"180px"),
+                array("fieldname"=>"payment_terms","caption"=>"Termin","width"=>"80px")
+        	)
+        ));
+		return $lookup;
+	}
+		
 }

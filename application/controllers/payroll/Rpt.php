@@ -21,6 +21,24 @@ class Rpt extends CI_Controller {
          switch ($id) {
              case 'emp_list':
                  $data['select_date']=false;
+                 $data['criteria1']=true;
+                 $data['label1']='Department';
+                 $data['text1']='';
+                 $data['output1']="text1";
+                 $data['key1']="dept_code";
+                 $data['ctr1']='lookup/query/departments';
+                 $data['fields1'][]=array("dept_name","180","Nama");
+                 $data['fields1'][]=array("dept_code","80","Kode");
+                 
+                 $data['criteria2']=true;
+                 $data['label2']='Division';
+                 $data['text2']='';
+                 $data['output2']="text2";
+                 $data['key2']="div_code";
+                 $data['ctr2']='lookup/query/divisions';                 
+                 $data['fields2'][]=array("div_name","180","Nama");
+                 $data['fields2'][]=array("div_code","180","Kode");
+                 
                  break;
              case 'overtime':
              case 'absensi':
@@ -44,7 +62,7 @@ class Rpt extends CI_Controller {
                  $data['text1']='';
                  $data['output1']="text1";
                  $data['key1']="dept_code";
-                 $data['ctr1']='lookup/query/department';
+                 $data['ctr1']='lookup/query/departments';
                  $data['fields1'][]=array("dept_name","180","Nama");
                  $data['fields1'][]=array("dept_code","80","Kode");
                  
@@ -64,6 +82,15 @@ class Rpt extends CI_Controller {
                  $data['key3']="period";
                  $data['ctr3']='lookup/query/hr_period';                 
                  $data['fields3'][]=array("period","180","Periode");
+
+                 $data['criteria4']=true;
+                 $data['label4']='Kelompok';
+                 $data['text4']='';
+                 $data['output4']="text4";
+                 $data['key4']="kode";
+                 $data['ctr4']='lookup/query/emptype';                 
+                 $data['fields4'][]=array("keterangan","180","Nama");
+                 $data['fields4'][]=array("kode","180","Kode");
                  
                  
                  break;

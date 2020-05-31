@@ -1,39 +1,37 @@
 <div class="thumbnail box-gradient">
 	<?php
-	   $min_date=$this->session->userdata("min_date","");
-	
-	if($posted=="")$posted=0;
-	if($closed=="")$closed=0;
-	if(!isset($has_payment))$has_payment=false;
-	if($has_payment=="")$has_payment=0;
-	if(!isset($has_retur))$has_retur=false;
-	if($has_retur=="")$has_retur=0;
-	if(!isset($has_memo))$has_memo=false;
-	if($has_memo=="")$has_memo=0;
-	$disabled="";$disabled_edit="";
-	if(!($mode=="add" or $mode=="edit"))$disabled=" readonly";
-	if($supplier_number=="")$disabled="";
-	if($terms=="")$disabled="";
-		 
-	echo link_button('Save', 'save_po()','save');		
-//	echo link_button('Add','','add','false',base_url().'index.php/purchase_invoice/add');		
-//	echo link_button('Search','','search','false',base_url().'index.php/purchase_invoice');		
-	if($mode!="add"){
-		echo link_button('Refresh','','reload','false',base_url().'index.php/purchase_invoice/view/'.$purchase_order_number);		
-		echo link_button('Delete', 'delete_nomor()','cut');
+		$min_date=$this->session->userdata("min_date","");	
+		if($posted=="")$posted=0;
+		if($closed=="")$closed=0;
+		if(!isset($has_payment))$has_payment=false;
+		if($has_payment=="")$has_payment=0;
+		if(!isset($has_retur))$has_retur=false;
+		if($has_retur=="")$has_retur=0;
+		if(!isset($has_memo))$has_memo=false;
+		if($has_memo=="")$has_memo=0;
+		$disabled="";$disabled_edit="";
+		if(!($mode=="add" or $mode=="edit"))$disabled=" readonly";
+		if($supplier_number=="")$disabled="";
+		if($terms=="")$disabled="";
+			 
+		echo link_button('Save', 'save_po()','save');		
 		echo link_button('Print', 'print_faktur()','print');	
-		if($posted) {
-			echo link_button('UnPosting','','cut','false',base_url().'index.php/purchase_invoice/unposting/'.$purchase_order_number);		
-		} else {
-			echo link_button('Posting','','ok','false',base_url().'index.php/purchase_invoice/posting/'.$purchase_order_number);		
+		//	echo link_button('Add','','add','false',base_url().'index.php/purchase_invoice/add');		
+		//	echo link_button('Search','','search','false',base_url().'index.php/purchase_invoice');		
+		if($mode!="add"){
+			echo link_button('Refresh','','reload','false',base_url().'index.php/purchase_invoice/view/'.$purchase_order_number);		
+			echo link_button('Delete', 'delete_nomor()','cut');
+			if($posted) {
+				echo link_button('UnPosting','','cut','false',base_url().'index.php/purchase_invoice/unposting/'.$purchase_order_number);		
+			} else {
+				echo link_button('Posting','','ok','false',base_url().'index.php/purchase_invoice/posting/'.$purchase_order_number);		
+			}
+				
 		}
-			
-	}
     ?>
 	<div style='float:right'>
         <?php
 //    	echo link_button('Doc Receive', 'select_receive();return false;','search');
-        echo link_button('Close','remove_tab_parent()','cancel');      
         ?>
     	<a href="#" class="easyui-splitbutton" data-options="plain:false, menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
     	<div id="mmOptions" style="width:200px;">
@@ -43,6 +41,8 @@
     		<div>MaxOn Forum</div>
     		<div>About</div>
     	</div>
+        <?=link_button('Help', 'load_help(\'purchase_invoice\')','help','false')?>       
+        <?=link_button('Close','remove_tab_parent()','cancel')?>      
 	</div> 
 </div>
 <div class="thumbnail">	
@@ -53,13 +53,15 @@
 	<table class="table2" width="100%">
 	<tr>
 		<td>Nomor Faktur</td><td width=300>
-		<?php echo form_input('purchase_order_number',
-                        $purchase_order_number,"id=purchase_order_number"); ?>
-                </td>
+		 <?php  
+		  echo form_input('purchase_order_number',
+                        $purchase_order_number,"id=purchase_order_number $disabled"); 
+          ?>
+        </td>
 			
-			<td rowspan='3' colspan='2'><div class='thumbnail' style='min-height:100px'>Nama Supplier : 
+		<td rowspan='3' colspan='2'><div class='thumbnail' style='min-height:100px'>Nama Supplier : 
 			    <br><span id='supplier_name'><?=$supplier_info?></span></div>
-			</td>				
+		</td>				
 				
         </tr>	 
        <tr>
@@ -75,7 +77,10 @@
             echo form_input('supplier_number',$supplier_number,
             "id=supplier_number class='easyui-validatebox' data-options='required:true,
 			validType:length[3,30]' ".$disabled);
-			if($disabled=="") echo link_button('','dlgsuppliers_show()',"search","false"); 			   
+			if($disabled=="") {
+			    echo link_button('','dlgsuppliers_show();return false;',"search","false"); 			   
+                echo link_button('','dlgsuppliers_list_master();return false;',"add","false");             
+            }
 			?>
             </td>
             
@@ -83,26 +88,40 @@
        <tr>
             <td>Termin</td><td><?php echo form_input('terms',$terms,"id='terms' 
 			     class='easyui-validatebox' data-options='required:true' ".$disabled);
-			    if($disabled=="") echo link_button('','dlgterms_show()',"search","false");  
+			    if($disabled=="") {
+			        echo link_button('','dlgterms_show();return false;',"search","false");  
+                    echo link_button('','dlgterms_list_master();return false;',"add");                      
+                }
 			
 			?></td>
 
              <td>Jangka Waktu</td>
-            <td><?=form_input('due_date',$po_date,'id=due_date  class="easyui-datetimebox" 
-			data-options="formatter:format_date,parser:parse_date"
-			required');?></td>
+            <td><?=form_input('due_date',$due_date,'id=due_date  class="easyui-datetimebox" 
+    			data-options="formatter:format_date,parser:parse_date"
+    			required');?></td>
        </tr>
        <tr>
            <td>Rekening#</td>
            <td><?php 
                 echo form_input("rekening",$rekening,"id='rekening' 
                     title='Rencana pembayaran hutang ini memakai rekening ini'");
-                echo link_button('','dlgbank_accounts_bank_show()',"search","false"); 
+                echo link_button('','dlgbank_accounts_bank_show();return false;',"search","false"); 
+                echo link_button('','dlgbank_accounts_bank_list_master();return false;',"add"); 
                 ?>
            </td>
            <td>Proyek</td><td><?=form_input('org_id',$org_id,"id='org_id' ");?>
-                <?=link_button('','dlggl_projects_show()',"search","false"); ?>      
+                <?=link_button('','dlggl_projects_show();return false;',"search","false"); ?>      
+                <?=link_button('','dlggl_projects_list_master(\'project\project\');return false;',"add"); ?>      
            </td>          
+           
+       </tr>
+       <tr>
+            <td>Gudang </td><td><?=form_input("warehouse_code",$warehouse_code,"id='warehouse_code' style='width:80px'")?>
+            <?=link_button('','dlgwarehouse_show()',"search","false"); ?>  
+            </td>
+			<td>Sistim</td><td><?=form_input('type_of_invoice',$type_of_invoice,"id='type_of_invoice' style='width:50px'");?>
+				<?=link_button('','dlgtype_of_invoice_show()',"search","false"); ?>		 
+			 </td>			
            
        </tr>
        <tr>
@@ -126,7 +145,7 @@
                     </td>
                     <td>JUMLAH: </td><td><input id='total' value='<?=number_format($amount,2)?>' style='width:100px'>
                          <a id='divHitung' href="#" class="easyui-linkbutton" data-options="iconCls:'icon-sum'"  
-                           plain='false' title='Hitung ulang' onclick='number_format()'></a>                     
+                           plain='false' title='Hitung ulang' onclick='hitung_jumlah();return false;'></a>                     
                     </td>
                 </tr>
             </table>        
@@ -199,6 +218,7 @@
                     <th data-options="<?=col_number('retail',2)?>">H Jual</th>
                     <th data-options="field:'margin',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Margin</th>
                     <th data-options="field:'line_number',width:30,align:'right'">Line</th>
+                    <th data-options="field:'no_urut',width:30,align:'right'">No</th>
 					
 				</tr>
 			</thead>
@@ -226,6 +246,9 @@
 					<th data-options="field:'date_paid',width:150">Tanggal Bayar</th>
 					<th data-options="field:'how_paid',width:50,align:'left',editor:'text'">Jenis</th>
                     <th data-options="<?=col_number('amount_paid',2)?>">Jumlah</th>
+					<th data-options="field:'line_number',width:80">Line</th>
+					<th data-options="field:'trans_id',width:80">Trans Id</th>
+					<th data-options="field:'bill_id',width:80">Bill Id</th>
 				</tr>
 			</thead>
 		</table>
@@ -281,7 +304,7 @@
 	
 	</DIV>
 	
-	<? 
+	<?php 
 		$data['gl_id']=$purchase_order_number;
 		echo load_view("gl/jurnal_view",$data); 
 	?> 
@@ -310,6 +333,8 @@
     echo $lookup_po;
     echo $lookup_project;
 	echo $lookup_terms;
+    echo $lookup_gudang;
+	echo $lookup_po_type;
 	
     include_once "select_sales_tran.php";
     
@@ -336,7 +361,7 @@
 	    var faktur=$("#purchase_order_number").val();
 	    $.ajax({
                 type: "GET",
-                url: "<?=base_url()?>/index.php/purchase_invoice/add_item_with_po/"+po+"/"+faktur,
+                url: "<?=base_url()?>index.php/purchase_invoice/add_item_with_po/"+po+"/"+faktur,
                 data: "",
                 success: function(result){
                     var result = eval('('+result+')');
@@ -435,7 +460,7 @@
 
 		$.ajax({
 				type: "GET",
-				url: "<?=base_url()?>/index.php/purchase_invoice/delete/"+$('#purchase_order_number').val(),
+				url: "<?=base_url()?>index.php/purchase_invoice/delete/"+$('#purchase_order_number').val(),
 				data: "",
 				success: function(result){
 					var result = eval('('+result+')');
@@ -457,7 +482,7 @@
 	
         row = $('#dgPay').datagrid('getSelected');
         if (row){
-            xurl=CI_ROOT+'payables_payments/delete_no_bukti/'+row['no_bukti'];                             
+            xurl=CI_ROOT+'payables_payments/delete_no_bukti/'+row['no_bukti']+'/'+row['line_number'];                             
             console.log(xurl);xparam='';
             $.ajax({
                 type: "GET",url: xurl,param: xparam,

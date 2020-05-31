@@ -8,10 +8,10 @@
 <table cellspacing="0" cellpadding="1" border="0"> 
      <tr>
      	<td>Tanggal</td><td><?=$sales_date?></td>
-     	<td colspan="2"><?=$sold_to_customer.' ('.$cst->company.')'?></td>
+     	<td colspan="2"><b><?=$sold_to_customer.' ('.$cst->company.')'?></b></td>
      </tr>
      <tr>
-     	<td>Termin</td><td><?=$payment_terms?></td>
+     	<td>Termin</td><td><b><?=$payment_terms?></b></td>
      	<td colspan="2"><?=$cst->street?></td>
      </tr>
      <tr>

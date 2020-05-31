@@ -1,13 +1,20 @@
 <script type="text/javascript">
     CI_ROOT = "<?=base_url()?>index.php/";
     CI_BASE = "<?=base_url()?>";        
+    
 </script>
 
 <?php 
 date_default_timezone_set("Asia/Jakarta");
 
-echo $library_src;
-echo $script_head;
+if(!isset($dont_load_js))$dont_load_js=false;
+
+if($dont_load_js){
+    
+}  else  {
+    echo $library_src;
+    echo $script_head;    
+}
 
 
 $width=isset($width)?$width." px":"auto";
@@ -16,13 +23,12 @@ $caption=isset($caption)?$caption:$controller;
 $offset=0;
 $limit=100;
 $def_col_width=80; 
-if(!isset($msg_left))$msg_left="<i>***Data yang ditampilkan hanya <b>100 baris.</b></i></br>
+if(!isset($msg_left))$msg_left="<i>***Data record yang ditampilkan hanya <b>100 baris.</b></i></br>
 <i>***Apabila data tidak tampil, persempit pencarian tekan tombol [<strong>Filter</strong>].</i>";
 if(!isset($msg_content))$msg_content="<p>***Silahkan pilih satu baris ditabel ini 
 	kemudian klik toolbar edit diatas.</p><p>***Apabila masih tidak tampil juga tekan [<strong>CTRL+R</strong>]</p>";
 
 ?>
-<div id='__section_left_content'   style='padding:0px;margin-left:0px;margin-right:0px'>
 <?php
 $table_head="<thead><tr>";
 if(isset($show_checkbox)){
@@ -87,29 +93,34 @@ if(isset($sub_controller)){
 	$sub_strip="";
 	$sub_slash="";
 }
+    if(!isset($with_tab)){
+        $with_tab="true";
+    } 
+    
 ?>
 <script type="text/javascript">    
     CI_CONTROL='<?=$controller?>';
     FIELD_KEY='<?=$field_key?>';
     CI_CAPTION='<?=$caption?>';
     CI_WIDTH='<?=$width?>';
-    CI_HEIGHT='<?=$height?>';	
+    CI_HEIGHT='<?=$height?>';	    
 </script>
+
 <div class='box-gradient' id='tb_<?=$controller_name?>' >
-	<?=link_button("Add", "addnew_$controller_name();return false;","add","false");?>
-	<?=link_button("Edit", "edit_$controller_name();return false;","edit","false");?>
-	<?=link_button("Del", "del_row_$controller_name();return false;","remove","false");?>
+	<?=link_button("", "addnew_$controller_name();return false;","add","false");?>
+	<?=link_button("", "edit_$controller_name();return false;","edit","false");?>
+	<?=link_button("", "del_row_$controller_name();return false;","remove","false");?>
 	<?php
 	if(isset($posting_visible)){
 		echo link_button('Posting','posting_'.$controller_name."();return false;",'save');
 	};
-	echo link_button('Filter','dlgFilter_'.$controller_name.'_Show();return false;','filter');
+	echo link_button('','dlgFilter_'.$controller_name.'_Show();return false;','filter');
 	if(isset($print_visible)){
 		if($print_visible){
 			echo link_button('','print_'.$controller_name."();return false;",'print');
 		}
 	}	
-	echo link_button('Refresh','cari_'.$controller_name."();return false;",'reload');
+	//echo link_button('','cari_'.$controller_name."();return false;",'reload');
 		
 	if(isset($other_button)){
 		if(is_array($other_button)){
@@ -125,10 +136,7 @@ if(isset($sub_controller)){
 			}
 		}
 	}
-    
-	echo link_button("Set", "set_".$controller_name."();return false;",'lock');
 	
-	echo link_button('Frame','refresh_tab_parent()','reload');
 	if(isset($list_info_visible)){
 		echo link_button('Info','cari_info_'.$controller_name."();return false;",'search');
 	};
@@ -140,74 +148,87 @@ if(isset($sub_controller)){
 	}	
 	echo " Find: <input type='text' id='tb_search' onchange='find_$controller_name();return false;'>";
 	echo link_button('','find_'.$controller_name."();return false;",'search');
+	echo link_button("Set", "set_".$controller_name."();return false;",'lock');
+	
+	echo link_button('','refresh_tab_parent()','reload');
 		
 	echo link_button("", "help_".$controller_name."();return false;",'help');
-    echo link_button('Close','remove_tab_parent()','cancel');      
+	echo link_button('','remove_tab_parent()','cancel');      
 	
 	if(isset($query_list)){
 	 
 	?>
-		<div style='float:right;'><select id='query_list' style='height:25px'>
-		<?php
-		for($i=0;$i<count($query_list);$i++) {
-			$q=$query_list[$i];
-			echo "<option value='".$q['value']."'>".$q['caption']."</option>";
-		}
-		?>
-		</select>
-		<a href='#' class='easyui-linkbutton' data-options="iconCls:'icon-search', 
-			plain: true" onclick='run_query();return false;' 
-			group="" id="" > Run 
-		</a>	
-		</div>
+		</br>
+			<select id='query_list' style='height:25px'>
+			<?php
+			for($i=0;$i<count($query_list);$i++) {
+				$q=$query_list[$i];
+				echo "<option value='".$q['value']."'>".$q['caption']."</option>";
+			}
+			?>
+			</select>
+			<?=link_button("Run", "run_query();return false;","search")?>
 	
 	<?php } ?>
+	
+	
 </div> 
 
-<div id="_section_table">
-	
-	<?php 
-	$url=base_url()."index.php/$controller/browse_data".$sub_strip;
-    $offset1=10;
-    $limit1=10;
-    $nama='x';
-    $url.="/$offset1/$limit1/$nama";
-    if(isset($row_count)){
-        $url.="/$row_count";
-    }
-    $fit="true";
-    if (count($fields)>5){
-        $fit="false";
-    } 
-	?>
-	<table  id="dg_<?=$controller_name?>" class="easyui-datagrid", 
-	    style='min-height:460px;min-width:800px'  
-        data-options="rownumbers:true,pagination:true,fitColumns:<?=$fit?>,
-      singleSelect:true,collapsible:false,method:'get',
-      url:'',
-      toolbar:'#tb_<?=$controller_name?>' ">
-      
-      <?=$table_head?>
-      
-	</table>
 
-	<?=$msg_content.$msg_left?>
-
-       
-	<?php
-		if(isset($other_menu)){
-			$this->load->view($other_menu);
+<div id='__section_left_content' style='padding:0px;margin-left:0px;margin-right:0px'>
+	<div id="_section_table">
+		<?php 
+		$url=base_url()."index.php/$controller/browse_data".$sub_strip;
+		$offset1=1;
+		$limit1=10;
+		$nama='x';
+		$url.="/$offset1/$limit1/$nama";
+		if(isset($row_count)){
+			$url.="/$row_count";
 		}
-	?>
+		$row_double_click=$this->session->userdata("row_double_click",false);
+		
+		$fit="true";
+		if (count($fields)>5){
+			$fit="false";
+		} 
+		//
+		?>
+		<table  id="dg_<?=$controller_name?>" class="easyui-datagrid", 
+			style='height:auto;width:auto;min-height:90%'  
+			data-options="rownumbers:true,pagination:true,fitColumns:<?=$fit?>,
+			singleSelect:true,collapsible:false,method:'get',
+			url:'', toolbar:'#tb_<?=$controller_name?>' ">
+		  
+			<?=$table_head?>
+		  
+		</table>
+
+		<?=$msg_content.$msg_left?>
+
+		   
+		<?php
+			if(isset($other_menu)){
+				$this->load->view($other_menu);
+			}
+		?>
+	</div>
 </div>
 
-</div>
-<div id="dlgSet" name='dlgSet' class="easyui-dialog" data-options="title:'Setting'" 
-	buttons='#button_setting' closed="true"  style="top:10px;width:400px;height:450px;padding:2px">
-	<form id='frmSet_<?=$controller_name?>' class='form'>
+ 
+<div id="dlgSet" name='dlgSet' class="easyui-dialog" 
+	data-options="title:'Setting'" 
+	buttons='#button_setting' closed="true"  
+	style="top:10px;width:400px;height:450px;padding:2px">
+	<form id='frmSet_<?=$controller_name?>' class='form' method='get'>
 		<?php
-		echo "Silahkan di contreng berikut ini apabila ingin mereset kolom yang tampil kesemula.
-		</br><input type='checkbox' name='ck_reset'  style='width:30px'>Reset pengaturan kolom";
+		$checked="";
+		if($this->session->userdata("row_double_click")){
+			$checked="checked";
+		}
+				echo "Silahkan contreng pengaturan berikut ini:
+		</br><input value='on' type='checkbox' name='ck_reset'  style='width:30px'>Reset pengaturan kolom
+		</br><input value='on' $checked type='checkbox' id='ck_double_click' name='ck_double_click'  style='width:30px'>Double klik baris untuk melihat detail";
 				
 		echo "</br></br>Pilihlah kolom yang ingin ditampikan, kolom nomor bukti atau primary key jangan dicontreng untuk hidden.";
 		if(isset($fields)){
@@ -227,39 +248,40 @@ if(isset($sub_controller)){
 	</div>
 </div>
 
-<div id="dlgFilter_<?=$controller_name?>"  class="easyui-dialog" data-options="title:'Filter Criteria'" 
-	closed="true" buttons="#button_filter" style="top:10px;width:600px;height:400px;padding:5px 5px">
+<div id="dlgFilter_<?=$controller_name?>"  class="easyui-dialog" 
+	data-options="title:'Filter Criteria'" 
+	closed="true" buttons="#button_filter" 
+	style="top:10px;width:600px;height:400px;padding:5px 5px">
+	
 	<div id="lb_<?=$controller_name?>" style="padding:5px;min-height:80%;" 
 		class=''>
 		<form id='frmSearch_<?=$controller_name?>' class='form'>
 			<?php
 			$i=0;
-			$s="<div class='col-xs-5'>";
+			//$s="<div class='col-sm-6'>";
+			$s="";
 			foreach($criteria as $fa){
 				$i++;
 				if($i==4){
-					$s.="</div><div class='col-xs-5'>";
+					///$s.="</div><div class='col-sm-5'>";
 				}
 				$type="text";
 				$val="";
 				if($fa->field_class=="easyui-datetimebox"){
-					$val=date("Y-m-d");
-                    $val=date('Y-m-d',strtotime("$val -1 Months"));
-					if(strpos($fa->field_id,"date_to")){
-					    $val=date("Y-m-t 23:59:59");
+                    $val=date("Y-m-d 23:59:59");
+                    $parse_date="parse_date";
+					if($fa->field_id=="date_from" || $fa->field_id=="sid_date_from" ){
+                        $val=date('Y-m-d',strtotime("$val -1 Months"));
+                        $parse_date="parse_date_no_time";
                     }
 					$s.="<div class='form-group'>";
 					$s.="&nbsp<label for='$fa->field_id'>$fa->caption</label></br>";
 					$s.="<input type='$type' value='$val' id='$fa->field_id'  
 					name='$fa->field_id' 
 					class='$fa->field_class form-control' style='width:100%' 
-					data-options='formatter:format_date,parser: ";
-					
-					if($fa->field_id=="sid_date_from"){
-						$s.="parse_date_no_time'>";					
-					} else {
-						$s.="parse_date'>";						
-					}
+					data-options='formatter:format_date,parser: $parse_date'   ";
+
+                                        
 					$s.= "</div>";
 				} else if($fa->field_class=="checkbox"){
 					$s.="<div class='form-group'>";
@@ -279,40 +301,83 @@ if(isset($sub_controller)){
 					$s.= "</div>";
 				}
 			}
-			$s."</div>";
+			//$s."</div>";
 			echo $s;
 			?>
 		</form>
 	</div>
 </div> 
+
 <div id='button_filter' class='box-gradient'>
 	<div>Silahkan isi kriteria pencarian dibawah ini:
 	<?=link_button('Filter','dlgFilter_close_'.$controller_name."();return false;",'search');?>			
 	<?=link_button('Close','dlgFilter_cancel_'.$controller_name."();return false;",'cancel');?>			
 	</div>  
 </div>
-	
+ 
+
+<?php
+if(isset($view_file)){
+    echo load_view($view_file);
+}
+?>	
 <script type="text/javascript">
     
     var xurl='<?=$url?>';
+    var with_tab=<?=$with_tab?>;
+	var filter='<?php if(isset($filter)) echo "$filter"; ?>';
+	var _request_count=0;
 
-	(function($){
+    $().ready(function (){
         $('#dg_<?=$controller_name?>').datagrid({
-            onClickRow:function(){
-                var row = $('#dg_<?=$controller_name?>').datagrid('getSelected');
-                if (row){
-                    edit_<?=$controller_name?>();
-                }       
-            }
+        	
+        	<?php if($row_double_click) { ?> 
+        		
+	            onDblClickRow:function(){
+	                var row = $('#dg_<?=$controller_name?>').datagrid('getSelected');
+	                if (row){
+	                    edit_<?=$controller_name?>();
+	                }       
+	            }
+	            
+        		
+        	<?php } else { ?>
+        		
+	            onClickRow:function(){
+	                var row = $('#dg_<?=$controller_name?>').datagrid('getSelected');
+	                if (row){
+	                    edit_<?=$controller_name?>();
+	                }       
+	            }
+	            
+        		
+        	<?php } ?>
+    
+            
         });        
 		cari_<?=$controller_name?>();
-	})(jQuery); 	 
+        //$.parser.parse();
+	}); 	 
 			
     function addnew_<?=$controller_name?>(){
+        loading();
         xurl_add=CI_ROOT+CI_CONTROL+'<?=$sub_slash?>/add';
+        if (filter != '')xurl_add=xurl_add+'?filter='+filter;
 		add_tab_parent("addnew_<?=$controller_name?>",xurl_add);
     };
     function edit_<?=$controller_name?>(){
+        loading();
+        if(with_tab){
+            edit_tab_<?=$controller_name?>();
+        } else {
+            edit_box_<?=$controller_name?>();
+        }
+        
+    }
+    function edit_box_<?=$controller_name?>(){
+       edit_<?=$controller_name?>();
+    }
+    function edit_tab_<?=$controller_name?>(){
         var row = $('#dg_<?=$controller_name?>').datagrid('getSelected');
         if (row){
             xurl_edit=CI_ROOT+CI_CONTROL+'<?=$sub_slash?>/view/'+row[FIELD_KEY];
@@ -366,8 +431,15 @@ if(isset($sub_controller)){
 		window.open(url,"_self");
 	}
     function cari_<?=$controller_name?>(){
+        loading();
     	xsearch=$('#frmSearch_<?=$controller_name?>').serialize();
 	    xurl2=xurl+'?'+xsearch;
+	    <?php
+            if(isset($filter)){
+                echo "xurl2=xurl2+'&filter=$filter';";
+            }
+        ?>
+	    
         $('#dg_<?=$controller_name?>').datagrid({url:xurl2});		
     }
     function dlgFilter_close_<?=$controller_name?>(){
@@ -378,7 +450,6 @@ if(isset($sub_controller)){
     function dlgFilter_cancel_<?=$controller_name?>(){
 		$('#dlgFilter_<?=$controller_name?>').dialog('close');		
     }
-    
     function posting_<?=$controller_name?>(){
     	xsearch=$('#frmSearch_<?=$controller_name?>').serialize();
 	    xurl_posting=CI_ROOT+CI_CONTROL+'<?=$sub_slash?>/posting_all?'+xsearch;
@@ -419,25 +490,31 @@ if(isset($sub_controller)){
     function set_cancel_<?=$controller_name?>(){
         $('#dlgSet').dialog('close');
     }
-    
     function help_<?=$controller_name?>(){
     	load_help('<?=$controller_name?>');
     }
-    
 	function export_<?=$controller_name?>(){
+	    loading();
     	xsearch=$('#frmSearch_<?=$controller_name?>').serialize();
 	    xurl_export=CI_ROOT+CI_CONTROL+'<?=$sub_slash?>/export_xls?'+xsearch;
         add_tab_parent('export_<?=$controller_name?>',xurl_export);		
 	}
 	function import_<?=$controller_name?>(){
+	    loading();
 	    xurl_import=CI_ROOT+CI_CONTROL+'<?=$sub_slash?>/import_<?=$controller_name?>';
         add_tab_parent('import_<?=$controller_name?>',xurl_import);		
 	}
 	function print_<?=$controller_name?>(){
+	    loading();
 		var row = $('#dg_<?=$controller_name?>').datagrid('getSelected');
 		if (row){
 			xurl_print=CI_ROOT+CI_CONTROL+'<?=$sub_slash?>/print_<?=$controller_name?>/'+row[FIELD_KEY];;
 			window.open(xurl_print,"_blank");		
+		} else {
+	        xurl_add=CI_ROOT+CI_CONTROL+'/rpt/list1';
+	        if (filter != '')xurl_add=xurl_add+'?filter='+filter;
+			add_tab_parent("print_"+CI_CONTROL,xurl_add);
+
 		}
 	}
 	function dlgFilter_<?=$controller_name?>_Show(){

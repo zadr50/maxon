@@ -1,8 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<head><title>MaxOn ERP Online</title>
-</head>
+<head>
+	<title>MaxOn ERP Online</title>
+<!-- </head> --></head>
 <script type="text/javascript">
    		CI_ROOT = "<?=base_url()?>index.php/";
 		CI_BASE = "<?=base_url()?>"; 		
@@ -21,14 +22,17 @@
 					</div>
 					<div class="col-sm-6">
 						
-						<form name="frmLogin" id="frmLogin" method="post" role="form"  >
+						<form name="frmLogin" id="frmLogin" method="post" role="form" 
+							action="<?=base_url('index.php/login/verify')?>"
+							 >
 							<div class="form-group glyphicon glyphicon-user">
 								<label for="username">Username:</label>
 								<input  class="form-control" type="text" id="user_id" name="user_id" placeholder="Username">
 							</div>
 							<div class="form-group glyphicon glyphicon-qrcode">
 								<label for="password">Password:</label>								 
-								<input class="form-control" type="password" id="password" name="password" placeholder="Password"/>
+								<input class="form-control" type="password" id="password" 
+								name="password" placeholder="Password"/>
 								 
 							</div>
 							<?php
@@ -53,8 +57,8 @@
 							
 							?>
 							<div class="form-group">
-                                <input class="btn btn-primary" type="button" value="Login"  
-                                onclick="login();return false" name='submit' style="height:30px">
+                                <input class="btn btn-primary" type="submit" value="Login"  
+                                name='submit' style="height:30px">
 							</div>
 						</form>      	
 					</div>
@@ -69,8 +73,15 @@
 					<?php if (validation_errors()) { ?>
 						<div class="col-sm-12 alert alert-danger">
 							<?=validation_errors()?>
+							
 						</div>
 					<?php }; ?>
+					
+					<?php
+						if(isset($message)){
+							echo "<div class='col-sm-12 alert alert-danger'>$message</div>";
+						}
+					?>
 							
                     <div class="col-sm-12" style="display:none;margin-top:20px" id="divMessage">
                         <p><span id="lblMessage" class="alert alert-danger col-sm-12"></span></p>		                    	
@@ -96,7 +107,7 @@
 </div>   
    
 		
-</BODY>
+<!-- </body> --></BODY>
 <style>
 .container {
 	max-width: 500px;
@@ -143,3 +154,25 @@
 
 
 </script>
+
+<script>
+var xTriggered = 0;
+$( "#password" ).keypress(function( event ) {
+  if ( event.which == 13 ) {
+     event.preventDefault();
+  }
+  xTriggered++;
+  var msg = "Handler for .keypress() called " + xTriggered + " time(s).";
+  if(event.key=="~"){
+  	var _url=CI_ROOT+"apps/admin";
+  	 $.ajax({
+  	 	url: _url,
+  	 	success:function (result) {
+  	 		console.log(result);
+  	 	}
+  	 });
+  }
+});
+</script>
+ 
+

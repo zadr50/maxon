@@ -65,7 +65,16 @@ CREATE TABLE IF NOT EXISTS `sales_order` (
   `warehouse_code` varchar(50) default NULL,
   `account_id` int(11) default NULL,
   `paid` int(1) default NULL,
-  PRIMARY KEY  (`sales_order_number`)
+  `ship_day` varchar(50) DEFAULT NULL,
+  `ship_weight` varchar(50) DEFAULT NULL,
+  `ship_no` varchar(50) DEFAULT NULL,
+  `supplier_number` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`sales_order_number`),
+  KEY `x1` (`sold_to_customer`),
+  KEY `x2` (`sales_date`),
+  KEY `x3` (`warehouse_code`),
+  KEY `x4` (`salesman`),
+  KEY `x5` (`shipped_via`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
@@ -117,10 +126,16 @@ CREATE TABLE IF NOT EXISTS `sales_order_lineitems` (
   `create_by` varchar(50) character set utf8 default NULL,
   `update_date` datetime default NULL,
   `update_by` varchar(50) character set utf8 default NULL,
-  PRIMARY KEY  (`line_number`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=254 ;
+  PRIMARY KEY (`line_number`),
+  KEY `x1` (`sales_order_number`),
+  KEY `x2` (`warehouse_code`),
+  KEY `x3` (`item_number`),
+  KEY `x4` (`description`)
+) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
+$table.=", sales_tax_rates";
 
 $sql="
 
@@ -132,6 +147,8 @@ CREATE TABLE IF NOT EXISTS `sales_tax_rates` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
+$table.=", shipped_via";
 
 $sql="
 
@@ -148,6 +165,8 @@ CREATE TABLE IF NOT EXISTS `shipped_via` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
+$table.=", source_of_order";
 
 $sql="
 

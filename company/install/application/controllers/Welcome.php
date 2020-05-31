@@ -111,7 +111,7 @@ private $user_pass="";
     }
 	function cek_db_process($company){		
 
-        error_reporting(0);
+        //error_reporting(0);
 
         $server=$this->server;
         $database=$company;

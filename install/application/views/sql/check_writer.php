@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS `check_writer` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$table="check_writer_deposit_detail";
+$table.=", check_writer_deposit_detail";
 $sql="
 CREATE TABLE IF NOT EXISTS `check_writer_deposit_detail` (
   `trans_id` int(11) default NULL,
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `check_writer_deposit_detail` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$table="check_writer_items";
+$table.=", check_writer_items";
 $sql="
 CREATE TABLE IF NOT EXISTS `check_writer_items` (
   `trans_id` int(11) default NULL,
@@ -86,13 +86,14 @@ CREATE TABLE IF NOT EXISTS `check_writer_items` (
   `update_date` datetime default NULL,
   `invoice_number` varchar(50) default NULL,
   `ref1` varchar(50) default NULL,
-  PRIMARY KEY  (`line_number`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+  PRIMARY KEY (`line_number`),
+  KEY `x1` (`trans_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$table="check_writer_print_settings";
+$table.=", check_writer_print_settings";
 $sql="
 CREATE TABLE IF NOT EXISTS `check_writer_print_settings` (
   `id` int(11) NOT NULL auto_increment,
@@ -112,7 +113,7 @@ CREATE TABLE IF NOT EXISTS `check_writer_print_settings` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$table="check_writer_recurring_payments";
+$table.=", check_writer_recurring_payments";
 
 $ql="
 CREATE TABLE IF NOT EXISTS `check_writer_recurring_payments` (
@@ -147,7 +148,7 @@ CREATE TABLE IF NOT EXISTS `check_writer_recurring_payment_items` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$table="check_writer_undeposited_checks";
+$table.=", check_writer_undeposited_checks";
 
 $sql="
 CREATE TABLE IF NOT EXISTS `check_writer_undeposited_checks` (

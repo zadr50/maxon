@@ -5,12 +5,8 @@
 	
 	echo link_button('Save', 'save_kontra_bon()','save');		
 	echo link_button('Print', 'print_faktur()','print');		
-	echo link_button('Add','','add','false',base_url().'index.php/po/kontra_bon/add');		
-	echo link_button('Search','','search','false',base_url().'index.php/po/kontra_bon');		
-	echo link_button('Refresh','','reload','false',base_url().'index.php/po/kontra_bon/view/'.$nomor);		
 	echo link_button('Delete', 'delete_nomor()','cut');
 ?>
-	<div style="float:right"> 
 	<a href="#" class="easyui-splitbutton" data-options="plain:false, menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
 		<div onclick="load_help('purchase_kotra_bon')">Help</div>
@@ -20,8 +16,6 @@
 		<div>About</div>
 	</div>
     <?=link_button('Close','remove_tab_parent()','cancel');  ?>    
-
-	</div>
 </div>
 
 	<form id='frmPo' method="post">
@@ -52,14 +46,15 @@
             "id=supplier_number  
             class='easyui-validatebox' data-options='required:true,
 			validType:length[3,30]'");
-			echo link_button('','dlgsuppliers_show()',"search","false"); 			   
+			echo link_button('Find','dlgsuppliers_show()',"search","false"); 			   
 			?>
             </td>
             
         </tr>	 
        <tr>
-            <td>Termin</td><td><?php echo form_dropdown('termin'
-                    ,$terms_list,$termin,"id=termin");?>
+            <td>Termin</td><td><?php echo form_input('termin',$termin,"id=termin");
+            	echo link_button("Find", "dlgterms_show();return false;","search");
+            	?>
             </td>
 
              <td>Tanggal Jth Tempo</td>
@@ -77,8 +72,8 @@
         </tr>    
        
        <tr>
-            <td>Keterangan</td><td colspan="3"><?php echo form_input('catatan'
-                    ,$catatan,'id=comments style="width:300px"');?></td>
+            <td>Keterangan</td><td colspan="4"><?php echo form_input('catatan'
+                    ,$catatan,'id=comments style="width:500px"');?></td>
        </tr>	  
 	   
    </table>
@@ -107,6 +102,7 @@
 					<th data-options="field:'tanggal',width:80">Tanggal</th>
                     <th data-options="<?=col_number('jumlah',2)?>">Jumlah</th>
                     <th data-options="<?=col_number('saldo',2)?>">Saldo</th>
+					<th data-options="field:'row_type',width:80">Type</th>
 					<th data-options="field:'id',width:30,align:'right'">Id</th>
 				</tr>
 			</thead>
@@ -120,6 +116,7 @@
 	
 <?=$lookup_suppliers?>
 <?=$lookup_receive?>
+<?=$lookup_terms?>
 
 <script type="text/javascript">
 	var url;	
@@ -130,11 +127,17 @@
         if(tanggal<min_date){
             valid_date=false;
         }
-        if(!valid_date){alert("Tanggal tidak benar ! Mungkin sudah closing !");return false;}
+        if(!valid_date){log_err("Tanggal tidak benar ! Mungkin sudah closing !");return false;}
         
-        if($('#nomor').val()==''){alert('Isi nomor kontra bon !');return false;}
-        if($('#supplier_number').val()==''){alert('Pilih kode supplier !');return false;}
-        if($('#termin').val()==''){alert('Pilih termin !');return false;}        
+        if($('#nomor').val()==''){log_err('Isi nomor kontra bon !');return false;}
+        if($('#supplier_number').val()==''){log_err('Pilih kode supplier !');return false;}
+        if($('#termin').val()==''){log_err('Pilih termin !');return false;}    
+        
+        var amount=$("#amount").val();
+        
+        if(amount=="" || amount=="0") {
+//        	log_err("Isi amount memo !");return false;
+        }   
 		url='<?=base_url()?>index.php/po/kontra_bon/save';
 
 			$('#frmPo').form('submit',{
@@ -151,7 +154,7 @@
 						$('#mode').val('view');
 						$('#dg').datagrid({url:'<?=base_url()?>index.php/po/kontra_bon/items/'+nomor+'/json'});
 						$('#dg').datagrid('reload');
-						log_msg('Data sudah tersimpan. Silahkan pilih nama barang.');
+						log_msg('Data sudah tersimpan. Silahkan pilih item faktur/retur/memo.');
 					} else {
 						log_err(result.msg);
 					}

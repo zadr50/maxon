@@ -1,13 +1,16 @@
-<?
-//var_dump($_POST);
-?>
-<?
+<?php
      $CI =& get_instance();
      $CI->load->model('company_model');
      $model=$CI->company_model->get_by_id($CI->access->cid)->row();
 	$date1= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateFrom')));
 	$date2= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateTo')));
 	$supplier= $CI->input->post('text1');
+	$category= $CI->input->post('text2');
+	$sistim= $CI->input->post('text3');
+	$outlet= $CI->input->post('text4');
+	$doc_type=$CI->input->post("text5");
+	$outlet_source=$CI->input->post("text6");
+	
 ?>
 <link href="<?php echo base_url();?>/themes/standard/style_print.css" rel="stylesheet">
 <table cellspacing="0" cellpadding="1" border="0" width='100%'> 
@@ -16,7 +19,9 @@
      </tr>
      <tr>
      	<td>
-     		Criteria: Dari Tanggal: <?=$date1?> s/d : <?=$date2?> Supplier: <?=$supplier?>
+     		Criteria: Dari Tanggal: <?=$date1?> s/d : <?=$date2?>, Supplier: <?=$supplier?>, 
+     		Outlet: <?=$outlet?>, Sistim: <?=$sistim?>, DocType: <?=$doc_type?>,
+     		Outlet Source: <?=$outlet_source?>
      	</td>
      </tr>
      <tr>
@@ -25,21 +30,28 @@
  		<thead>
  			<tr><td>Nomor PO</td><td>Tanggal</td><td>Termin</td><td>Due</td><td>Faktur</td>
  				<td>Kode Supplier</td><td>Nama Supplier</td><td>Kota</td>
- 				<td>Phone</td><td>Jumlah</td>
+ 				<td>Phone</td><td>Jumlah</td><td>Gudang</td><td>Sistim</td><td>DocType</td><td>Outlet</td>
  			</tr>
  		</thead>
  		<tbody>
-     			<?
+     			<?php
 	 		       $sql="select p.purchase_order_number,p.po_date,p.terms,p.supplier_number,
-	 		        s.supplier_name,p.amount,p.received,s.city,s.phone,p.due_date,p.po_ref   
+	 		        s.supplier_name,p.amount,p.received,s.city,s.phone,p.due_date,p.po_ref,
+	 		        p.warehouse_code,p.type_of_invoice,p.branch_code,p.doc_type   
 	                from purchase_order p
 	                left join suppliers s on s.supplier_number=p.supplier_number
 	                where p.potype='R' and p.po_date between '$date1' and '$date2'";
 					if($supplier!="")$sql.=" and p.supplier_number='$supplier'"; 
+					if($outlet!="")$sql.=" and p.warehouse_code='$outlet' ";
+					if($sistim!="")$sql.=" and p.type_of_invoice='$sistim' ";
+					if($doc_type!="")$sql.=" and p.doc_type='$doc_type' ";
+	                if($outlet_source!="")$sql.="  and p.branch_code='$outlet_source' ";
+	                
 	                $sql.=" order by p.purchase_order_number";
 			        $query=$CI->db->query($sql);
 	
 	     			$tbl="";
+					$total=0;
 	                 foreach($query->result() as $row){
 	                    $tbl.="<tr>";
 	                    $tbl.="<td>".$row->purchase_order_number."</td>";
@@ -52,9 +64,30 @@
 	                    $tbl.="<td>".$row->city."</td>";
 	                    $tbl.="<td>".$row->phone."</td>";
 	                    $tbl.="<td align='right'>".number_format($row->amount)."</td>";
+	                    $tbl.="<td>$row->warehouse_code</td>";
+	                    $tbl.="<td>$row->type_of_invoice</td>";
+	                    $tbl.="<td>$row->doc_type</td>";
+	                    $tbl.="<td>$row->branch_code</td>";
 	                    $tbl.="</tr>";
+						$total+=$row->amount;
 	               };
-				   echo $tbl;
+                    $tbl.="<tr>";
+                    $tbl.="<td><b>TOTAL</b></td>";
+                    $tbl.="<td></td>";
+                    $tbl.="<td></td>";
+                    $tbl.="<td></td>";
+                    $tbl.="<td></td>";
+                    $tbl.="<td></td>";
+                    $tbl.="<td></td>";
+                    $tbl.="<td></td>";
+                    $tbl.="<td></td>";
+                    $tbl.="<td align='right'><b>".number_format($total)."</b></td>";
+                    $tbl.="<td></td>";
+                    $tbl.="<td></td>";
+                    $tbl.="<td></td>";
+                    $tbl.="<td></td>";
+                    $tbl.="</tr>";
+   				   echo $tbl;
     			?>
      	
 

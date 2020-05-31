@@ -3,34 +3,39 @@
 class Retur_toko extends CI_Controller {
     private $limit=10;
     private $table_name='inventory_products';
-    private $receipt_type="ETC_OUT",$sql;
+    private $receipt_type="ETC_OUT";
+    private $sql="";
     private $file_view='inventory/retur_toko';
     private $primary_key='nomor_bukti';
     private $controller='retur_toko';
     private $doc_type='2';      //kode retur toko
+    private $error_message="";
     
 	function __construct()
 	{
 		parent::__construct();        
+        
         
 		if(!$this->access->is_login())redirect(base_url());
  		$this->load->helper(array('url','form','mylib_helper','browse_select'));
         $this->load->library('sysvar');
 		$this->load->library('template');
 		$this->load->library('form_validation');
+		$this->load->library('my_setting');
 		$this->load->model('inventory_products_model');
 		$this->load->model('inventory_model');
 		$this->load->model('shipping_locations_model');
 		$this->load->model('syslog_model');
         $this->load->library("list_of_values");      
         $this->sql="select distinct shipment_id,
-                format(date_received,'%Y-%m-%d) as date_received,ip.warehouse_code,
-                ip.supplier_number, ip.doc_type
+                concat(year(date_received),'-',month(date_received),'-',day(date_received)) as date_received,
+                ip.warehouse_code,
+                ip.supplier_number, ip.doc_type,ip.doc_status
                 from inventory_products ip left join inventory i
                 on ip.item_number=i.item_number
                 where receipt_type='$this->receipt_type' and doc_type='$this->doc_type'
         ";
-        
+        $this->load->model('purchase_invoice_model');
         
 	}
 	function nomor_bukti($add=false)
@@ -64,11 +69,37 @@ class Retur_toko extends CI_Controller {
                 $data['warehouse_code']=current_gudang();                
                 $data['doc_status']="OPEN";
 			}
-            
+            $data['other_doc_number']=$data['ref1'];
             $doc_status['dlgBindId']="doc_status";
             $doc_status['sysvar_lookup']='doc_status';
             $data['lookup_doc_status']=$this->list_of_values->render($doc_status);
-            
+            $dlgRetFunc="$('#other_doc_number').val(row.purchase_order_number);";
+            $data['lookup_faktur']=$this->purchase_invoice_model->lookup('','purchase_invoice',$dlgRetFunc);
+			
+            $data['lookup_gudang1']=$this->list_of_values->lookup_gudang();
+            $data['lookup_gudang2']=$this->list_of_values->render(array(
+				'dlgBindId'=>"gudang",
+				"dlgRetFunc"=>"$('#supplier_number').val(row.location_number); ",
+				'dlgCols'=>
+				array( 
+                        array("fieldname"=>"location_number","caption"=>"Kode","width"=>"80px"),
+                        array("fieldname"=>"attention_name","caption"=>"Nama Toko","width"=>"180px"),
+                        array("fieldname"=>"company_name","caption"=>"Kode Pers","width"=>"50px"),
+                        array("fieldname"=>"company","caption"=>"Perusahaan","width"=>"200px")
+                   ),
+                'show_date_range'=>false
+			));            
+			$gudang_tujuan="";
+			$s="select location_number from shipping_locations where address_type='pusat' ";
+			if($q=$this->db->query($s)){
+				if($r=$q->row()){
+					$gudang_tujuan=$r->location_number;
+				}
+			}
+			if($gudang_tujuan!="")			$data['supplier_number']=$gudang_tujuan;
+			$data['lookup_inventory']=$this->list_of_values->lookup_inventory();
+	
+			
             return $data;
 	}
 	function index()
@@ -152,10 +183,12 @@ class Retur_toko extends CI_Controller {
         $data['caption']='DAFTAR RETUR TOKO';
 		$data['controller']=$this->controller;		
 		$data['fields_caption']=array('Nomor Bukti','Tanggal',
-		'Gudang','Tujuan','Doc Type');
-		$data['fields']=array('shipment_id'
-        ,'date_received','warehouse_code',
-        'supplier_number','doc_type');
+		'Gudang','Tujuan','Doc Type','Status');
+		$data['fields']=array('shipment_id','date_received','warehouse_code',
+        'supplier_number','doc_type','doc_status');
+					
+		if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
 		$data['field_key']='shipment_id';
 		$this->load->library('search_criteria');
 		
@@ -178,6 +211,7 @@ class Retur_toko extends CI_Controller {
         }
 
 
+        
         if($no!=''){
             $sql.=" and shipment_id='".$no."'";
         } else {
@@ -191,6 +225,14 @@ class Retur_toko extends CI_Controller {
                 
             }
         }
+        
+        $sort_by=$this->my_setting->sort_by();
+        if($sort_by=='1'){
+            $sql.=" order by date_received desc";
+        } else {
+            $sql.=" order by shipment_id";
+        }
+                
         if($this->input->get("page"))$offset=$this->input->get("page");
         if($this->input->get("rows"))$limit=$this->input->get("rows");
         if($offset>0)$offset--;
@@ -201,10 +243,13 @@ class Retur_toko extends CI_Controller {
 	function delete($id){
 		if(!allow_mod2('retur_toko_delete'))return false;   
 		$id=urldecode($id);
-	 	$this->inventory_products_model->delete($id);
+	 	$ok  = $this->inventory_products_model->delete($id);
 		$this->syslog_model->add($id,"retur_toko","delete");
-
-	 	$this->browse();
+		if ($ok){
+			echo json_encode(array('success'=>true));
+		} else {
+			echo json_encode(array('msg'=>'Some errors occured.'));
+		}
 	}
 	function detail(){
 		$data['shipment_id']=isset($_GET['shipment_id'])?$_GET['shipment_id']:'';
@@ -254,12 +299,21 @@ class Retur_toko extends CI_Controller {
             $id=$this->nomor_bukti();
             $this->nomor_bukti(true);
         }
-		$line=$this->input->post("line_number");
+		$line=$this->input->post("id");
         $data['item_number']=$item_no;
-        $data['quantity_received']=$this->input->post('quantity');
-        $item=$this->inventory_model->get_by_id($data['item_number'])->row();
-       	$cost=item_cost($item_no);
+        $data['quantity_received']=$this->input->post('quantity_received');
+        $item=$this->inventory_model->get_by_id($data['item_number'])->row();		
+		$data['cost']=$this->input->post("cost");
+		$cost=0;
+		if($data['cost']>0){
+			$cost=$data['cost'];
+		}
+		if($cost==0){
+	       	$cost=item_cost($data['item_number']);
+			
+		}
         $data['cost']=$cost;
+		
         $data['unit']=$this->input->post('unit');
         $data['shipment_id']=$id;
         $data['warehouse_code']=$this->input->post('warehouse_code');
@@ -269,6 +323,9 @@ class Retur_toko extends CI_Controller {
 		$data['comments']=$this->input->post('comments');;
 		$data['supplier_number']=$this->input->post('supplier_number');
         $data['ref1']=$this->input->post('ref1');
+		if($this->input->post('other_doc_number')){
+			$data['ref1']=$this->input->post('other_doc_number');
+		}
         $data['doc_type']=$this->doc_type;
         $data['doc_status']=$this->input->post('doc_status');
         $data['supplier_number']=$this->input->post('supplier_number');
@@ -300,8 +357,7 @@ class Retur_toko extends CI_Controller {
     function print_retur_toko($nomor){
         $this->print_bukti($nomor);
     }
-    function del_item(){
-    	$id=$this->input->post('line_number');
+    function del_item($id){
         $ok=$this->inventory_products_model->delete_item($id);
 		if ($ok){
 			echo json_encode(array('success'=>true));
@@ -321,4 +377,113 @@ class Retur_toko extends CI_Controller {
 		 
 		echo datasource($sql);
 	}
+    function approve($nomor){
+        $nomor=urldecode($nomor);
+        
+        if(!allow_mod2('retur_toko_approve',true)){
+            
+            return false;        
+        }
+        $ok=$this->db->query("update inventory_products set doc_status='APPROVED' 
+            where shipment_id='$nomor'");
+        $this->add_receive_from($nomor);
+        $this->add_retur_supplier_from($nomor);    
+        if($ok){
+            echo json_encode(array("success"=>true,"msg"=>"Nomor [$nomor] berhasil di update status."));
+        } else {
+            echo json_encode(array("success"=>false,"msg"=>"Tidak bisa update status !"));
+        }
+    }
+    function add_retur_supplier_from($nomor){
+        $retval=false;
+        $nomor_target=$nomor."-R";
+        $nomor_faktur=$this->input->get("other_doc_number");
+        $sql="update inventory_products set other_doc_number='$nomor_faktur' where shipment_id='$nomor'";
+        $this->db->query($sql);
+        if($nomor_faktur==""){
+            $this->error_message.="<br>Nomor faktur tidak ditemukan !";
+            return false;
+        }
+        if(!$faktur_q=$this->purchase_invoice_model->get_by_id($nomor_faktur)){
+            $this->error_message.="<br>Nomor faktur [$nomor_faktur] tidak ditemukan !";
+            return false;            
+        }
+        if(!$faktur=$faktur_q->row()){
+            $this->error_message.="<br>Nomor faktur [$nomor_faktur] tidak ditemukan !";
+            return false;                        
+        }
+        $warehouse_code=current_gudang();
+        $amount=0;        
+        if($source=$this->inventory_products_model->get_by_id($nomor)){
+            foreach($source->result_array() as $target){
+                   
+               $nama_barang="";$hbeli=0;$unit="";$qty=0;
+               $qty=$target['quantity_received'];
+               if($qty==0)$qty=1;
+                
+               if($item_q=$this->inventory_model->get_by_id($target['item_number'])){
+                   if($item_r=$item_q->row()){
+                       $nama_barang=$item_r->description;
+                       $hbeli=$item_r->cost;
+                       if($hbeli==0)$hbeli=$item_r->cost_from_mfg;
+                       $unit=$item_r->unit_of_measure;
+                   }
+               } 
+               $po_line['purchase_order_number']=$nomor_target;
+               $po_line['item_number']=$target['item_number'];               
+               $po_line['description']=$nama_barang;
+               $po_line['price']=$hbeli;
+               $po_line['quantity']=$qty;
+               $po_line['total_price']=$po_line['price']*$po_line['quantity'];
+               $po_line['unit']=$unit;
+               $po_line['currency_code']=$faktur->currency_code;
+               $po_line['currency_rate']=$faktur->currency_rate;
+               $po_line['multi_unit']=$unit;
+               $po_line['mu_qty']=$po_line['quantity'];
+               $po_line['mu_harga']=$po_line['price'];
+               $po_line['from_line_number']=$target['id'];
+               $po_line['from_line_doc']=$target['shipment_id'];
+               $po_line['from_line_type']='retur_toko';
+               $po_line['warehouse_code']=$warehouse_code;
+               
+                 
+               $this->purchase_invoice_model->save_item($po_line);         
+               $amount+=$po_line['total_price'];
+                    
+            }
+            $po_header['purchase_order_number']=$nomor_target;
+            $po_header['po_date']=$target['date_received'];
+            $po_header['potype']='R';
+            $po_header['amount']=$amount;
+            $po_header['supplier_number']=$faktur->supplier_number;
+            $po_header['terms']=$faktur->terms;
+            $po_header['po_ref']=$nomor_faktur;
+            $po_header['saldo_invoice']=$po_header['amount'];
+            $po_header['discount']=$faktur->discount;
+            $po_header['disc_2']=$faktur->disc_2;
+            $po_header['disc_3']=$faktur->disc_3;
+            $po_header['warehouse_code']=$faktur->warehouse_code;
+            
+            $this->purchase_invoice_model->save($po_header);
+       }
+       return $retval;         
+    }
+    function add_receive_from($nomor){
+        $nomor_target=$nomor."-X";
+        if($source=$this->inventory_products_model->get_by_id($nomor)){
+            foreach($source->result_array() as $target){
+                unset($target["id"]);    
+                $target["shipment_id"]=$nomor_target;
+                $target["receipt_by"]=user_id();
+                $target["supplier_number"]=$target["warehouse_code"];
+                $target["warehouse_code"]=current_gudang();
+                $target["doc_type"]=3;
+                $target["receipt_type"]="ETC_IN";
+                $target["date_received"]=date("Y-m-d h:i:s");
+                $target["other_doc_number"]=$nomor;
+                $target["comments"]="AutoCreate from approve";
+                $this->inventory_products_model->save($target);
+            }
+        }
+    }
 }

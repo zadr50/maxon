@@ -68,6 +68,7 @@ class Ptkp extends CI_Controller {
 		$data['fields_caption']=array('Kode','Keterangan','Ptkp','Id');
 		$data['fields']=array('kode','keterangan','jumlah');
 		$data['field_key']='kode';
+        $data['fields_format_numeric']=array("jumlah");
 		$this->load->library('search_criteria');
 		
 		$faa[]=criteria("Kode","sid");

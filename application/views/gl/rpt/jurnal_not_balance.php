@@ -1,12 +1,21 @@
-<?
-//var_dump($_POST);
-?>
-<?
+<?php
      $CI =& get_instance();
      $CI->load->model('company_model');
+     $CI->load->model("periode_model");
      $model=$CI->company_model->get_by_id($CI->access->cid)->row();
-	$date1= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateFrom')));
-	$date2= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateTo')));
+     $data=$CI->input->post();
+     $periode=$data['text1'];
+     $date1="";
+     if($qprd=$CI->periode_model->get_by_id($periode)){
+         if($prd=$qprd->row()){
+            $date1= date('Y-m-d H:i:s', strtotime($prd->startdate));
+            $date2= date('Y-m-d H:i:s', strtotime($prd->enddate));
+         }
+     }
+     if($date1==""){
+         echo "<h1>Periode [$period] belum disettting !";
+         exit;
+     }
     $CI->load->model('chart_of_accounts_model');
 ?>
 <link href="<?php echo base_url();?>/themes/standard/style_print.css" rel="stylesheet">
@@ -34,7 +43,8 @@
 	     		<tbody>
      			<?
      			$sql="select gl_id,sum(debit) as z_debit,sum(credit) as z_credit
-					from gl_transactions
+					from gl_transactions g
+					where g.date between '$date1' and '$date2'
 					group by gl_id
 					having sum(debit)<>sum(credit) ";
      			$rst_gl=$CI->db->query($sql);

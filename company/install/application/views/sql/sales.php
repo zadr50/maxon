@@ -1,7 +1,7 @@
 <?php
  
 	$table="sales_order";
-
+$msg="";
 	$sql="
 
 CREATE TABLE IF NOT EXISTS `sales_order` (
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS `sales_order` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-
+$table="sales_order_lineitems";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `sales_order_lineitems` (
@@ -122,6 +122,7 @@ CREATE TABLE IF NOT EXISTS `sales_order_lineitems` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="sales_tax_rates";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `sales_tax_rates` (
@@ -133,6 +134,7 @@ CREATE TABLE IF NOT EXISTS `sales_tax_rates` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="shipped_via";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `shipped_via` (
@@ -149,6 +151,7 @@ CREATE TABLE IF NOT EXISTS `shipped_via` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="source_of_order";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `source_of_order` (

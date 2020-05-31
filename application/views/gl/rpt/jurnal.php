@@ -1,13 +1,19 @@
-<?
-//var_dump($_POST);
-?>
-<?
+<?php
      $CI =& get_instance();
      $CI->load->model('company_model');
      $model=$CI->company_model->get_by_id($CI->access->cid)->row();
 	$date1= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateFrom')));
 	$date2= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateTo')));
     $CI->load->model('chart_of_accounts_model');
+	$data=$this->input->post();
+	$periode=$data['text1'];
+	$s="select * from financial_periods where period='$periode'";
+	if($q=$this->db->query($s)){
+		if($r=$q->row()){
+			$date1=$r->startdate;
+			$date2=$r->enddate;	
+		}
+	}
 ?>
 <link href="<?php echo base_url();?>/themes/standard/style_print.css" rel="stylesheet">
 <table cellspacing="0" cellpadding="1" border="0" width='800px'> 
@@ -40,7 +46,7 @@
 	     			</tr>
 	     		</thead>
 	     		<tbody>
-     			<?
+     			<?php
      			$sql="select distinct gl_id from gl_transactions g
 	            where g.date between '$date1' and '$date2'  ";
      			$rst_gl=$CI->db->query($sql);

@@ -44,9 +44,10 @@ if(!isset($controller))$controller=base_url().'index.php/eshop_admin/items';
 				<?=my_input("Merk","manufacturer",$manufacturer,'','',$readonly)?>
 				<?=my_dropdown("Category","category",$category,$cat_list,'','')?>
 				<?=my_dropdown("Sub Category","sub_category",$sub_category,$cat_list,'','')?>
+				<?=my_checkbox("Aktif","active",$active)?>
 		  </div>
 		  <div role="tabpanel" class="tab-pane fade  " id="tab2">
-				<?=my_input("Satuan","unit_of_measure",$category,'','')?>
+				<?=my_input("Satuan","unit_of_measure",$unit_of_measure,'','')?>
 				<?=my_input("Harga Jual","retail",$retail,'','')?>
 				<?=my_input("Harga Beli","cost",$cost,'','')?>
 				<?=my_input("Berat Kg","weight",$weight,'','')?>

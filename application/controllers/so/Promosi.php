@@ -87,7 +87,7 @@ class Promosi extends CI_Controller {
 			$data['message']="Sukses.";
 		} else {
 			$data['success']=false;
-			$data['message']=mysql_error();
+			$data['message']=$this->db->error();
 		}
 		echo json_encode($data);
 	}

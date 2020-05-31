@@ -2,13 +2,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <head><title>MaxOn ERP Online Demo</title>
-	<?php
+<?php
 date_default_timezone_set("Asia/Jakarta");
 //date("Y-m-d H:i:s", mktime(date("H")-1, date("i"), date("s"), date("m"), date("d"), date("Y")));
 //echo gmdate("Y-m-d H:i:s", time()+60*60*7);
-?>
-<?
-
 echo $library_src;
 echo $script_head;
 
@@ -19,16 +16,12 @@ if(!isset($_right_menu))$_right_menu="";
 
 $sidebar_pos="right";
 $sidebar_show=$visible_right;
+if(!isset($_left_menu_caption))$_left_menu_caption='Left Menu';
+if(!isset($message))$message="";
 
-
-?>
-	
-<?
-	if(!isset($_left_menu_caption))$_left_menu_caption='Left Menu';
-	if(!isset($message))$message="";
 ?> 
 <script type="text/javascript">
-   		CI_ROOT = "<?=base_url()?>index.php/";
+   		CI_ROOT = "<?=base_url()?>pos.php/";
 		CI_BASE = "<?=base_url()?>"; 		
 </script>
 </head>

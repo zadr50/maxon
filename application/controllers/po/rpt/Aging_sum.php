@@ -17,6 +17,12 @@ class Aging_sum extends CI_Controller {
 		 $data['date_from']=date('Y-m-d 00:00:00');
 		 $data['date_to']=date('Y-m-d 23:59:59');
 		 $data['select_date']=true;
+		 
+         $data['criteria2']=true;                 
+         $data['label2']='Tampil Saldo 0 (1-Yes, 0-No)';
+         $data['text2']='0';
+         $data['output2']="text2";                 
+		 
 		$data['rpt_controller']=$this->rpt;
 		$this->template->display_form_input('criteria',$data,'');	
 	

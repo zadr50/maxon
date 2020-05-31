@@ -1,5 +1,5 @@
 <?php
-
+$msg="";
 $table="check_writer";
 $sql="
 CREATE TABLE IF NOT EXISTS `check_writer` (

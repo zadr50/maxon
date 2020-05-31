@@ -1,5 +1,5 @@
 <?php
- 
+$msg=""; 
 $table="payroll";
 $sql=" 
 CREATE TABLE jenis_tunjangan (
@@ -13,6 +13,7 @@ CREATE TABLE jenis_tunjangan (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="jenis_potongan";
 $sql=" 
 CREATE TABLE jenis_potongan (
 	kode varchar (50) character set utf8 NOT NULL ,
@@ -25,6 +26,7 @@ CREATE TABLE jenis_potongan (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="employee_type";
 $sql=" 
 
 CREATE TABLE employee_type (
@@ -34,6 +36,8 @@ CREATE TABLE employee_type (
 	PRIMARY KEY  (`kode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
+$table="employee_group";
 
 $sql=" 
 
@@ -45,6 +49,7 @@ CREATE TABLE employee_group (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="employee_status";
 $sql=" 
 
 CREATE TABLE employee_status (
@@ -55,6 +60,7 @@ CREATE TABLE employee_status (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="employee_level";
 $sql=" 
 
 CREATE TABLE employee_level (
@@ -63,6 +69,8 @@ CREATE TABLE employee_level (
 	PRIMARY KEY  (`kode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
+$table="divisions";
 
 $sql=" 
 

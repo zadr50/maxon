@@ -43,7 +43,7 @@ if($q=$CI->db->where("location_number",$po->warehouse_code)->get("shipping_locat
 	   $sql="select item_number,description,quantity,unit,discount,
 			price,total_price,disc_2,disc_3 
 				from purchase_order_lineitems i
-				where purchase_order_number='".$po_number."' order by description";
+				where purchase_order_number='".$po_number."' order by no_urut";
 		$query=$CI->db->query($sql);
 		$tbl="";
         $no=0;

@@ -9,15 +9,22 @@
  <body>
  	<div id='hd' >
 	   	<div id='hd_left'  >
-	    	<? 
+	    	<?php 
 			if( !isset($header)) $header="";
-			echo $header;
+				echo $header;
 			?> 
 	    </div>
 	    <div id='hd_right' >
 	   		<h1><?php echo $caption?></H1>
 	   	</div>
    	</div>
+        <?php 
+        if(isset($criteria)){
+            echo "<div>$criteria</div>";
+        }
+        
+        ?>
+   	
    	<div  >
    		<?php 
 		if(isset($before_print))echo load_view($before_print);

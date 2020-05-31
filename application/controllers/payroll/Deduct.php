@@ -75,12 +75,31 @@ class Deduct extends CI_Controller {
     }
     function browse_data($offset=0,$limit=10,$nama=''){
 		$sql="select t.* from hr_jenis_potongan t where 1=1";
-		$s=$this->input->get('sid_kode');		
+
+		$s=$this->input->get('sid_kode');
+		$s2="";
+		if($this->input->get('tb_search')){
+			$s2=$this->input->get('tb_search');
+		}		
 		if($s!=''){
 			$sql.=" and kode='$s'";
 		} else {
-			$s=$this->input->get('sid_nama');if($s!='')$sql.=" and t.keterangan like '$s%'";
+			$s=$this->input->get('sid_nama');
+			if($s2!=""){
+				$s=$s2;
+			}
+			if($s!='')$sql.=" and t.keterangan like '%$s%'";
 		}			
+		$sql.=" order by t.kode";
+
+		
+        if($this->input->get("page"))$offset=$this->input->get("page");
+        if($this->input->get("rows"))$limit=$this->input->get("rows");
+        
+        if($offset>0)$offset--;
+        $offset=$limit*$offset;
+        $sql.=" limit $offset,$limit";
+		
         echo datasource($sql);		
     }
       

@@ -2,12 +2,12 @@
 	<?php
 	   $min_date=$this->session->userdata("min_date","");
 	
-	echo link_button('Save', 'simpan()','save');		
+		echo link_button('Save', 'simpan()','save');		
+		
+		echo "<div style='float:right'>";
 	
-	echo "<div style='float:right'>";
-
-    echo link_button('Close','remove_tab_parent()','cancel');      
-	echo link_button('Help', "load_help('receive_po')",'help');		
+	    echo link_button('Close','remove_tab_parent()','cancel');      
+		echo link_button('Help', "load_help('receive_po')",'help');		
 	
 	
 	?>
@@ -33,9 +33,10 @@
             ?></td>
             <td>Tanggal:</td>
             <td><?=form_input('date_received',
-                    $date_received,'id=date_received class="easyui-datetimebox" required
-					data-options="formatter:format_date,parser:parse_date"
-					');?>
+                    $date_received,"id='date_received' class='easyui-datetimebox' required
+					data-options='formatter:format_date,parser:parse_date'
+					style='width:180px'
+					");?>
             </td>
 			
        </tr>
@@ -43,9 +44,8 @@
             <td>Nomor PO:</td>
             <td>
             <?
-                echo form_input('purchase_order_number',$purchase_order_number,
-                "id=purchase_order_number");
-				echo link_button('','select_po()',"search"); 
+                echo form_input('purchase_order_number',$purchase_order_number,"id=purchase_order_number");
+				echo link_button('','dlgpo_open_show();return false;',"search"); 
 				if($purchase_order_number!=""){
     				echo link_button('',"po_items('".$purchase_order_number."')",'reload',"false",'',"*bila item PO tidak tampil tekan tombol reload ini.");
 				}
@@ -54,8 +54,9 @@
 				
             </td>            
 
-            <td>Gudang:</td><td><?php echo form_dropdown('warehouse_code',
-                    $warehouse_list,$warehouse_code,'id=warehouse_code');?>
+            <td>Gudang:</td><td><?php echo form_input('warehouse_code',
+                    $warehouse_code,"id='warehouse_code'");?>
+               <?=link_button("", "dlgwarehouse_show();return false;","search")?>
             </td>
 			
        </tr>
@@ -81,9 +82,8 @@
 
 	<table id="dgRcv" class="easyui-datagrid table"  data-options="
 			iconCls: 'icon-edit',fitColumns: true,
-			singleSelect: true, toolbar: '#tbRcv',
-			url: ''
-		">
+			singleSelect: true, toolbar: '#tbRcv' 
+		" rownumbers="true" pagination="true">
 		<thead>
 			<tr>
 				<th data-options="field:'item_number',width:100">Item</th>
@@ -94,7 +94,8 @@
 				<th data-options="field:'unit',width:50">Unit</th>
 				<th data-options="field:'mu_qty',width:80">M Qty</th>
 				<th data-options="field:'multi_unit',width:80">M Unit</th>
-				<th data-options="field:'line',width:50">Line</th>
+				<th data-options="field:'no_urut',width:50">No Urut</th>
+				<th data-options="field:'line',width:80">Line</th>
 			</tr>
 		</thead>
 	</table>
@@ -113,14 +114,21 @@
 </div>
 
 
-<?
+<?php
+echo $lookup_gudang;
 echo $lookup_suppliers;
+echo $lookup_po_open;
 echo load_view('purchase/select_open_po');
 ?>
 
 <script type="text/javascript">
 	var mode='<?=$mode?>';
 	var po_number='<?=$purchase_order_number?>';
+
+	$().ready(function(){
+		void po_items(po_number);
+	});
+
     function cancel(){
         
     }
@@ -131,12 +139,17 @@ echo load_view('purchase/select_open_po');
         if(tanggal<min_date){
             valid_date=false;
         }
-        if(!valid_date){alert("Tanggal tidak benar ! Mungkin sudah closing !");return false;}
+        if(!valid_date){log_err("Tanggal tidak benar ! Mungkin sudah closing !");return false;}
+        if(!valid_qty_recv){log_err("Quantity terima tidak benar !");return false;}
         
         if($('#shipment_id').val()==''){alert('Isi dulu nomor bukti !');return false;}
         if($('#warehouse_code').val()==''){alert('Pilih kode gudang !');return false;}
         
         $('#myform').submit();
+    }
+    function valid_qty_recv(){
+    	
+    	return true;
     }
 
     function proses()
@@ -157,9 +170,6 @@ echo load_view('purchase/select_open_po');
     		
     	}
     }
-	$().ready(function(){
-		void po_items(po_number);
-	});
 	function view_po(){
 	    var po=$("#purchase_order_number").val();
 	    var url='<?=base_url("index.php/purchase_order/view/")?>';
@@ -171,11 +181,42 @@ echo load_view('purchase/select_open_po');
 	}
 	function calc_ratio(baris){
 		console.log(baris);
-		qty=$("#qty_"+baris).val();
-		ratio=$("#ratio_"+baris).val();
+		qty=c_($("#qty_"+baris).val());
+		ratio=c_($("#ratio_"+baris).val());
 		mu_qty=qty*ratio;
 		$("#mu_qty_"+baris).val(mu_qty);
 		
+	}
+	function calc_qty_recv(baris){
+		qty=c_($("#qty_"+baris).val());
+		ratio=c_($("#ratio_"+baris).val());
+		qty_sisa=c_($("#qty_sisa_"+baris).val());
+		
+		console.log("qty sisa: "+qty_sisa+", input: "+qty);
+		if(qty>qty_sisa){
+			log_err("Qty yang diinput lebih dari sisa !");
+			$("#qty_"+baris).val(qty_sisa);
+		}
+		
+	}
+	function po_open_selected(){
+		var row = $('#dgpo_open').datagrid('getSelected');
+		if (row){
+			var nomor=row.purchase_order_number;
+			$('#purchase_order_number').val(nomor);
+			$("#supplier_number").val(row.supplier_number);
+			$('#dlgSelectFaktur').dialog('close');
+	 		$("#divItem").fadeIn("slow");
+			url=CI_ROOT+"purchase_order/items_not_received/"+nomor;
+			$('#dgRcv').datagrid({url:url});
+			$("#dgRcv").datagrid("reload");
+			console.log("po_open_selected");
+		} else {
+			log_err("Pilih salah satu nomor purchase order !");
+		}
+	}
+	function dlgpo_open_find(){
+
 	}
 </script>    
 

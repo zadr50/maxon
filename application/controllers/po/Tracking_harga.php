@@ -28,17 +28,25 @@ class Tracking_harga extends CI_Controller {
         $this->template->display("purchase/tracking_harga",$data);                 
 	}
 	
-    function browse_data($offset=0,$limit=10,$nama=''){
+    function browse_data($offset=0,$limit=30,$nama=''){
 		$sql="select il.item_number,il.description,il.price,i.po_date,i.purchase_order_number,
 		i.supplier_number,s.supplier_name 
-		from purchase_order_lineitems il left join purchase_order i on i.purchase_order_number=il.purchase_order_number
-		left join suppliers s on s.supplier_number=i.supplier_number where 1=1";
+		from purchase_order_lineitems il  join purchase_order i on i.purchase_order_number=il.purchase_order_number
+		 join suppliers s on s.supplier_number=i.supplier_number where 1=1";
 		if($data=$this->input->get()){
 			if($data['supplier']!="")$sql.=" and i.supplier_number='".$data['supplier']."'";
 			if($data['item_no']!="")$sql.=" and (il.item_number='".$data['item_no']."' or il.description like '".$data['item_no']."%')";
-		} else {
-			$sql.=" limit 0";
-		}
+		} 
+		
+        if($this->input->get("page"))$offset=$this->input->get("page");
+        if($this->input->get("rows"))$limit=$this->input->get("rows");
+        
+        if($offset>0)$offset--;
+        $offset=$limit*$offset;
+        $sql.=" limit $offset,$limit";
+
+
+
         echo datasource($sql);
     }	 
 }

@@ -1,10 +1,12 @@
-<?
+<?php
      $CI =& get_instance();
      $CI->load->model('company_model');
      $model=$CI->company_model->get_by_id($CI->access->cid)->row();
 	$date1= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateFrom')));
 	$date2= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateTo')));
-    $CI->load->model('sales_order_model');
+	$salesman=$CI->input->post("text1");
+	$customer=$CI->input->post("text2");
+	$outlet=$CI->input->post("text3");
 ?>
 <link href="<?php echo base_url();?>/themes/standard/style_print.css" rel="stylesheet">
 <table cellspacing="0" cellpadding="1" border="0" width='100%'> 
@@ -13,7 +15,8 @@
      </tr>
      <tr>
      	<td>
-     		Criteria: Dari Tanggal: <?=$date1?> s/d : <?=$date2?>
+     		Criteria: Dari Tanggal: <?=$date1?> s/d : <?=$date2?>, Salesman: <?=$salesman?>, 
+     		Customer: <?=$customer?>, Outlet: <?=$outlet?>
      	</td>
      </tr>
      <tr>
@@ -26,7 +29,7 @@
 	     			</tr>
 	     		</thead>
 	     		<tbody>
-     			<?
+     			<?php
      			$sql="select i.invoice_date,i.invoice_number,i.sold_to_customer,
      			c.company,i.due_date,i.payment_terms,i.salesman,i.amount,i.sales_order_number,
 				il.item_number,il.description,il.quantity,il.unit
@@ -39,10 +42,15 @@
 				if($logged_in['flag1']!=''){
 					$sql.=" and s.salesman='".$logged_in['username']."'";
 				}
+				if($salesman!="")$sql.=" and i.salesman='$salesman'";
+				if($customer!="")$sql.=" and i.sold_to_customer='$customer'";
+				if($outlet!="")$sql.=" and il.warehouse_code='$outlet'";
 				
      			$rst_so=$CI->db->query($sql);
 				
      			$tbl="";
+				$total=0;
+				
                  foreach($rst_so->result() as $row){
                     $tbl.="<tr>";
                     $tbl.="<td>".$row->invoice_date."</td>";
@@ -55,7 +63,20 @@
                     $tbl.="<td align='right'>".number_format($row->quantity)."</td>";
                     $tbl.="<td>".$row->unit."</td>";
                     $tbl.="</tr>";
+                    $total+=$row->amount;
                };
+                $tbl.="<tr>";
+                $tbl.="<td><b>TOTAL</b></td>";
+                $tbl.="<td></td>";
+                $tbl.="<td></td>";
+                $tbl.="<td></td>";
+                $tbl.="<td></td>";
+                $tbl.="<td></td>";
+                $tbl.="<td></td>"; 
+                $tbl.="<td align='right'><b>".number_format($total)."</b></td>";
+                $tbl.="<td></td>";
+                $tbl.="</tr>";
+                              
 			   echo $tbl;
 				   				   				   
 			?>	

@@ -24,7 +24,7 @@ class Template {
 		$themes="standard";
 	//}
 	$base=base_url();
-	$versi_lib_js="3";	//ubah v1+1 apabila ada versi barunya libjs biar direload
+	$versi_lib_js="6";	//ubah v1+1 apabila ada versi barunya libjs biar direload
 
 		$this->bootstrap='
 	<link rel="stylesheet" type="text/css" href="'.base_url().'themes/'.$themes.'/style.css">
@@ -33,37 +33,38 @@ class Template {
 	$this->bootstrap_only ="<link rel='stylesheet' type='text/css' href='".base_url()."assets/bootstrap-3.3.5/css/bootstrap.css'>";
 	$this->bootstrap_only.=$this->_cjs('assets/jquery/jquery-1.11.3.min.js',true);
     $this->bootstrap_only.=$this->_cjs('assets/bootstrap-3.3.5/js/bootstrap.min.js',true);
-    $this->bootstrap_only.=$this->_cjs('js/lib.js?v='.$versi_lib_js,true);
+    $this->bootstrap_only.=$this->_cjs('js/lib.js?v=10',true);
 	
 	$this->library_src =$this->_cjs('assets/jquery/jquery-1.11.3.min.js',true);
     $this->library_src.=$this->_cjs('assets/bootstrap-3.3.5/js/bootstrap.min.js',true);
     $this->library_src.=$this->_cjs('assets/datepicker/bootstrap-datepicker.js',true);
     $this->library_src.=$this->_cjs('assets/jquery-easyui-1.4.3/jquery.easyui.min.js',true);
-    //$this->library_src.=$this->_cjs('assets/jquery-easyui-1.4.3/jquery.easyui.mobile.js',true);
+    $this->library_src.=$this->_cjs('assets/jquery-easyui-1.4.3/jquery.easyui.mobile.js',true);
     $this->library_src.=$this->_cjs('js/autocomplete/jquery.autocomplete.min.js',true);
     $this->library_src.=$this->_cjs('js/jquery.formatNumber.js',true);
-    $this->library_src.=$this->_cjs('assets/flexslider/jquery.flexslider.js',true);
+//    $this->library_src.=$this->_cjs('assets/flexslider/jquery.flexslider.js',true);
     $this->library_src.=$this->_cjs('assets/printThis-master/printThis.js',true);
-    $this->library_src.=$this->_cjs('js/lib.js?v='.$versi_lib_js,true);
-    $this->library_src.=$this->_cjs('assets/pos/lib_pos.js?v='.$versi_lib_js,true);
+    $this->library_src.=$this->_cjs('js/lib.js?v=10',true);
+    $this->library_src.=$this->_cjs('assets/pos/lib_pos.js?v=17',true);
+    $this->library_src.=$this->_cjs('js/lib_input.js?v=8',true);
     $this->library_src.=$this->_cjs('js/lib_error.js',true);
 
 
     $this->flexslider=$this->_cjs('assets/flexslider/jquery.flexslider.js',true);
 	
   /// $this->script_head=$this->_ci->jquery->_compile();
-	$this->script_head='
-	
+	$this->script_head='	
 	<link rel="stylesheet" type="text/css" href="'.base_url().'themes/'.$themes.'/style.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'js/autocomplete/jquery.autocomplete.css">
-	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/jquery-easyui-1.4.3/themes/'.$themes.'/easyui.css">
-	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/jquery-easyui-1.4.3/themes/icon.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/datepicker/datepicker.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/bootstrap-3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="'.base_url().'assets/pos/style.css">
+    <link rel="stylesheet" type="text/css" href="'.base_url().'assets/pos/style.css?v=1">
 	
 	';
-//	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/jquery-easyui-1.4.3/themes/mobile.css">
+	$this->script_head.='	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/jquery-easyui-1.4.3/themes/'.$themes.'/easyui.css">
+	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/jquery-easyui-1.4.3/themes/icon.css">';
+
+	//	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/jquery-easyui-1.4.3/themes/mobile.css">
 //	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/flexslider/flexslider.css">
 	
 	$this->jquery_easyui='
@@ -205,10 +206,16 @@ function display_main($template="",$data=null){
 	 }
  }
  function display_single($template,$data=null) {
-  	$data['library_src']=$this->library_src;
-  	$data['script_head']=$this->script_head;
 	if($template=="")$template='blank';
-	$this->_ci->load->view($template,$data);
+	if(is_ajax()){
+	  	$data['library_src']=$this->library_src;
+	  	$data['script_head']=$this->script_head;
+		$this->_ci->load->view($template,$data);		
+	} else {
+	  	$data['library_src']=$this->library_src;
+	  	$data['script_head']=$this->script_head;
+		$this->_ci->load->view($template,$data);
+	}
  }
  function display_website($template,$data=null){
   	$data['library_src']=$this->library_src;

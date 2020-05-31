@@ -9,7 +9,7 @@
 		<? echo $criteria_text; ?>
 		</form>
 	</div>
-	<?
+	<?php
 }
 
 	$s="select customer_number,company,city,phone,fax,first_name,street,salesman,current_balance
@@ -36,7 +36,7 @@
 		$i=0;
 		foreach($q->result() as $row){
 			$i++;
-			echo "<div class='info thumbnail' onclick=on_view('$row->customer_number');>";
+			echo "<div class='info-maxon thumbnail' onclick=on_view('$row->customer_number');>";
 			echo "<div class='photo'>
 					   <img src='' />
 				  </div>";

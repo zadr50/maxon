@@ -37,24 +37,29 @@ class Periode extends CI_Controller {
 		$data=data_table_post($this->table_name);
 		return $data;
 	}
+    function save()
+    {
+         $data=$this->set_defaults();
+         $this->_set_rules();
+         if ($this->form_validation->run()=== TRUE){
+            $data=$this->get_posts();
+            $data['closed']=$data['closed']=='No'?'0':'1';
+            $id=$this->periode_model->save($data);
+            $this->syslog_model->add($id,"periode","edit");
+            $success=true;
+        } else {
+            $success=false;
+        }
+        echo json_encode(array("success"=>$success,"msg"=>"Success"));
+    }
+    
 	function add()
 	{
 		if (!allow_mod2('_30031'))  exit;
 		 $data=$this->set_defaults();
 		 $this->_set_rules();
-		 if ($this->form_validation->run()=== TRUE){
-			$data=$this->get_posts();
-            $data['closed']=$data['closed']=='No'?'0':'1';
-			$id=$this->periode_model->save($data);
-            $data['message']='update success';
-            $data['mode']='view';
-			$this->syslog_model->add($id,"periode","edit");
-
-            $this->browse();
-		} else {
-			$data['mode']='add';
-            $this->template->display_form_input($this->file_view,$data,'');
-		}
+		$data['mode']='add';
+        $this->template->display_form_input($this->file_view,$data,'');
 	}
 	function update()
 	{

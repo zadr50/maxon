@@ -27,13 +27,7 @@ $sql="
 
 INSERT INTO `shipping_locations` (`location_number`, `address_type`, `attention_name`, `company_name`, `street`, `suite`, `city`, `state`, `zip`, `country`, `phone`, `fax`, `other_phone`, `comments`, `update_status`) VALUES
 ('Jakarta', 'Gudang', NULL, NULL, 'Jl. Raya Sadang', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('Jogja', 'Penyimpanan', '', '', 'JL. GARUDA KEMAYORAN', '', '', '', '', '', '', '', '', 0, 0),
-('Bekasi', 'Penyimpanan', '', NULL, '', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('Medan', 'Penyimpanan', '', '', 'Jl. Sunter 80', '', '', '', '', '', '', '', '', 0, 0),
 ('Purwakarta', 'Penyimpanan', '', NULL, '', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('Surabaya', 'Penyimpanan', '', '', 'Jl. Raya pejaten timur no. 28', '', '', '', '', '', '', '', '', 0, 0),
-('Ambon', 'Penyimpanan', '', NULL, '', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('Bali', 'Penyimpanan', 'Husni', NULL, 'Jl. Raya Sabrang', NULL, 'Bali', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 

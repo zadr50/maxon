@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `org_struct` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$table="org_struct";
+$table="user";
 
 
 
@@ -44,12 +44,12 @@ CREATE TABLE IF NOT EXISTS `user` (
   `userlevel` varchar(50) default NULL,
   `active` int(11) default '0',
   `cid` varchar(10) default NULL,
+  `branch_code` varchar(50) default NULL,
   PRIMARY KEY  (`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$table="org_struct";
 
 $sql="
 
@@ -67,7 +67,7 @@ INSERT INTO `user` (`user_id`, `username`, `password`, `path_image`, `update_sta
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$table="org_struct";
+$table.="user_group_modules";
 
 $sql="
 
@@ -85,7 +85,6 @@ CREATE TABLE IF NOT EXISTS `user_group_modules` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-$table="org_struct";
 	
 $sql="
 
@@ -158,6 +157,7 @@ INSERT INTO `user_group_modules` (`id`, `group_id`, `module_id`, `permission`, `
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 	
+$table="user_jobs";
 
 $sql="
 
@@ -195,8 +195,12 @@ CREATE TABLE IF NOT EXISTS `branch` (
   `update_status` int(11) DEFAULT NULL,
   PRIMARY KEY (`branch_code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+";
+if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-REPLACE INTO `branch` (`branch_code`, `branch_name`, `address_type`, `attention_name`, `company_name`, `street`, `suite`, `city`, `state`, `zip`, `country`, `phone`, `fax`, `other_phone`, `comments`, `update_status`) VALUES
+$sql="
+REPLACE INTO `branch` (`branch_code`, `branch_name`, `address_type`, `attention_name`, `company_name`, `street`, `suite`, `city`, `state`, `zip`, `country`, `phone`, `fax`, `other_phone`, `comments`, `update_status`) 
+VALUES
 	('KRW', 'KARAWANG', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 	('CWG', 'CAWANG', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 	('PST', 'PUSAT', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);

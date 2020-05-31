@@ -8,21 +8,10 @@ class Setting extends CI_Controller {
 	{
 		parent::__construct();
  		$this->load->helper(array('url','form'));
-                
-        $multi_company=$this->config->item('multi_company');
-       if($multi_company){
-            $company_code=$this->session->userdata("company_code","");
-            if($company_code!=""){
-               $this->db = $this->load->database($company_code, TRUE);
-           }
-       }         
-        
-        
 		$this->load->library('template_eshop');
 	}
 	function index() {	
-		$data['file']="member_view";
-		$this->view($data['file']);
+		$this->view("member_view");
 	}
 	function view($file='',$active_tab=1,$page=0) {
 		if($file==''){
@@ -31,7 +20,7 @@ class Setting extends CI_Controller {
 		}
 		$data['content']=true;
 		$data['footer']='eshop/footer';
-		$data['file']=$file;		
+		$data['file']="customers/$file";		
 		$data['active_tab']=$active_tab;
 		$data['caption']="PENGATURAN";
 		$data['customer_number']="";
@@ -58,7 +47,7 @@ class Setting extends CI_Controller {
 			$data['zip_postal_code']=$cst->zip_postal_code;
 		}
 	
-		$this->template_eshop->display("setting",$data);
+		$this->template_eshop->display("setting/setting",$data);
 	}
 
 }

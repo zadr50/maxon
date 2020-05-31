@@ -4,7 +4,7 @@ if(!defined('BASEPATH')) exit('No direct script access allowd');
 class Customer_type extends CI_Controller {
     private $limit=100;
     private $table_name='customer_type';
-    private $file_view='customer_type';
+    private $file_view='sales/customer_type';
     private $controller='customer_type';
     private $primary_key='type_id';
     private $sql="";
@@ -86,6 +86,7 @@ class Customer_type extends CI_Controller {
 
 		$this->load->model("customer_type_model");
 		$data['item_prices']=$this->customer_type_model->get_prices($id);
+		$data['lookup_inventory']=$this->list_of_values->lookup_inventory();
 		$this->template->display_form_input($this->file_view,$data);
     }
      // validation rules
@@ -118,6 +119,13 @@ class Customer_type extends CI_Controller {
         $sql=$this->sql.' where 1=1';
 		$nama=$this->input->get('nama');
 		if($nama!="")$sql .= " and type_name  like '%$nama%'";
+		
+        if($this->input->get("page"))$offset=$this->input->get("page");
+        if($this->input->get("rows"))$limit=$this->input->get("rows");
+        if($offset>0)$offset--;
+        $offset=$limit*$offset;
+        $sql.=" limit $offset,$limit";
+		
         echo datasource($sql);
     }	   
 	function delete($id){
@@ -132,23 +140,56 @@ class Customer_type extends CI_Controller {
 		$query=$this->db->query("select * from $table_name where type_name='$nomor'");
 		echo json_encode($query->row_array());
  	}	
+	function delete_item_price($id){
+		$ok=$this->db->where("id",$id)->delete("inventory_price_customers");
+		echo json_encode(array("success"=>true,"msg"=>"Data berhasil dihapus"));
+	}
 	function save_item_price()
 	{
-		$id=$this->input->get('i');
-		$data['sales_price']=$this->input->get('p');
-		$data['min_qty']=$this->input->get('q');
-		$data['disc_prc_from']=$this->input->get('d1');
-		$data['disc_prc_to']=$this->input->get('d2');
-		if($id>0){
-			$ok=$this->db->where("id",$id)->update("inventory_price_customers",$data);
-			$message="Success.";
+		if($this->input->post()){
+			$id=$this->input->post("id");
+			$data['sales_price']=$this->input->post('sales_price');
+			$data['min_qty']=$this->input->post('min_qty');
+			$data['disc_prc_from']=$this->input->post('disc_prc_from');
+			$data['disc_prc_to']=$this->input->post('disc_prc_to');			
+			$data['cust_type']=$this->input->get("cust_type");
+			$data['item_no']=$this->input->post('item_number');
+			
 		} else {
+			$id=$this->input->get('i');
+			$data['sales_price']=$this->input->get('p');
+			$data['min_qty']=$this->input->get('q');
+			$data['disc_prc_from']=$this->input->get('d1');
+			$data['disc_prc_to']=$this->input->get('d2');			
 			$data['cust_type']=$this->input->get('cust_type');
 			$data['item_no']=$this->input->get('item_no');
-			$ok=$this->db->insert("inventory_price_customers",$data);
-			$message="Error!";
 		}
+		if($id=="")$id=0;
+		$message="Data berhasil disimpan, tekan refresh bila diperlukan";
+		if($id>0){
+			$ok=$this->db->where("id",$id)->update("inventory_price_customers",$data);
+		} else {
+			$ok=$this->db->insert("inventory_price_customers",$data);
+		}
+		if(!$ok)$message="Data tidak bisa disimpan !";
 		echo json_encode(array("success"=>$ok,"msg"=>$message));
+	}
+	function browse_json($offset=0,$limit=100){
+		$sql="select i.item_number,i.description,i.retail,ipc.sales_price,
+			ipc.min_qty,ipc.disc_prc_from,ipc.disc_prc_to,ipc.id
+			from inventory i left join inventory_price_customers ipc 
+			on i.item_number=ipc.item_no";
+		if($cust_type=$this->session->userdata("cust_type_price")){
+			$sql.=" where ipc.cust_type='$cust_type' ";
+		}
+			
+        if($this->input->post("page"))$offset=$this->input->post("page");
+        if($this->input->post("rows"))$limit=$this->input->post("rows");
+        if($offset>0)$offset--;
+        $offset=$limit*$offset;
+        $sql.=" limit $offset,$limit";
+						
+		echo datasource($sql); 
 	}
 }
 ?>

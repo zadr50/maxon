@@ -97,8 +97,8 @@
 <div class="easyui-tabs" >
     <div id='divGeneral' title='Items'> 
 	<!-- LINEITEMS -->		
-		<div id='divItem' style='display:<?=$mode=="add"?"":""?>'>
-			<table id="dg" class="easyui-datagrid" width=900 
+		<div id='divItem' style='display:<?=$mode=="add"?"":""?>;  '>
+			<table id="dg" class="easyui-datagrid" width=120% height=300 
 				data-options="
 					iconCls: 'icon-edit',fitColumns:true,
 					singleSelect: true,
@@ -135,7 +135,7 @@
 <?php 
 	echo $lookup_gudang;
 	echo $lookup_gudang2;
-    echo load_view('inventory/inventory_select'); 
+	echo $lookup_inventory;
     echo load_view('inventory/input_qty'); 
     echo load_view("inventory/select_unit");
     echo load_view("inventory/inventory_select_checkbox");

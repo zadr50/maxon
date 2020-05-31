@@ -2,8 +2,10 @@
 
 class sales_dbmemo extends CI_Controller {
     private $limit=10;
-    private $sql="select kodecrdb,tanggal,docnumber,amount,keterangan,c.account, c.account_description
-     from crdb_memo cm left join chart_of_accounts c on c.id=cm.accountid where transtype='SO-DEBIT MEMO'";
+    private $sql="select kodecrdb,tanggal,docnumber,amount,
+    	cm.cust_supp, keterangan,c.account, c.account_description
+     from crdb_memo cm left join chart_of_accounts c on c.id=cm.accountid 
+     where transtype='SO-DEBIT MEMO'";
     private $controller='sales_dbmemo';
     private $primary_key='kodecrdb';
     private $file_view='sales/debit_memo';
@@ -47,8 +49,10 @@ class sales_dbmemo extends CI_Controller {
 	}
     function browse($offset=0,$limit=50,$order_column='',$order_type='asc'){
 		$data['controller']=$this->controller;
-		$data['fields_caption']=array('Nomor Bukti','Tanggal','Faktur','Jumlah','Keterangan','Kode Akun','Perkiraan');
-		$data['fields']=array('kodecrdb','tanggal','docnumber','amount','keterangan','account','account_description');
+		$data['fields_caption']=array('Nomor Bukti','Tanggal','Faktur','Jumlah','Customer',
+			'Keterangan','Kode Akun','Perkiraan');
+		$data['fields']=array('kodecrdb','tanggal','docnumber','amount','cust_supp','keterangan',
+			'account','account_description');
 					
 		if(!$data=set_show_columns($data['controller'],$data)) return false;
 			
@@ -82,12 +86,15 @@ class sales_dbmemo extends CI_Controller {
 	function add()
 	{
 		if (!allow_mod2('_30131'))  exit;
-		$data['kodecrdb']=$this->nomor_bukti();
+		$data=$this->set_defaults();
+		$data['kodecrdb']="AUTO"; //$this->nomor_bukti();
 		$data['tanggal']=date('Y-m-d');
 		$data['docnumber']='';
 		$data['amount']=0;
 		$data['keterangan']="";
+		$data['posted']=false;
 		$data['mode']='add';
+		$data['customer_number']='';
 		$this->template->display_form_input('sales/debit_memo',$data,'');			
 		
 	}
@@ -103,6 +110,7 @@ class sales_dbmemo extends CI_Controller {
 			$data['amount']=$this->input->post('amount');
 			$data['keterangan']=$this->input->post('keterangan');
 			$data['transtype']=$this->input->post('transtype');
+			$data['cust_supp']=$this->input->post('customer_number');
 			$this->crdb_model->save($data);
 			$this->nomor_bukti(true);
 			$this->syslog_model->add($data['kodecrdb'],"crdb","edit");
@@ -117,27 +125,53 @@ class sales_dbmemo extends CI_Controller {
 		 $model=$this->crdb_model->get_by_id($id)->result_array();
 		 $data=$this->set_defaults($model[0]);
 		 $data['mode']='view';
+		 
+		 $customer_number=$data['cust_supp'];
+		 $amount=0;
+		 $invoice_date="";
+		 $company="";
+		 $street="";
+		 $city="";
+		 
+		 
+		$this->load->model('invoice_model');
+		$this->load->model("customer_model");
+		
+		 if($q=$this->invoice_model->get_by_id($data['docnumber'])){
+		 	if($r=$q->row()){
+				$customer_number=$r->sold_to_customer;
+		 		$invoice_date=$r->invoice_date;
+				$amount=$r->amount;
+
+				
+		 	}	
+		 };
+		 if($q=$this->customer_model->get_by_id($customer_number)){
+		 	if($r=$q->row()){
+				$company=$r->company;
+				$street=$r->street;
+				$city=$r->city;
+			}	
+		 }
+		 
+		 $data['customer_number']=$customer_number;
+		 $data['faktur_info']=$invoice_date." Rp. ".number_format($amount);
+		 $data['customer_name']=$company;
+		 $data['customer_info']=$company." ".$street." ".$city;
+		 		 
          $this->template->display('sales/debit_memo',$data);                 
 	}
    
 	function set_defaults($record=NULL){
-            $data=data_table($this->table_name,$record);
-            $data['mode']='';
-            $data['message']='';
+		$data=data_table($this->table_name,$record);
+		$data['mode']='';
+		$data['message']='';
+		$data['customer_info']="";
+		$data['faktur_info']="";
+		$data['customer_number']="";
+		$data['lookup_customer']=$this->list_of_values->lookup_customers();
             
-            $setsupp['dlgBindId']="suppliers";
-            $setsupp['dlgRetFunc']="$('#supplier_number').val(row.supplier_number);
-            $('#supplier_name').html(row.supplier_name);
-            ";
-            $setsupp['dlgCols']=array( 
-                        array("fieldname"=>"supplier_name","caption"=>"Nama Supplier","width"=>"180px"),
-                        array("fieldname"=>"supplier_number","caption"=>"Kode","width"=>"80px"),
-                        array("fieldname"=>"first_name","caption"=>"Kontak","width"=>"50px"),
-                        array("fieldname"=>"city","caption"=>"Kota","width"=>"200px")
-                    );          
-            $data['lookup_suppliers']=$this->list_of_values->render($setsupp);
-            
-			return $data;
+		return $data;
 	}
 	
 }

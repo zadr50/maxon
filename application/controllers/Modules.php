@@ -25,14 +25,23 @@ class Modules extends CI_Controller {
 	}
 	function index()
 	{	
-		$this->modules('0');
+		$this->modules('_00000');
 	}
 	function modules($parent_id) {
 		$parent_id=urldecode($parent_id);
 		$data['parent_id']=$parent_id;
+        $data['parent_id_list']=$this->modules_model->parent_id_list();
 		$this->template->display_form_input("admin/module_list",$data);
 	}
-	function list_json(){
+  
+	function list_json($parent_id=""){
+	    $kelompok="_00000";
+        if($parent_id!="")$kelompok=$parent_id;
+	    if($this->input->get("txtKelompok")){	        
+	        $kelompok=$this->input->get("txtKelompok");
+	    }
+	    if($kelompok=="")$kelompok="_00000";
+	    $this->modules_model->parent_id=$kelompok;
 		$this->modules_model->module_list();
 	}
 	function get_posts(){
@@ -131,11 +140,25 @@ class Modules extends CI_Controller {
 		$this->load->library('search_criteria');
 		$faa[]=criteria("Nama Modul","sid_nama");
 		$data['criteria']=$faa;
+//        $data['with_tab']="false";
+//        $data['view_file']="admin/modules";
         $this->template->display_browse2($data);            
     }
     function browse_data($offset=0,$limit=100,$nama=''){
         $sql=$this->sql.' where 1=1';
-		if($this->input->get('sid_nama')!='')$sql.=" module_name like '".$this->input->get('sid_nama')."%'";
+		if($this->input->get('sid_nama')!='')$sql.=" and module_name like '".$this->input->get('sid_nama')."%'";
+        if($this->input->get('tb_search')){
+            $search=$this->input->get("tb_search");
+            $sql.=" and (module_id like '$search%' or module_name like '%$search%')";
+        }
+        
+        if($this->input->get("page"))$offset=$this->input->get("page");
+        if($this->input->get("rows"))$limit=$this->input->get("rows");
+        if($offset>0)$offset--;
+        $offset=$limit*$offset;
+        $sql.=" limit $offset,$limit";
+
+        
         echo datasource($sql);
     }	 
 	function delete($id){

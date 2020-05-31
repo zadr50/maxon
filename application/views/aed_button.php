@@ -1,4 +1,4 @@
-<div class="box-gradient">
+<div class="box-gradient" id="divToolbar">
 	<?php 
 	$help=!isset($help)?"unknown":$help;
 	$show_tool=!isset($show_tool)?true:$show_tool;
@@ -26,14 +26,15 @@
 	if($mode=="view" || $mode=="edit") {
 		if($show_tool) {
 			//if($show_edit) echo link_button('Edit','edit_aed()','edit');		
-            if($show_save) echo link_button('Save', 'save_aed()','save');   
+            if($show_save) echo link_button('Save', 'save_aed()','save','false',"" ,"","aed_button_save");   
 			if($show_print) echo link_button('Print', 'print_aed();return false;','print');		
 			if($show_refresh) echo link_button('Refresh','refresh_aed();return false;','reload');
 			if($show_delete) echo link_button('Delete', 'delete_aed();return false;','remove');		
 		}
 	} else {
 		if($show_tool) {
-			if($show_save) echo link_button('Save', 'save_aed()','save');	
+			if($show_save) echo link_button('Save', 'save_aed()','save','false',"" ,"","aed_button_save");	
+			if($show_print) echo link_button('Print', 'print_aed();return false;','print');		
 		}
 	}
 	if($show_tool) {

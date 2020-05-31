@@ -1,4 +1,4 @@
-<?
+<?php
 $CI =& get_instance();
 $CI->load->model('company_model');
 $model=$CI->company_model->get_by_id($this->access->cid)->row();
@@ -8,9 +8,9 @@ $category=$this->input->post('text1');
 $supplier=$this->input->post('text2');
 $sql="select il.item_number,s.description,s.retail,
 sum(il.quantity) as qty_sale,s.unit_of_measure as unit,
-sum(il.amount) as amount_sale,sum(il.cost) as amount_cost,
-sum(il.amount-il.cost) as profit,
-sum(il.amount-il.cost)/sum(il.amount) as profit_percent,
+sum(il.amount) as amount_sale,sum(il.cost*il.quantity) as amount_cost,
+sum(il.amount-(il.cost*il.quantity)) as profit,
+(sum(il.amount-(il.cost*il.quantity))/sum(il.amount))*100 as profit_prc,
 s.category,s.supplier_number
 from invoice i 
 left join invoice_lineitems il on il.invoice_number=i.invoice_number

@@ -13,6 +13,7 @@ class Notify extends CI_Controller {
     function process(){
         $this->load->library('alert');;
         $this->alert->process();
+		echo $this->alert->message_text();
     }
  
 }

@@ -1,7 +1,4 @@
-<?
-//var_dump($_POST);
-?>
-<?
+<?php
      $CI =& get_instance();
      $CI->load->model('company_model');
      $model=$CI->company_model->get_by_id($CI->access->cid)->row();
@@ -42,21 +39,18 @@
 	     		<table class='titem'>
 	     		<thead>
 	     			<tr>
-	     				<td>Kode Kelompok</td><td>Category</td>
-	     				<td>Sub Category</td><td>Sub Cat Name</td><td>Qty</td><td>Jumlah</td>
+	     				<td>Kode Kelompok</td><td>Category</td><td>Qty</td><td>Jumlah</td>
 	     			</tr>
 	     		</thead>
 	     		<tbody>
-     			<?
-     			$sql="select stk.category as kode,cat.category,
-     			stk.sub_category,cat2.category as sub_cat_name,
+     			<?php
+     			$sql="select stk.category as kode,cat.category, 
      			sum(il.amount) as z_amount,
      			sum(il.quantity) as z_qty
      			 from invoice i left join customers c on c.customer_number=i.sold_to_customer
      			 left join invoice_lineitems il on il.invoice_number=i.invoice_number
      			 left join inventory stk on stk.item_number=il.item_number
      			 left join inventory_categories cat on cat.kode=stk.category
-     			 left join inventory_categories_sub cat2 on cat2.parent_id=cat.kode  and cat2.kode=stk.sub_category
      			 
 	            where i.invoice_type='I' and i.invoice_date between '$date1' and '$date2'  ";
 				if($salesman!="")$sql.=" and i.salesman='".$salesman."'";
@@ -65,22 +59,31 @@
                 //if($kode_kelompok_barang!="")$sql.=" and stk.category='".$kode_kelompok_barang."'";
                 
                 
-    			$sql.=" group by stk.category,cat.category,stk.sub_category";
+    			$sql.=" group by stk.category,cat.category";
 				
                  
                 
      			$rst_so=$CI->db->query($sql);
      			$tbl="";
+     			$qty_tot=0;
+     			$amt_tot=0;
                  foreach($rst_so->result() as $row){
                     $tbl.="<tr>";
                     $tbl.="<td>".$row->kode."</td>";
                     $tbl.="<td>".$row->category."</td>";
-                    $tbl.="<td>".$row->sub_category."</td>";
-                    $tbl.="<td>".$row->sub_cat_name."</td>";
                     $tbl.="<td align='right'>".number_format($row->z_qty)."</td>";
                     $tbl.="<td align='right'>".number_format($row->z_amount,2)."</td>";
                     $tbl.="</tr>";
+                    $qty_tot+=$row->z_qty;
+                    $amt_tot+=$row->z_amount;
                };
+                    $tbl.="<tr>";
+                    $tbl.="<td><strong>TOTAL</strong></td>";
+                    $tbl.="<td></td>";
+                    $tbl.="<td align='right'><strong>".number_format($qty_tot)."</strong></td>";
+                    $tbl.="<td align='right'><strong>".number_format($amt_tot,2)."</strong></td>";
+                    $tbl.="</tr>";
+               
 			   echo $tbl;
 				   				   				   
 			?>	

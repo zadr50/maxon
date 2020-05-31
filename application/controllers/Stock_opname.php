@@ -5,7 +5,7 @@ class Stock_opname extends CI_Controller {
     private $table_name='inventory_moving';
     private $sql="select distinct ip.transfer_id,
         concat(year(date_trans),'-',month(date_trans),'-',day(date_trans)) as date_trans,
-        ip.from_location,ip.status,ip.trans_by,ip.comments
+        ip.from_location,ip.status,ip.trans_by,ip.status,ip.verify_by,ip.verify_date, ip.comments
         from inventory_moving ip
         where trans_type='opname' 
                 ";
@@ -73,6 +73,7 @@ class Stock_opname extends CI_Controller {
             $setwh['show_date_range']=false;
             $data['lookup_gudang']=$this->list_of_values->render($setwh);
             if($data['from_location']=='') $data['from_location']=$this->session->userdata('session_outlet','');          
+			$data['lookup_inventory']=$this->list_of_values->lookup_inventory();
             
             return $data;
 	}	
@@ -104,17 +105,17 @@ class Stock_opname extends CI_Controller {
 	}
 	function update()
 	{
-		 $transfer_id=$this->input->post("transfer_id");
-         $data['date_trans']=$this->input->post("date_trans");
-         $data['trans_by']=$this->input->post("trans_by");
-         $data['verify_by']=$this->input->post("verify_by");
-         $data['from_location']=$this->input->post("from_location");
-         $data['verify_date']=$this->input->post("verify_date");
-         $data['comments']=$this->input->post("comments");
-         $data['status']=$this->input->post("status");
-         $ok=$this->db->where("transfer_id",$transfer_id)->update("inventory_moving",$data);          
- 	 	redirect(base_url("stock_opname/view/$transfer_id"));		
-	}
+		$data=$this->get_posts();
+		$id=$data['transfer_id'];
+	   $ok=$this->inventory_moving_model->update_bukti($id,$data);
+	   if($ok){		 	
+		  $msg='Update Success';
+		  $this->syslog_model->add($id,"stock_opname","edit");
+	  } else {
+		  $msg='Error Update';
+	  }	  
+	   echo json_encode(array("success"=>$ok,"msg"=>$msg));
+  }
 	
 	function view($id,$message=null){
 		$id=urldecode($id);
@@ -127,8 +128,8 @@ class Stock_opname extends CI_Controller {
 	function items($nomor)
 	{
 		$nomor=urldecode($nomor);
-		$sql="select p.item_number,i.description,p.from_qty as quantity_received, 
-		p.unit,p.cost,p.id as line_number
+		$sql="select p.item_number,i.description,p.to_qty as quantity, 
+		p.unit,p.cost,p.total_amount,p.id as line_number
 		from inventory_moving p
 		left join inventory i on i.item_number=p.item_number
 		where transfer_id='$nomor'";
@@ -143,8 +144,8 @@ class Stock_opname extends CI_Controller {
 	{
         $data['caption']='DAFTAR TRANSAKSI STOCK OPNAME';
 		$data['controller']=$this->controller;		
-		$data['fields_caption']=array('Nomor Bukti','Tanggal','Gudang','Status','By','Comments');
-		$data['fields']=array('transfer_id', 'date_trans','from_location','status','trans_by','comments');
+		$data['fields_caption']=array('Nomor Bukti','Tanggal','Gudang','Status','By','Verify','Comments');
+		$data['fields']=array('transfer_id', 'date_trans','from_location','status','trans_by','verify_by','comments');
 					
 		if(!$data=set_show_columns($data['controller'],$data)) return false;
 			
@@ -193,13 +194,25 @@ class Stock_opname extends CI_Controller {
 	 
 	function delete($id){
 		$id=urldecode($id);
-	 	$this->inventory_moving_model->delete($id);
+	 	$ok = $this->inventory_moving_model->delete($id);
 		$this->syslog_model->add($id,"stock_opname","delete");
-	 	$this->browse();
+	 	echo json_encode(array("success"=>true,"message"=>"Success"));
 	}	
 	 
     function save_item(){            
-            $item_no=$this->input->post('item_number');
+			$item_no=$this->input->post('item_number');
+			$id=$this->input->post('transfer_id');
+            $gudang=$this->input->post('from_location');
+            $unit=$this->input->post('unit');
+			$doc_type=$this->input->post("doc_type");
+			if($doc_type=="")$doc_type=0;
+			$status=$this->input->post("status");
+			if($status=="")$status="OPEN";
+			$date_trans=$this->input->post('date_trans');
+			$comments=$this->input->post('comments');
+			$trans_by=$this->input->post('trans_by');
+			
+
             if($item_no==""){
                 echo json_encode(array("success"=>false,"msg"=>"Pilih kode barang !"));
                 return false;
@@ -209,8 +222,24 @@ class Stock_opname extends CI_Controller {
 			    $id=$this->nomor_bukti();
                 $this->nomor_bukti(true);
 			}
+            $gudang=$this->input->post('from_location');
+            
+            $qty_stock=0;
+            if($qitem=$this->db->query("select quantity from inventory_warehouse 
+                where item_number='$item_no' and warehouse_code='$gudang'")){
+                if($ritem=$qitem->row()){
+                    $qty_stock=$ritem->quantity;
+                }
+            }
+            $qty_adj=$this->input->post("quantity");
+            
             $data['item_number']=$item_no;
-            $data['from_qty']=$this->input->post('quantity');
+            $data['from_qty']=$qty_stock;
+			$data['to_qty']=$qty_adj;
+            $qty_stock=0;
+            $qty_adj=0;
+			$qty=$this->input->post("quantity");
+			
             $item=$this->inventory_model->get_by_id($data['item_number'])->row();
             if($item){
             	$cost=$item->cost;
@@ -221,18 +250,39 @@ class Stock_opname extends CI_Controller {
             $data['unit']=$this->input->post('unit');
             $data['transfer_id']=$id;
             $data['from_location']=$this->input->post('from_location');
-            $data['total_amount']=$data['from_qty']*$data['cost'];
+            $data['total_amount']=$qty_adj*$data['cost'];
 			$data['trans_type']='OPNAME';
 			$data['date_trans']=$this->input->post('date_trans');;
 			$data['comments']=$this->input->post('comments');;
 			$data['trans_by']=user_id();
-			$ok=$this->inventory_moving_model->save($data);
+
+			$mu_qty = $this->input->post("mu_qty");
+			
+			$data['multi_unit']=$this->input->post('multi_unit');
+			if($data['multi_unit']==$data['unit'] || $data['multi_unit']==""){
+				$mu_qty=$qty;
+			} 
+			$data['mu_qty']=$mu_qty; 
+						
+			$line=$this->input->post('id');
+			if($line==""){
+				$ok=$this->inventory_moving_model->save($data);
+			} else {
+				$ok=$this->inventory_moving_model->update($line,$data);				
+			}
+						
+			$this->db->where("transfer_id",$id)->update($this->table_name,array(
+				"doc_type"=>$doc_type,"status"=>$status,"date_trans"=>$date_trans,
+				"comments"=>$comments,"trans_by"=>$trans_by,'from_location'=>$gudang
+			));
+			
 			if ($ok){
 				echo json_encode(array('success'=>true,'transfer_id'=>$id));
 			} else {
-				echo json_encode(array("success"=>true,'transfer_id'=>$id,'msg'=>'Some errors occured.'));
+				echo json_encode(array('msg'=>'Some errors occured.'));
 			}
 	            
+            
             
             
 		}         
@@ -245,15 +295,15 @@ class Stock_opname extends CI_Controller {
 			$data['comments']=$mov->comments;
 			$data['content']=load_view('inventory/rpt/print_opname',$data);
 			$this->load->view('pdf_print',$data);
-        }
-    function del_item(){
-    	$id=$this->input->post('id');
-        $ok=$this->inventory_moving_model->delete_item($id);
-		if ($ok){
-			echo json_encode(array('success'=>true));
-		} else {
-			echo json_encode(array('msg'=>'Some errors occured.'));
 		}
-    }        
+		function del_item($id){
+			$id=urldecode($id);
+			$ok=$this->inventory_moving_model->delete_item($id);
+			if ($ok){
+				echo json_encode(array('success'=>true));
+			} else {
+				echo json_encode(array('msg'=>'Some errors occured.'));
+			}
+		}        
 
 }

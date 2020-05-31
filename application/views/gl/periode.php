@@ -1,7 +1,5 @@
 <div class="thumbnail box-gradient">
 	<?php
-	echo link_button('Add','','add','false',base_url().'index.php/periode/add');		
-	echo link_button('Search','','search','false',base_url().'index.php/periode');		
 	echo link_button('Save', 'save_periode();return false;','save');		
     if($closed=="1"){
         echo link_button('ReOpen', '','edit','false',base_url().'index.php/periode/unclosing/'.$period);       
@@ -10,7 +8,8 @@
         echo link_button('Closing', '','edit','false',base_url().'index.php/periode/closing/'.$period);     
         
     }
-	echo link_button("Refresh","","reload","false",base_url("periode/view/$period"));
+	echo link_button("Refresh","onReload();return false","reload");
+	echo link_button("Delete","onDelete();return false;","remove");
 	echo "<div style='float:right'>";
 	echo link_button('Help', 'load_help(\'periode\')','help');		
 	?>
@@ -18,7 +17,6 @@
 	<div id="mmOptions" style="width:200px;">
 		<div onclick="load_help('periode')">Help</div>
 		<div onclick="show_syslog('periode','<?=$period?>')">Log Aktifitas</div>
-
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
@@ -33,18 +31,17 @@
     <div title="General" id="box_section" style="padding:10px">
     	<?php
 		if($mode=='view'){
-			echo form_open('periode/update','id=\'myform\' name=\'myform\' class=\'form-horizontal\' role=form');
-			$disabled='disable';
+			$disabled=' readonly';
 		} else {
 			$disabled='';
-			echo form_open('periode/add','id=myform name=myform  class=form-horizontal  role=form'); 
 		}
     	?>
+    	<form name='myform' id='myform' method='POST'>
 		<table class='table' >
 			
 		<?php 
 			echo "<tr>";
-			echo my_input_td("Periode Id",'period',$period);
+			echo my_input_td("Periode Id",'period',$period,""," $disabled");
 			echo my_input_td("Periode Month",'month_name',$month_name);
 		    echo "</tr>";
 		    echo "<tr>";
@@ -135,10 +132,46 @@
     function save_periode(){
         if($('#period').val()===''){log_err('Isi dulu kode periode !');return false;};
         if($('#year_id').val()===''){log_err('Isi dulu tahun !');return false;};
-        $('#myform').submit();
+
+//            echo form_open('periode/add','id=myform name=myform  class=form-horizontal  role=form'); 
+//            echo form_open('periode/update','id=\'myform\' name=\'myform\' class=\'form-horizontal\' role=form');
+        loading();
+        url='<?=base_url()?>index.php/periode/save';
+            $('#myform').form('submit',{
+                url: url,
+                onSubmit: function(){
+                    return $(this).form('validate');
+                },
+                success: function(result){
+                    var result = eval('('+result+')');
+                    loading_close();
+                    if (result.success){
+                        log_msg(result.msg);
+                        remove_tab_parent();
+                    } else {
+                        log_err(result.msg);
+                    }
+                }
+            });
+            
+                    
     }
 	function load_help() {
 		window.parent.$("#help").load("<?=base_url()?>index.php/help/load/periode");
+	}
+	function onReload(){
+		var period=$("#period").val();
+		var url=CI_BASE+"index.php/periode/view/"+period;
+		window.open(url,"_self");
+	}
+	function onDelete(){
+		var period=$("#period").val();
+		$.messager.confirm('Confirm','Are you sure you want to remove this ?',function(r){
+		if (r){
+			var url=CI_BASE+"index.php/periode/delete/"+period;
+			window.open(url,"_self");
+		}}
+		);
 	}
 </script>
 	

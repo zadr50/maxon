@@ -70,7 +70,7 @@ class Crud extends CI_Controller {
 		if($retval){
 			echo json_encode(array("success"=>true));
 		} else {
-			echo json_encode(array("success"=>false,"msg"=>"Error ".$this->CI->db->_error_message()));
+			echo json_encode(array("success"=>false,"msg"=>"Error ".$this->db->_error_message()));
 		}
 	}
 	function delete($class_name,$id)

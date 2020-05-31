@@ -22,6 +22,11 @@ private $limit=10;
 		$this->load->library('form_validation');
 		$this->load->model('manuf/work_exec_model');
 		$this->load->model('inventory_model');
+		$this->load->model("manuf/workorder_model");
+		$this->load->model("department_model");
+		$this->load->model("manuf/person_model");
+		$this->load->model('manuf/work_order_detail_model');
+		$this->load->model('manuf/work_exec_detail_model');
 	}
 	function nomor_bukti($add=false)
 	{
@@ -47,18 +52,20 @@ private $limit=10;
         $data=data_table($this->table_name,$record);
 		$data['mode']='';
 		$data['message']='';
-		if($record==NULL)$data['work_exec_no']=$this->nomor_bukti();
+		if($record==NULL){
+			$data['work_exec_no']="AUTO";	//$this->nomor_bukti();
+			$data['wo_customer']='';
+			$data['wo_date_from']='';
+			$data['wo_date_to']='';
+			$data['wo_comment']='';
+			$data['wo_so_number']='';
+   
+		}
 		if($data['start_date']=='')$data['start_date']= date("Y-m-d H:i:s");
 		if($data['expected_date']=='')$data['expected_date']= date("Y-m-d H:i:s");						
-		 $data['wo_customer']='';
-		 $data['wo_date_from']='';
-		 $data['wo_date_to']='';
-		 $data['wo_comment']='';
-		 $data['wo_so_number']='';
-		 $this->load->model("department_model");
-		 $this->load->model("manuf/person_model");
 		$data['dept_list']=$this->department_model->lookup();
 		$data['person_list']=$this->person_model->lookup();
+		$data['workorder_lookup']=$this->workorder_model->lookup();
 		return $data;
 	}
 	function index()
@@ -76,9 +83,13 @@ private $limit=10;
 		 $this->_set_rules();
 		 if ($this->form_validation->run()=== TRUE){
 			$data=$this->get_posts();
-			$data['work_exec_number']=$this->nomor_bukti(); 
-			$this->work_exec_order_model->save($data);
-			$this->nomor_bukti(true);
+			if($data['work_exec_number']=="AUTO"){
+				$data['work_exec_number']=$this->nomor_bukti(); 
+				$this->nomor_bukti(true);
+				$this->work_exec_order_model->save($data);
+			} else {
+				$this->work_exec_order_model->update($data['work_exec_number'],$data);
+			}
 		} else {
 			$data['mode']='add';
 			$data['message']='';
@@ -88,18 +99,14 @@ private $limit=10;
 	}
 	function save()
 	{
-		$mode=$this->input->post('mode');
-		if($mode=="add"){
-	        $id=$this->nomor_bukti();
-		} else {
-			$id=$this->input->post('work_exec_no');			
-		}
 		$data=$this->input->post();
-		if(isset($data['line'])){
-			$this->save_item_wo_detail($id,$data['line'],$data['qty_exec']);
-			unset($data['line']);
-			unset($data['qty_exec']);
-		}
+		$mode=$this->input->post('mode');
+		$id=$this->input->post('work_exec_no');			
+		if($id=="AUTO"){
+			$id=$this->nomor_bukti();
+			$data['work_exec_no']=$id; 
+			$this->nomor_bukti(true);
+		}	
 		unset($data['mode']);
 		$data2['work_exec_no']=$data['work_exec_no'];
 		$data2['wo_number']=$data['wo_number'];
@@ -115,7 +122,11 @@ private $limit=10;
 			$ok=$this->work_exec_model->update($id,$data2);			
 		}
 		if ($ok){
-			if($mode=="add") $this->nomor_bukti(true);
+			if(isset($data['line'])){
+				$this->save_item_wo_detail($id,$data['line'],$data['qty_exec']);
+				unset($data['line']);
+				unset($data['qty_exec']);
+			}
 			echo json_encode(array('success'=>true,'work_exec_no'=>$id));
 		} else {
 			echo json_encode(array('msg'=>'Some errors occured.'));
@@ -134,7 +145,6 @@ private $limit=10;
 			 $data['mode']='view';
 		 }
 		 if($data['wo_number']!=''){
-			$this->load->model('manuf/workorder_model');
 			if($wo=$this->workorder_model->get_by_id($data['wo_number'])){
 				$row=$wo->row();
 				$data['wo_date_from']=$row->start_date;
@@ -204,14 +214,27 @@ private $limit=10;
 			$sql.=" and work_exec_no='".$no."'";	
 		} else {
 			if($this->input->get('sid_wo')!='')$sql.=" work_order_no = '".$this->input->get('sid_wo')."'";
-			$d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));
-			$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
-			$sql.=" and start_date between '$d1' and '$d2'";
+			$from=$this->input->get("from");
+			$to=$this->input->get("to");
+			if($from!=""){
+				$d1= date( 'Y-m-d H:i:s', strtotime($from));
+				$d2= date( 'Y-m-d H:i:s', strtotime($to));
+				$sql.=" and start_date between '$d1' and '$d2'";	
+			}
 		}
 
+        if($this->input->get("page"))$offset=$this->input->get("page");
+        if($this->input->get("rows"))$limit=$this->input->get("rows");
+        if($this->input->post("page"))$offset=$this->input->post("page");
+        if($this->input->post("rows"))$limit=$this->input->post("rows");
+        if($offset>0)$offset--;
+        $offset=$limit*$offset;
         $sql.=" limit $offset,$limit";
         echo datasource($sql);
-    }	 
+	}	 
+	function select_open(){
+		$this->browse_data();
+	}
 	function delete($id){
 		$id=urldecode($id);
 	 	$this->work_exec_model->delete($id);
@@ -252,14 +275,12 @@ private $limit=10;
 		if ($ok){
 			echo json_encode(array('success'=>true));
 		} else {
-			echo json_encode(array('msg'=>mysql_error()));
+			echo json_encode(array('msg'=>$this->db->display_error()));
 		}
     }        
 	function save_item_wo_detail($exec_no, $arLine,$arQtyExec)
 	{
 		$exec_no=urldecode($exec_no);
-		$this->load->model('manuf/work_order_detail_model');
-		$this->load->model('manuf/work_exec_detail_model');
 		for($i=0;$i<count($arLine);$i++)
 		{
 			$id=$arLine[$i];
@@ -277,7 +298,7 @@ private $limit=10;
 					$data['work_exec_no']=$exec_no;
 					$data['item_number']=$wod->item_number;
 					$data['description']=$wod->description;
-					$data['quantity']=$wod->quantity;
+					$data['quantity']=$qty;
 					$data['unit']=$wod->unit;
 					$this->work_exec_detail_model->save($data);
 				}
@@ -300,5 +321,13 @@ private $limit=10;
 		from work_exec";
 		echo datasource($s);
 	}
+	function print_bukti($nomor){
+		$nomor=urldecode($nomor);
+        $data=$this->work_exec_model->get_by_id($nomor)->row_array();
+		$data['content']=load_view('manuf/rpt/work_exec',$data);
+        $this->load->view('pdf_print',$data);                
+
+	}
+
 }
 ?>

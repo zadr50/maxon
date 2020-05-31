@@ -55,6 +55,15 @@
 		<tr><td>Status Proyek</td><td><?
 			$status_project_list=$this->sysvar->lookup('status_project');
 			echo form_dropdown('status_project',$status_project_list,$status_project);?></td></tr>
+			
+		<tr>
+			<td>Status Proyek</td>
+			<td><?=form_input("status_project",$status_project,"id='status_project' style='width:80px'")?>
+    			<?=link_button('','dlgstatus_project_show()',"search","false"); ?>	
+                <?=link_button('','dlgstatus_project_add()',"add");?>                   
+            </td>		
+		</tr>			
+			
 		<tr><td>Kelompok</td><td><? 
 			$category_project_list=$this->sysvar->lookup('group_project');
 			echo form_dropdown('category_project',$category_project_list,$category_project);?></td></tr>

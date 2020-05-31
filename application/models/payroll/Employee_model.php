@@ -43,7 +43,7 @@ function get_nama($nip){
 	}
 	function info($id){
 		if($emp=$this->get_by_id($id)->row()){
-			return $emp->nama.' '.$emp->alamat;
+			return $emp->nama.', Type: '.$emp->emptype.", Status: ".$emp->status.", Alamat: ".$emp->alamat;
 		} else {
 			return "";
 		}
@@ -70,7 +70,24 @@ function get_nama($nip){
 		$this->db->where($this->primary_key,$id);
 		return $this->db->delete($this->table_name);
 	}
-	function lookup(){
+    function lookup(){        
+        $lookup = $this->list_of_values->render(array(
+        	"dlgBindId"=>"employee","modules"=>"employee",
+        	"dlgRetFunc"=>"			
+				$('#nip').val(row.nip);
+                $('#collector').val(row.nama);
+        	",
+        	"dlgCols"=>array(
+                array("fieldname"=>"nama","caption"=>"Nama","width"=>"180px"),
+                array("fieldname"=>"nip","caption"=>"NIP","width"=>"80px")
+        	)
+        ));
+		return $lookup;
+        
+    }	
+	
+	function lookup_list(){
+		
 		$query=$this->db->query("select nip,nama from ".$this->table_name);
 		$ret=array();$ret['']='- Select -';
  		foreach ($query->result() as $row){$ret[$row->nip]=$row->nama;}		 

@@ -1,10 +1,4 @@
-
-
-
-<?
-//var_dump($_POST);
-?>
-<?
+<?php
      $CI =& get_instance();
      $CI->load->model('company_model');
      $CI->load->model("shipping_locations_model");
@@ -38,7 +32,7 @@
                 <table class='titem'>
                 <thead>
                     <tr><td>Nomor Faktur</td><td>Tanggal</td>
-                        <td>Jumlah</td>
+                        <td>Jumlah</td><td>Customer</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -54,6 +48,8 @@
                 if($outlet!="")$sql.="  and warehouse_code='$outlet'";
                 if($salesman!="")$sql.=" and salesman='$salesman'";
                 $sql.=" group by salesman";
+
+                    echo $sql;
                 
                 $qinv=$CI->db->query($sql);
                 $tbl="";
@@ -61,14 +57,17 @@
                          
                    $tbl.="<tr><td colspan=3><strong>Kasir/Sales: $rinv->salesman</strng></td></tr>";
                     
-                    $sql="select invoice_number,invoice_date,amount 
-                    from invoice i where invoice_date between '$date1' and '$date2' 
+                    $sql="select i.invoice_number,i.invoice_date,i.amount,c.company 
+                    from invoice i 
+                    left join customers c on c.customer_number=i.sold_to_customer                     
+                    where invoice_date between '$date1' and '$date2' 
                     and invoice_type='i'";
                     if($outlet!="")$sql.=" and i.warehouse_code='$outlet'";
-                    $sql.=" and salesman='$rinv->salesman'";
+                    $sql.=" and i.salesman='$rinv->salesman'";
 //                    if($text2!="")$sql.=" and i.sold_to_customer='" . $text2 . "'";
                     $sql.=" order by i.invoice_number";
                     
+					
                     $rst_so=$CI->db->query($sql);
                     
                     $z_amount=0;      
@@ -81,6 +80,7 @@
                             $tbl.="<td>".$row->invoice_number."</td>";
                             $tbl.="<td>".$row->invoice_date."</td>";
                             $tbl.="<td align='right'>".number_format($row->amount)."</td>";
+                            $tbl.="<td>".$row->company."</td>";
                             $tbl.="</tr>";
                             $z_amount=$z_amount+$row->amount;
                         }

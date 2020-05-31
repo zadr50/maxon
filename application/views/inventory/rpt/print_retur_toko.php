@@ -30,12 +30,12 @@
      	<td colspan="8">
      	<table cellpadding="3" border="1" width='100%'>
      		<thead>
-     			<tr><th>Kode Barang</th><th>Nama Barang</th><th>Qty</th>
-     			    <th>Unit</td><th>Harga Beli</th><th>No.Ref#</th>
+     			<tr><th>No</th></th><th>Kode Barang</th><th>Nama Barang</th><th>Qty</th>
+     			    <th>Unit</td><th>Harga Jual</th><th>Total</th><th>No.Ref#</th>
      			</tr>
      		</thead>
      		<tbody>
-     			<?
+     			<?php
 		       $sql="select i.item_number,s.description,i.quantity_received,i.unit,
 		          ref1,s.retail,i.cost 
 		                from inventory_products i left join inventory s on s.item_number=i.item_number
@@ -43,20 +43,25 @@
 		        $query=$CI->db->query($sql);
 
      			$tbl="";    $qty=0;     $amt=0;
+				$no=0;
                  foreach($query->result() as $row){
-                    $tbl.="<tr>";
+                 	$no++;
+                    $tbl.="<tr><td>$no</td>";
+					
                     $tbl.="<td>".$row->item_number."</td>";
                     $tbl.="<td>".$row->description."</td>";
                     $tbl.="<td align='right'>".number_format($row->quantity_received)."</td>";
                     $tbl.="<td>".$row->unit."</td>";
-                    $tbl.="<td align='right'>".number_format($row->cost)."</td>";
+                    $tbl.="<td align='right'>".number_format($row->retail)."</td>";
+                    $tbl.="<td align='right'>".number_format($row->retail*$row->quantity_received)."</td>";
                     $tbl.="<td>".$row->ref1."</td>";
                     $tbl.="</tr>";
                     $qty+=$row->quantity_received;
-                    $amt+=$row->cost*$row->quantity_received;
+                    $amt+=$row->retail*$row->quantity_received;
                 };
-                $tbl.="<tr><td><strong>Total</strong></td><td></td>
+                $tbl.="<tr><td></td><td><strong>Total</strong></td><td></td>
                     <td align='right'><strong>".number_format($qty)."</strong></td>
+                    <td></td>	
                     <td></td><td align='right'><strong>".number_format($amt)."</strong></td>
                     <td></td></tr>";
 			    echo $tbl;

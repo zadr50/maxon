@@ -8,16 +8,6 @@ class Member extends CI_Controller {
 	{
 		parent::__construct();
  		$this->load->helper(array('url','form'));
-                
-        $multi_company=$this->config->item('multi_company');
-       if($multi_company){
-            $company_code=$this->session->userdata("company_code","");
-            if($company_code!=""){
-               $this->db = $this->load->database($company_code, TRUE);
-           }
-       }         
-        
-        
 		$this->load->library('template_eshop');
 	}
 	function index() {	
@@ -29,8 +19,8 @@ class Member extends CI_Controller {
 		$data['mode']="add";
 		$data['content']=true;
 		$data['footer']='footer';
-		$data['sidebar']='category_list';
-		$this->template_eshop->display("member",$data);
+		//$data['sidebar']='category_list';
+		$this->template_eshop->display("customers/member",$data);
 	}
 	function set_default() {
 		$data['customer_number']="";
@@ -49,15 +39,24 @@ class Member extends CI_Controller {
 		$data=$this->input->post();
 		$mode=$data['mode'];
 		unset($data['mode']);
-		
+		$cust_id=$data['customer_number'];
+		$ok=false;
+		$message="";
 		if($mode=="add"){
-			$ok=$this->db->insert("customers",$data);
+			if($q=$this->db->query("select company from customers 
+				where customer_number='$cust_id' ")){
+				if($q->num_rows()){
+					$message="Tidak bisa pakai user id ini, silahkan di ganti !";
+				} else {
+					$ok=$this->db->insert("customers",$data);
+				}
+			}
 		} else {
-			$cust_id=$data['customer_number'];
 			unset($data['customer_number']);
 			$ok=$this->db->where("customer_number",$cust_id)->update("customers",$data);
 		}
-		$message="Ada kesalahan saat menyimpan data !";
+		if($message=="" ) $message="Ada kesalahan saat menyimpan data !";
+		
 		echo json_encode(array("success"=>$ok,"message"=>$message));
 	}
 }

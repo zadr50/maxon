@@ -417,6 +417,7 @@ if(!function_exists("cid")){
 }
 if(!function_exists("cidt")){
 	function cidt(){
+		return "";
         $CI =& get_instance();
      
 		$cid=$CI->access->cid();
@@ -552,13 +553,13 @@ if(!function_exists('criteria')){
 	}
 }
 if(!function_exists('link_button')){
-    function link_button($caption,$func,$icon='',$plain='false',$url='',$title=''){
+    function link_button($caption,$func,$icon='',$plain='false',$url='',$title='',$class=''){
     	if($url==''){
-	        return '<a href="#" class="easyui-linkbutton"
+	        return '<a href="#" class="easyui-linkbutton '.$class.' "
 	        data-options="iconCls:\'icon-'.$icon.'\',
 	        plain: '.$plain.'" onclick="'.$func.';return false;">'.$caption.'</a>';
 		} else {
-	        return '<a href="'.$url.'" class="easyui-linkbutton"
+	        return '<a href="'.$url.'" class="easyui-linkbutton  '.$class.'"
 	        data-options="iconCls:\'icon-'.$icon.'\',
 	        plain: '.$plain.'"  " >'.$caption.'</a>';
 		}
@@ -1457,6 +1458,111 @@ if(!function_exists('item_need_update')){
         }
      }
 }
+	if ( ! function_exists('set_show_columns')) {
+    function set_show_columns($key,$data){
+	        $CI =& get_instance();
+			$show_cols=$CI->session->userdata("cols_".$key,null);
+			
+			if($ck_reset=$CI->input->get("ck_reset")){
+				$CI->session->unset_userdata("cols_".$key);
+				$show_cols=null;
+				echo json_encode(array("success"=>true,"msg"=>"Success"));
+				return false;
+			} else if ($ck_double_click=$CI->input->get('ck_double_click')){
+				$CI->session->set_userdata("row_double_click",true);
+				echo json_encode(array("success"=>true,"msg"=>"Success"));
+				return false;
+								
+			} else {
+				$CI->session->unset_userdata("row_double_click",false);
+							
+				if($ck_cols=$CI->input->get("ck_cols")){
+					$show_cols=$ck_cols;
+					$CI->session->set_userdata("cols_".$key,$ck_cols);
+					echo json_encode(array("success"=>true,"msg"=>"Success"));
+					return false;
+				}
+				
+			}
+						
+			if($show_cols){
+				$data_tmp=null;
+				$data_tmp_caption=null;
+				$flds=$data['fields'];
+				$fldscap=$data['fields_caption'];
+				for($icols=0;$icols<count($show_cols);$icols++){
+					$fld=$show_cols[$icols];
+					for($iflds=0;$iflds<count($flds);$iflds++){
+						if($fld==$flds[$iflds]){
+							$data_tmp[$icols]=$fld;
+							$data_tmp_caption[$icols]=$fldscap[$iflds];
+							break;
+						}
+					}
+				}
+				if($data_tmp){
+					$data['fields']=$data_tmp;
+					$data['fields_caption']=$data_tmp_caption;
+				}
+			}
+			return $data;		
+		}
+	}
+if(!function_exists('customer_need_update')){
+     function customer_need_update($cust_no){
+        $CI =& get_instance();
+        $cust_no=urldecode($cust_no);
+        if($cust_no!="") {
+            if($q=$CI->db->where("cust_no",$cust_no)->get("zzz_customer_need_update")){
+                if($q->num_rows()==0){
+                    $CI->db->insert("zzz_customer_need_update",array("cust_no"=>$cust_no));
+                }
+            }
+        }
+     }
+}
+if(!function_exists('supplier_need_update')){
+     function supplier_need_update($supp_no){
+        $CI =& get_instance();
+        $supp_no=urldecode($supp_no);
+        if($supp_no!="") {
+            if($q=$CI->db->where("supp_no",$supp_no)->get("zzz_supplier_need_update")){
+                if($q->num_rows()==0){
+                    $CI->db->insert("zzz_supplier_need_update",array("supp_no"=>$supp_no));
+                }
+            }
+        }
+     }
+}
+if(!function_exists('rekening_need_update')){
+     function rekening_need_update($rek_no){
+        $CI =& get_instance();
+        $rek_no=urldecode($rek_no);
+        if($rek_no!="") {
+            if($q=$CI->db->where("rek_no",$rek_no)->get("zzz_rekening_need_update")){
+                if($q->num_rows()==0){
+                    $CI->db->insert("zzz_rekening_need_update",array("rek_no"=>$rek_no));
+                }
+            }
+        }
+     }
+}
+if(!function_exists("due_date")){
+	function due_date($tanggal,$terms){
+        $CI =& get_instance();
+		$due_date=$tanggal;
+		if($t=$CI->db->query("select days from type_of_payment 
+			where type_of_payment='$terms'")){
+			if($t=$t->row()){
+				$due_date=add_date($tanggal,$t->days);
+			}
+		}
+		return $due_date;
+		
+	}
+}
+	
+	
         
 
 }

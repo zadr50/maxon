@@ -1,13 +1,16 @@
-<div class="easyui-panel " title="IKLAN">
+<?php 
+if($this->config->item('google_ads_visible')) { 
+  $this->load->view("analyticstracking");      
+?>
 <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<!-- http://demo.maxonerp.com -->
+<!-- maxonerp -->
 <ins class="adsbygoogle"
-     style="display:block"
+     style="display:inline-block;"
      data-ad-client="ca-pub-1869511402643723"
-     data-ad-slot="8685712696"
-     data-ad-format="auto"></ins>
+     data-ad-slot="5514821899">
+</ins>
 <script>
-(adsbygoogle = window.adsbygoogle || []).push({});
+    (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
-</div>
-
+    
+<?php } ?>

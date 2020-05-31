@@ -1,4 +1,12 @@
 <?php
+/** Check folder install exist ?
+//$filename="./application/config/maxon_installed.php";
+//if(@dir("install") ) {
+//	header("location:install");
+//	exit;
+//}
+*/
+	
 /**
  * CodeIgniter
  *

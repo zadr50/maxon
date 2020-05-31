@@ -13,63 +13,63 @@
 				echo info_link_box("sekolah/siswa", "Master siswa", $img, $keterangan);
 			?>
 
-			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/sekolah/guru">
+			<div class='info-maxon thumbnail info_link' href="<?=base_url()?>index.php/sekolah/guru">
 				<div class='photo'><img src='<?=base_url()?>images/rocket.png'/></div>
 				<div class='detail'>
 					<h4>Master Guru</h4>
 				</br>Pengelolaan data master guru
 				</div>
 			</div>
-			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/sekolah/jurusan">
+			<div class='info-maxon thumbnail info_link' href="<?=base_url()?>index.php/sekolah/jurusan">
 				<div class='photo'><img src='<?=base_url()?>images/tor-icon.png'/></div>
 				<div class='detail'>
 					<h4>Master Jurusan</h4>
 				</br>Mengelola data master jurusan
 				</div>
 			</div>
-			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/sekolah/kelas">
+			<div class='info-maxon thumbnail info_link' href="<?=base_url()?>index.php/sekolah/kelas">
 				<div class='photo'><img src='<?=base_url()?>images/desktop.png'/></div>
 				<div class='detail'>
 					<h4>Master Kelas</h4>
 				</br>Mengelola data master kelas
 				</div>
 			</div>
-			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/sekolah/mata_kuliah">
+			<div class='info-maxon thumbnail info_link' href="<?=base_url()?>index.php/sekolah/mata_kuliah">
 				<div class='photo'><img src='<?=base_url()?>images/scribus.png'/></div>
 				<div class='detail'>
 					<h4>Mata Kuliah</h4>
 				</br>Mengelola data master mata kuliah
 				</div>
 			</div>
-			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/sekolah/jadwal_belajar">
+			<div class='info-maxon thumbnail info_link' href="<?=base_url()?>index.php/sekolah/jadwal_belajar">
 				<div class='photo'><img src='<?=base_url()?>images/rocket.png'/></div>
 				<div class='detail'>
 					<h4>Jadwal Belajar</h4>
 				</br>Mengelola data jadwal belajar
 				</div>
 			</div>
-			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/sekolah/setting">
+			<div class='info-maxon thumbnail info_link' href="<?=base_url()?>index.php/sekolah/setting">
 				<div class='photo'><img src='<?=base_url()?>images/ico_setting.png'/></div>
 				<div class='detail'>
 					<h4>Setting</h4>
 				</br>Data setting dan pengaturan sekolah
 				</div>
 			</div>
-			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/sekolah/krs">
+			<div class='info-maxon thumbnail info_link' href="<?=base_url()?>index.php/sekolah/krs">
 				<div class='photo'><img src='<?=base_url()?>images/ico_setting.png'/></div>
 				<div class='detail'>
 					<h4>Data Master KRS</h4>
 				</br>Mengelola data master KRS
 				</div>
 			</div>
-			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/sekolah/khs">
+			<div class='info-maxon thumbnail info_link' href="<?=base_url()?>index.php/sekolah/khs">
 				<div class='photo'><img src='<?=base_url()?>images/ico_setting.png'/></div>
 				<div class='detail'>
 					<h4>Data Master KHS</h4>
 				</br>Mengelola Data master KHS
 				</div>
 			</div>
-			<div class='info thumbnail info_link' href="<?=base_url()?>index.php/sekolah/laporan">
+			<div class='info-maxon thumbnail info_link' href="<?=base_url()?>index.php/sekolah/laporan">
 				<div class='photo'><img src='<?=base_url()?>images/ico_setting.png'/></div>
 				<div class='detail'>
 					<h4>Daftar Laporan</h4>

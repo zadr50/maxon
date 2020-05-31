@@ -1,6 +1,7 @@
 <?php 
 echo $this->list_of_values->render(array(
     "dlgBindId"=>"chart_of_accounts",
+    "dlgBeforeLookup"=>"",
     "dlgColsData"=>array("account","account_description","group_id","id"),
     "dlgRetFunc"=>"
         $('#'+idd).val(row.account+' - '+row.account_description);        

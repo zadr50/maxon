@@ -4,7 +4,7 @@ class Employee extends CI_Controller {
     private $limit=10;
     private $offset=0;
     private $table_name='employee';
-	private $sql="select nip,nama,dept from employee ";
+	private $sql="select * from employee ";
 
 	function __construct()
 	{
@@ -103,8 +103,12 @@ class Employee extends CI_Controller {
 	function browse($offset=0,$limit=10,$order_column='company',$order_type='asc')	{
         $data['caption']='DAFTAR MASTER PEGAWAI';
 		$data['controller']='payroll/employee';		
-		$data['fields_caption']=array('Kode','Nama Pegawai','Dept','Divisi','Jabatan','Kelompok','Lokasi');
-		$data['fields']=array('nip','nama','dept','divisi','position','emptype','location');
+		$data['fields_caption']=array('Kode','Nama Pegawai','Dept','Divisi','Jabatan',
+			'Kelompok','Lokasi','Status','Id Mesin','Npwp','Bank','Rekening','L/P',
+			'Tgl Masuk','Cuti','Telpon','Hp','Alamat','Agama');
+		$data['fields']=array('nip','nama','dept','divisi','position',
+			'emptype','location','status','nip_id','npwp','bank_name','account','kelamin',
+			'hireddate','sisa_cuti','telpon','hp','alamat','agama');
 		$data['field_key']='nip';
 		$this->load->library('search_criteria');
 		
@@ -121,7 +125,7 @@ class Employee extends CI_Controller {
     }
     function browse_data($offset=0,$limit=10,$nama=''){
         
-		$sql="select nip,nama,dept,divisi,position,emptype,location from employee where 1=1";
+		$sql="select * from employee where 1=1";
 		$s=$this->input->get('sid');		
 		if($s!=''){
 			$sql.=" and nip='$s'";
@@ -137,7 +141,7 @@ class Employee extends CI_Controller {
         if(!is_numeric($offset))$search=$offset;
         if($search!="")$sql.=" and (nip='$search' or nama like '%$search%')";
         
-        $sql.=" order by nama";
+        $sql.=" order by nip";
         
 
         if($this->input->get("page"))$offset=$this->input->get("page");
@@ -162,12 +166,63 @@ class Employee extends CI_Controller {
 		order by nama limit 100";
 		echo datasource($sql);
 	}
-	function find($nip=""){
+	function find($nip="",$period_id=""){
 		$nip=urldecode($nip);
-		$sql="select nama,nip,dept,divisi,emptype,nip_id	from employee";
+		$sql="select nama,nip,dept,divisi,emptype,nip_id,gp,tjabatan	from employee";
 		if($nip!="")$sql.=" where nip='$nip'";
 		$query=$this->db->query($sql);	
-		echo json_encode($query->row_array());
+		$data=null;
+		$ot1=0;
+		$ot2=0;
+		$ot_jumlah=0;
+		$data['success']=false;
+		if($query){
+			$data=$query->row_array();
+			if($data['gp']=="" || $data['gp']==0){
+				$salary_no="";
+				$s="select pay_no from hr_paycheck where employee_id='$nip' and pay_period='$period_id' ";
+				if($q=$this->db->query($s)){
+					if($r=$q->row()){
+						$salary_no=$r->pay_no;
+					}
+				}
+				$gp=0;	//gaji harian
+				$s="select org_value from hr_paycheck_sal_comp where pay_no='$salary_no' 
+					and  salary_com_code='GPHARI'";
+				if($q=$this->db->query($s)){
+					if($r=$q->row()){
+						$gp=$r->org_value;
+					}
+				}
+				$data['gp']=$gp;
+			}
+			$tul=round(($data['gp']+$data['tjabatan'])/173);
+			$data["tarip_upah_lembur"]=$tul;
+			$data["tarif"]=$tul;
+			$data['success']=true;
+			if($period_id!=""){
+				$this->load->model('payroll/periode_model');
+				$prd=$this->periode_model->get_by_id($period_id)->row();
+				$s="select sum(ttc_1x*$tul) as ot1,
+					sum((ttc_2x+ttc_3x+ttc_4x)*$tul) as ot2,sum(amount) as amt 
+					from overtime_detail where nip='$nip' 
+					and tanggal between '$prd->from_date' and '$prd->to_date' 
+					";
+				if($qot=$this->db->query($s)){
+					if($r=$qot->row()){
+						$ot1=$r->ot1;
+						$ot2=$r->ot2;
+						$ot_jumlah=$r->amt;
+					}
+				}	
+					
+			}
+		}
+		$data['lembur_jam1']=$ot1;
+		$data['lembur_jam2']=$ot2;
+		$data['lembur_jumlah']=$ot_jumlah;
+		
+		echo json_encode($data);
 	}
 	function find2($nip=""){
 		$nip=urldecode($nip);

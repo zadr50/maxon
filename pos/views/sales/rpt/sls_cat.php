@@ -1,7 +1,4 @@
-<?
-//var_dump($_POST);
-?>
-<?
+<?php
      $CI =& get_instance();
      $CI->load->model('company_model');
      $CI->load->model("shipping_locations_model");
@@ -58,17 +55,19 @@
 	     		<table class='titem'>
 	     		<thead>
 	     			<tr>
-	     				<td>Kode Kelompok</td><td>Nama Kelompok Barang</td><td align=right>Qty</td><td align=right>Amount</td> 
+	     				<td>Kode Kelompok</td><td>Nama Kelompok Barang</td><td align=right>Qty</td>
+	     				<td align=right>Discount</td> 
+	     				<td align=right>Amount</td> 
 	     			</tr>
 	     		</thead>
 	     		<tbody>
      			<?php
      			$sql="select stk.category as kode,cat.category,sum(il.amount) as z_amount,
-     			sum(il.quantity) as z_qty
+     			sum(il.quantity) as z_qty,sum(il.discount_amount) as disc_amount
      			 from invoice i left join customers c on c.customer_number=i.sold_to_customer
-     			 left join invoice_lineitems il on il.invoice_number=i.invoice_number
-     			 left join inventory stk on stk.item_number=il.item_number
-     			 left join inventory_categories cat on cat.kode=stk.category
+     			 join invoice_lineitems il on il.invoice_number=i.invoice_number
+     			 join inventory stk on stk.item_number=il.item_number
+     			 join inventory_categories cat on cat.kode=stk.category
 	            where i.invoice_type='I' and i.invoice_date between '$date1' and '$date2'";
                 if($outlet!="")$sql.=" and il.warehouse_code='$outlet'  ";
 				if($kode_kelompok_barang!="")$sql.=" and stk.category='".$kode_kelompok_barang."'";
@@ -85,7 +84,7 @@
                     $tbl.="</tr>";
 
                     $sql="select il.item_number,il.description,sum(il.amount) as z_amount,
-                    sum(il.quantity) as z_qty
+                    sum(il.quantity) as z_qty,sum(il.discount_amount) as disc_amount
                      from invoice i left join customers c on c.customer_number=i.sold_to_customer
                      left join invoice_lineitems il on il.invoice_number=i.invoice_number
                      left join inventory stk on stk.item_number=il.item_number
@@ -97,22 +96,28 @@
                                         
                     $z_qty=0;
                     $z_amt=0;
+                    $z_disc=0;
+                                        
                     if($qitem=$CI->db->query($sql)){
                     foreach($qitem->result() as $ritem){
                         $tbl.="<tr>";
                         $tbl.="<td>$ritem->item_number</td>";
                         $tbl.="<td>$ritem->description</td>";
                         $tbl.="<td align='right'>".number_format($ritem->z_qty)."</td>";
+                        $tbl.="<td align='right'>".number_format($ritem->disc_amount)."</td>";
                         $tbl.="<td align='right'>".number_format($ritem->z_amount)."</td>";
                         $tbl.="</tr>";
                         $z_qty+=$ritem->z_qty;
                         $z_amt+=$ritem->z_amount;
+                        $z_disc+=$ritem->disc_amount;
+						
                     }    
                     }
                     
                     $tbl.="<tr>";
                     $tbl.="<td colspan=2><strong>Sub Total: $row->kode - $row->category</strong></td>";
                     $tbl.="<td align='right'><strong>".number_format($z_qty)."</strong></td>";
+                    $tbl.="<td align='right'><strong>".number_format($z_disc)."</strong></td>";
                     $tbl.="<td align='right'><strong>".number_format($z_amt)."</strong></td>";
                     $tbl.="</tr>";
                                         

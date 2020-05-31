@@ -12,13 +12,13 @@ class Sales_order extends CI_Controller {
     private $controller='sales_order';
     private $primary_key='sales_order_number';
     private $file_view='sales/sales_order';
-    private $table_name='sales_order';
+	private $table_name='sales_order';
+	private $data_item=null;
+
 	function __construct()
 	{
 		parent::__construct();        
-       
-        
-		if(!$this->access->is_login())redirect(base_url());
+		//if(!$this->access->is_login())redirect(base_url());
  		$this->load->helper(array('url','form','browse_select','mylib_helper'));
         $this->load->library('sysvar');
         $this->load->library('javascript');
@@ -155,7 +155,8 @@ class Sales_order extends CI_Controller {
 		}        
 	}
 	function save()	{ 
-        $data=$this->input->post();
+		$data=$this->input->post();
+		if(isset($data['sales_date']))$data['sales_date']=date_sql($data['sales_date']);
         $mode=$data['mode'];
         $id=$data['sales_order_number'];           
 		if($mode=="add" || $id=="AUTO"){
@@ -163,9 +164,9 @@ class Sales_order extends CI_Controller {
 		} 
 		 
 		$data['sales_order_number']=$id;
-		$data['delivered']=$data['delivered'];
-		$data['discount']=$data['disc_total_percent']; 
-		$data['amount']=$data['total']; 
+		if(isset($data['delivered']))$data['delivered']=$data['delivered'];
+		if(isset($data['disc_total_percent']))$data['discount']=$data['disc_total_percent']; 
+		if(isset($data['total']))$data['amount']=$data['total']; 
 		unset($data['mode']);
 		unset($data['sub_total']);
 		unset($data['disc_total_percent']);
@@ -220,22 +221,46 @@ class Sales_order extends CI_Controller {
 	}
 	function view($id,$message=null){
 		if (!allow_mod2('_30050'))  exit;
+		$ajax=false;
+		if($this->input->get('json')!=""){
+			$ajax=true;
+		}
 		$id=urldecode($id);
 		$this->sales_order_model->recalc_ship_qty($id);
+
 		 $data['id']=$id;
 		 $model=$this->sales_order_model->get_by_id($id)->row();
 		 $data=$this->set_defaults($model);
 		 $data['mode']='view';
-         $data['message']=$message;
-         $data['customer_list']=$this->customer_model->select_list();  
-         $data['customer_info']=$this->customer_model->info($data['sold_to_customer']);
-		 $data['salesman_list']=$this->salesman_model->select_list();
-		 $data['cust_type']=$this->customer_model->customer_type($data['sold_to_customer']);
-         $menu='sales/menu_sales_order';
-		 $this->session->set_userdata('_right_menu',$menu);
-         $this->session->set_userdata('sales_order_number',$id);
-         $data['payment_terms_list']=$this->type_of_payment_model->select_list();
-		 $this->template->display_form_input($this->file_view,$data,'');			
+		 $data['message']=$message;
+		 $data['customer_info']=$this->customer_model->info($data['sold_to_customer']);
+
+		 if($ajax){			 
+			unset($data['lookup_company_name']);
+			unset($data['lookup_gudang']);
+			unset($data['lookup_salesman']);
+			unset($data['lookup_payment_terms']);
+			unset($data['lookup_customers']);
+			unset($data['lookup_inventory']);
+
+			$items=$this->items($id,'',true);
+			$data['items']=$items;
+			$data['sub_total']=$this->db->query("select sum(amount) zamt  
+				from sales_order_lineitems where sales_order_number='$id'")->row()->zamt;
+
+			echo json_encode($data);
+		 } else {
+			$data['customer_list']=$this->customer_model->select_list();  
+			$data['salesman_list']=$this->salesman_model->select_list();
+			$data['cust_type']=$this->customer_model->customer_type($data['sold_to_customer']);
+			$menu='sales/menu_sales_order';
+			$this->session->set_userdata('_right_menu',$menu);
+			$this->session->set_userdata('sales_order_number',$id);
+			$data['payment_terms_list']=$this->type_of_payment_model->select_list();
+			   
+			$this->template->display_form_input($this->file_view,$data,'');		
+		 }
+
 	}
    
 	function _set_rules(){	
@@ -293,7 +318,7 @@ class Sales_order extends CI_Controller {
 		
 		$d1= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_from')));
 		$d2= date( 'Y-m-d H:i:s', strtotime($this->input->get('sid_date_to')));
-        if($d1<'2000-01-01')$d1=date("Y-m-d");        
+        if($d1<'2000-01-01')$d1=date("Y-m-1");        
         if($d2<'2000-01-01')$d2=date("Y-m-d H:i:s");        
         
         $sql=$this->sql." where 1=1";
@@ -311,6 +336,14 @@ class Sales_order extends CI_Controller {
 		if ($salesman!="") $sql.=" and salesman='$salesman'";
 		if ($delivered!="") $sql.=" and delivered=$delivered";
 		if(lock_report_salesman())$sql.=" and i.salesman='".current_salesman()."'";
+
+		if($cust_no=$this->input->get("sid_cust_no")){
+			$sql.=" and i.sold_to_customer='$cust_no'";
+		}
+
+		if($order_by = $this->input->get("order_by")){
+			$sql.=" order by $order_by";
+		}
         //$sql.=" limit $offset,$limit";
 		//echo $sql;
 		//get script end time
@@ -368,16 +401,21 @@ class Sales_order extends CI_Controller {
             where sales_order_number='$nomor'";
             echo browse_simple($sql);
     }
-	function items($nomor,$type='')
+	function items($nomor,$type='',$no_echo=false)
 	{
 		$nomor=urldecode($nomor);
 		$sql="select p.item_number,p.description,p.quantity 
 		,p.unit,p.price,p.discount,p.amount,p.line_number,p.ship_qty,p.ship_date
-		,p.disc_2,p.disc_3,p.multi_unit,p.mu_qty,p.mu_harga
+		,p.disc_2,p.disc_3,p.multi_unit,p.mu_qty,p.mu_harga,p.no_urut,
+		p.warehouse_code
 		from sales_order_lineitems p
 		left join inventory i on i.item_number=p.item_number
 		where sales_order_number='$nomor'";
-		echo datasource($sql);
+		if($no_echo) {
+			return datasource($sql); 
+		} else {
+			echo datasource($sql);
+		}
 	}
     function add_item(){
     	$nomor=$this->input->get('sales_order_number');            
@@ -395,13 +433,31 @@ class Sales_order extends CI_Controller {
 		$this->load->model('inventory_prices_model');
 		$this->load->model("sales_order_lineitems_model");
 		$this->load->model("sales/promosi_model");
+
+
 		$id=$this->input->post('line_number');
 		if($id!='')$data['line_number']=$id;		
         $item_no=$this->input->post('item_number');
 		$so=$this->input->post('so_number');
+		if($so==""){
+			$so=$this->input->post("sales_order_number");
+		}
+		if($so=="null")$so="";
+		$cmd=$this->input->post("cmd");
+		if($cmd=="add_cart"){
+			if($so==""){
+				$so=$this->nomor_bukti();
+				$this->nomor_bukti(true);
+			}
+		}
+
         $data['sales_order_number']=$so;
-        $data['item_number']=$item_no;
-        $unit=$this->input->post('unit');
+		$data['item_number']=$item_no;
+		$data['description']=$this->input->post('description');
+		$unit=$this->input->post('unit');
+		if($unit==""){
+			$unit=$this->input->post("unit_of_measure");
+		}
 		$cost=$this->input->post('cost');
 		if($cost=="")$cost=0;
         $item=$this->inventory_model->get_by_id($data['item_number'])->row();
@@ -412,8 +468,13 @@ class Sales_order extends CI_Controller {
 		}
         $qty=$this->input->post('quantity');
 		if($qty=="")$qty=1;
-        $price=$this->input->post('price');
+		$price=$this->input->post('price');		
 		if($price=="")$price=0;
+		if($price==0){
+			$price=$this->input->post("retail");
+		}
+		if($price=="")$price=0;
+
 		$amount=$qty*$price;
 		$disc1=$this->input->post('discount');
 		if($disc1=="")$disc1=0;	if($disc1>1)$disc1=$disc1/100;
@@ -441,16 +502,17 @@ class Sales_order extends CI_Controller {
 		
 		// apabila default satuan tidak sama dg inputan 
 		$lFoundOnPrice=false;
-		if($item->unit_of_measure!=$data['unit']) {
-			if($unit_price=$this->inventory_prices_model->get_by_id($data['item_number'],
-				$data['unit'])->row())
-			{
-				 
-				$lFoundOnPrice=true;
-				if($unit_price->quantity_high>0) $data['mu_qty']=$data['quantity']*$unit_price->quantity_high;
-				$data['mu_harga']=$item->cost_from_mfg;
-				if($data['mu_harga']==0)$data['mu_harga']=$item->cost;			
-				$data['multi_unit']=$item->unit_of_measure;			
+		if($item) {
+		  	if ($item->unit_of_measure!=$data['unit']) {
+				if($unit_price=$this->inventory_prices_model->get_by_id($data['item_number'],
+					$data['unit'])->row())
+				{				 
+					$lFoundOnPrice=true;
+					if($unit_price->quantity_high>0) $data['mu_qty']=$data['quantity']*$unit_price->quantity_high;
+					$data['mu_harga']=$item->cost_from_mfg;
+					if($data['mu_harga']==0)$data['mu_harga']=$item->cost;			
+					$data['multi_unit']=$item->unit_of_measure;			
+				}
 			}
 		}
 		if($unit=exist_unit($data['unit']) && !$lFoundOnPrice ){
@@ -463,10 +525,7 @@ class Sales_order extends CI_Controller {
 			$data['mu_qty']=$data['quantity'];
 			$data['mu_harga']=$data['price'];
 			$data['multi_unit']=$data['unit'];
-		}	
-
-	
-		
+		}			
 		if($id!=''){
 			$ok=$this->sales_order_lineitems_model->update($id,$data);
 		} else {
@@ -485,9 +544,19 @@ class Sales_order extends CI_Controller {
 		}
 		
 		$this->sales_order_model->recalc($so);
-		 
+		$item_count=0;
+		$item_amount=0;
+		$sql="select count(1) as cnt,sum(amount) as amt from sales_order_lineitems where sales_order_number='$so'";
+		if($q=$this->db->query($sql)){
+			$item_count=$q->row()->cnt;
+			$item_amount=$q->row()->amt;
+		}
+		$data["item_count"]=$item_count;
+		$data["item_amount"]=$item_amount;
+		$data["success"]=$ok;
+
 		if ($ok){
-			echo json_encode(array('success'=>true));
+			echo json_encode($data);
 		} else {
 			echo json_encode(array('msg'=>'Some errors occured.'));
 		}
@@ -553,11 +622,20 @@ class Sales_order extends CI_Controller {
 		echo datasource($sql);
 		
 	}  
+	
+	function list_item_for_do($nomor){
+		$s="select *,quantity-coalesce(ship_qty,0) as q_sisa  
+		from sales_order_lineitems where sales_order_number='$nomor' 
+		order by line_number";	
+		echo datasource($s,false,"",0,"q_sisa","line_number");
+	}
 
 	function list_item_delivery($nomor){
 		$nomor=urldecode($nomor);
 		$this->load->model('sales_order_lineitems_model');
-		$query=$this->db->query("select * from sales_order_lineitems where sales_order_number='$nomor'");
+		$query=$this->db->query("select *
+			from sales_order_lineitems where sales_order_number='$nomor'");
+		
 		$table="
 		<p>Silahkan isi quantity pengiriman dikolom [Kirim] dibawah ini</p>
 		<table class='table2' width='100%'>
@@ -666,6 +744,70 @@ class Sales_order extends CI_Controller {
 	function print_more(){
 		echo "Modul ini belum tersedia !";
 	}	
+	function cart($nomor){
+		$s="select sol.item_number,sol.description,sol.quantity, 
+		sol.unit,sol.discount,sol.price, sol.amount, sol.line_number,sol.unit, 
+		i.special_features,i.item_picture,i.unit_of_measure 
+		from sales_order_lineitems sol left join inventory i on i.item_number=sol.item_number 
+		 where sales_order_number='$nomor'";
+		echo datasource($s);
+	}
+	function checkout($nomor_so=""){
+		$sales_order_number=$this->input->post("sales_order_number");
+		if($nomor_so!="")$sales_order_number=$nomor_so;
+		$sold_to_customer=$this->input->post("sold_to_customer");
+		$shipped_via=$this->input->post("shipped_via");
+		if($sales_order_number==""){
+			echo json_encode(array("success"=>false,"msg"=>"Nomor Order tidak ada !"));
+			return false;
+		}
+		if($sold_to_customer==""){
+			echo json_encode(array("success"=>false,"msg"=>"Pelanggan tidak terdaftar !"));
+			return false;
+		}
+		if($shipped_via==""){
+			echo json_encode(array("success"=>false,"msg"=>"Jasa Pengiriman tidak terdaftar !"));
+			return false;
+		}
+		$data["sales_order_number"]=$sales_order_number;
+		$data["sold_to_customer"]=$sold_to_customer;
+
+		$ongkos=0;
+		if($shipped_via=="TIKI"){
+			$ongkos=5000;
+		} else if($shipped_via=="JNE"){
+			$ongkos=5000;
+		}		
+		$data["shipped_via"]=$shipped_via;
+		$data["freight"]=$ongkos;
+
+		$data["payment_terms"]="KREDIT";
+
+		$s="select sum(amount) as zamt from sales_order_lineitems 
+		where sales_order_number='$sales_order_number'";
+		$item_amount=$this->db->query($s)->row()->zamt;
+
+
+		$amount=$item_amount+$ongkos;
+		$data["amount"]=$amount;
+		$data['sales_date']= date( 'Y-m-d H:i:s', now());
+
+		if($this->exist($sales_order_number)){
+			unset($data['sales_order_number']);
+			$result = $this->sales_order_model->update($sales_order_number,$data);
+
+		} else {
+			$result = $this->sales_order_model->save($data);
+
+		}
+		$data['success']=$result;
+		echo json_encode($data);
+
+	}
+	function exist($nomor){
+		return $this->db->query("select count(1) as cnt from sales_order 
+			where sales_order_number='$nomor'")->row()->cnt>0;
+	}
 }
 
 ?>

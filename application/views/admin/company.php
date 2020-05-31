@@ -1,80 +1,77 @@
 <div class="thumbnail box-gradient">
     <?php
-    if($mode=="view") echo link_button('Refresh','','reload','false',base_url().'index.php/company/view/'.$company_code);        
-    echo "<div style='float:right'>";
-    echo link_button('Help', 'load_help(\'banks\')','help');        
-    
+        if($mode=="view") echo link_button('Refresh','','reload','false',base_url().'index.php/company/view/'.$company_code);        
+        echo link_button('Save', 'save_this();return false;','save');
+        echo link_button('Account Link', 'gl_link();return false;','search');
+                    
     ?>
-    <a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
-    <div id="mmOptions" style="width:200px;">
-        <div onclick="load_help('banks')">Help</div>
-        <div onclick="show_syslog('company','<?=$company_code?>')">Log Aktifitas</div>
-        <div>Update</div>
-        <div>MaxOn Forum</div>
-        <div>About</div>
+    <div style='float:right'>
+        <a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+        <div id="mmOptions" style="width:200px;">
+            <div onclick="load_help('banks')">Help</div>
+            <div onclick="show_syslog('company','<?=$company_code?>')">Log Aktifitas</div>
+            <div>Update</div>
+            <div>MaxOn Forum</div>
+            <div>About</div>
+        </div>
+        <?=link_button('Help', 'load_help(\'banks\');return false;','help');?>
+        <?=link_button('Close', 'remove_tab_parent();return false;','cancel');?>
     </div>
 </div>
-
-<div class="thumbnail">	
+<div>
    <?php 
-   echo validation_errors(); 
-   
-	if($mode=='view'){
-		echo form_open('company/update'," name='myform' id='myform' ");
-		$disabled='disable';
-	} else {
-		$disabled='';
-		echo form_open('company/add'," name='myform' id='myform' "); 
-	}
-		
-   ?> 
-   <div class="easyui-tabs" >
+        echo validation_errors();        
+        $disabled='disable';
+   ?>     
+</div>
+
+ 
+<div class="easyui-tabs" >
     <div title="General" style="padding:10px">
+        <?php if($mode=='view'){ ?>
+            <form id='myform' name='myform' method='POST' action='<?=base_url("index.php/company/update")?>'>
+        <?php } else { 
+                echo form_open(base_url("index.php/company/add")," name='myform' id='myform' method='POST'"); 
+            }
+        ?>        
        <table class='table' width="100%">
-    	<tr>
-    		<td>Kode</td>
-    		<td>
-    		<?php
-    		if($mode=='view'){
-    			echo "<strong>$company_code</strong>";
-    			echo form_hidden('company_code',$company_code," id='company_code' ");
-    		} else { 
-    			echo form_input('company_code',$company_code," id='company_code' ");
-    		}		
-    		?>
-    		</td>
-    		
-    	</tr>	 
-        <tr>
+        	<tr>
+        		<td>Kode</td>
+        		<td>
+        		<?php
+                    if($mode=='view'){
+                        $readonly=" locked";
+                    } else {
+                        $readonly=""; 
+                    }       
+                    echo form_input('company_code',$company_code," $readonly");
+        		?>
+        		</td>        		
+        	</tr>	 
+            <tr>
                 <td>Nama Perusahaan</td>
                 <td><?php 
                 echo form_input('company_name',$company_name,
                 "id='company_code' style='width:200px' ");
                 ?>
-                </td>
-    
-        </tr>
-    	<tr>	 
-    		<td>Alamat</td><td><?php echo form_input('street',
-                            $street,'style="width:90%"');?></td>		 
-    	</tr>
-    	<tr><td>Kota</td><td><?php echo form_input('city_state_zip_code',
-                            $city_state_zip_code,'style="width:300px"');?></td></tr>
-    	<tr><td>Telp</td><td><?php echo form_input('phone_number',
-                            $phone_number,'style="width:300px"');?></td></tr>
-    	<tr><td>Fax</td><td><?php echo form_input('fax_number',
-                            $fax_number,'style="width:300px"');?></td></tr>
-    	<tr><td>Email</td><td><?php echo form_input('email',
-                            $email,'style="width:300px"');?></td></tr>
-    	<tr><td><?=link_button('Save', 'save_this()','save'); ?></td>
-        </tr>	
+                </td>        
+            </tr>
+        	<tr>	 
+        		<td>Alamat</td><td><?php echo form_input('street',
+                                $street,'style="width:90%"');?></td>		 
+        	</tr>
+        	<tr><td>Kota</td><td><?php echo form_input('city_state_zip_code',
+                                $city_state_zip_code,'style="width:300px"');?></td></tr>
+        	<tr><td>Telp</td><td><?php echo form_input('phone_number',
+                                $phone_number,'style="width:300px"');?></td></tr>
+        	<tr><td>Fax</td><td><?php echo form_input('fax_number',
+                                $fax_number,'style="width:300px"');?></td></tr>
+        	<tr><td>Email</td><td><?php echo form_input('email',
+                                $email,'style="width:300px"');?></td></tr>
        </table>
        </form>
-   
-    </div>
-    
-    <div title="Outlet">
-    
+    </div>    
+    <div title="Outlet">    
        <div id='divOutlet'>
             <div id='tb' name='tb' class='box-gradient'>
                 <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="false" onclick="addItem();return false;">Add</a>
@@ -85,27 +82,18 @@
                 $sql="select code,toko_name,address,contact,phone,fax,id
                 from toko_master where code_company='$company_code'";
                 
-                echo browse2($sql,"Daftar toko terkait perusahaan ini","company/toko",
-                    0,50,'','asc','','',$company_code);
+                echo browse2($sql,"Daftar gudang / toko terkait perusahaan ini.",
+                    "company/toko", 0,50,'','asc','','',$company_code);
             ?>
        </div>
     
     </div>
-    
-    <div title="Seting Account Link">
-        <div class='thumbnail'>
-            <?php 
-            $data=$this->company_model->setting_data($company_code);
-            echo load_view('admin/gl_link',$data); ?>
-        </div>
-    </div>
-    
-   
- </div>
+
+</div>
  <div id='dgItem' class="easyui-dialog" style="width:600px;height:480px;
-	left:100px;top:20px;padding:5px 5px"
+    left:100px;top:20px;padding:5px 5px"
     closed="true" buttons="#btnItem" >
-	<?php 
+    <?php 
     echo $this->form_builder->open_form(array('id' => 'frmItem','action'=>''));
     echo $this->form_builder->build_form_horizontal(array(
         array(
@@ -128,12 +116,13 @@
         array('id'=>'company_code_item','type'=>'input','value'=>$company_code) 
     ));
     echo $this->form_builder->close_form();
-	?>
+    ?>
 </div>
 <div id='btnItem'>
-	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  
-	   plain='false'	onclick='save_item()'>Simpan</a>
+    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  
+       plain='false'    onclick='save_item()'>Simpan</a>
 </div>
+  
 <script language="JavaScript">
 	var mode='<?=$mode?>';
 	function save_this(){
@@ -223,5 +212,8 @@
 				}
 			}
 		});
+	}
+	function gl_link(){
+	    add_tab_parent("Account Link",CI_ROOT+"company/gl_link");
 	}
  </script>

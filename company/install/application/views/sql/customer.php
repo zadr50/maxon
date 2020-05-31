@@ -103,7 +103,7 @@ $table="customer_beginning_balance";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `customer_beginning_balance` (
-  `tanggal` datetime NOT NULL default '0000-00-00 00:00:00',
+  `tanggal` datetime NOT NULL default '2000-01-01 00:00:00',
   `customer_number` varchar(50) character set utf8 NOT NULL default '',
   `piutang_awal` double default NULL,
   `piutang` double default NULL,

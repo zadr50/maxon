@@ -8,22 +8,22 @@
 	        <input type='hidden' id='gudang_item' name='gudang_item'>
 				<table class='table2' style='float:left;' width='100%'>
 				 <tr><td >Kode Barang</td><td colspan='3'>
-				 	<input onblur='find()' id="item_number" style='width:180px' 
+				 	<input onblur='find();return false' id="item_number" style='width:180px' 
 					name="item_number"   class="easyui-validatebox" required="true">
 					<a href="#" class="easyui-linkbutton" iconCls="icon-search" data-options="plain:false" 
-					onclick="searchItem();return false;"></a>
+					onclick="dlginventory_show();return false;"></a>
 				 </td>
 				 
 				 </tr>
 				 <tr><td>Nama Barang</td><td colspan='3'><input id="description" name="description" style='width:300px'></td></tr>
 				 <tr><td>Qty</td><td><input id="quantity"  style='width:60px'  name="quantity" onblur="hitung()">
-				 Unit <input id="unit" name="unit"  style='width:60px' readonly>
+				 Unit <input id="unit" name="unit"  style='width:60px' >
 				<a href="#" class="easyui-linkbutton" iconCls="icon-search" data-options="plain:false" 
 					onclick="searchUnit();return false;" 
 					id='cmdLovUnit'></a> 
 				</td>
 				<tr><td colspan=3>
-					 <div id="divUnit" style='display:none' >
+					 <div id="divMultiUnit" style='display:none' >
 						M_Qty: <?=form_input("mu_qty","","id='mu_qty' style='width:40px'")?>
 						M_Unit: <?=form_input("multi_unit","","id='multi_unit' style='width:80px'")?>
 					</div>	
@@ -50,7 +50,8 @@
 </div>
  
 <?php 
-	echo load_view("inventory/inventory_select");
+	echo $lookup_inventory;
+//	echo load_view("inventory/inventory_select");
 	echo load_view("inventory/select_unit");	
 ?>
  
@@ -160,6 +161,57 @@
 	function hitung(){
 	    
 	}
+	function find(){
+			var cust_type=$('#cust_type').val();
+			 
+			var item=$("#item_number").val();
+			if( item=="" || item=="undefined")return false;
+			var cust_no=$("#sold_to_customer").val();
+		    xurl=CI_ROOT+'inventory/find/'+item+'/'+cust_type ;
+			var param={item_no:item,cust_type:cust_type,cust_no:cust_no};
+			
+			loading();
+			
+		    $.ajax({
+				type: "GET",
+				url: xurl,
+				data: param,
+				success: function(msg){
+					var obj=jQuery.parseJSON(msg);
+					if(obj.success){
+						$('#item_number').val(obj.item_number);
+						$('#price').val(obj.retail);
+						$('#cost').val(obj.cost);
+						if(obj.cost)$("#cost").val(obj.cost_from_mfg);
+						
+						$('#unit').val(obj.unit_of_measure);
+						$('#description').val(obj.description);
+						$("#discount").val(obj.discount);
+						if(obj.discount==0) $("#discount").val(obj.disc_prc_1);
+						$("#disc_2").val(obj.disc_prc_2);
+						$("#disc_3").val(obj.disc_prc_3);
+						if(obj.multiple_pricing){
+							$("#cmdLovUnit").show();
+							$("#divMultiUnit").show();
+						} else {
+							$("#cmdLovUnit").hide();
+							$("#divMultiUnit").hide();
+						}
+						$("#quantity").val("1");
+						
+					}
 
+					loading_close();
+					
+					hitung();
+				},
+				error: function(msg){
+					loading_close();
+					log_err(msg);
+				}
+		    });
+		};
+		
+		
 </script>
     

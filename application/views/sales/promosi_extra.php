@@ -133,13 +133,13 @@ closed="true" buttons ="#dlgItemTool">
     function select_item(){
         var item_type=$("#item_type").val();
         if(item_type=="item"){
-            dlginventory_show();            
+            dlgitem_number_show();            
         } else if (item_type=="supplier"){
             dlgsuppliers_show();
         } else if (item_type=='category'){
-            dlginventory_categories_show();
+            dlgcategories_show();
         } else if (item_type=='sub_category'){
-            dlginventory_sub_categories_show();
+            dlgsub_categories_show();
         } else if (item_type=="merk"){
             dlgmerk_show();
         } else if (item_type=="model"){

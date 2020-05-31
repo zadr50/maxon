@@ -1,6 +1,6 @@
 <?php
 
-	$table="gl_projects";
+$table="gl_projects";
 
 $sql="
 
@@ -36,9 +36,7 @@ CREATE TABLE IF NOT EXISTS `gl_projects` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-	$table="gl_projects_budget";
-
-
+$table=", gl_projects_budget";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `gl_projects_budget` (
@@ -61,13 +59,14 @@ CREATE TABLE IF NOT EXISTS `gl_projects_budget` (
   `update_status` int(11) default NULL,
   `sourceautonumber` varchar(50) character set utf8 default NULL,
   `sourcefile` varchar(255) character set utf8 default NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `x1` (`project_code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-	$table="gl_projects_saldo";
+$table.=", gl_projects_saldo";
 
 
 $sql="
@@ -81,35 +80,13 @@ CREATE TABLE IF NOT EXISTS `gl_projects_saldo` (
   `update_status` int(11) default NULL,
   `sourceautonumber` varchar(50) character set utf8 default NULL,
   `sourcefile` varchar(255) character set utf8 default NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `x1` (`project_code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-	$table="gl_report_groups";
-
-
-$sql="
-CREATE TABLE IF NOT EXISTS `gl_report_groups` (
-  `id` int(11) NOT NULL auto_increment,
-  `company_code` varchar(50) character set utf8 default NULL,
-  `account_type` double default NULL,
-  `group_type` varchar(10) character set utf8 default NULL,
-  `group_name` varchar(50) character set utf8 default NULL,
-  `parent_group_type` varchar(10) character set utf8 default NULL,
-  `update_status` int(11) default NULL,
-  `sourceautonumber` varchar(50) character set utf8 default NULL,
-  `sourcefile` varchar(255) character set utf8 default NULL,
-  `create_date` datetime default NULL,
-  `create_by` varchar(50) character set utf8 default NULL,
-  `update_date` datetime default NULL,
-  `update_by` varchar(50) character set utf8 default NULL,
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `x1` (`group_type`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=271 ;
-";
-if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 	
 
 ?>

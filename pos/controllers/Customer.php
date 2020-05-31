@@ -255,8 +255,26 @@ class Customer extends CI_Controller {
 		city,region,country,street,suite,salesman,payment_terms,discount_percent   
 		from customers where  (company like '$search%' or customer_number like '$search%')
 		order by company";
+		
+        $search=urldecode($search);
+        $sql=$this->sql;
+
+        if($search!=""){
+            $sql.=" where (customer_number like '$search%' 
+                or company like '$search%')";
+        }
+        $sql.=" order by company";
+
+        $offset=0; $limit=10;
+        if($this->input->post("page"))$offset=$this->input->post("page");
+        if($this->input->post("rows"))$limit=$this->input->post("rows");
+        if($offset>0)$offset--;
+        $offset=$limit*$offset;
+        $sql.=" limit $offset,$limit";        
+        
+        echo datasource($sql);
 	 
- 		echo datasource($sql);
+ 		//echo datasource($sql);
 	}
 	function filter($search=''){
 		$search=urldecode($search);

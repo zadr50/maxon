@@ -25,21 +25,31 @@ class Umur_barang extends CI_Controller {
         $this->template->display("purchase/umur_barang",$data);                 
 	}
 	
-    function browse_data($offset=0,$limit=10,$nama=''){
+    function browse_data($offset=0,$limit=30,$nama=''){
 		$sql="select il.item_number,il.description,
-		il.last_inventory_date,now() as tgl_hrini,datediff(now(),il.last_inventory_date) as umur,
+		il.last_inventory_date,now() as tgl_hrini,coalesce(datediff(now(),il.last_inventory_date),0) as umur,
 		il.quantity_in_stock,il.supplier_number,s.supplier_name,il.category
-		from inventory il left join suppliers s on s.supplier_number=il.supplier_number 
+		from inventory il join suppliers s on s.supplier_number=il.supplier_number 
 		where 1=1";
+		$umur=30;
 		if($data=$this->input->get()){
 			if($data['supplier']!="")$sql.=" and il.supplier_number='".$data['supplier']."'";
 			if($data['item_no']!="")$sql.=" and (il.item_number='".$data['item_no']."' or il.description like '".$data['item_no']."%')";
 			if($data['category']!="")$sql.=" and il.category='".$data['category']."'";
-			if($data['umur']!="")$sql.=" and datediff(now(),il.last_inventory_date)>".$data['umur'];
-			
-		} else {
-			$sql.=" limit 0";
-		}
+			if($data['umur']!="")$umur=$data['umur'];
+		} 
+		$sql.=" and coalesce(datediff(now(),il.last_inventory_date),0)>$umur";		
+		
+		
+        if($this->input->get("page"))$offset=$this->input->get("page");
+        if($this->input->get("rows"))$limit=$this->input->get("rows");
+        
+        if($offset>0)$offset--;
+        $offset=$limit*$offset;
+        $sql.=" limit $offset,$limit";
+        
+		//echo $sql;
+		
         echo datasource($sql);
     }	 	
 }

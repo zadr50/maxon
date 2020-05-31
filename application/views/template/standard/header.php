@@ -133,63 +133,36 @@
 			<li><a href="<?=base_url()?>index.php/help/error" class="info_link glyphicon glyphicon-random"> Laporkan Masalah</a></li>
           </ul>
         </li>
+        <li class="border-hover">
+			<li><a href="#" class="glyphicon glyphicon-th-list" onclick="mini_sidebar();return false"> </a></li>
+        </li>
+        
       
-		
+<!--		
       <form class="navbar-form navbar-right " role="search">
         <div class="form-group">
           <input type="text" class="form-control" placeholder="Search">
         </div>
         <button type="submit" class="btn btn-info">Search</button>
       </form>
-		
+-->		
 		
       </ul>
     </div><!-- /.navbar-collapse -->
 </nav>
-<?php
-if(!function_exists("menu")){
-	function menu($title,$url,$func=false){
-		if(!$func){
-			echo "<div><a href='".base_url()."index.php/".$url."' class='easyui-linkbutton' data-options='plain:true'>".$title."</a></div>";	
-		} else {
-			echo "<div><a href='#' onclick=\"load_menu('$url')\"  class='easyui-linkbutton' data-options='plain:true'>".$title."</a></div>";
-		}
-	}
-}
-if(!function_exists("add_menu_drop")){
-	function add_menu_drop($menu_id,$caption,$mod_id) {
-		if(allow_mod($mod_id)){
-			echo "<li><a onclick=load_menu('$menu_id') href='#'>$caption</a></li>";
-		}
-	}
-}
-if(!function_exists("add_menu_drop_2")){
-	function add_menu_drop_2($menu_id,$caption,$mod_id) {
-		if(allow_mod($mod_id)){
-			echo "<li><a href='".base_url()."index.php/$menu_id'
-			class='info_link' >$caption</a></li>";
-		}
-	}
-}
-?> 
-<script>
-	$(document).ready(function(){
-		//$("#divMenu").show();
-/* 			$('ul.nav li.dropdown').hover(function() {
-			  $(this).find('.dropdown-menu').stop(true, true).delay(200).fadeIn(500);
-			}, function() {
-			  $(this).find('.dropdown-menu').stop(true, true).delay(200).fadeOut(500);
-			}); */
-		
-	});
-	 function load_menu(path){
-	     xurl='<?=base_url()?>index.php/menu/load/'+path;
-	     window.open(xurl,'_self');
-	     return false;
-	 }
-	 function edit_user(){
-	     var user_id="<?=user_id()?>";
-	     var _url="<?=base_url("user/view2/".user_id())?>";
-	     add_tab_parent("view_"+user_id,_url);
-	 }
+<script language="JavaScript">
+ function load_menu(path){
+     xurl='<?=base_url()?>index.php/menu/load/'+path;
+     window.open(xurl,'_self');
+     return false;
+ }
+ function edit_user(){
+     var user_id="<?=user_id()?>";
+     var _url="<?=base_url("user/view2/".user_id())?>";
+     add_tab_parent("view_"+user_id,_url);
+ }
+ function mini_sidebar(){
+ 	xurl=CI_ROOT+"sessionset/mini_sidebar";
+ 	window.open(xurl,"_self");
+ }    
 </script>

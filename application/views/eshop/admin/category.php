@@ -1,5 +1,5 @@
 <div class="row-fluid" >
-	<?
+	<?php
 	if($cmd=="list") {
 		$this->load->library("browser");
 		$browse=new browser();

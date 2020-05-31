@@ -1,7 +1,7 @@
 <div id="tb_search_isc" style="height:auto" class="box-gradient">
-	<input type='checkbox' id='select_all_isc' style='width:30px'>Select All &nbsp
+	<input type='checkbox' id='select_all_isc' style='width:20px'>Select All &nbsp
     <input type='checkbox' id='only_item_supplier_isc' name='only_item_supplier'  
-        title='Filter by related selected supplier' style='width:30px'>Supplier &nbsp
+        title='Filter by related selected supplier' style='width:20px'>Supplier &nbsp
 	
 	Field: <?php 
 	$options=array("description"=>"description","item_number"=>"item_number","supplier_name"=>"supplier_name");
@@ -11,12 +11,12 @@
     ?>
 	Enter Text: <input  id="search_item_isc" style='width:100px' name="search_item_isc" 
 		onchange='filterItemIsc();return false;'>
-	<?=link_button("Search", "filterItemIsc();return false","search")?>	
+	<?=link_button("", "filterItemIsc();return false","search")?>	
 	<?=link_button("Select", "selectSearchItemIsc();return false","save")?>	
 	<?=link_button("Close", "dlgSearchItemIsc_close();return false","cancel")?>	
 </div>
 
-<div id='dlgSearchItemIsc' class="easyui-dialog" style="width:780px;height:480px;;left:50px;top:20px"
+<div id='dlgSearchItemIsc' class="easyui-dialog" style="width:800px;height:480px;;left:10px;top:20px"
      closed="true" toolbar="#tb_search_isc">
      <form method='post' name='frmLovItemsIsc' id="frmLovItemsIsc">
      <div id='divItemSearchResultIsc'> 

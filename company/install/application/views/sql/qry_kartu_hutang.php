@@ -1,5 +1,5 @@
 <?php
- 
+$msg=""; 
 $table="qry_kartu_hutang";
 $sql="create view qry_kartu_hutang as 
 

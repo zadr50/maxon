@@ -1,20 +1,19 @@
-<h4>FORMULIR REKENING SIMPANAN</H4>
 <div class="thumbnail">
 	<?php
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','true',base_url().'index.php/koperasi/rekening/add');		
-	echo link_button('Refresh','','reload','true',base_url().'index.php/koperasi/rekening/view/'.$no_simpanan);		
-	echo link_button('Search','','search','true',base_url().'index.php/koperasi/rekening');		
-	echo link_button('Help', 'load_help()','help');		
 	
 	?>
-	<a href="#" class="easyui-splitbutton" data-options="menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
+	<div style="float:right">
+	<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
 	<div id="mmOptions" style="width:200px;">
 		<div onclick="load_help()">Help</div>
 		<div>Update</div>
 		<div>MaxOn Forum</div>
 		<div>About</div>
+	</div>
+	<?=link_button('Help', 'load_help()','help');?>		
+	<?=link_button('Close', 'remove_tab_parent()','cancel');?>		
 	</div>
 </div>
 
@@ -25,49 +24,47 @@
  
 	<form id="frmLoan"  method="post">
 		<input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
-	   <table>
+	   <table class='table'>
 			<tr><td>Nomor Simpanan</td>
 				<td>
 					<?php
-					if($mode=='view'){
-						echo "<span class='thumbnail'><strong>$no_simpanan</strong></span>";
-						echo "<input type='hidden' id='no_simpanan' value='$no_simpanan'>";
-					} else { 
-						echo form_input('no_simpanan',$no_simpanan,"id=no_simpanan");
-					}		
+					$readonly="";
+					if($mode=='view')$readonly="readonly";
+					echo form_input('nomor',$nomor,"id=nomor $readonly");
 					?>
 				</td>
 				<td rowspan='4' colspan='4'>
-					<div class="thumbnail" style="width:400px;height:100px">
+					<div id='nama_anggota' class="thumbnail" style="width:400px;height:100px">
 						<?=$anggota?>
 					</div>
 				</td>
 			</tr>	 
 			<tr>
-				<td>Nomor Anggota</td><td><?php echo form_input('no_anggota',$no_anggota,"id=no_anggota"); 
-				echo link_button("","select_anggota()","search");?></td>
+				<td>Nomor Anggota</td><td><?php echo form_input('kode_anggota',$kode_anggota,"id=kode_anggota"); 
+				echo link_button("","select_anggota();return false","search");?></td>
 			</tr>
 		   <tr>
-				<td>Tanggal Daftar</td><td><?=form_input('tanggal',$tanggal,"class='easyui-datetimebox' style='width:150px'");?></td>
+				<td>Tanggal Daftar</td><td><?=form_input('tanggal_daftar',$tanggal_daftar,"class='easyui-datetimebox' 
+				data-options='formatter:format_date,parser:parse_date' style='width:180px'");?></td>
 		   </tr>
 		   <tr>
-				<td>Jenis Simpanan</td><td><?php echo form_dropdown('jenis',$jenis_list, $jenis); ?></td>
+				<td>Jenis Simpanan</td><td><?php echo form_input('jenis_simpanan',$jenis_simpanan,"id='jenis_simpanan'"); ?>
+					<?=link_button("", "select_jenis();return false","search")?>
+				</td>
 		   </tr>
 			<tr>
 				<td>Setoran Awal</td><td><?=form_input('setor_awal',$setor_awal);?></td>
-		   </tr>
-			<tr>
 				<td>Administrasi</td><td><?=form_input('setor_admin',$setor_admin);?></td>
-			</tr>
+		   </tr>
 		   <tr>
-				<td>Jumlah Setoran</td><td><?=form_input('jumlah',$jumlah);?></td>
-				<td>Nomor Bukti Kas</td><td><?=form_input('voucher_kas',$voucher_kas);?></td>       
+				<td>Jumlah SetoranAwal+Admin</td><td><?=form_input('setor_total',$setor_total);?></td>
+				<td>Nomor Bukti Kas</td><td><?=form_input('voucher',$voucher);?></td>       
 		   </tr>
 		   <tr>
 				<td>Deposito Jangka Waktu</td><td><?=form_input('deposito_jangka',$deposito_jangka);?></td>       
 				<td>Bunga Percent</td><td><?=form_input('deposito_percent',$deposito_percent);?></td>
 		   </tr>
-		   <tr><td>Catatan</td><td colspan="4"><?=form_input('comments',$comments,"style='width:400px'");?></td></tr>
+		   <tr><td>Catatan</td><td colspan="5"><?=form_input('catatan',$catatan,"style='width:400px'");?></td></tr>
 		   <tr>
 		   </tr>
 	   </table>
@@ -76,12 +73,9 @@
 	 
 
 </div>	
-	
-<?=load_view("koperasi/anggota_select.php"); ?>
-
 <script type="text/javascript">
     function save_this(){
-        if($('#no_simpanan').val()===''){alert('Isi dulu nomor simpanan !');return false;};
+        if($('#nomor').val()===''){alert('Isi dulu nomor simpanan !');return false;};
 
 		url='<?=base_url()?>index.php/koperasi/rekening/save';
 			$('#frmLoan').form('submit',{
@@ -92,9 +86,10 @@
 				success: function(result){
 					var result = eval('('+result+')');
 					if (result.success){
-						$('#no_simpanan').val(result.no_simpanan);
+						$('#nomor').val(result.nomor);
 						$('#mode').val('view');
 						log_msg('Data sudah tersimpan.');
+						remove_tab_parent();
 					} else {
 						log_err(result.msg);
 					}
@@ -104,5 +99,32 @@
 	function load_help() {
 			window.parent.$("#help").load("<?=base_url()?>index.php/help/load/rekening_simpanan");
 	}
+	function select_anggota(){
+		lookup1({id:"kop_anggota", 
+			url:CI_ROOT+"lookup/query/kop_anggota",
+			fields: [[
+		        {field:'no_anggota',title:'Kode Anggota',width:80},
+		        {field:'nama',title:'Nama',width:300},
+		        {field:'phone',title:'Phone',width:80},
+		        {field:'group_type',title:'Kelompok',width:80}
+    		]],
+    		result: function result(){
+    			$("#kode_anggota").val(r.data.no_anggota);
+    		}
+		});		
+	}
+	function select_jenis(){
+		lookup1({id:"kop_jenis_simpanan", 
+			url:CI_ROOT+"lookup/query/kop_jenis_simpanan",
+			fields: [[
+		        {field:'nama',title:'Nama Simpanan',width:300}
+    		]],
+    		result: function result(){
+    			$("#jenis_simpanan").val(r.data.nama);
+    		}
+		});		
+	}
+	
+	
 		
 </script>  

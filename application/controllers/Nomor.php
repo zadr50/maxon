@@ -4,7 +4,7 @@ class Nomor extends CI_Controller {
     private $limit=10;
     private $table_name='system_variables';
     private $file_view='admin/nomor';
-    private $primary_key='varname';
+    private $primary_key='id';
     private $controller='nomor';
 	function __construct()
 	{
@@ -21,12 +21,12 @@ class Nomor extends CI_Controller {
 	}
 	function browse(){
 		$data['controller']=$this->controller;
-		$data['fields_caption']=array('Kode','Var Value','keterangan');
-		$data['fields']=array('varname','varvalue','keterangan');
+		$data['fields_caption']=array('VarName','VarValue','Description','Id');
+		$data['fields']=array('varname','varvalue','keterangan','id');
 					
 		if(!$data=set_show_columns($data['controller'],$data)) return false;
 			
-		$data['field_key']='varname';
+		$data['field_key']='id';
 		$data['caption']='DAFTAR KODE PENOMORAN TRANSAKSI';
 
 		$this->load->library('search_criteria');
@@ -38,7 +38,7 @@ class Nomor extends CI_Controller {
 	}
     function browse_data($nama=''){
 		$nama=urldecode($nama);
-    	$sql="select varname,varvalue,keterangan from system_variables 
+    	$sql="select * from system_variables 
     	where varname like '% numbering' ";
 		if($this->input->get('sid_nama')!='')$sql.=" and varname like '".$this->input->get('sid_nama')."% numbering'";
         
@@ -91,15 +91,31 @@ class Nomor extends CI_Controller {
         $data['message']='';
         return $data;
 	}
-    function update()   {
-    	$id=$this->input->post('varname');
-    	$id=urldecode($id);
-		
-        $data['varname']=$id;
-        $data['varvalue']=$this->input->post('varvalue');
-        $data['keterangan']=$this->input->post('keterangan');
-        $this->sysvar_model->update($id,$data);
-        $message='Update Success';
-        $this->browse();
+    function save()   {
+    	$data=$this->input->post();    
+    	$mode=$data['mode'];
+        unset($data['mode']);
+        $id_ret=0;
+        if($mode=="add"){
+            unset($data["id"]);
+            $id_ret=$this->sysvar_model->save($this->table_name,$data);
+        } else {
+            $id_ret=$this->sysvar_model->update($data['id'],$data);
+            
+        }
+        if($id_ret>0){
+            echo json_encode(array("success"=>true,"id"=>$id_ret,"msg"=>"Data sudah tersimpan"));
+        } else {
+            echo json_encode(array("success"=>false,"id"=>$id_ret,"msg"=>"Gagal simpan !"));
+        }
+    }
+    function delete($id){
+        $this->db->where("id",$id);
+        $ok=$this->db->delete($this->table_name);
+        if($ok){
+            echo json_encode(array("success"=>true,"msg"=>"Success"));
+        } else {
+            echo json_encode(array("success"=>false,"msg"=>"Error !"));
+        }
     }
 }

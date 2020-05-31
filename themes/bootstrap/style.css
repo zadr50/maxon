@@ -6,7 +6,7 @@
 a.l-btn span.l-btn-left {
   height: 24px;
 }
-body {
+.body-maxon {
     font-family: tahoma,helvetica,verdana,sans-serif;
     padding:5px;
     margin:0 auto;
@@ -38,7 +38,7 @@ input[type="radio"], input[type="checkbox"] {
     border-bottom: 1px solid #bfcee6;
 	
 }
-.sidebar {
+.sidebar-maxon {
 	background: #f5f5f5;
 	padding-top:10px;
  
@@ -46,7 +46,7 @@ input[type="radio"], input[type="checkbox"] {
 	padding:0px;
 	
 }
-.sidebar .panel .panel-body {
+.sidebar-maxon .panel .panel-body {
     background-color: #f5f5f5;
 }
 .alert-info {
@@ -597,13 +597,13 @@ padding-left: 5px;
 	border: 1px solid transparent;
 	border-radius: 4px;
 }
-.info {
+.info-maxon {
 	width:200px;height:100px;float:left;font-size:9px;margin:5px;
 }
-.info .photo img {
+.info-maxon .photo img {
 	width:50px;height:50px;float:left;margin:5px;
 }
-.info:hover {
+.info-maxon:hover {
 	cursor:pointer;
 	border: 1px solid #aaa;
 	-webkit-border-radius: 5px;

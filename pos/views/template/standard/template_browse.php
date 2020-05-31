@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    CI_ROOT = "<?=base_url()?>index.php/";
+    CI_ROOT = "<?=base_url()?>pos.php/";
     CI_BASE = "<?=base_url()?>";        
 </script>
 
@@ -158,7 +158,7 @@ if(isset($sub_controller)){
     //,pageSize:10,pagination:true
     
     ?>
-    <table  id="dg_<?=$controller_name?>" class="easyui-datagrid", style='min-height:400px'
+    <table  id="dg_<?=$controller_name?>" class="easyui-datagrid", style='height:auto;width:auto;'
       data-options="rownumbers:true,fitColumns:true,pagination:true,
       singleSelect:true,collapsible:false,method:'get',
       url:'<?=base_url()?>index.php/<?=$controller?>/browse_data<?=$sub_strip?>',

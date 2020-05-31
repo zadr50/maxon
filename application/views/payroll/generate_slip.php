@@ -5,6 +5,7 @@
 	pada periode yang dipilih dibawah ini.</br>
 	Pilihlah periode yang belum digenerate kemudian klik tombol [Proses]
 </p>
+<p>* optional boleh tidak diisi</p>
 </div>
 <?php 
 $field=array("caption"=>"Select Periode : ",
@@ -13,6 +14,11 @@ $field=array("caption"=>"Select Periode : ",
 	"  ".link_button("Proses","proses()","save")
 	);
 echo my_input($field,"pay_period",Date("Y-m"));
+echo my_input(
+	array(
+		"caption"=>"* Hanya Satu NIP","field_name"=>"nip_cari"	
+	),"nip_cari");
+echo "</br>";
 echo $lookup_periode;
 ?>
 <div id='divGenerate'>
@@ -22,6 +28,6 @@ echo $lookup_periode;
     function proses(){
         if($('#pay_period').val()===''){alert('Isi dulu periode penggajian !');return false;};
 		url='<?=base_url()?>index.php/payroll/generate/proses';
-		get_this(url,{pay_period:$("#pay_period").val()},"divGenerate");
+		get_this(url,{pay_period:$("#pay_period").val(),nip_cari:$("#nip_cari").val()},"divGenerate");
     }
 </script>

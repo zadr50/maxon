@@ -19,6 +19,7 @@ function __construct(){
     $this->load->model('payment_model');
     $this->load->model('crdb_model');
     $this->load->model('invoice_lineitems_model');
+    $this->load->model('customer_model');
         
     
 }
@@ -123,46 +124,107 @@ function count_all(){
 }
 
 function get_by_id($id){
-	 
-	$this->db->where($this->primary_key,$id);
-	if($row=$this->db->get($this->table_name)->row()){
-		$r_item=$this->db->query("select warehouse_code from invoice_lineitems 
-			where invoice_number='$id' limit 1")->row();
-		if($r_item)	$this->warehouse_code=$r_item->warehouse_code;
-		$terms=$row->payment_terms;
-		$due_date=$row->due_date;
-		if($t=$this->db->query("select days from type_of_payment where type_of_payment='$terms'")){
-			if($t=$t->row())$due_date=add_date($row->invoice_date,$t->days);
-		}
-		$data['warehouse_code']=$this->warehouse_code;
-		$data['due_date']=$due_date;
-		$this->update($id,$data);
-	}
 	$this->db->where($this->primary_key,$id);
 	return $this->db->get($this->table_name);
 }
 function save($data){
 	$data['invoice_date']= date('Y-m-d H:i:s', strtotime($data['invoice_date']));
 	$data['due_date']= date('Y-m-d H:i:s', strtotime($data['due_date']));
+
+    $warehouse_code="";
+    if(isset($data['warehouse_code'])){
+        $warehouse_code=$data['warehouse_code'];
+    } else {
+        $warehouse_code=current_gudang();
+    }
+    $data['warehouse_code']=$warehouse_code;
+	
     if(!isset($data['inv_amount']))$data["inv_amount"]=0;
     
 //	$this->db->insert($this->table_name,$data);
 //	echo $this->db->_error_message();
 //	return $this->db->insert_id();
-	return $this->db->insert($this->table_name,$data);
+
+
+    $amount=c_($data["inv_amount"]);
+    $sold_to_customer=$data['sold_to_customer'];
+    $this->customer_model->update_saldo($sold_to_customer,$amount);
+	$ok = $this->db->insert($this->table_name,$data);
+	return $ok;
+	
 }
 function update($id,$data){
-	
-	if(isset($data['warehouse_code'])){
-		$gudang=$data['warehouse_code'];	
-		$this->db->query("update invoice_lineitems set warehouse_code='$gudang' 
-		where invoice_number='$id'");			
-		//unset($data['warehouse_code']);
-	}
-	if(isset($data['invoice_date']))$data['invoice_date']= date('Y-m-d H:i:s', strtotime($data['invoice_date']));
-	if(isset($data['due_date']))$data['due_date']= date( 'Y-m-d H:i:s', strtotime($data['due_date']));
-    if(!isset($data['inv_amount']))$data["inv_amount"]=0;
+    $inv_amount=0;
+    if(isset($data['inv_amount'])){
+        $inv_amount=$data['inv_amount'];
+        if($inv_amount=="")$inv_amount=0;
+    }
+    if(isset($data['amount'])){
+        $inv_amount=c_($data['amount']);
+    }
+	$invoice_date="";
+    if(isset($data['invoice_date'])){
+        $invoice_date=$data['invoice_date'];
+    }
+    if($invoice_date==""){
+        $invoice_date=date("Y-m-d H:i:s");
+    }
+    $warehouse_code="";
+    if(isset($data['warehouse_code'])){
+        $warehouse_code=$data['warehouse_code'];
+    } else {
+        $warehouse_code=current_gudang();
+    }
+    if($warehouse_code!=""){
+        $this->db->query("update invoice_lineitems set warehouse_code='$warehouse_code' 
+            where invoice_number='$id' and (warehouse_code='' or warehouse_code is null)");           
+    }    
+
+    $payment_terms="";
+    $due_date="";
+    if(isset($data['due_date'])){
+        $due_date=$data['due_date'];
+    }
     
+    if(isset($data['payment_terms'])){
+        $payment_terms=$data["payment_terms"];
+        if(strtoupper($payment_terms!="CASH")){
+            if($t=$this->db->query("select days from type_of_payment 
+                where type_of_payment='$payment_terms'")){
+                if($t=$t->row()){
+                    $due_date=add_date($invoice_date,$t->days);
+                }
+            }
+        } else {
+            $due_date=$invoice_date;
+        }
+    } else {
+        $payment_terms="CASH";
+    }
+    if($due_date==""){
+        $due_date=$invoice_date;
+    }
+    $inv_amount=c_($inv_amount);
+
+    $data['invoice_date']= date('Y-m-d H:i:s', strtotime($invoice_date));
+    $data['warehouse_code']=$warehouse_code;
+    $data['due_date']= date('Y-m-d H:i:s', strtotime($due_date));
+    $data['inv_amount']=$inv_amount;
+         
+    ///update saldo
+    $amount=$inv_amount;
+    $sold_to_customer=$data['sold_to_customer'];
+    $amount_old=0;
+    if($qinv=$this->db->query("select inv_amount,amount from invoice 
+        where invoice_number='$id'")){
+            if($rinv=$qinv->row()){
+                $amount_old=$rinv->inv_amount;
+                if($amount_old==0){
+                    $amount_old=$rinv->amount;
+                }
+            }
+        }
+    $this->customer_model->update_saldo($sold_to_customer,$amount,$amount_old,false);
     
 	$this->db->where($this->primary_key,$id);
 	return $this->db->update($this->table_name,$data);

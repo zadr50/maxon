@@ -7,29 +7,41 @@
 	<script>$().ready(function(){$("#tt").tabs("select","DASHBOARD");});</script>
 
 	<div title="DASHBOARD" style="padding:10px">
-	    
-	<div class='col-xs-12'>
-
-		<div class="easyui-panel themes" data-options="iconCls:'icon-save',closable:true,
-			collapsible:true,minimizable:true,maximizable:true" 
-			title='Main Menu'>
-			<div class='col-md-8'>
-				<img src="<?=base_url()?>images/inventory.png" usemap="#mapdata" class="map">
-				<map id="mapdata" name="mapdata">
-				<area shape="circle" alt="Receive Purchase Order" coords="120,95,30" href="<?=base_url()?>index.php/receive_po"  class="info_link" title="Receive Purchase Order" />
-				<area shape="circle" alt="Inventory" coords="266,95,28" href="<?=base_url()?>index.php/inventory"  class="info_link" title="Inventory" />
-				<area shape="circle" alt="Delivery" coords="411,98,30" href="<?=base_url()?>index.php/delivery"  class="info_link" title="Delivery" />
-				<area shape="circle" alt="Transfer Item Between Warehouse" coords="134,252,29" href="<?=base_url()?>index.php/stock_mutasi" class="info_link"  title="Transfer Item Between Warehouse" />
-				<area shape="circle" alt="Stock Adjustment" coords="265,250,30" href="<?=base_url()?>index.php/stock_adjust" class="info_link"  title="Stock Adjustment" />
-				<area shape="circle" alt="Stock Card" coords="401,247,29" href="<?=base_url()?>index.php/inventory/rpt/cards_summary" class="info_link"  title="Stock Card" />
-				<area shape="circle" alt="Manage Warehouse" coords="117,362,29" href="<?=base_url()?>index.php/shipping_locations"  class="info_link" title="Manage Warehouse" />
-				<area shape="default" nohref="nohref" alt="" />
-				</map>
-			</div>
-		</div>
-
-		<?php if($this->config->item('google_ads_visible')) $this->load->view('google_ads');?>
 	
+	<div class='row'>
+        <div class='col-md-8'>
+    
+            <div class="easyui-panel themes" data-options="iconCls:'icon-save',closable:true,
+                collapsible:true,minimizable:true,maximizable:true" 
+                title='Main Menu'>
+                <div class='col-md-8'>
+                    <img src="<?=base_url()?>images/inventory.png" usemap="#mapdata" class="map">
+                    <map id="mapdata" name="mapdata">
+                    <area shape="circle" alt="Receive Purchase Order" coords="120,95,30" href="<?=base_url()?>index.php/receive_po"  class="info_link" title="Receive Purchase Order" />
+                    <area shape="circle" alt="Inventory" coords="266,95,28" href="<?=base_url()?>index.php/inventory"  class="info_link" title="Inventory" />
+                    <area shape="circle" alt="Delivery" coords="411,98,30" href="<?=base_url()?>index.php/delivery"  class="info_link" title="Delivery" />
+                    <area shape="circle" alt="Transfer Item Between Warehouse" coords="134,252,29" href="<?=base_url()?>index.php/stock_mutasi" class="info_link"  title="Transfer Item Between Warehouse" />
+                    <area shape="circle" alt="Stock Adjustment" coords="265,250,30" href="<?=base_url()?>index.php/stock_adjust" class="info_link"  title="Stock Adjustment" />
+                    <area shape="circle" alt="Stock Card" coords="401,247,29" href="<?=base_url()?>index.php/inventory/rpt/cards_summary" class="info_link"  title="Stock Card" />
+                    <area shape="circle" alt="Manage Warehouse" coords="117,362,29" href="<?=base_url()?>index.php/shipping_locations"  class="info_link" title="Manage Warehouse" />
+                    <area shape="default" nohref="nohref" alt="" />
+                    </map>
+                </div>
+            </div>
+    
+        
+        </div>
+        <div class='col-md-4'>
+            <h3>Category Value</h3>
+                <div id='divGrafikCategory' style="height:350px;width:300px">
+                     <img src="<?=base_url('images/loading.gif')?>">      
+                </div>              
+        </div>
+	    
+	</div>    
+	<div class='col-xs-12'>
+        <?php if($this->config->item('google_ads_visible')) $this->load->view('google_ads');?>
+	    
 	</div>
 	
     
@@ -51,7 +63,7 @@
 		<div id="p" class="easyui-panel themes" title="Top Ten Sales" 
 			data-options="iconCls:'icon-help',closable:true,collapsible:true,
 			minimizable:true,maximizable:true" >
-			<div id='divSales'   style="width:90%;height:200px;padding:5px;"></div>
+			<div id='divSales'   style="width:90%;height:400px;padding:5px;"></div>
 		</div>
 	</div>
 	<div class='col-xs-12'>
@@ -87,6 +99,7 @@
 <script type="text/javascript" src="<?=base_url()?>assets/flot/excanvas.js"></script>
 <script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.js"></script>
 <script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.categories.js"></script>
+<script type="text/javascript" src="<?=base_url()?>assets/flot/jquery.flot.pie.js"></script>
 
 <script  language="javascript">
 $().ready(function(){
@@ -140,6 +153,38 @@ $().ready(function(){
 	}
 	checkForChanges();
 	
+	
+    
+    var data_grafik_cat=[];
+    var alreadyFetched_cat = {};
+    var idx_cat=0;
+    
+        $.ajax({
+            url: CI_ROOT+'category/grafik',type: "GET",dataType: "json",
+            success: grafik_category          
+        });
+        function grafik_category(series) {
+            if (!alreadyFetched_cat[series.label]) {
+                alreadyFetched_cat[series.label] = true;
+                for(j=0;j<series.data.length;j++){
+                    data_grafik_cat[idx_cat]={
+                        label:series.data[j][0], 
+                        data:series.data[j][1]
+                    };
+                    idx_cat++;
+                }
+            }
+            $.plot($('#divGrafikCategory'), data_grafik_cat, {
+                series: {
+                    pie: { show: true},
+                    show: true
+                },
+                    legend: {
+                        show: false
+                    },
+                    title: "Grafik Category"
+            });
+       }  	
 			
 </script>
 

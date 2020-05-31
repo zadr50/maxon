@@ -3,10 +3,13 @@ class Check_writer_items_model extends CI_Model {
 
 	private $primary_key='line_number';
 	private $table_name='check_writer_items';
+	public $amount_total=0;
+	private $trans_id=0;
+	private $trans_type='';
 
 	function __construct(){
 		parent::__construct();        
-       
+        $this->load->model(array("check_writer_model"));
         
 	}
 	function count_all(){
@@ -28,17 +31,63 @@ class Check_writer_items_model extends CI_Model {
 			where i.trans_id='$id'";
 		echo datasource($sql);
 	}
-	function save($data){
-		$this->db->insert($this->table_name,$data);
-		return $this->db->insert_id();
+	function get_trans_id($trans_id){
+		if($trans_id>0){
+			if($q=$this->check_writer_model->get_by_trans_id($this->trans_id)){
+				if($r=$q->row()){
+					$this->trans_type=$r->trans_type;
+				}
+			}
+		}
+		
 	}
-	function update($id,$data){
+	function save($data){
+		$this->trans_id=$data['trans_id'];
+		$this->get_trans_id($this->trans_id);
+		$this->db->insert($this->table_name,$data);
+		$id =  $this->db->insert_id();
+		$this->recalc_total();
+		return $id;
+	}
+	function update($id,$data){		
+		$this->trans_id=$data['trans_id'];
+		$this->get_trans_id($this->trans_id);
+		
 		$this->db->where($this->primary_key,$id);
-		return $this->db->update($this->table_name,$data);
+		$ok = $this->db->update($this->table_name,$data);
+		$this->recalc_total();
+		return $ok;
+	}
+	function recalc_total(){
+		$s="select sum(coalesce(amount,0)) as amount_total from check_writer_items 
+			where trans_id='$this->trans_id'";
+		$this->amount_total=$this->db->query($s)->row()->amount_total;
+		$fld='payment_amount';
+		if($this->trans_type=="cash in" || $this->trans_type=='trans in' || $this->trans_type=='cheque in'){
+			$fld='deposit_amount';
+		}
+		$s="update check_writer set $fld='$this->amount_total' where trans_id='$this->trans_id' ";
+		$this->db->query($s);
+		
 	}
 	function delete($id){
+		$s="select h.trans_id,h.trans_type from check_writer h 
+		left join check_writer_items d on d.trans_id=h.trans_id 
+			where d.line_number='$id' ";
+		if($q=$this->db->query($s)){
+			if($r=$q->row()){
+				$this->trans_id=$r->trans_id;
+				$this->trans_type=$r->trans_type;
+			}
+		}
+		
+		
 		$this->db->where($this->primary_key,$id);
-		return $this->db->delete($this->table_name);
+		$ok = $this->db->delete($this->table_name);
+		
+		$this->recalc_total();
+		
+		return $ok;
 	}
 
 }

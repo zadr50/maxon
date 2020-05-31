@@ -84,6 +84,7 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
 	   </tr>
 	   <tr>
 	        <td>Posted</td><td><?php echo form_input('posted',$posted,'id=posted');?></td>
+	        <td>Trans Type</td><td><?php echo form_input('trans_type',$trans_type,'id=trans_type');?></td>
 	       
 	   </tr>
 	
@@ -114,8 +115,13 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
 						<th data-options="field:'description',width:150">Nama Barang</th>
 						<th data-options="field:'quantity',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
 						<th data-options="field:'unit',width:50,align:'left',editor:'text'">Unit</th>
+						<?=col_number2("cost","Cost")?>
 						<th data-options="field:'mu_qty',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">M Qty</th>
 						<th data-options="field:'multi_unit',width:50,align:'left',editor:'text'">M Unit</th>
+						<?=col_number2('mu_price','Mu Price')?>
+						<?=col_number2('total_amount','Total')?>
+						<th data-options="field:'warehouse_code',width:80">Gudang</th>
+						<th data-options="field:'supplier_number',width:80">Asal</th>
 						<th data-options="field:'line_number',width:30,align:'right'">Line</th>
 					</tr>
 				</thead>
@@ -133,7 +139,7 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
 </div> 
 
 <?php 
-    echo load_view('inventory/inventory_select'); 
+	echo $lookup_inventory;
     echo $lookup_gudang;
     echo load_view('inventory/input_qty'); 
     echo load_view("inventory/select_unit");
@@ -155,7 +161,7 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
     function refreshItem(){
     	load_items();
     }
-    function hitung(){
+    function hitung3(){
     	calc_qty_unit();
     }
     function deleteItem(){
@@ -183,6 +189,7 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
         if (!valid()) return false;
         loading();
         var _param=get_input_values();
+        console.log(_param);
         $.ajax({
             type: "POST",
             url: url_save_item,
@@ -206,7 +213,7 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
     }
     
     
-    function hitung(){
+    function hitung2(){
         
     }
 
@@ -229,6 +236,10 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
         $("#unit").val("Pcs");
         $('#mu_qty').val("");
         $("#multi_unit").val("");
+        $("#mu_harga").val("");
+        $("#total_unit").val("");
+        $("#cost").val("");
+        
         $("#id").val("");
     }
 
@@ -265,6 +276,9 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
             receipt_by:$("#receipt_by").val(),
             mu_qty:$("#mu_qty").val(),
             multi_unit:$("#multi_unit").val(),
+            mu_price:$("#mu_harga").val(),
+            multi_unit:$("#multi_unit").val(),
+            total_amount:$("#total_amount").val(),cost:$("#cost").val(),
             id:$("#id").val()};
        return _param; 
     }
@@ -330,6 +344,9 @@ if ( $mode=="view" && $warehouse_code !="" ) $readonly_gudang="readonly";
             $('#id').val(row.line_number);
             $('#mu_qty').val(row.mu_qty);
             $('#multi_unit').val(row.multi_unit);
+            $('#cost').val(row.cost);
+            $('#mu_harga').val(row.mu_price);
+            $('#total_amount').val(row.total_amount);
         }
     }
     function load_items(){

@@ -3,7 +3,7 @@
    $min_date=$this->session->userdata("min_date","");
 	
 	echo link_button('Save', 'save_db_memo()','save');		
-	echo link_button('Print', 'print()','print');		
+	echo link_button('Print', 'print_bukti()','print');		
 	echo link_button('Add','','add','false',base_url().'index.php/purchase_dbmemo/add');		
 	echo link_button('Search','','search','false',base_url().'index.php/purchase_dbmemo');		
 	echo link_button('Delete','delete_memo()','cut');		
@@ -13,9 +13,7 @@
 		echo link_button('Posting','','ok','false',base_url().'index.php/purchase_dbmemo/posting/'.$kodecrdb);		
 	}
 	echo link_button('Refresh','','reload','false',base_url().'index.php/purchase_dbmemo/view/'.$kodecrdb);		
-	echo "<div style='float:right'>";
 	echo link_button('Help', 'load_help(\'purchase_dbmemo\')','help');		
-    echo link_button('Close','remove_tab_parent()','cancel');      
 	
 	?>
 	<a href="#" class="easyui-splitbutton" data-options="plain:false,menu:'#mmOptions',iconCls:'icon-tip'">Options</a>
@@ -26,7 +24,7 @@
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
-	</div>
+    <?=link_button('Close','remove_tab_parent()','cancel')?>      
 </div>
 <div class="thumbnail">		
 <form id="frmCrDb"  method="post">
@@ -44,6 +42,15 @@
 					Supplier Name.<?=$supplier_info?>
 				</div>
 			</td>
+			<td>Doc Type</td>
+			<td>
+				<?php echo form_input('doc_type',$doc_type,"id=doc_type"); 
+	            echo link_button('','dlgdoc_type_show();return false;',"search","false"); 
+	            echo link_button('',"dlgdoc_type_list('doc_type_podb');return false;","add","false"); 
+				
+				?>
+			</td>
+			
         </tr>	 
         <tr>
             <td>Tanggal</td><td><?php echo form_input('tanggal',$tanggal,'id=tanggal 
@@ -51,6 +58,11 @@
 			data-options="formatter:format_date,parser:parse_date"
 			style="width:150px"');?>
             </td>
+			<td>Outlet</td>
+			<td>
+				<?php echo form_input('outlet',$outlet,"id=outlet"); ?>
+            	<?=link_button("",'dlgoutlet_show();return false;','search','false')?>
+			</td>
 			 
         </tr>
        <tr>
@@ -62,29 +74,25 @@
 				<div id='faktur_info' name='faktur_info' class='thumbnail' style='height:50px;width:300px'>
 					Nomor Faktur.<?=$faktur_info?>
 				</div>
-			</td>
-			
+			</td>			
        </tr>
        <tr>
             <td>Faktur</td>
             <td><?=form_input('docnumber',$docnumber,'id="docnumber"');?>
-            	<?=link_button("",'select_faktur()','search','false')?>
-            </td>
-			 
+            	<?=link_button("",'dlgpurchase_invoice_show();return false;','search','false')?>
+            </td>			 
        </tr>
        <tr>
        		<td>Jumlah: </td>
        		<td><?php echo form_input('amount',$amount,'id=amount');?></td>
             <td>Percent%: <?php echo form_input('prc_value',$prc_value,
-            "id='prc_value' onblur='calc_prc_value()' ");?></td>
-			 
+            "id='prc_value' onblur='calc_prc_value()' ");?></td>			 
       </tr>
        <tr>
             <td>Keterangan</td>
             <td colspan="2">
             	<?php echo form_input('keterangan',$keterangan,'id=keterangan style="width:300px"');?>
-            </td>
-			 
+            </td>			 
        </tr>
    </table>
 </form>
@@ -166,14 +174,20 @@
 	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="false" onclick="deleteItem()">Delete</a>	
 </div>
 
-<?=load_view('gl/select_coa')?>
-<? include_once 'faktur_select_crdb.php' ?>
-<?=$lookup_suppliers?>
+<?php 
+//include_once 'faktur_select_crdb.php'; 
+echo load_view("gl/select_coa");
+echo $lookup_faktur;
+echo $lookup_suppliers;
+echo $lookup_doc_type;
+echo $lookup_gudang;
+?>
 
 
 <script type="text/javascript">
 	var url;	
 	var saldo_faktur=0;
+	
 	function calc_prc_value(){
         prc_value=$('#prc_value').val();
         if(prc_value>1){
@@ -303,5 +317,27 @@
 			});
 			
 		}
-    
+      	function print_bukti(){
+            txtNo='<?=$kodecrdb?>'; 
+            window.open("<?=base_url().'index.php/crdb/print_bukti/'?>"+txtNo,"new");  		
+	  	}
+	function find_faktur(){
+		var nomor=$('#docnumber').val();
+		if(nomor=="")return false;
+		xurl=CI_ROOT+'purchase_invoice/find/'+nomor;
+		loading();
+		$.ajax({
+					type: "GET",
+					url: xurl,
+					data:'invoice_number='+nomor,
+					success: function(msg){
+						var obj=jQuery.parseJSON(msg);
+						$('#faktur_info').html('Tanggal: '+obj.po_date+', Jumlah: '+obj.amount+', Saldo: '+obj.saldo);
+						saldo_faktur=c_(obj.saldo);
+						loading_close();
+					},
+					error: function(msg){alert(msg);}
+		});
+	};
+
 </script>

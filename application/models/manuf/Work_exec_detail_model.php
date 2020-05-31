@@ -13,14 +13,19 @@ function count_all(){
 	return $this->db->count_all($this->table_name);
 }
 function get_by_id($id){
+
 	$this->db->where($this->primary_key,$id);
 	return $this->db->get($this->table_name);
 }
 function save($data){
+	$data['price']=0;
+	$data['total']=0;
 	$this->db->insert($this->table_name,$data);
 	return $this->db->insert_id();
 }
 function update($id,$data){
+	$data['price']=0;
+	$data['total']=0;
 	$this->db->where($this->primary_key,$id);
 	return $this->db->update($this->table_name,$data);
 }

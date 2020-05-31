@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS `payroll_link` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table.=", hr_emp_angsurang";
 
 $sql=" 
 
@@ -84,6 +85,8 @@ CREATE TABLE hr_emp_loan (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table.=", hr_pph";
+
 $sql=" 
 CREATE TABLE hr_pph (
 	kode varchar (50) character set utf8 NULL ,
@@ -132,6 +135,8 @@ CREATE TABLE hr_shift (
 	PRIMARY KEY  (kode)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
+$table.=", employee_shift";
 
 $sql=" 
 

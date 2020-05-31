@@ -65,16 +65,21 @@ $().ready(function (){
 		}
 	}
 	function load_do_items(nomor) {
+		var nomor_do=$("#invoice_number").val();
+		if(nomor_do=="" || nomor_do=="AUTO"){
+			log_err("Isi nomor surat jalan !");return false;
+		}
 		$.ajax({
 			type : 'GET',
-			url : '<?=base_url();?>index.php/delivery_order/insert_invoice/'+nomor+'/'+$('#invoice_number').val(),
+			url : '<?=base_url();?>index.php/delivery_order/insert_invoice/'+nomor+'/'+nomor_do,
 			data: '',
 			success: function (data) {                
-				console.log(data);
+				//console.log(data);
+				log_msg("Nomor surat jalan berhasil disimpan. Tekan Simpan lagi bila diperlukan.");
 			}
 		});
 		
-		$('#dg').datagrid({url:'<?=base_url()?>index.php/invoice/items/'+nomor+'/json'});
+		$('#dg').datagrid({url:'<?=base_url()?>index.php/invoice/items/'+nomor_do+'/json'});
 				
 	}
 	

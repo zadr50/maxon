@@ -1,4 +1,4 @@
-<div class="thumbnail box-gradient">
+<div class="thumbnail box-gradient" id='divToolbar'>
 	<?php
 		echo link_button("Save","save_so()","save");
 		echo link_button('Print', 'print_so()','print');
@@ -75,6 +75,7 @@
 	function load_items(){
 		var so=$("#sales_order_number").val();								
 		$('#dg').datagrid({url:'<?=base_url()?>index.php/sales_order/items/'+so+'/json'});
+		$("#dg").datagrid("reload");
 	}
 	function display(){
 		var so=$("#sales_order_number").val();
@@ -84,6 +85,10 @@
         if($('#sales_order_number').val()==''){log_err('Isi nomor sales order !');return false;}
         if($('#sold_to_customer').val()==''){log_err('Pilih pelanggan !');return false;}
         if($('#salesman').val()==''){log_err('Pilih salesman !');return false;}        
+		if($('#warehouse_code').val()==''){
+			log_err("Isi kode gudang !");
+			return false;
+		}
 		
         var valid_date=true;
         var min_date='<?=$min_date?>';
@@ -97,7 +102,8 @@
 			log_msg(ERR_ACCESS_MODULE);
 			return false;
 		}
-	
+		$("#divToolbar").hide();
+		
 		loading();
 		
 		hitung_jumlah();
@@ -117,6 +123,8 @@
 						$('#mode').val('view');
 						$('#dg').datagrid({url:'<?=base_url()?>index.php/sales_order/items/'+so+'/json'});
 						log_msg('Data sudah tersimpan. Silahkan pilih nama barang');
+						$("#divToolbar").show();
+						
 					} else {
 						loading_close();
 						log_err(result.msg);

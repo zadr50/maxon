@@ -43,7 +43,9 @@
 			"Hapus semua database.");		
 			add_button_menu("Cek DB Struktur","company/check_db_structure","flame.png",
 			"Hapus semua database.");		
-								
+			add_button_menu("Data Transfer","replicate/setting","flame.png",
+			"Data transfer or replicate to other database.");		
+											
 		?>
 		</div>
 

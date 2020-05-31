@@ -3,14 +3,11 @@
 	if(!isset($set_hide))$set_hide=false;
 	echo link_button('Save', 'save()','save');		
 	echo link_button('Print', 'print_item()','print');	
-    if(!$set_hide)	echo link_button('Add','','add','false',base_url().'index.php/user/add');		
-	echo link_button('Search','','search','false',base_url().'index.php/user');		
 	if($mode=="view") echo link_button('Refresh','','reload','false',base_url().'index.php/user/view/'.$id);		
 	if(!$set_hide) echo link_button('Delete', 'delete_user()','remove');		
     
     
 	echo "<div style='float:right'>";
-    echo link_button('Close','remove_tab_parent()','cancel');      
 	echo link_button('Help', 'load_help()','help');		
 	
 	?>
@@ -22,6 +19,7 @@
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
+    <?=link_button('Close','remove_tab_parent()','cancel')?>      
 	
 	
 	</div>
@@ -62,7 +60,7 @@
             <tr><td>Username &nbsp&nbsp</td><td><?php echo form_input('username',$username,"id=username");?></td>
         		<td>CID </td><td><?php echo form_input('cid',$cid,"id=cid");?></td>
         	</tr>
-        	<tr><td>Password </td><td><?php echo form_input('password',$password,"id=password");?></td>
+        	<tr><td>Password </td><td><?php echo form_password('password',$password,"id=password");?></td>
         		<td>Cabang</td><td><?php echo form_dropdown('branch_code',$branch_list,$branch_code,"id='branch_code' title='Pilih kode outlet atau cabang perusahaan untuk user ini.' ");?></td>       	
         	</tr> 
         <tr>
@@ -77,7 +75,7 @@
             </td>
         </tr>
             <tr><td colspan=2>
-                <?=form_checkbox("flag1",1,$flag1)?>&nbsp Tampilkan data hanya untuk user ini saja</td>
+                <?=form_checkbox("flag1",1,$flag1,"style='width:25px'")?>&nbsp Tampilkan data hanya untuk user ini saja</td>
                 <td>Session Id</td>
                 <td>
                     <input value='<?=$session_id?>' name='session_id' id='session_id' title='Session yang dibuat otomatis ketika login.'/>

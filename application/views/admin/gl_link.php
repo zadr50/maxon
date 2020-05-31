@@ -26,6 +26,12 @@ if($q=$this->company_model->get_by_id($company_code)){
         <?=link_button('Close', 'remove_tab_parent()','cancel');?>
     </div>
 </div>
+<div class='alert alert-info'>
+    Diatas ini adalah seting dan pengaturan link akun yang berfungsi untuk 
+    mengintegrasikan kode akun standard/default untuk semua transaksi yang 
+    ada dalam software ini. Silahkan isi atau pilih dengan akun yang bersesuaian.
+    <br>Company: <?="<strong>$company_code - $company_name</strong>"?>
+</div>
  
 <?php
 function show_fields($fields){
@@ -55,6 +61,7 @@ function show_fields($fields){
     
 	<div class="easyui-tabs">
         <div title="Pembelian" id="pur-tab">
+            <div class="col-md-11">
 			<?php 
 			$fields=array(
 			array("caption"=>"Hutang (Account Payable)",
@@ -67,6 +74,8 @@ function show_fields($fields){
 				"field"=>"po_tax","value"=>$po_tax),
 			array("caption"=>"Potongan Pembelian",
 				"field"=>"po_discounts_taken","value"=>$po_discounts_taken),
+            array("caption"=>"Retur Pembelian",
+                "field"=>"txtReturBeli","value"=>$txtReturBeli),
 			array("caption"=>"Kredit/Debit Memo",
 				"field"=>"supplier_credit_account_number","value"=>$supplier_credit_account_number),
 			array("caption"=>"Uang Muka Pembelian",
@@ -75,9 +84,10 @@ function show_fields($fields){
 			);
 			show_fields($fields);
 			?>
-
+            </div>
 		</div>
         <div title="Penjualan" id="sal-tab">
+            <div class="col-md-11">
 		<?php
 			$fields=array(
 			array("caption"=>"Piutang (Account Receivable)",
@@ -90,6 +100,8 @@ function show_fields($fields){
 				"field"=>"so_tax","value"=>$so_tax),
 			array("caption"=>"Potongan Penjualan",
 				"field"=>"so_discounts_given","value"=>$so_discounts_given),
+            array("caption"=>"Retur Penjualan",
+                "field"=>"txtReturJual","value"=>$txtReturJual),
 			array("caption"=>"Debit/Kredit Memo Piutang",
 				"field"=>"customer_credit_account_number","value"=>$customer_credit_account_number),
 			array("caption"=>"Uang Muka Penjualan",
@@ -99,12 +111,16 @@ function show_fields($fields){
 			array("caption"=>"Biaya Promosi",
 				"field"=>"txtPromo","value"=>$txtPromo),
 			array("caption"=>"Biaya Bonus / Hadiah",
-				"field"=>"txtGift","value"=>$txtGift)			
+				"field"=>"txtGift","value"=>$txtGift),			
+			array("caption"=>"Hutang Komisi",
+				"field"=>"txtHutangKomisi","value"=>$txtHutangKomisi)			
 			);
 			show_fields($fields); 			
 		?>		
+		    </div>  
 		</div>
         <div title="Persediaan" id="inv-tab">
+            <div class="col-md-11">
 		<?php
 			$fields=array(
 			array("caption"=>"Penjualan Barang (Inventory Sales)",
@@ -125,11 +141,13 @@ function show_fields($fields){
 			);
 			show_fields($fields);
 		?>
+		      </div>
 		</div>
         <div title="Financial" id="fin-tab">
+            <div class="col-md-11">
 		<?php
 			$fields=array(
-			array("caption"=>"PPerkiraan Transaksi Kas",
+			array("caption"=>"Perkiraan Transaksi Kas",
 				"field"=>"default_cash_payment_account","value"=>$default_cash_payment_account),
 			array("caption"=>"Perkiraan Transaksi Bank",
 				"field"=>"default_bank_account_number","value"=>$default_bank_account_number),
@@ -145,18 +163,10 @@ function show_fields($fields){
 			);
 			show_fields($fields);
 		?>
+		      </div>
 		</div>
 	</div>	
 </form>
- 
-
-
-<div class='alert alert-info'>
-    Diatas ini adalah seting dan pengaturan link akun yang berfungsi untuk 
-    mengintegrasikan kode akun standard/default untuk semua transaksi yang 
-    ada dalam software ini. Silahkan isi atau pilih dengan akun yang bersesuaian.
-    <br>Company: <?="<strong>$company_code - $company_name</strong>"?>
-</div>
    
 <?=load_view('gl/select_coa_link')?>   	
 <?=$lookup_company?>

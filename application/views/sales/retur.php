@@ -160,7 +160,7 @@
 	<div id='divItem' title='Items'>
 		<div id='dgItem'><? include_once "invoice_add_item_simple.php"; ?></div>
 		
-		<table id="dg" class="easyui-datagrid"  width='1200'
+		<table id="dg" class="easyui-datagrid"  width='1200'  style="height:400px"
 			data-options="
 				iconCls: 'icon-edit', fitColumns: true, 
 				singleSelect: true,

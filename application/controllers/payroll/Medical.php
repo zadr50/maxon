@@ -82,9 +82,10 @@ class Medical extends CI_Controller {
 	function browse($offset=0,$limit=10,$order_column='nip',$order_type='asc')	{
         $data['caption']='DAFTAR MEDICAL KARYAWAN';
 		$data['controller']='payroll/medical';		
-		$data['fields_caption']=array('NIP','Nama Karyawan','Tanggal','Keterangan','Id');
-		$data['fields']=array('employeeid','nama','medicaldate','description','id');
+		$data['fields_caption']=array('Nama Karyawan','NIP','Tanggal','Keterangan','Amount','Id');
+		$data['fields']=array('nama','employeeid','medicaldate','description','amount','id');
 		$data['field_key']='id';
+		$data['fields_format_numeric']=array("amount");
 		
 		$faa[]=criteria("NIP","sid_nip");
 		$faa[]=criteria("Nama","sid_nama");
@@ -92,14 +93,14 @@ class Medical extends CI_Controller {
         $this->template->display_browse2($data);            
     }
     function browse_data($offset=0,$limit=10,$nama=''){
-		$sql="select o.employeeid,e.nama, o.medicaldate,o.description,o.id 
+		$sql="select o.employeeid,e.nama, o.medicaldate,o.description,o.id,o.amount 
 		from employeemedical o left join employee e on e.nip=o.employeeid ";
         echo datasource($sql);		
     }
       
 	function delete($id){
 		$id=urldecode($id);
-	 	$this->medical_model->delete($id);
-	 	$this->browse();
+	 	$ok=$this->medical_model->delete($id);
+        echo json_encode(array("success"=>$ok,"msg"=>"Sukses"));
 	}
 }

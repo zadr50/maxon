@@ -6,7 +6,9 @@ class Promosi_model extends CI_Model {
 
 	function __construct(){
 		parent::__construct();        
-       
+        $this->load->model("inventory_model");
+        $this->load->model("category_model");
+        $this->load->model("supplier_model");
         
 	}
 	function count_all(){
@@ -98,5 +100,39 @@ class Promosi_model extends CI_Model {
 			}
 		}
 		return $ret;
+	}
+	function save_item($data){
+		$id=0;
+		$item_number=$data['item_number'];
+		$item_type="item";
+		if(isset($data['item_type']))$item_type=$data['item_type'];
+		$this->db->where("promosi_code",$data['promosi_code']);
+		$this->db->where("item_number",$item_number);
+		if($q=$this->db->get("promosi_item")){
+			if(!$q->num_rows()){
+				$data['item_type']=$item_type;
+				if($item_type=="item"){
+					$data['description']=$this->inventory_model->get_description($item_number);
+				} else if($item_type=="category"){
+					$data['description']=$this->category_model->get_category($item_number);
+
+				} else if($item_type=="supplier"){
+					$data['description']=$this->supplier_model->get_supplier_name($item_number);
+				} else {
+					$data['description']=$data['item_number'];
+				}
+
+				if($q2=$this->db->insert("promosi_item",$data)){
+					return $this->db->insert_id();
+				}
+			} else {
+				$id=$q->row()->id;
+			}
+		}
+		return $id;
+	}
+	function delete_item($id){
+		$this->db->where("id",$id);
+		return $this->db->delete("promosi_item");
 	}
 }

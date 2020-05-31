@@ -89,7 +89,9 @@ class Receive_po extends CI_Controller {
         
     }
 	function saveex(){
-        $data['potype']='O';
+	    $potype=getvar("PoType","O");
+
+        $data['potype']=$potype;
         $id=$this->nomor_bukti();
 		$data['purchase_order_number']=$id;
 		$data['po_date']=$this->input->post('po_date');
@@ -118,7 +120,7 @@ class Receive_po extends CI_Controller {
 			$data['date_received']= date("Y-m-d H:i:s");
 			$data['receipt_type']='PO';
 			$data['shipment_id']=$this->sysvar->autonumber("Receivement Numbering",0,'!TRM~$00001');
-            $data['warehouse_code']=$this->session->userdata('session_outlet','');
+            $data['warehouse_code']=current_gudang();
             $data['doc_status']="OPEN";
 		} 
         $setsupp['dlgBindId']="suppliers";
@@ -133,7 +135,39 @@ class Receive_po extends CI_Controller {
                 );          
         $data['lookup_suppliers']=$this->list_of_values->render($setsupp);
 
-
+            $setwh['dlgBindId']="warehouse";
+            $setwh['dlgRetFunc']="$('#warehouse_code').val(row.location_number);
+            $('#bill_to_contact').val(row.company_name);";
+            $setwh['dlgCols']=array( 
+                        array("fieldname"=>"location_number","caption"=>"Kode","width"=>"80px"),
+                        array("fieldname"=>"attention_name","caption"=>"Nama Toko","width"=>"180px"),
+                        array("fieldname"=>"company_name","caption"=>"Kode Pers","width"=>"50px"),
+                        array("fieldname"=>"company","caption"=>"Perusahaan","width"=>"200px")
+                    );          
+            $setwh['show_date_range']=false;
+            $data['lookup_gudang']=$this->list_of_values->render($setwh);
+		
+		$data['lookup_po_open']=$this->list_of_values->render(array(
+			'dlgBindId'=>'po_open',
+			'dlgRetFunc'=>'po_open_selected(row.purchase_order_number);',
+			'dlgUrlQuery'=>'purchase_order/select_open_po',
+			'dlgBeforeLookup'=>"q1=$('#supplier_number').val(); ",
+			'dlgTitle'=>'Daftar PO Outstanding',
+			'show_date_range'=>true,
+			'dlgCols'=>array(
+                array("fieldname"=>"purchase_order_number","caption"=>"Nomor PO","width"=>"80px"),
+                array("fieldname"=>"po_date","caption"=>"Tanggal","width"=>"80px"),
+                array("fieldname"=>"terms","caption"=>"Termin","width"=>"80px"),
+                array("fieldname"=>"due_date","caption"=>"Jth Tempo","width"=>"80px"),
+                array("fieldname"=>"supplier_number","caption"=>"Supplier","width"=>"80px"),
+                array("fieldname"=>"supplier_name","caption"=>"Nama Supplier","width"=>"80px"),		
+                array("fieldname"=>"doc_status","caption"=>"Status","width"=>"80px"),
+                array("fieldname"=>"bill_to_contact","caption"=>"Company","width"=>"80px")
+                		
+			)
+			
+		));
+		
 		return $data;
 	}	
 	function get_posts(){
@@ -175,10 +209,10 @@ class Receive_po extends CI_Controller {
 		$id=urldecode($id);
         $sql="select i.item_number,s.description,i.quantity_received,
             i.unit,i.id,i.cost,i.total_amount,s.manufacturer,i.mu_qty,
-            i.multi_unit,i.mu_price
+            i.multi_unit,i.mu_price,i.no_urut
             from inventory_products i
             left join inventory s on s.item_number=i.item_number
-            where shipment_id='".$id."'";
+            where shipment_id='$id' order by i.no_urut";
 		echo datasource($sql);               
  //       return browse_simple($sql,'Daftar Barang diterima');
     }                 
@@ -266,7 +300,8 @@ class Receive_po extends CI_Controller {
 		if($nomor_po_row=$this->inventory_products_model->get_by_id($id)->row()){
 		  $nomor_po=$nomor_po_row->purchase_order_number;   
 		};
-		if($this->inventory_products_model->validate_delete_receive_po($id) and $this->inventory_products_model->delete($id)){
+		if($this->inventory_products_model->validate_delete_receive_po($id) 
+			and $this->inventory_products_model->delete($id)){
 
 			$this->load->model('purchase_order_model');
 			$this->purchase_order_model->recalc_qty_recvd($nomor_po);
@@ -280,14 +315,16 @@ class Receive_po extends CI_Controller {
     function delete_by_shipment($shipment_id){
         $shipment_id=urldecode($shipment_id);
         $nomor_po="";
-        $q=$this->db->query("select purchase_order_number from inventory_products 
-            where shipment_id='$shipment_id' and purchase_order_number<>'' limit 1");
+		$sql="select purchase_order_number from inventory_products 
+            where shipment_id='$shipment_id' and purchase_order_number<>'' limit 1";
+        $q=$this->db->query($sql);
         if($q){
             if($r=$q->row()){
                 $nomor_po=$r->purchase_order_number;
             }
         }
-        $ok=$this->db->where("shipment_id",$shipment_id)->delete("inventory_products");
+		$ok=$this->inventory_products_model->delete($shipment_id);
+//        $ok=$this->db->where("shipment_id",$shipment_id)->delete("inventory_products");
         $this->purchase_order_model->recalc_qty_recvd($nomor_po);
         echo json_encode(array("success"=>$ok,"msg"=>$ok?"Berhasil hapus nomor ini.":"Error"));
         
@@ -302,13 +339,13 @@ class Receive_po extends CI_Controller {
         }
 	function add_item($recv_id){                
 		$recv_id=urldecode($recv_id);
-                $data['shipment_id']=$recv_id;
-                $data['quantity_received']=$_GET['qty'];
-                $data['item_number']=$_GET['item'];
-                $data['receipt_type']='ETC_IN';
-                $data['warehouse_code']=$this->access->cid;
-                $this->inventory_card_header_model->add_item($data);
-                echo $this->receive_items($recv_id);
+        $data['shipment_id']=$recv_id;
+        $data['quantity_received']=$_GET['qty'];
+        $data['item_number']=$_GET['item'];
+        $data['receipt_type']='ETC_IN';
+        $data['warehouse_code']=$this->access->cid;
+        $this->inventory_card_header_model->add_item($data);
+        echo $this->receive_items($recv_id);
 	}
 	function del_item($id,$recv_id){
 		$id=urldecode($id);
@@ -325,6 +362,7 @@ class Receive_po extends CI_Controller {
 		$data['warehouse_code']=$rcv->warehouse_code;
 		$data['comments']=$rcv->comments;
 		$data['purchase_order_number']=$rcv->purchase_order_number;
+		$data['items']=$rcv;
 		$data['content']=load_view('inventory/rpt/print_receive',$data);
 		$this->load->view('pdf_print',$data);
 	}
@@ -355,6 +393,7 @@ class Receive_po extends CI_Controller {
 		$line=$this->input->post('line');
 		$mu_qty_data=$this->input->post("mu_qty");
 		$ratio=$this->input->post("ratio");
+		$urut=$this->input->post("urut");
 		
 		//var_dump(count($qty));
 		for($i=0;$i<count($qty);$i++){
@@ -389,6 +428,7 @@ class Receive_po extends CI_Controller {
 				$data["mu_qty"]=$mu_qty;
 				$data["multi_unit"]=$multi_unit;
 				$data["mu_price"]=$poline->mu_harga;
+				$data["no_urut"]=$urut[$i];
 				$this->inventory_products_model->save($data);
 				$this->purchase_order_lineitems_model->update_qty_received($poline->line_number,$qty_now);
 			}
@@ -441,7 +481,7 @@ class Receive_po extends CI_Controller {
 		foreach($query->result() as $row){
 			$data.="<tr><td>".$row->shipment_id."</td><td>".$row->date_received."</td><td>".$row->warehouse_code."</td>";
             $data.="<td>$row->purchase_order_number</td>";
-			$data.="<td><input type='checkbox' name='nomor[]' value='".$row->shipment_id."' style='height:30px;width:30px'></td>";
+			$data.="<td><input type='checkbox' name='nomor[]' value='".$row->shipment_id."' style='height:20px;width:20px'></td>";
 			$data.="</tr>";
 			$i++;
 		}
@@ -522,6 +562,7 @@ class Receive_po extends CI_Controller {
 			$data['multi_unit']=$row->multi_unit;
 			$data['mu_harga']=$row->mu_price;
 			$ok=$this->purchase_order_lineitems_model->save($data);
+            $this->inventory_model->hpp_calc($data['item_number'],$data['price'],$data['quantity']);
             
 		}
 		$this->db->query("update inventory_products set selected=1 where shipment_id='".$shipment_id."'");

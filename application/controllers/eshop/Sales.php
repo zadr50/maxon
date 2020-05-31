@@ -8,16 +8,6 @@ class Sales extends CI_Controller {
 	{
 		parent::__construct();
  		$this->load->helper(array('url','form'));
-                
-        $multi_company=$this->config->item('multi_company');
-       if($multi_company){
-            $company_code=$this->session->userdata("company_code","");
-            if($company_code!=""){
-               $this->db = $this->load->database($company_code, TRUE);
-           }
-       }         
-        
-        
 		$this->load->library('template_eshop');
 	}
 	function index() {	
@@ -35,7 +25,7 @@ class Sales extends CI_Controller {
 			->get("sales_order_lineitems");
 		$so_pay=$this->db->where("invoice_number",$so_number)->get("payments")->row();
 		$data['content']=true;
-		$data['footer']='eshop/footer';
+		$data['footer']='eshop/template/footer';
 		$data['cust']=$this->db->where("customer_number",$cust_id)->get("customers")->row();
 		$data['so']=$so;
 		$data['so_detail']=$so_item;
@@ -43,7 +33,9 @@ class Sales extends CI_Controller {
 		$data['caption']="TAGIHAN";
 		$data['so_list']=$this->db->where('sold_to_customer',$cust_id)->order_by('sales_date desc')
 			->get('sales_order');
-		$this->template_eshop->display("sales",$data);
+        $data['cmd']=$this->input->get("cmd");
+        
+		$this->template_eshop->display("sales/sales",$data);
 	}
 }
 ?>

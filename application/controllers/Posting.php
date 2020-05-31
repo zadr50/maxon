@@ -10,7 +10,10 @@ class Posting extends CI_Controller {
                 
     private $postcode="";
     private $posting_all=false;
-	
+	private $message="";
+	function message_text(){
+		return $this->message;
+	}
 	function __construct()
 	{
 		parent::__construct();        
@@ -26,20 +29,46 @@ class Posting extends CI_Controller {
         $this->load->model('check_writer_model');
         $this->load->model('purchase_invoice_model');
         $this->load->model('invoice_model');
+		$this->load->model('inventory_products_model');
+		
 	}
 
     function index(){
-        $this->browse();        
+//        $this->browse();        
+		$data['caption']='Posting all transactions';
+		$this->template->display("gl/posting",$data);
     }
-    
-
+    function load_data(){
+		$from_date=$this->input->get("d1");
+		$to_date=$this->input->get("d2");
+		$jenis=$this->input->get("q");
+		$unposted=$this->input->get("unposted");
+		$s="select * from q_all_trans where tanggal between '$from_date' and '$to_date' ";
+		if($unposted){
+			$s.=" and (posted=false or posted is null)";
+		} else {
+			$s.=" and posted=true";
+		}
+		if($jenis!=""){
+			$s.=" and jenis='$jenis' ";
+		}
+		$s.=" order by tanggal ";
+		//echo $s;
+		
+		echo datasource($s);
+    }
+	function sales_invoice_filter(){
+		$data["caption"]="Posting Penjualan";
+		$data["proses"]="invoice";
+		$this->template->display("gl/posting",$data);
+	}
     function sales_invoice($nomor="",$unposting=false){
         if($nomor!=""){
             if($unposting){
             $this->invoice_model->unposting($nomor);
                 
             }  else {
-            $this->invoice_model->posting($nomor);
+            $this->invoice_model->posting($nomor,false);
                 
             }
             
@@ -150,7 +179,7 @@ class Posting extends CI_Controller {
         }
     }
     function purchase_invoice($invoice_number="",$unposting=false) {
-        if($invoice_number!=""){
+  	        if($invoice_number!=""){
             if($unposting){
                 $this->purchase_invoice_model->unposting($invoice_number);
             } else {
@@ -322,6 +351,31 @@ class Posting extends CI_Controller {
         $this->template->display_browse2($data); 
         
     }
+	function posting_all2(){
+		$success=false;
+		$data=$this->input->post();
+		if(isset($data['row'])){
+			$row=$data['row'];
+			$nomor=$row['nomor_bukti'];
+			$jenis=$row['jenis'];
+			$posted=$row['posted'];
+			$this->posting_process($nomor, $jenis);
+			$success=true;
+			echo json_encode(array("success"=>$success,"message"=>$this->message));
+		} else {
+			$rows=$data['rows'];
+			for($i=0;$i<count($rows);$i++){
+				$row=$rows[$i];
+				$nomor=$row['nomor_bukti'];
+				$jenis=$row['jenis'];
+				$posted=$row['posted'];
+				$this->posting_process($nomor, $jenis);
+			}
+			$success=true;
+			echo json_encode(array("success"=>$success,"message"=>$this->message));			
+		}
+		
+	}
     function posting_all(){
         $date1=$this->input->get("sid_date_from");
         $date2=$this->input->get("sid_date_to");
@@ -338,49 +392,55 @@ class Posting extends CI_Controller {
             foreach($q->result() as $glid){
                 $jenis=$glid->jenis;
                 $nomor=$glid->nomor_bukti;
-                echo "<br>Posting [$nomor] - $jenis...please wait";
-                if($jenis=="kas masuk" || $jenis=="kas keluar"){
-                    $this->cash($nomor);
-                } else if ($jenis=="faktur penjualan kontan" || $jenis=="faktur penjualan kredit"){
-                    $this->sales_invoice($nomor);
-                } else if ($jenis=="faktur pembelian kredit"){
-                    $this->purchase_invoice($nomor);
-                } else if ($jenis=="retur pembelian"){
-                    $this->purchase_retur($nomor);            
-                } else if ($jenis=="faktur beli konsinyasi"){
-                    $this->purchase_invoice($nomor);          
-                } else if ($jenis=="debit credit memo pembelian"){
-                    $this->purchase_memo($nomor);            
-                } else if ($jenis=="faktur pembelian non po"){
-                    $this->purchase_invoice($nomor);            
-                } else if ($jenis=="retur penjualan"){
-                    $this->sales_retur($nomor);            
-                } else if ($jenis=="faktur jual konsinyasi"){
-                    $this->sales_invoice($nomor);           
-                } else if ($jenis=="debit credit memo pembelian"){
-                    $this->sales_memo($nomor);            
-                } else if ($jenis=="debit credit memo penjualan"){
-                    $this->sales_memo($nomor);            
-                } else if ($jenis=="assembly disassembly"){
-                                
-                } else if ($jenis=="stock adjustment"){
-                              
-                } else if ($jenis=="bank transfer"){
-                                
-                } else if ($jenis=="barang keluar lainnya"){
-                                
-                                
-                } else {
-                    msgbox("Jenis transaksi belum bisa di Posting
-                     <strong>[$jenis]</strong> untuk nomor bukti 
-                     <strong>[$nomor]</strong>","Informasi");
-                }
-                
+				$this->posting_process($nomor,$jenis);
             }
         }
-        echo "<p>Finish</p>";  
+        echo "<br>$this->message <p>Finish</p>";  
         
     }
+	function posting_process($nomor,$jenis){
+            $this->message.= "<br>Posting [$nomor] - $jenis...please wait";
+            if($jenis=="kas masuk" || $jenis=="kas keluar"){
+                $this->cash($nomor);
+            } else if ($jenis=="faktur penjualan kontan" || $jenis=="faktur penjualan kredit"){
+                $this->sales_invoice($nomor);
+            } else if ($jenis=="faktur pembelian kredit"){
+                $this->purchase_invoice($nomor);
+            } else if ($jenis=="retur pembelian"){
+                $this->purchase_retur($nomor);            
+            } else if ($jenis=="faktur beli konsinyasi"){
+                $this->purchase_invoice($nomor);          
+            } else if ($jenis=="debit credit memo pembelian"){
+                $this->purchase_memo($nomor);            
+            } else if ($jenis=="faktur pembelian non po"){
+                $this->purchase_invoice($nomor);            
+            } else if ($jenis=="retur penjualan"){
+                $this->sales_retur($nomor);            
+            } else if ($jenis=="faktur jual konsinyasi"){
+                $this->sales_invoice($nomor);           
+            } else if ($jenis=="debit credit memo pembelian"){
+                $this->sales_memo($nomor);            
+            } else if ($jenis=="debit credit memo penjualan"){
+                $this->sales_memo($nomor);            
+            } else if ($jenis=="assembly disassembly"){
+                            
+            } else if ($jenis=="stock adjustment"){
+                          
+            } else if ($jenis=="bank transfer"){
+                            
+            } else if ($jenis=="barang keluar lainnya"){
+                $this->inventory_products_model->posting($nomor);				            
+            } else if ($jenis=="barang masuk lainnya"){
+                $this->inventory_products_model->posting($nomor);				            
+            	
+            	                
+            } else {
+                $this->message.="<br>Jenis transaksi belum bisa di Posting
+                 <strong>[$jenis]</strong> untuk nomor bukti 
+                 <strong>[$nomor]</strong>";
+            }
+                		
+	}
     function all(){
         $data['date_from']=date('Y-m-d 00:00:00');
         $data['date_to']=date('Y-m-d 23:59:59');
@@ -488,6 +548,32 @@ class Posting extends CI_Controller {
             msgbox("Jenis transaksi belum bisa di lihat <strong>[$jenis]</strong> untuk nomor bukti <strong>[$id]</strong>","Informasi");
         }
     }    
+	function unposting_all2(){
+		$success=false;
+		$data=$this->input->post();
+		if(isset($data['row'])){
+			$row=$data['row'];
+			$nomor=$row['nomor_bukti'];
+			$jenis=$row['jenis'];
+			$posted=$row['posted'];
+			$this->unposting_process($nomor, $jenis);
+			$success=true;
+			echo json_encode(array("success"=>$success,"message"=>$this->message));
+		} else {
+			$rows=$data['rows'];
+			for($i=0;$i<count($rows);$i++){
+				$row=$rows[$i];
+				$nomor=$row['nomor_bukti'];
+				$jenis=$row['jenis'];
+				$posted=$row['posted'];
+				$this->unposting_process($nomor, $jenis);
+			}
+			$success=true;
+			echo json_encode(array("success"=>$success,"message"=>$this->message));			
+		}
+		
+	}
+	
     function unposting_all(){
         $date1=$this->input->get("sid_date_from");
         $date2=$this->input->get("sid_date_to");
@@ -504,7 +590,15 @@ class Posting extends CI_Controller {
             foreach($q->result() as $glid){
                 $jenis=$glid->jenis;
                 $nomor=$glid->nomor_bukti;
-                echo "<br>UnPosting [$nomor] - $jenis...please wait";
+				$this->unposting_process($nomor,$jenis);
+
+            }
+        }
+        echo "<p>Finish</p>";  
+        
+    }
+	function unposting_process($nomor,$jenis){
+                $this->message .= "<br>UnPosting [$nomor] - $jenis...please wait";
                 if($jenis=="kas masuk" || $jenis=="kas keluar"){
                     $this->cash($nomor,true);
                 } else if ($jenis=="faktur penjualan kontan" || $jenis=="faktur penjualan kredit"){
@@ -534,19 +628,40 @@ class Posting extends CI_Controller {
                 } else if ($jenis=="bank transfer"){
                                 
                 } else if ($jenis=="barang keluar lainnya"){
-                                
+                    $this->inventory_products_model->unposting($nomor);            
+                } else if ($jenis=="barang masuk lainnya"){
+                    $this->inventory_products_model->unposting($nomor);            
                                 
                 } else {
-                    msgbox("Jenis transaksi belum bisa di UnPosting
+                    $this->message.="Jenis transaksi belum bisa di UnPosting
                      <strong>[$jenis]</strong> untuk nomor bukti 
-                     <strong>[$nomor]</strong>","Informasi");
+                     <strong>[$nomor]</strong>";
                 }
-                
-            }
-        }
-        echo "<p>Finish</p>";  
-        
-    }
+                		
+	}
+ 	function autopost(){
+        $sql="select * from q_all_trans where (posted='0' or posted is null)  
+        	and nomor_bukti not in (select gl_id from zzz_jurnal_error) limit 1";
+		if($q=$this->db->query($sql)){
+			if($r=$q->row()){
+				$hari=round((strtotime(date("Y-m-d"))-strtotime($r->tanggal))/3600/24);
+				
+				if($hari>1){
+					$this->message="AutoPost: $r->nomor_bukti";
+					$this->posting_process($r->nomor_bukti, $r->jenis);
+					echo json_encode(array("success"=>true,"message"=>$this->message));
+										
+				}
+			}
+		}
+		$this->posting_sales_ticket();
+ 		
+ 	}
+	function posting_sales_ticket(){
+		$this->load->model("ticketing/sales_model");
+		$this->sales_model->posting();
+	}
+
 
 }
 

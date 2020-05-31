@@ -24,6 +24,7 @@ class Receive_prod extends CI_Controller {
 		$this->load->model('inventory_products_model');
 		$this->load->model('inventory_model');
 		$this->load->model('shipping_locations_model');
+		$this->load->model("manuf/workorder_model");
 	}
 	function nomor_bukti($add=false)
 	{
@@ -46,12 +47,18 @@ class Receive_prod extends CI_Controller {
 	}
 	
 	function set_defaults($record=NULL){
-            $data=data_table($this->table_name,$record);
-            $data['mode']='';
-            $data['message']='';
-			$data['date_received']=date("Y-m-d H:i:s");
-			if($record==NULL)$data['shipment_id']=$this->nomor_bukti();			
-            return $data;
+		$data=data_table($this->table_name,$record);
+		$data['mode']='';
+		$data['message']='';
+		if($data['date_received']=='')$data['date_received']=date("Y-m-d H:i:s");
+		if($record==NULL){
+			$data['shipment_id']="AUTO";			
+		}
+		$data['warehouse_list']=$this->shipping_locations_model->lookup();
+		$data['workorder_list']=$this->workorder_model->lookup();
+		$data['inventory_list']=$this->inventory_model->lookup_by_class();
+
+		return $data;
 	}
 	function index()
 	{	
@@ -76,7 +83,6 @@ class Receive_prod extends CI_Controller {
             $this->browse();
 		} else {
 			$data['mode']='add';
-            $data['warehouse_list']=$this->shipping_locations_model->select_list();
             $this->template->display_form_input($this->file_view,$data,'');
 		}
 	}
@@ -130,9 +136,9 @@ class Receive_prod extends CI_Controller {
         $data['caption']='DAFTAR PENERIMAAN BARANG PRODUKSI';
 		$data['controller']=$this->controller;		
 		$data['fields_caption']=array('Nomor Bukti','Kode Barang','Nama Barang','Tanggal',
-		'Qty','Unit','Cost','Gudang');
+			'Qty','Unit','Cost','Gudang');
 		$data['fields']=array('shipment_id','item_number','description','date_received',
-		'quantity_received','unit','cost','warehouse_code');
+			'quantity_received','unit','cost','warehouse_code');
 		$data['field_key']='shipment_id';
 		$this->load->library('search_criteria');
 		
@@ -187,9 +193,12 @@ class Receive_prod extends CI_Controller {
         echo $s." ".browse_simple($sql);
     }
     function save_item(){
-		$this->load->model("manuf/workorder_model");
         $item_no=$this->input->post('item_number');
 		$id=$this->input->post('shipment_id');
+		if($id=="AUTO"){
+			$id=$this->nomor_bukti();
+			$this->nomor_bukti(true);
+		}
 		$wo_number=$this->input->post("purchase_order_number");
         $data['item_number']=$item_no;
         $data['quantity_received']=$this->input->post('quantity');

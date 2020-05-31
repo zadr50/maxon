@@ -9,7 +9,10 @@
 <li><?=anchor('inventory/rpt/cards_category','Kartu Stock Per Kategori',"class='info_link'")?></li>
 <li><?=anchor('inventory/rpt/cards_tran','History Transaksi Stock',"class='info_link'")?></li>
 <li><?=anchor('inventory/rpt/sales_laku','Barang paling laku dipenjualan',"class='info_link'")?></li>
+<!--
 <li><?=anchor('inventory/rpt/sales_tdk_laku','Barang tidak laku',"class='info_link'")?></li>
+-->
+
 <li><?=anchor('inventory/rpt/cards_dead','Barang tidak bergerak',"class='info_link'")?></li>
 <li><?=anchor('inventory/rpt/min_stock','Stock Minimum',"class='info_link'")?></li>
 <li><?=anchor('inventory/rpt/max_stock','Stock Maximum',"class='info_link'")?></li>

@@ -1,7 +1,7 @@
 <?php
 class Sysvar_model extends CI_Model {
 
-private $primary_key='varname';
+private $primary_key='id';
 private $table_name='system_variables';
 
 function __construct(){
@@ -30,22 +30,26 @@ function __construct(){
 		$this->db->where($this->primary_key,$id);
 		return $this->db->get($this->table_name);
 	}
+	function get_by_varname($varname){
+		$this->db->where("varname",$varname);
+		return $this->db->get($this->table_name);
+	}
     function get_by_id_row($id){
         $this->db->where("id",$id);
         return $this->db->get($this->table_name);
     }
 	function save($data){
+	    if(isset($data['id']))unset($data['id']);
 		$this->db->insert($this->table_name,$data);
 		return $this->db->insert_id();
 	}
 	function update($id,$data){
-		if($id!=''){
-			$this->db->where($this->primary_key,$id);
-			$this->db->update($this->table_name,$data);
-		}
+		$this->db->where($this->primary_key,$id);
+		return $this->db->update($this->table_name,$data);
 	}
     function update_id($id,$data){
-        if(isset($data['id']))unset($data['id']);
+		if(isset($data['id']))unset($data['id']);
+		if($data['varlen']=='')$data['varlen']=0;
         $this->db->where("id",$id);
         return       $this->db->update($this->table_name,$data);
     } 
@@ -64,10 +68,32 @@ function __construct(){
         $ret['']='- Select -';
         foreach ($query->result() as $row)
         {
-                $ret[$row->varvalue]=$row->company;
+                $ret[$row->varvalue]=$row->varname;
         }		 
         return $ret;
 	}
-	function lookup($varname){ return value_list($varname); }
+	function lookup_ex($varname){ return value_list($varname); }
+	function lookup($param=null){
+		$dlgBindId="varname";
+		$dlgRetFunc="$('#varvalue').val(row.varvalue);";
+		$dlgId=$dlgBindId;
+		if($param){
+			if(is_array($param)){
+				if(isset($param['dlgRetFunc'])){
+					$dlgRetFunc=$param['dlgRetFunc'];
+				}
+				if(isset($param['dlgBindId'])){
+					$dlgBindId=$param['dlgBindId'];
+				}
+				if(isset($param["dlgId"]))$dlgId=$param['dlgId'];
+			}			
+		}
+        return $this->list_of_values->render(
+	        array('dlgBindId'=>$dlgBindId,'dlgRetFunc'=>$dlgRetFunc,
+	        	"sysvar_lookup"=>$dlgId,"dlgId"=>$dlgId
+			)
+		);          
+		
+	}
 
 }

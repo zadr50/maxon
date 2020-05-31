@@ -2,10 +2,8 @@
 <?php
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','false',base_url().'index.php/payroll/employee/add');		
 	echo link_button('Refresh','frmEmployeeReload()','reload','false');		
     echo link_button('Import','import_excel()','csv','false');     
-	echo link_button('Search','','search','false',base_url().'index.php/payroll/employee');		
 ?>	
     <div style='float:right'>
 	<?=link_button('Help', 'load_help(\'employee\')','help');?>
@@ -56,7 +54,12 @@ if($err!=""){
 					</td>
 					<td>Level</td><td><?=form_dropdown('emplevel',$level_list,$emplevel,"id=emplevel");?>
 					</td>
-                    <td>Sisa Cuti</td><td><?=form_input('sisa_cuti',$sisa_cuti,"id='sisa_cuti'");?></td>       
+                    <td>Sisa Cuti</td>
+                    <td>
+                        <?=form_input('sisa_cuti',$sisa_cuti,"id='sisa_cuti' style='width:50px'");?>
+                        <?=link_button("Calc", "calc_cuti();return false","sum")?>
+                        <?=link_button("View","view_cuti();return false","edit")?>
+                    </td>       
 			   </tr>
 			   <tr>
 					<td>Divisi</td><td><?=form_dropdown('divisi',$div_list,$divisi,"id=divisi");?>
@@ -144,6 +147,7 @@ if($err!=""){
 	<div title='Reward And Funish'><? include_once "employee_reward.php" ?></div>
 	<div title='Kartu Identitas'><? include_once "employee_license.php" ?></div>
 	<div title='Training'><? include_once "employee_training.php" ?></div>
+	<div title='Salary'><? include_once "employee_salary.php" ?></div>
 </div>
 
 <div id="dlgGambar" class="easyui-dialog" 
@@ -196,6 +200,7 @@ echo $lookup_outlet;
 						$('#nip').val(result.nip);
 						$('#mode').val('view');
 						log_msg('Data sudah tersimpan.');
+						remove_tab_parent();
 					} else {
 						log_err(result.msg);
 					}
@@ -275,6 +280,31 @@ echo $lookup_outlet;
                 }
             }
         });
+    }
+    function calc_cuti(){
+        var nip=$("#nip").val();
+        if(nip==""){
+            log_err("Pilih NIP karyawan !");return false;
+        }
+        loading();
+        var _url=CI_ROOT+"payroll/cuti/recalc?nip="+nip;
+        $.ajax({
+           url: _url, 
+           error:function(result){
+               log_err(result);
+           },
+           success:function(result){
+                var result = eval('('+result+')');
+               if(result.success){
+                   $("#sisa_cuti").val(result.sisa_cuti);
+               }
+           }
+        });
+    }
+    function view_cuti(){
+        var nip=$("#nip").val();
+        var _url=CI_ROOT+"payroll/cuti/browse?nip="+nip;
+        add_tab_parent("Cuti: "+nip,_url);
     }
 	
 		

@@ -1,11 +1,7 @@
-<legend>MASTER BARANG JADI</legend>
 <div class="thumbnail box-gradient">
-	<?
+	<?php
 	echo link_button('Save', 'save()','save');		
 	echo link_button('Print', 'print_item()','print');		
-	echo link_button('Add','','add','false',base_url().'index.php/manuf/product/add');		
-	echo link_button('Search','','search','false',base_url().'index.php/manuf/product');		
-	echo link_button("Gambar", 'upload_gambar()','man');		
 	if($mode=="view") echo link_button('Refresh','','reload','false',base_url().'index.php/manuf/product/view/'.$item_number);		
 	//echo link_button('Import', 'import_excel()','year');		
 	echo "<div style='float:right'>";
@@ -19,6 +15,7 @@
 		<div>MaxOn Forum</div>
 		<div>About</div>
 	</div>
+	<?=link_button("Close", "remove_tab_parent()","cancel")?>
 	</div>
 </div>
 <div class="thumbnail">	
@@ -28,20 +25,26 @@
 			<div title="Umum" id="box_section" style="padding:10px">
 			<table class='table2' width="100%">
 			<tr><td>Item Number</td><td><?=form_input("item_number",$item_number,"id='item_number'")?>
-			&nbsp Aktif <?=form_radio('active',1,$active=='1'?TRUE:FALSE).' Yes '
-					.form_radio('active',0,$active=='0'?TRUE:FALSE).' No'?>
+				&nbsp Aktif <?=form_radio('active',1,$active=='1'?TRUE:FALSE,"style='width:30px'").' Yes '
+					.form_radio('active',0,$active=='0'?TRUE:FALSE,"style='width:30px'").' No'?>
 				</td>
 				
 			</tr>
 			<tr><td>Nama Barang</td>
-			<td colspan='3'><?=form_input("description",$description,"id='description' style='width:80%'")?>
+			<td colspan='4'><?=form_input("description",$description,"id='description' style='width:60%'")?>
 			</td>
 			</tr>
-			<tr><td>Category</td><td><?=form_dropdown('category',$category_list,$category);?>
-				<?=link_button("Add","add_category();","add","false");?>
+			<tr><td>Category</td><td><?=form_input('category',$category,"id='category'");?>
+				<?=link_button("","dlginventory_categories_show();","search");?>
 			</td>
+				<td rowspan=5 colspan=2>Deskripsi panjang atau fitur khusus </br>
+					<?php echo form_textarea('special_features',$special_features,"style='width:200px;height:200px'");?> 
+			   </td>
+
 			</tr>
-			<tr><td>Sub Category</td><td><?=form_dropdown('sub_category',$category_list,$sub_category);?></td>
+			<tr><td>Sub Category</td><td><?=form_input('sub_category',$sub_category,"id='sub_category'");?>
+				<?=link_button("","dlginventory_sub_categories_show();","search");?>		
+				</td>
 			</tr>
 			<tr><td>Satuan</td><td><?=form_input("unit_of_measure",$unit_of_measure,"id='unit_of_measure'")?></td></tr>
 			<tr><td>Harga Jual</td><td><?=form_input("retail",$retail,"id='retail'")?></td>
@@ -49,13 +52,10 @@
 			<tr><td>Cost</td><td><?=form_input("cost",$cost,"id='cost'")?></td></tr>
 			<tr>
 			   <td>Pakai Nomor Serial </td>
-			   <td><?=form_radio('serialized',1,$serialized=='1'?TRUE:FALSE);?>
-				 Yes <?php echo form_radio('serialized',0,$serialized=='0'?TRUE:FALSE);?>No </td>
+			   <td><?=form_radio('serialized',1,$serialized=='1'?TRUE:FALSE,"style='width:30px'");?>
+				 Yes <?php echo form_radio('serialized',0,$serialized=='0'?TRUE:FALSE,"style='width:30px'");?>No </td>
 			</tr>
 			<tr>
-			   <td>Fitur Khusus </td>
-			   <td colspan="3"><?php echo form_input('special_features',$special_features,"style='width:200px'");?> 
-			   </td>
 			</tr>
 			</table>
 		</div>
@@ -88,7 +88,10 @@
 			<table width='100%' class='table2'>
 			<tr>
 			   <td>Gambar Barang </td>
-			   <td><?php echo form_input('item_picture',$item_picture,"style='width:200px' id='item_picture'");?></td>
+			   <td><?php echo form_input('item_picture',$item_picture,"style='width:200px' id='item_picture'");?>
+				   <?=link_button("Select...", 'upload_gambar()','man');?>	
+
+				</td>
 			</tr><td>
 			   <td>
 					<img id="imgBarang" src="<?=base_url()."/tmp/".$item_picture?>" style="width:200px;height:200px;border:1px solid lightgray">
@@ -97,27 +100,28 @@
 			</table>
 		</div>
 		<div title='Bahan Baku'>
-					<div class='thumbnail box-gradient'>
-						<p>Item Assembly atau Paket &nbsp &nbsp<?=form_radio('assembly',1,$assembly=='1'?TRUE:FALSE);?>
-							 Yes <?php echo form_radio('assembly',0,$assembly=='0'?TRUE:FALSE);?>No 
-						</p>
-					</div>
-					<table id='dgAsm' name='dgAsm' class="easyui-datagrid"  width='100%'
-						data-options="
-							iconCls: 'icon-edit', fitColumns: true,
-							singleSelect: true,  
-							url: '<?=base_url()?>index.php/inventory/assembly_list/<?=$item_number?>',
-							toolbar:'#dgAsm_Tool'," width="100%">
-						<thead>
-							<tr>
-								<th data-options="field:'assembly_item_number',width:80">Item Number</th>
-								<th data-options="field:'description',width:180">Description</th>
-								<th data-options="field:'quantity',width:80,align:'right'">Qty</th>
-								<th data-options="field:'default_cost',width:80,align:'right'">Cost</th>
-								<th data-options="field:'comment',width:180,align:'left'">Keterangan</th>
-							</tr>
-						</thead>
-					</table>
+			<div class='thumbnail box-gradient'>
+				<p>Item Assembly atau Paket &nbsp &nbsp
+					<?=form_radio('assembly',1,$assembly=='1'?TRUE:FALSE,"style='width:30px'");?>
+						Yes <?php echo form_radio('assembly',0,$assembly=='0'?TRUE:FALSE,"style='width:30px'");?>No 
+				</p>
+			</div>
+			<table id='dgAsm' name='dgAsm' class="easyui-datagrid"  width='95%' height="300px"
+				data-options="
+					iconCls: 'icon-edit', fitColumns: true,
+					singleSelect: true,  
+					url: '<?=base_url()?>index.php/inventory/assembly_list/<?=$item_number?>',
+					toolbar:'#dgAsm_Tool'," >
+				<thead>
+					<tr>
+						<th data-options="field:'assembly_item_number',width:80">Item Number</th>
+						<th data-options="field:'description',width:180">Description</th>
+						<th data-options="field:'quantity',width:80,align:'right'">Qty</th>
+						<th data-options="field:'default_cost',width:80,align:'right'">Cost</th>
+						<th data-options="field:'comment',width:180,align:'left'">Keterangan</th>
+					</tr>
+				</thead>
+			</table>
 		</div>
 		<!-- QUANTITY -->				
 		<div title="Quantity" style="padding:10px">
@@ -146,8 +150,11 @@
 	<?=link_button('Delete', 'dlgAsm_Delete()','remove');?>
 	<?=link_button('Refresh', 'dgAsm_Refresh()','reload');?>
 </div>
-<? echo load_view('gl/select_coa_link');
-echo load_view("inventory/assembly");
+<?php 
+ 	echo load_view('gl/select_coa_link');
+	echo load_view("inventory/assembly");
+	echo $lookup_category;
+	echo $lookup_sub_category;
 ?>
  <script language='javascript'>
 		var index = 0;

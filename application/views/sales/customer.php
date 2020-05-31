@@ -1,10 +1,8 @@
 <div class="thumbnail box-gradient">
-	<?
+	<?php
 	echo link_button('Save', 'save();return false;','save');		
 	echo link_button('Print', 'print()','print');		
-	echo link_button('Add','','add','false',base_url().'index.php/customer/add');		
 	echo link_button('Refresh','','reload','false',base_url().'index.php/customer/view/'.$customer_number);		
-	echo link_button('Search','','search','false',base_url().'index.php/customer');		
 	
 	echo "<div style='float:right'>";
 	echo link_button('Help', 'load_help(\'customer\')','help');		
@@ -26,7 +24,10 @@
 <div class="thumbnail">	
 <form id="myform"  method="post" role="form">
 <input type='hidden' name='mode' id='mode'	value='<?=$mode?>'>
-<?php echo validation_errors(); ?>
+<?php 
+echo validation_errors(); 
+$readonly="";
+?>
 <div class="easyui-tabs">
 	<div title="General" style="padding:10px">
 		<table class="table2" width="100%">
@@ -34,11 +35,10 @@
         <td>Kode</td> 
         <td><?php
             if($mode=='view'){
-                echo "<strong>".$customer_number."</strong>";
-                echo form_hidden('customer_number',$customer_number,"id=customer_number");
-            } else { 
-                echo form_input('customer_number',$customer_number,"id=customer_number");
-            }?>
+               $readonly=" readonly";
+            }  
+            echo form_input('customer_number',$customer_number,"id='customer_number' $readonly");
+            ?>
         </td>
         <td colspan=2 width=100>
             Aktif <?=form_radio('active',1,$active=='1'?TRUE:FALSE,"style='width:30px'");?>Yes 
@@ -118,8 +118,11 @@
 			 </td>
 			 </tr>
 		 <tr>
-				<td>Credit Limit</td><td><?=form_input('credit_limit',$credit_limit);?></td>
-			 <td>Credit Balance</td><td><?=form_input('credit_balance',$credit_balance);?></td>
+		     <td>Credit Limit</td><td><?=form_input('credit_limit',number_format($credit_limit,2));?></td>
+			 <td>Credit Balance</td><td><?=form_input('credit_balance',number_format($credit_balance,2));?></td>
+		   </tr>
+		   <tr>
+                <td>Current Balance</td><td><?=form_input('current_balance',number_format($current_balance,2));?></td>                
 		   </tr>
 	   
       </table>
@@ -128,7 +131,7 @@
 		<table class="table" width="100%">
 		   <tr>
 			<td>Discount % (1+2+3)</td><td>
-			<?
+			<?php
 			echo form_input('discount_percent',$discount_percent,"style='width:50px'");
 			echo "+".form_input('disc_prc_2',$disc_prc_2,"style='width:50px'");
 			echo "+".form_input('disc_prc_3',$disc_prc_3,"style='width:50px'");
@@ -189,9 +192,13 @@
 			<form method="post">
 			<table class='table2' width='100%'>
 			<tr><td>Date From</td>
-			<td><?=form_input('date_from',date("Y-m-d"),'id=date_from class="easyui-datetimebox" ');?></td>
+			<td><?=form_input('date_from',date("Y-m-d"),'id=date_from 
+			class="easyui-datetimebox" style="width:150px"
+            data-options="formatter:format_date,parser:parse_date"');?></td>
 			<td>Date To</td>
-			<td><?=form_input('date_to',date("Y-m-d"),'id=date_to  class="easyui-datetimebox" ');?></td>
+			<td><?=form_input('date_to',date("Y-m-d 23:59:59"),'id=date_to  
+			class="easyui-datetimebox" style="width:150px"
+            data-options="formatter:format_date,parser:parse_date"');?></td>
 			<td><?=link_button('Search','search_cards()','search');?></td>
 			</tr>
 			</table>
@@ -349,10 +356,11 @@
   	}	
 	function search_cards()
 	{
+	    var cust=$("#customer_number").val();
 		var d1=$("#date_from").datebox('getValue');
 		var d2=$("#date_to").datebox('getValue');
 	 
-		var xurl='<?=base_url()?>index.php/customer/kartu_piutang/<?=$customer_number?>?d1='+d1+'&d2='+d2;
+		var xurl='<?=base_url()?>index.php/customer/kartu_piutang/'+cust+'?d1='+d1+'&d2='+d2;
 		console.log(xurl);
 		$('#dgCard').datagrid({url:xurl});
 		$('#dgCard').datagrid('reload');

@@ -1,10 +1,13 @@
-<?php if(!defined('BASEPATH')) exit('No direct script access allowd');
+<?php 
+if(!defined('BASEPATH')) exit('No direct script access allowd');
 
 Class Inventory extends CI_Controller {
 
     private $limit=10,$table_name="";
     private $file_view='inventory/inventory';
 	private $show_cols=null;
+	private $message="";
+	
  	function __construct()
 	{
 		parent::__construct();
@@ -32,12 +35,15 @@ Class Inventory extends CI_Controller {
 		$this->sql="select i.item_number,i.description,unit_of_measure,
                 i.retail,cost_from_mfg,i.supplier_number,
                 s.supplier_name,i.class,i.category,c1.category as cat_name,
-                i.sub_category,i.type_of_invoice,i.quantity_in_stock
+                i.sub_category,i.type_of_invoice,i.quantity_in_stock,
+                ip.customer_pricing_code,ip.qty_last,i.kode_lama,i.item_picture
                 from ".cidt()."inventory i
                 left join ".cidt()."suppliers s on s.supplier_number=i.supplier_number
                 left join inventory_categories c1 on c1.kode=i.category
+                left join inventory_prices ip on ip.item_number=i.item_number
                 ";
 		
+    	$this->load->model("replicate_model");
 		
 	}
 	function set_defaults($record=NULL){          
@@ -50,8 +56,15 @@ Class Inventory extends CI_Controller {
 		$data['class_list']=$this->inventory_model->class_list();
 		$data['sub_category_list']=$this->inventory_model->category_list();               
 		$data['supplier_name']='';
+		if(!$record){
+			
+		}
         if($data['active']=="") $data['active']='1';
 		if($data['unit_of_measure']=="")$data['unit_of_measure']='PCS';
+		if($data['class']=="")$data["class"]="Stock";
+		if($data['colour']=="")$data["colour"]="0";
+		if($data['size']=="")$data['size']="0";
+        if($data['division']=="")$data['division']="MD";		
         		
 		$setting['dlgBindId']="divisions";
 		$setting['dlgCols']=array( 
@@ -185,10 +198,10 @@ Class Inventory extends CI_Controller {
                     $sis=$data['type_of_invoice'];
                     $colour=$data['colour'];    
                     $size=$data['size'];
-                    if($colour=="")$color="0";
+                    if($colour=="")$colour="0";
                     if($size=="")$size="0";
                     if($sis=="")$sis="0";
-                    if($sup=="")$sis="000";
+                    if($sup=="")$sup="000";
                     if($cat=="")$cat="0";
                     if($sub=="")$sub="0";
                     $bln=kode_bulan();  
@@ -196,12 +209,27 @@ Class Inventory extends CI_Controller {
                     $key="$cat$sub$sup$sis$colour$size$bln$thn";
                     $no=$this->nomor(false,$key,"$001");
                     $id="$key$no";
+					//cek exist item no???                      
+					if($this->db->query("select count(1) as cnt from inventory 
+						where item_number='$id'")->row()->cnt>0){
+						$this->nomor(true,$key);
+						$no=$this->nomor(false,$key);
+						$id=$cat.$no;
+					}  
+					
                     
                 } else if($method==2){
                     $cat=$data['category']; 
                     $key="Inventory Numbering $cat";
                     $no=$this->nomor(false,$key);
-                    $id="$cat$no";                        
+                    $id=$cat.$no;
+					//cek exist item no???                      
+					if($this->db->query("select count(1) as cnt from inventory 
+						where item_number='$id'")->row()->cnt>0){
+						$this->nomor(true,$key);
+						$no=$this->nomor(false,$key);
+						$id=$cat.$no;
+					}  
                 } else {
                     $key="Inventory Numbering";
                     $id=$this->nomor(false,$key);
@@ -218,16 +246,14 @@ Class Inventory extends CI_Controller {
 			$data['tax_account']=$this->acc_id($data['tax_account']);
 			if($data['class']=='')$data['class']="Stock";
             if($data['active']=='')$data['active']='1';
-			if($mode=="view"){
-				$ok=$this->inventory_model->update($id,$data);	
-				$this->syslog_model->add($id,"inventory","add");
-				
-			} else {
+			if($mode=="add" ){
 			    $data['item_number']=$id;
 				$ok=$this->inventory_model->save($data);
                 if($ok)$this->nomor(true,$key);
 				$this->syslog_model->add($id,"inventory","edit");
-
+			} else {
+				$ok=$this->inventory_model->update($id,$data);	
+				$this->syslog_model->add($id,"inventory","add");
 			}
 			$this->syslog_model->add($id,"inventory",$mode);
 
@@ -274,14 +300,25 @@ Class Inventory extends CI_Controller {
 		 $data['quantity_in_stock']=$this->inventory_model->quantity_in_stock($id);
 		 $supp_name="";
 		 if($query=$this->db->query("select supplier_name 
-		 from suppliers where supplier_number='".$inventory->supplier_number."'")){
+		 from suppliers where supplier_number='".$data['supplier_number']."'")){
 			if($row=$query->row()){
 				$supp_name=$row->supplier_name;
 			}
 		}
+		item_need_update($id);		 
 		$data['supplier_name']=$supp_name;
-		 $data['item_picture']=str_replace(":","",$data['item_picture']);
-         $this->session->set_userdata('_right_menu', 'inventory/inventory_menu');
+		$data['item_picture']=str_replace(":","",$data['item_picture']);
+		$data['margin']=0;
+		if(isset($data['margin'])){
+			if($data['retail']>0){
+				$profit=$data['retail']-$data['cost'];
+				if($profit>0){
+					$data['margin']=number_format(($profit/$data['retail'])*100,2);
+				}
+			}
+		}
+
+		 $this->session->set_userdata('_right_menu', 'inventory/inventory_menu');		 
          $this->template->display_form_input($this->file_view,$data,'');
 	}
 	 // validation rules
@@ -302,10 +339,7 @@ Class Inventory extends CI_Controller {
 		   return true;
 	   }
 	}
-	function save_setting_column($ck_cols){
-	}
-	function browse($offset=0,$limit=10,$order_column='company',$order_type='asc')
-	{
+	function browse_ajax($offset=0,$limit=10,$order_column='company',$order_type='asc') {
 		$this->show_cols=$this->session->userdata("cols_inventory",null);
 
 		$query_proc=false;
@@ -315,12 +349,16 @@ Class Inventory extends CI_Controller {
 			$data['caption']='DAFTAR BARANG DAN JASA';
 			$data['controller']='inventory';		
 			
-			$data['fields_caption']=array('Kode','Nama Barang','Qty','Unit','Harga Jual','Harga Beli',
-				'Kode Supplier','Nama Supplier','Kelas','Category','Cat Name','Sub','Sistim');
+			$data['fields_caption']=array('Kode','Nama Barang','Qty','Unit',
+			"Unit2","Qty2",'Harga Jual','Harga Beli',
+				'Kode Supplier','Nama Supplier','Kelas','Category','Cat Name','Sub','Sistim',
+				'Kode Lama');
 				
 			$data['fields']=array('item_number','description','quantity_in_stock','unit_of_measure',
+			     "customer_pricing_code","qty_last",
 					'retail','cost_from_mfg','supplier_number','supplier_name','class',
-					'category','cat_name','sub_category','type_of_invoice');
+					'category','cat_name','sub_category','type_of_invoice',
+					'kode_lama');
 			$data["col_width"]=array("description"=>200,"quantity_in_stock"=>50,"unit_of_measure"=>50);
 					
 			if(!$data=set_show_columns($data['controller'],$data)) return false;
@@ -343,8 +381,63 @@ Class Inventory extends CI_Controller {
 			$data['query_list'][]=array("value"=>"inventory_query_2","caption"=>"Quantity Minus");
 			$data['query_list'][]=array("value"=>"inventory_query_3","caption"=>"Stock Value");
             $data['fields_format_numeric']=array("retail",'cost_from_mfg');
+			
 			$data['row_count']=$this->db->query("select count(1) as cnt from inventory")->row()->cnt;
-			if($data['row_count']>1)$data['row_count']=$data['row_count']/$limit;
+			if($data['row_count']>1)$data['row_count']=$data['row_count'];
+			echo json_encode($data);
+///			$this->template->display_browse2($data);
+		}
+
+	}
+
+	function save_setting_column($ck_cols){
+	}
+	function browse($offset=0,$limit=10,$order_column='company',$order_type='asc')
+	{
+		$this->show_cols=$this->session->userdata("cols_inventory",null);
+
+		$query_proc=false;
+		if($this->input->get('query_proc'))$query_proc=true;
+		
+		if(!$query_proc || $this->input->get('query_proc')=='0'){
+			$data['caption']='DAFTAR BARANG DAN JASA';
+			$data['controller']='inventory';		
+			
+			$data['fields_caption']=array('Kode','Nama Barang','Qty','Unit',
+			"Unit2","Qty2",'Harga Jual','Harga Beli',
+				'Kode Supplier','Nama Supplier','Kelas','Category','Cat Name','Sub','Sistim',
+				'Kode Lama');
+				
+			$data['fields']=array('item_number','description','quantity_in_stock','unit_of_measure',
+			     "customer_pricing_code","qty_last",
+					'retail','cost_from_mfg','supplier_number','supplier_name','class',
+					'category','cat_name','sub_category','type_of_invoice',
+					'kode_lama');
+			$data["col_width"]=array("description"=>200,"quantity_in_stock"=>50,"unit_of_measure"=>50);
+					
+			if(!$data=set_show_columns($data['controller'],$data)) return false;
+			
+			$data['field_key']='item_number';
+			$this->load->library('search_criteria');
+			
+			$faa[]=criteria("Kode","sid_kode");
+			$faa[]=criteria("Nama","sid_nama");
+			$faa[]=criteria("Supplier","sid_supp");
+			$faa[]=criteria("Category","sid_cat");
+            $faa[]=criteria("Sub Category","sid_cat_sub");
+            $faa[]=criteria("System","sid_sistim");
+            
+			$data['list_info_visible']=true;
+			$data['import_visible']=true;
+			$data['criteria']=$faa;
+			$data['query_list'][]=array("value"=>"inventory","caption"=>"Daftar Master Barang");
+			$data['query_list'][]=array("value"=>"stock/query/exec/1","caption"=>"Quantity Stock Level");
+			$data['query_list'][]=array("value"=>"inventory_query_2","caption"=>"Quantity Minus");
+			$data['query_list'][]=array("value"=>"inventory_query_3","caption"=>"Stock Value");
+            $data['fields_format_numeric']=array("retail",'cost_from_mfg');
+			
+			$data['row_count']=$this->db->query("select count(1) as cnt from inventory")->row()->cnt;
+			if($data['row_count']>1)$data['row_count']=$data['row_count'];
             
 			$this->template->display_browse2($data);
 		} else {
@@ -366,36 +459,60 @@ Class Inventory extends CI_Controller {
 		if(!is_numeric($offset)){
 			$sql.=" and description like '%$offset%'";
 		}  else {
+			$filter=$this->input->get('filter');
+			if($filter!=''){
+				$sql.=" and $filter='$search' ";
+			}
 			if($this->input->get('sid_kode')!='')$sql.=" and item_number like '".$this->input->get('sid_kode')."%'";
 			if($this->input->get('sid_nama')!='')$sql.=" and i.description like '%".$this->input->get('sid_nama')."%'";
 			$supp=$this->input->get('sid_supp');
 			if($supp!='')$sql.=" and (supplier_name like '%$supp%' or i.supplier_number='$supp')";
 			$cat=$this->input->get('sid_cat');
-			if($cat!='')$sql.=" and (
-			     i.category like '%$cat%' or c1.category like '%$cat%')";
+			if($cat!=''){
+				if($cat!='undefined'){
+					$sql.=" and (i.category like '%$cat%' or c1.category like '%$cat%')";
+				}
+			}
             if($search!='')$sql.=" and (i.description like '%$search%' 
-                or item_number='$search' or kode_lama='$search')";
+                or i.item_number='$search' or i.kode_lama='$search')";
             $cat_sub=$this->input->get("sid_cat_sub");
             if($cat_sub!="")$sql.=" and i.sub_category like '$cat_sub%'";
             $sis=$this->input->get("sid_sistim");
-            if($sis!="")$sql.=" and i.type_of_invoice='$sis'";    
+			if($sis!="")$sql.=" and i.type_of_invoice='$sis'";    
+			$supplier="";
+			if($this->input->get("supplier")){
+				$supplier=$this->input->get("supplier");
+			}
+			if($supplier!=""){
+				$sql.=" and i.supplier_number='$supplier'";
+			}	
+	
 		}
 		$sql.=" order by item_number";
         
         if($this->input->get("page"))$offset=$this->input->get("page");
         if($this->input->get("rows"))$limit=$this->input->get("rows");
+        if($this->input->post("page"))$offset=$this->input->post("page");
+        if($this->input->post("rows"))$limit=$this->input->post("rows");
         if($offset>0)$offset--;
         $offset=$limit*$offset;
         $sql.=" limit $offset,$limit";
 				
 		echo datasource($sql,false,"",$row_count);		
 		
-    }
+	}
+	function data_material(){
+		$this->browse_data();
+	}
 	function manufacturer($cmd='lookup'){
-		echo datasource("select distinct manufacturer from inventory");
+		echo datasource("select distinct manufacturer from inventory 
+		where not (manufacturer is null or manufacturer='')");
 	}
 	function model($cmd='lookup'){
 		echo datasource("select distinct model from inventory");
+	}
+	function lookup_merk(){
+		return $this->inventory_model->lookup_merk();
 	}
     function lookup($offset=0,$limit=20,$order_column='item_number',$order_type='asc'){           
         return $this->inventory_model->lookup($offset,$limit,
@@ -428,18 +545,22 @@ Class Inventory extends CI_Controller {
 		 i.supplier_number,s.supplier_name, i.unit_of_measure
 		 from inventory  i 
 		 left join suppliers s on s.supplier_number=i.supplier_number 
-		 where  ";
+		 where  1=1 ";
          if($field=$this->input->get("field")){
              if($field=="supplier_name"){
-                 $sql.="s.supplier_name like '%$nama%'";
+                 $sql.=" and s.supplier_name like '%$nama%'";
              } else if($field=="item_number"){
-                 $sql.="(i.item_number like '$nama%' or i.kode_lama like '$nama%')";
+                 $sql.=" and (i.item_number like '$nama%' or i.kode_lama like '$nama%')";
              } else {
-                  $sql.="i.description like '%$nama%'";                 
+             	if($nama!=""){
+                  $sql.=" and i.description like '%$nama%'";                 
+             	}
              }
              
          } else {
-		      $sql.="i.description like '%".$nama."%'";
+         	if($nama!=""){
+		      $sql.=" and i.description like '%".$nama."%'";         		
+         	}
          }
         if($this->input->get("supplier")){
             if($only_item_supplier=$this->input->get("only_item_supplier")){
@@ -463,8 +584,8 @@ Class Inventory extends CI_Controller {
         
                 
         $limit=getvar("max_row");
-        if($limit=="")$limit=50;        
-        if($limit<10)$limit=50;
+        if($limit=="")$limit=500;        
+        if($limit<10)$limit=500;
         $sql.=" limit $limit";
         //echo $sql;
         
@@ -474,33 +595,58 @@ Class Inventory extends CI_Controller {
 	function find($item_number='',$cust_type='',$min_qty=0){
 		$item_number=urldecode($item_number);
 		$cust_type=trim(urldecode($cust_type));
-		$query=$this->db->query("select item_number,description,retail,
-		unit_of_measure,cost,cost_from_mfg,multiple_pricing,margin 
-		from inventory where item_number='$item_number'");
+		$cust_no="";
+		if($this->input->get("cust_no")){
+			$cust_no=$this->input->get("cust_no");
+		}
+
+		if($cust_type=="" && $cust_no!=""){
+			if($rcst=$this->db->query("select customer_record_type from customers 
+				where customer_number='$cust_no'")){
+					if($cst=$rcst->row()){
+						$cust_type=$cst->customer_record_type;
+					}
+				}
+		}
+		if($cust_type=="undefined")$cust_type="";
+		$s="select item_number,description,retail,
+		unit_of_measure,cost,cost_from_mfg,multiple_pricing,margin,
+		quantity_in_stock,reorder_quantity,special_features,
+		supplier_number,item_picture,item_picture2,item_picture3,item_picture4,create_date,weight 
+		from inventory where (item_number='$item_number' or kode_lama='$item_number' 
+			or upc_code='$item_number') ";
+		$query=$this->db->query($s);
 		$data=$query->row_array();
-        if($data['unit_of_measure']=='')$data['unit_of_measure']='Pcs';
-		$disc_prc=$this->promo_disc_item($item_number);
-		$data['disc_prc_1']=$disc_prc['disc_prc_1'];
-		$data['disc_prc_2']=$disc_prc['disc_prc_2'];
-		$data['disc_prc_3']=$disc_prc['disc_prc_3'];
-		if($cust_type!=""){
-			$this->load->model("customer_type_model");
-			$row_price=$this->customer_type_model->get_price($cust_type,$item_number);
-			if($row_price)
-            
-			{
-				if($row_price->sales_price>0){
-					$data['retail']=$row_price->sales_price;
+		if($data){
+			if($data['cost']==0 && $data['cost_from_mfg']>0){
+				$data['cost']=$data['cost_from_mfg'];
+				$this->db->where("item_number",$data['item_number'])->update("inventory",array("cost"=>$data['cost']));
+				item_need_update($data['item_number']);
+			}	
+			$data['success']=true;
+	        if($data['unit_of_measure']=='')$data['unit_of_measure']='Pcs';
+			$disc_prc=$this->promo_disc_item($item_number);
+			$data['disc_prc_1']=$disc_prc['disc_prc_1'];
+			$data['disc_prc_2']=$disc_prc['disc_prc_2'];
+			$data['disc_prc_3']=$disc_prc['disc_prc_3'];
+			if($cust_type!=""){
+				$this->load->model("customer_type_model");
+				$row_price=$this->customer_type_model->get_price($cust_type,$item_number);
+				if($row_price)
+	            
+				{
+					if($row_price->sales_price>0){
+						$data['retail']=$row_price->sales_price;
+					}
 				}
 			}
-		}
-		if(count($data)==0){
-			$data['success']=false;
+			$cust_no="";if($this->input->get("cust_no"))$cust_no=$this->input->get("cust_no");
+			$data['discount']=$this->inventory_model->sales_discount($item_number,$cust_no,$min_qty);
+			
 		} else {
-			$data['success']=true;
+			$data['success']=false;			
 		}
-		$cust_no="";if($this->input->get("cust_no"))$cust_no=$this->input->get("cust_no");
-		$data['discount']=$this->inventory_model->sales_discount($item_number,$cust_no,$min_qty);
+		
 		echo json_encode($data);
  	}
 	function sales_discount($item_number,$customer,$qty_sold){
@@ -599,9 +745,7 @@ Class Inventory extends CI_Controller {
    }
    
    function unit_price_list($id){
-		$sql="select customer_pricing_code,retail,quantity_low,
-			quantity_high,retail,date_from,date_to,cost 
-			from inventory_prices where item_number='$id'";
+		$sql="select * from inventory_prices where item_number='$id'";
 		echo datasource($sql);
    }
 	function unit_price_load($item_number,$customer_pricing_code){
@@ -665,6 +809,7 @@ Class Inventory extends CI_Controller {
 		$item_asm=$data['assembly_item_number'];
 		$query=$this->inventory_assembly_model->get_by_id($id,$item_asm);
 		unset($data['description']);
+		unset($data['assembly_description']);
 		if($query->num_rows()){
 			unset($data['item_number']);
 			$ok=$this->inventory_assembly_model->update($id,$data);
@@ -732,16 +877,17 @@ Class Inventory extends CI_Controller {
 		
 		$config['upload_path'] = './tmp/';
 		$config['allowed_types'] = 'gif|jpg|png';
-		$config['max_size']	= '100';
-		$config['max_width']  = '1024';
-		$config['max_height']  = '768';
+		$config['max_size']	= '1500';
+		//$config['max_width']  = '1024';
+		//$config['max_height']  = '768';
 		$userfile=$this->input->get('userfile');
+		if(!$userfile)$userfile=$_FILES['userfile'];
 
 		$this->load->library('upload', $config);
 
 		if ( ! $this->upload->do_upload())
 		{
-			$error = array('error' =>'Error upload !! Maximum size gambar 100kb');
+			$error = array('error' =>strip_tags($this->upload->display_errors()));
 		    echo json_encode($error);
 		}
 		else
@@ -875,14 +1021,15 @@ Class Inventory extends CI_Controller {
 			$s .= " and category='$category'";
 		}
 		$s.=" order by description";
-//		$s .= " limit 10";
+		$s .= " limit 50";
 		$ss = "";
 		$ar=null;
+		
 		if($q=$this->db->query($s)){
 		   foreach($q->result() as $r) {
 			   $item_picture=$r->item_picture;
 			   $item_picture=load_picture($item_picture);
-			   $ss .= "<div class='item-cell box-gradient' id='".$r->item_number."' align='center'>";
+			   $ss .= "<div class='item-cell box-gradient ' id='".$r->item_number."' align='center'>";
 				$ss .= "<span class='badge' style='float:left'>Rp. ".number_format($r->retail)."</span>";
 				$ss .= "<img src='".$item_picture."'>
 						<p>".$r->description."</p>";
@@ -898,6 +1045,17 @@ Class Inventory extends CI_Controller {
 		$data['html']=$ss;
 		$data['rec']=$ar;
 		echo json_encode($data);
+	}
+	function promo($item_number){
+		$item_number=urldecode($item_number);
+		$s="select distinct pd.promosi_code,pd.description,pd.category,pd.tipe,pd.nilai,
+		pd.date_from,pd.date_to
+		from promosi_disc pd  
+		left join promosi_item pi on pi.promosi_code=pd.promosi_code 
+		where '".date('Y-m-d H:i:s')."' 
+		between pd.date_from and pd.date_to  
+		and pi.item_number='$item_number'";
+		echo datasource($s);
 	}
 	function promo_disc_item($item_number){
 		$sql="select disc_prc_1,disc_prc_2,disc_prc_3 
@@ -950,6 +1108,13 @@ Class Inventory extends CI_Controller {
 		}
 		echo $s;
 	}
+	function pos_category_json($page=0){	
+		$s="";
+		$page=$page*5;
+		$s="select category,kode,item_picture from inventory_categories order by category limit $page,10";
+		echo datasource($s);
+	}
+		
 	function supplier_list($item_number){
 		$sql="select a.supplier_number,s.supplier_name,a.supplier_item_number,a.lead_time,a.cost
 		 from inventory_suppliers a 
@@ -1022,32 +1187,36 @@ Class Inventory extends CI_Controller {
 		$c_division=$this->input_col('division');
         $c_model=$this->input_col('model');
         $c_manufacturer=$this->input_col('manufacturer');
-        $c_type_of_payment=$this->input_col('type_of_payment');
+        $c_type_of_invoice=$this->input_col('type_of_invoice');
         $c_colour=$this->input_col('colour');
         $c_size=$this->input_col('size');
         $c_qty=$this->input_col('qty');
         $c_kode_lama=$this->input_col('kode_lama');
     		
+ini_set('memory_limit', '512M');
+ini_set('max_execution_time', '180');
+
 		$filename=$_FILES["file_excel"]["tmp_name"];
 		if($_FILES["file_excel"]["size"] > 0)
 		{
 			$file = fopen($filename, "r");
 			$i=0;
 			$ok=false;
-			$this->db->trans_begin();
+			//$this->db->trans_begin();
 			while (($emapData = fgetcsv($file, 10000, chr(9))) !== FALSE)
 			{
 				//print_r($emapData[$c_kode]);
 				//exit();
-				$item_no=$emapData[$c_kode];
+                $data=null;
+								$item_no=$emapData[$c_kode];
 				if(! ($item_no == null or $item_no == "" or $item_no == "kode" ) ) {
 					$i++;
 					$data["item_number"]=$item_no;
 					if($c_nama>0)$data["description"]=$emapData[$c_nama];
 					if($c_unit>0)$data["unit_of_measure"]=$emapData[$c_unit];
 					if($c_jual>0)$data["retail"]=$emapData[$c_jual];
-					if($c_cost>0)$data["cost"]=$emapData[$c_cost];
-					if($c_beli>0)$data["cost_from_mfg"]=$emapData[$c_beli];
+					if($c_cost>0)$data["cost"]=c_($emapData[$c_cost]);
+					if($c_beli>0)$data["cost_from_mfg"]=c_($emapData[$c_beli]);
 					$data['class']="Stock Item";
 					if($c_class>0)$data["class"]=$emapData[$c_class];
 					if($data['class']=="")$data["class"]="Stock Item";
@@ -1060,11 +1229,12 @@ Class Inventory extends CI_Controller {
 					if($c_division>0)$data["division"]=$emapData[$c_division];
                     if($c_manufacturer>0)$data["manufacturer"]=$emapData[$c_manufacturer];
                     if($c_model>0)$data["model"]=$emapData[$c_model];
-                    if($c_type_of_payment>0)$data["type_of_payment"]=$emapData[$c_type_of_payment];
-                    if($c_qty>0)$data["quantity_in_stock"]=$emapData[$c_qty];
+                    if($c_type_of_invoice>0)$data["type_of_invoice"]=$emapData[$c_type_of_invoice];
+                    if($c_qty>0)$data["quantity_in_stock"]=c_($emapData[$c_qty]);
                     if($c_colour>0)$data["colour"]=$emapData[$c_colour];
                     if($c_size>0)$data["size"]=$emapData[$c_size];
                     if($c_kode_lama>0)$data["kode_lama"]=$emapData[$c_kode_lama];
+                    $data['insr_name']=1;
                                         
 					if($this->inventory_model->exist($item_no)){
 						unset($data['item_number']);
@@ -1079,17 +1249,97 @@ Class Inventory extends CI_Controller {
 			if ($this->db->trans_status() === FALSE)
 			{
 				echo "Error: Row $i : ".$item_no." : ".$this->db->display_error()."</br>";
-				$this->db->trans_rollback();
+				//$this->db->trans_rollback();
 			}
 			else
 			{
-				$this->db->trans_commit();
+				//$this->db->trans_commit();
 			}			
+            if($c_qty>0){
+                $this->create_saldo_awal();
+            }
+            if($this->input->post("chkUpdateCoaPersediaan")){
+                $this->update_saldo_coa();
+            }
 			fclose($file);
 			if ($ok){echo json_encode(array("success"=>true));} else {echo json_encode(array('msg'=>'Some errors occured.'));}   	
 		}
 		echo "<div class='alert alert-success'>FINISH.</div>";
 	}
+    function create_saldo_awal(){
+        $this->load->model("inventory_products_model");
+        $s="select item_number,cost,quantity_in_stock,unit_of_measure from inventory 
+            order by item_number";
+        $gudang=current_gudang();
+        $no_bukti="SALDO-$gudang";
+        $tanggal=date("Y-m-1");    
+        $user=user_id();
+        if($q=$this->db->query($s)){
+            foreach($q->result() as $r){
+                $data['shipment_id']=$no_bukti;
+                $data['date_received']=$tanggal;
+                $data['warehouse_code']=$gudang;
+                $data['receipt_type']='ETC_IN';
+                $data['create_by']=$user;
+                $data['create_date']=date("Y-m-d H:i:s");
+                $data['item_number']=$r->item_number;
+                $data['unit']=$r->unit_of_measure;
+                $data['quantity_received']=$r->quantity_in_stock;
+                $data['cost']=$r->cost;
+                $data['total_amount']=$r->quantity_in_stock*$r->cost;
+                $data['supplier_number']='SALDO AWAL';
+                $data['quantity_in_stock']=$r->quantity_in_stock;
+                if($r->quantity_in_stock>0){
+                    $this->inventory_products_model->save($data);
+                }
+            }
+        }
+    }
+    function update_saldo_coa(){
+        $s="select i.category,sum(i.cost*i.quantity_in_stock) as cost_amount 
+            from inventory i  group by i.category";
+        $total_persediaan=0;
+        $has_inventory_account_category=false;
+        if($q=$this->db->query($s)){
+            foreach($q->result() as $r){
+                //cari categori ini akunya apa?
+                $sales_account="";
+                $cogs_account="";
+                $inventory_account="";
+                $tax_account="";
+                if($qcat=$this->db->where("kode",$r->category)->get("inventory_categories")){
+                    if($rcat=$qcat->row()){
+                        $sales_account=$rcat->sales_account;
+                        $cogs_account=$rcat->cogs_account;
+                        $inventory_account=$rcat->inventory_account;
+                        $tax_account=$rcat->tax_account;
+                        if($inventory_account>0){
+                            $has_inventory_account_category=true;
+                        }
+                    }
+                }
+                $saldo=$r->cost_amount;
+                $total_persediaan+=$r->cost_amount;
+                $s="update chart_of_accounts set beginning_balance='$saldo' 
+                    where id='$inventory_account';
+                ";
+                $this->db->query($s);
+                if(!$has_inventory_account_category){
+                    if($qpref=$this->db->get("preferences")){
+                        if($rpref=$qpref->row()){
+                            $inventory_account=$rpref->inventory_account;
+                            $s="update chart_of_accounts set beginning_balance='$saldo' 
+                                where id='$inventory_account';
+                            ";
+                            $this->db->query($s);
+                            
+                        }
+                    }
+                }
+                $this->db->query($s);
+            }
+        }
+    }
 	function import_inventory(){
 		$data['caption']="IMPORT DATA MASTER";
 		$this->template->display("inventory/import_master",$data);
@@ -1261,6 +1511,10 @@ Class Inventory extends CI_Controller {
 
 	}
 	function closing(){
+		$data["caption"]="PROSES CLOSING STOCK";
+		$this->template->display("inventory/closing2",$data);				
+	}
+	function closing2(){
 		$this->load->model("shipping_locations_model");
 		$data["message"]="";
 		$data["periode"]=null;
@@ -1273,7 +1527,7 @@ Class Inventory extends CI_Controller {
 			$data["periode"]=$query;
 		}
 		$data["caption"]="PROSES CLOSING STOCK";
-		$this->template->display("inventory/closing",$data);
+		$this->template->display("inventory/closing2",$data);
 	}
 	function closing_delete($tahun,$bulan){
 		$data["message"]="";
@@ -1346,12 +1600,62 @@ Class Inventory extends CI_Controller {
         }
         echo "<h2>Finish</h2>";
     }
-	function closing_proses(){
+    function add_beg_balance($tahun,$bulan){
+    	
+    }
+    function closing_proses(){
+    	$tanggal=$this->input->get("tanggal");
+    	$cnt=0;
+    	if($q=$this->db->query("select count(1) as cnt  from inventory 
+    		where (closing_status=0 or closing_status is null)")){
+    		$cnt=$q->row()->cnt;
+    	}
+		if($cnt==0){
+			//$this->db->query("update inventory set closing_status='0'");
+			
+	    	if($q=$this->db->query("select count(1) as cnt  from inventory 
+	    		where (closing_status=0 or closing_status is null)")){
+	    		$cnt=$q->row()->cnt;
+	    	}
+			
+		}
+    	if(!$cnt)$cnt=0;
+		
+		echo json_encode(array("success"=>true,"count_item"=>$cnt));    	    	
+    }
+    function closing_proses_run(){
+    	$tanggal=$this->input->get("tanggal");
+    	$tanggal2=date("Y-m-d 23:59:59");
+		$count_index=$this->input->get("count_index");
+    	$cnt=0;
+		$description="";
+		$item_number="";
+		$qty=0;
+		$gudang="";
+		if($this->input->get("gudang"))$gudang=$this->input->get("gudang");
+    	if($q=$this->db->query("select item_number,description  from inventory 
+    		where (closing_status=0 or closing_status is null) order by description")){
+    		if($r=$q->row()){
+	    		$cnt=$q->num_rows;
+    			$item_number=$r->item_number;
+    			$description=$r->description;
+    		}
+    	}
+    	$this->inventory_model->recalc_stock_arsip_gudang_run($item_number,$gudang,$tanggal);
+			
+		$this->db->query("update inventory set closing_status='1' where item_number='$item_number'");
+		
+		echo json_encode(array("success"=>true,"count_item"=>$cnt,"item_number"=>$item_number,
+			"description"=>$description,"qty"=>$qty));
+    }
+	function closing_proses2(){
 		$exist=false;
 		if($post=$this->input->post()){
 			    
 			$tahun=$post["tahun"];
 			$bulan=$post["bulan"];
+			
+			$this->add_beg_balance($tahun,$bulan);
 
 		    $antrian=0;
             $s="select count(1) as z_cnt from zzz_stock_arsip where year_arc='$tahun' and month_arc='$bulan'";
@@ -1384,9 +1688,7 @@ Class Inventory extends CI_Controller {
 			for($i=0;$i<count($items);$i++){
 				$item_no=$items[$i]["item_number"];
 				echo "<br>closing_proses(): item: $item_no";
-				$this->inventory_model->add_arsip($tiem_no,$tahun,$bulan);
-                
-
+				$this->inventory_model->add_arsip($item_no,$tahun,$bulan);  
 			}
 		}
 		
@@ -1395,8 +1697,24 @@ Class Inventory extends CI_Controller {
 		$this->rpt("daftar");
 	}
 	function recalc($item_number="",$tahun="",$bulan=""){
-	    $msg=$this->inventory_model->recalc($item_number,$tahun,$bulan);
-		$msg.="<br>".$this->inventory_model->trx_data_sj("T00");
+			
+		$this->inventory_model->recalc_stock_arsip_gudang();
+    	
+		$this->inventory_model->convert_kode_lama();
+		
+		
+        if($item_number==""){
+        	$item_number=$this->inventory_model->next_item_recalc();
+		}
+        if($item_number=="") return false;        
+		
+	    $msg="Success";    
+	    $this->inventory_model->recalc($item_number,$tahun,$bulan);
+//		$this->inventory_model->trx_data_sj("T00");
+		$this->replicate_model->inventory($item_number);
+        $msg=$this->replicate_model->message_text();
+        if($msg!="")$msg.=$this->inventory_model->message_text();
+		if($msg=="")$msg="Ready.";		
         echo json_encode(array("success"=>true,"msg"=>$msg));
 	}
 
@@ -1419,5 +1737,95 @@ Class Inventory extends CI_Controller {
         $sql.=" limit $offset,$limit";        
         
         echo datasource($sql);
+	}
+    function select_merk($search=""){
+        
+        $search=urldecode($search);
+        $sql="select distinct manufacturer from inventory ";
+
+        if($search!=""){
+            $sql.=" where manufacturer like '$search%'";
+        }
+        $sql.=" order by manufacturer";
+
+        $offset=0; $limit=10;
+        if($this->input->post("page"))$offset=$this->input->post("page");
+        if($this->input->post("rows"))$limit=$this->input->post("rows");
+        if($offset>0)$offset--;
+        $offset=$limit*$offset;
+        $sql.=" limit $offset,$limit";        
+        
+        echo datasource($sql);
+    }
+	
+    function download_item($counter){
+        $counter=$counter*100;
+        $sql="select item_number,description,retail,cost,unit_of_measure,quantity_in_stock,
+            supplier_number,category
+            from inventory 
+            order by item_number limit $counter,100";    
+        $data["success"]=false;
+        $data["eof"]=false;
+        if($q=$this->db->query($sql)){
+            $icnt=0;
+            foreach($q->result_array() as $row){
+                $data['rows'][]=$row;
+                $icnt++;
+            }
+            if($icnt==0){
+                $data["eof"]=true;
+            }
+            $data["success"]=true;
+        }
+        echo json_encode($data);
     }    
+	function checkharga(){
+		if(!$this->access->is_login()){
+			$this->load->view("login_cekharga");
+		} else {
+			$this->load->view("inventory/cekharga");
+		}
+	}
+	function checkharga_logout(){
+		$this->access->logout();
+		$this->load->view("login_cekharga");
+	}
+function login($cmd){
+    $submit_value=$this->input->post("submit");
+   $this->form_validation->set_rules('password', 'Password', 'trim|required|callback_check_database');
+   if($this->form_validation->run() && $this->session->userdata("logged_in")) {
+		header("location:".base_url()."index.php/inventory/checkharga");
+   } else {
+		$data["message"]="UserID atau Password salah !";			
+		$data['multi_company']=$this->config->item('multi_company');
+		$this->load->view("login_cekharga",$data);
+   }
 }
+ function check_database($password)  {
+	 $this->load->model("user");
+   $password=urldecode($password);
+   $user_id = $this->input->post('user_id');
+   
+   $result = $this->user->login($user_id, $password);
+   
+   if($result)  {
+	 my_log("LOGIN","",$user_id);			
+     $sess_array = array();
+     foreach($result->result() as $row) {
+       $sess_array = (array)$row;
+       unset($sess_array['password']);
+       $this->session->set_userdata('logged_in', $sess_array);
+     }
+     return true;
+   } else {
+     $this->form_validation->set_message('password', "Error user_id or password ! or Unknown !");
+     return false;
+   }
+ }
+
+
+
+	
+}
+
+?>

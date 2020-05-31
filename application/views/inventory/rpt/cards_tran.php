@@ -28,15 +28,19 @@
 	} else {
 		$date1= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateFrom')));
 		$date2= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateTo')));
+		$cat=$CI->input->post("text1");
 		$sql="select i.item_number,i.description,i.category,
 			q.tanggal,q.jenis,q.no_sumber,q.qty_masuk,q.qty_keluar,
 			q.amount_masuk,q.amount_keluar,q.cost,q.comments
 			from inventory i 
 			left join qry_kartustock_union q 
 			on q.item_number=i.item_number 
-			where q.tanggal between '$date1' and '$date2'
-			order by i.item_number
-			";
+			where q.tanggal between '$date1' and '$date2' ";
+		if($cat!=""){
+			$sql.=" and i.category='$cat'";
+		}	
+		$sql.="	order by i.item_number";
+		
 		$kel=""; if($CI->input->post("text1"))$kel=$CI->input->post("text1");
 		if($kel!="")$sql.=" and i.category='".$kel."'";
 		$item=""; if($CI->input->post('text2'))$item=$CI->input->post('text2');

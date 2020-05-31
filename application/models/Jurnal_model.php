@@ -3,21 +3,24 @@ class Jurnal_model extends CI_Model {
 
 private $primary_key='transaction_id';
 private $table_name='gl_transactions';
+private $message="";
+public $silent_mode=false;
 
-function __construct(){
-	parent::__construct();        
-  
-     $this->load->model("chart_of_accounts_model");   
-    
-}
-	function get_paged_list($limit=10,$offset=0,
-	$order_column='',$order_type='asc')
+	function __construct(){
+		parent::__construct();          
+	    $this->load->model("chart_of_accounts_model");   
+	    
+	}
+	function message_text(){
+		return $this->message;
+	}
+	function get_paged_list($limit=10,$offset=0,$order_column='',$order_type='asc')
 	{
-                $nama='';
-                if(isset($_GET['gl_id'])){
-                    $nama=$_GET['gl_id'];
-                }
-                if($nama!='')$this->db->where("gl_id like '%$nama%'");
+        $nama='';
+        if(isset($_GET['gl_id'])){
+            $nama=$_GET['gl_id'];
+        }
+        if($nama!='')$this->db->where("gl_id like '%$nama%'");
 
 		if (empty($order_column)||empty($order_type))
 		$this->db->order_by($this->primary_key,'asc');
@@ -107,17 +110,37 @@ function __construct(){
 		}
 		//var_dump($data);
 		if($account_id=="" or $account_id=="0") {
-			echo "<div class='alert alert-info'><div class='alert alert-warning'>
-			ERR_INVALID_COA : <strong>AccountId:</strong> [$account_id] not found !, "
-			."<strong>Operation:</strong> $operation, <strong>Source:</strong> $source, 
-			<strong>RefId:</strong> $ref</p></div></div>";
-			return false;
+			if(is_ajax()){
+				$this->message.="ERR_INVALID_COA : AccountId: [$account_id] not found !, Operation: $operation, Source: $source, RefId: $ref, GLId: $gl_id";
+				
+				echo json_encode(array("success"=>false,"message"=>$this->message));
+				
+			} else {
+				if(!$this->silent_mode){
+					
+					echo "<div class='alert alert-info'><div class='alert alert-warning'>
+					ERR_INVALID_COA : <strong>AccountId:</strong> [$account_id] not found !, "
+					."<strong>Operation:</strong> $operation, <strong>Source:</strong> $source, 
+					<strong>RefId:</strong> $ref <b>GLId: </b>$gl_id </p></div></div>";
+				}
+				
+				return false;
+				
+			}
+			$this->add_jurnal_error($gl_id,$data['date'],$this->message);
 		}
 		if($data['debit']-$data['credit']==0){
 			return false;
 		} else {
 			$ok=$this->save($data);
 		}
+	}
+	function add_jurnal_error($gl_id,$tanggal,$message){
+		$data['gl_id']=$gl_id;
+		$data['tanggal']=$tanggal;
+		$data['error_message']=$message;
+		$this->db->insert("zzz_jurnal_error",$data);
+		
 	}
     function unposting($gl_id){
         return $this->del_jurnal($gl_id);
@@ -128,7 +151,7 @@ function __construct(){
 			if($r=$q->row()){
 				$this->load->model("periode_model");
 				if($this->periode_model->closed($r->date)){
-					///echo "ERR_PERIOD";
+					echo "ERR_PERIOD: date: ".$r->date.", closed? ".$this->periode_model->closed($r->date);
 					return false;
 				}
 			}
@@ -150,7 +173,18 @@ function __construct(){
 	    $dont_validate_journal=$this->session->userdata('dont_validate_journal',FALSE);
         if($dont_validate_journal)return true;
 		if(!$this->balance($gl_id)){
-			if($display_error) echo "</br>ERR_NOT_BALANCE";
+			$tanggal=date("Y-m-d");
+			if($q=$this->db->query("select `date` from gl_transactions where gl_id='$gl_id' ")){
+				if($r=$q->row()){
+					$tanggal=$r->date;
+				}
+			}
+			$this->add_jurnal_error($gl_id, $tanggal, "Jurnal tidak balance [$gl_id]...");
+			if($display_error) {
+				echo "</br>ERR_NOT_BALANCE";
+			} else {
+				$this->message.="\r $gl_id Not Balance !";
+			}
 			if($delete) $this->del_jurnal($gl_id);
 			return false;
 		}
@@ -170,7 +204,7 @@ function __construct(){
         } else {
             $valid_status=" and valid_status='$valid_status'";
         }
-        $sql="select gl_id,concat(year(date),month(date),day(date)) as date1,
+        $sql="select gl_id,concat(year(date),'-',month(date),'-',day(date)) as date1,
             sum(debit) as debit_sum,
             sum(credit) as credit_sum,sum(debit-credit) as saldo 
             from gl_transactions 
@@ -186,6 +220,9 @@ function __construct(){
         }
         return $result;
     }	
+	function exist_account_id($id){
+		return $this->db->query("select count(1) as cnt from chart_of_accounts where id='$id'")->row()->cnt>0;
+	}
 }
 
 ?>

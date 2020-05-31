@@ -20,7 +20,7 @@ if(!$CI->input->post('cmdPrint')){
      $model=$CI->company_model->get_by_id($CI->access->cid)->row();
 	$date1= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateFrom')));
 	$date2= date('Y-m-d H:i:s', strtotime($CI->input->post('txtDateTo')));
-	$supplier= $CI->input->post('text1');
+	$category = $CI->input->post('text1');
 ?>
 <link href="<?php echo base_url();?>/themes/standard/style_print.css" rel="stylesheet">
 <table cellspacing="0" cellpadding="1" border="0" width='800px'> 
@@ -30,7 +30,7 @@ if(!$CI->input->post('cmdPrint')){
      </tr>
      <tr>
      	<td>
-     		Criteria: Dari Tanggal: <?=$date1?> s/d : <?=$date2?>, Suppplier: <?=$supplier?>
+     		Criteria: Dari Tanggal: <?=$date1?> s/d : <?=$date2?>, Category: <?=$category?>
      	</td>
      </tr>
      <tr><td colspan=4 style='border-bottom: black solid 1px'></td></tr>
@@ -38,25 +38,83 @@ if(!$CI->input->post('cmdPrint')){
      	<td colspan="8">
  		<table class='titem'>
  		<thead>
- 			<tr><td>Kode Barang</td><td>Nama Barang</td><td>Kelompok</td>
- 				<td>Qty Akhir</td><td>Qty OnPO</td><td>Qty OnSO</td><td>Qty Min</td><td>Qty Max</td>
+ 			<tr><td>Kode Barang</td><td>Nama Barang</td><td>Qty Sales M3</td>
+ 				<td>Qty Akhir</td>
+
+ 				<td>Qty MinM3</td>
+				<td>Qty MinM1</td>
+				<td>Qty MinW7</td>
+ 				
+ 				<td>Qty SafM3</td>
+				<td>Qty SafM1</td>
+				<td>Qty SafW7</td>
+ 				
  			</tr>
  		</thead>
  		<tbody>
      			<?php
-     			$sql="select * from inventory order by description";
+     			$dayYmd=date("Y-m-d");
+     			$tanggal_tiga_bulan=date("Y-m-d",strtotime($dayYmd . " -2 month"));
+				
+     			$sql="select i.item_number,i.description,i.category,i.quantity_in_stock
+     			,i.quantity_on_order,i.picking_order,i.reorder_quantity,i.quantity_on_back_order
+     			,q.qty_sale
+     			
+     			 from inventory i 
+     			 left join (
+				 	select il.item_number, sum(il.quantity) as qty_sale 
+				 	from invoice_lineitems il join invoice i on i.invoice_number=il.invoice_number 
+				 	where i.invoice_type='I' and i.invoice_date>'$tanggal_tiga_bulan' 
+				 	group by il.item_number
+				 ) q on q.item_number=i.item_number";
+				 
+				 
+				 if($category!="")$sql.=" where i.category='$category' ";
+
+
+				 //$sql.=" and i.item_number='CMN-BL-A-0001'";
+
+				 $sql.=" order by i.description";
+				 
+			 	//echo $sql;
+				
+				
+				$qty_min_m1=0;
+				$qty_min_w1=0;
 				$rst_item=$CI->db->query($sql);
 				foreach($rst_item->result() as $row_item){
+					$qty_min=c_($row_item->qty_sale);
+					if($qty_min>0){
+						$qty_min=round($qty_min/90);
+						$qty_min_m1=round($qty_min*30);
+						$qty_min_w1=round($qty_min*7);
+											}
+//					$qty_min=$qty_min*7;
+					$qty_safety=$row_item->quantity_in_stock-$qty_min;
+					$qty_safety_m1=$row_item->quantity_in_stock-$qty_min_m1;
+					$qty_safety_w1=$row_item->quantity_in_stock-$qty_min_w1;
+					$red_css="";
+					if($qty_safety<0)$red_css=" style='color:red'";
+					$red_css_m1="";
+					if($qty_safety_m1<0)$red_css_m1=" style='color:red'";
+					$red_css_w1="";
+					if($qty_safety_w1<0)$red_css_w1=" style='color:red'";
+															
 				?>	
 					<tr>
-						<td><?=$row_item->item_number?></td>
-						<td><?=$row_item->description?></td>
-						<td><?=$row_item->category?></td>
+						<td <?=$red_css?> > <?=$row_item->item_number?></td>
+						<td <?=$red_css?> ><?=$row_item->description?></td>
+						<td><?=c_($row_item->qty_sale)?></td>
 						<td><?=$row_item->quantity_in_stock?></td>
-						<td><?=$row_item->quantity_on_order?></td>
-						<td><?=$row_item->picking_order?></td>
-						<td><?=$row_item->reorder_quantity?></td>
-						<td><?=$row_item->quantity_on_back_order?></td>
+
+						<td><?=$qty_min?></td>
+						<td><?=$qty_min_m1?></td>
+						<td><?=$qty_min_w1?></td>
+
+						<td <?=$red_css?>><?=$qty_safety?></td>
+						<td <?=$red_css_m1?>><?=$qty_safety_m1?></td>
+						<td <?=$red_css_w1?>><?=$qty_safety_w1?></td>
+						
 						
 					</tr>
 				

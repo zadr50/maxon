@@ -1,7 +1,7 @@
 <?php
  
 $table="supplier";
-
+$msg="";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `other_vendors` (
@@ -30,7 +30,8 @@ CREATE TABLE IF NOT EXISTS `other_vendors` (
 
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
-	
+
+$table="suppliers";	
 $sql="
 CREATE TABLE IF NOT EXISTS `suppliers` (
   `supplier_number` varchar(50) character set utf8 NOT NULL,
@@ -77,6 +78,7 @@ CREATE TABLE IF NOT EXISTS `suppliers` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+
 $sql="
 
 INSERT INTO `suppliers` (`supplier_number`, `active`, `supplier_other_vendor`, `supplier_account_number`, `type_of_vendor`, `supplier_name`, `salutation`, `first_name`, `middle_initial`, `last_name`, `street`, `suite`, `city`, `state`, `zip_postal_code`, `country`, `phone`, `fax`, `email`, `payment_terms`, `credit_limit`, `fed_tax_id`, `comments`, `credit_balance`, `default_account`, `x1099`, `x1099fedwithheld`, `x1099line`, `x1099statewithheld`, `print1099`, `state_tax_id`, `plafon_hutang`, `org_id`, `update_status`, `create_date`, `create_by`, `update_date`, `update_by`, `acc_biaya`) VALUES
@@ -87,6 +89,7 @@ INSERT INTO `suppliers` (`supplier_number`, `active`, `supplier_other_vendor`, `
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="supplier_beginning_balance";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `supplier_beginning_balance` (

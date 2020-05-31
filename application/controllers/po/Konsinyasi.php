@@ -65,7 +65,40 @@ class Konsinyasi extends CI_Controller {
         
         echo datasource($s);
         
+    
+	}
+	
+    function item_sales_total($date_from,$date_to,$supplier=""){
+        $date_from=urldecode($date_from);
+        $date_to=urldecode($date_to);
+        $supplier=urldecode($supplier);
+        
+        $s="select sum(il.amount) as amount_jual,
+        sum(il.quantity*coalesce(if(il.cost=0,s.cost_from_mfg,il.cost),0)) as amount_cost 
+        from invoice_lineitems il left join invoice i on i.invoice_number=il.invoice_number 
+        left join inventory s on s.item_number=il.item_number 
+        where  i.invoice_type in ('i') 
+        and i.invoice_date between '$date_from' and '$date_to'";
+        if($supplier!="")$s.=" and s.supplier_number='$supplier'"; 
+        
+        $success=true;
+        $jual_amt=0;
+        $cost_amt=0;
+		$margin_prc=0;
+		
+        if($q=$this->db->query($s)){
+        	if($r=$q->row()){
+        		$jual_amt=$r->amount_jual;
+        		$cost_amt=$r->amount_cost;
+        		$margin_prc=round(($jual_amt-$cost_amt)/$jual_amt,4)*100;
+				
+        	}
+        }
+        echo json_encode(array("success"=>$success,"jual_amt"=>number_format($jual_amt),
+        	"cost_amt"=>number_format($cost_amt),"margin_prc"=>$margin_prc));
+        
     }
+	
 	function get_posts(){
 		$data=data_table_post($this->table_name);
 		return $data;

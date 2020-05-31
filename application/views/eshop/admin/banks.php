@@ -1,11 +1,13 @@
 <div class="row-fluid" >
-	<?
+	<?php
 	if($cmd=="list") {
 		echo $browse;		
 	} else {
+	    $bank_account_number="";
+        $bank_name="";
+        $contact_name="";
+        $city="";
 		if(!isset($readonly))$readonly='';
-		echo "<h1>$caption</h1>";
-		
 	?>
 		<div class="col-md-10">
 			<div class="row">
@@ -16,9 +18,6 @@
 					<?=my_input_2("Nama Pemilik Rekening","contact_name",$contact_name)?>
 					<?=my_input_2("Cabang / Kota","city",$city)?>
 				</form>			
-			</div>
-			<div  class='row'>
-				<button type="button" class="btn btn-primary" onclick='save_form();return false'>Save Changes</button>
 			</div>
 		</div>
 		<script language='javascript'>

@@ -39,6 +39,7 @@ class Kontra_bon extends CI_Controller {
     		$data['tgl_jth_tempo']=date("Y-m-d");
     		$data['termin']="KREDIT";
         }
+        $data['lookup_terms']=$this->type_of_payment_model->lookup();
         $data['lookup_suppliers']=$this->supplier_model->lookup();
         $data['lookup_receive']=$this->receive_item_model->lookup(
             array("dlgRetFunc"=>"add_receive_no(row.shipment_id);"
@@ -115,7 +116,7 @@ class Kontra_bon extends CI_Controller {
 	function items($nomor)
 	{
 		$nomor=urldecode($nomor);
-		$sql="select faktur,tanggal,jumlah,saldo,id
+		$sql="select faktur,tanggal,jumlah,saldo,row_type,id
 		from payables_bill_detail p 
 		where nomor='$nomor'";		 
 		echo datasource($sql);
@@ -205,9 +206,15 @@ class Kontra_bon extends CI_Controller {
     		}
             
         }
-         
+		$sql.=" order by nomor";
+		
+        if($this->input->get("page"))$offset=$this->input->get("page");
+        if($this->input->get("rows"))$limit=$this->input->get("rows");
+        if($offset==1)$offset=0;
+        $offset=10*$offset;
+        $sql.=" limit $offset,$limit";
         
-        echo datasource($sql);
+	        echo datasource($sql);
     }	 
 	function delete($id){
 		//if(!allow_mod2('_40133'))return false;
@@ -247,6 +254,7 @@ class Kontra_bon extends CI_Controller {
         function save_item(){ 
             //$this->load->model('payables_bill_detail_model');
 			$kontra_bon=$this->session->userdata('nomor');	
+			$row_type=$this->input->post("row_type");
 			$faktur=$this->input->post('faktur');
 			$ok=false;
 			$message="Tidak ada nomor faktur yang dipilih !";
@@ -254,17 +262,38 @@ class Kontra_bon extends CI_Controller {
 				for($i=0;$i<count($faktur);$i++){
 					$no=$faktur[$i];
 					if($no!=""){
-						if($q=$this->db->where("purchase_order_number",$no)->get("purchase_order")){
-							if($r=$q->row()){
-							    $amount=$r->amount;
-                                if($r->potype=='R')$amount=$r->amount*-1;
-								$d['nomor']=$kontra_bon;
-								$d['faktur']=$no;
-								$d['tanggal']=$r->po_date;
-								$d['jumlah']=$amount;
-								$d['saldo']=$r->saldo_invoice;
-								$this->db->insert("payables_bill_detail",$d);
+						if($row_type=="memo"){
+							if($q=$this->db->where("kodecrdb",$no)->get("crdb_memo")){
+								if($r=$q->row()){
+									$d['nomor']=$kontra_bon;
+									$d['faktur']=$no;
+									$d['tanggal']=$r->tanggal;
+									$d['jumlah']=-1*$r->amount;
+									if($r->transtype=="PO-CREDIT MEMO"){
+										$d['jumlah']=$r->amount;
+									}
+									$d['saldo']=$d['jumlah'];
+									$d['row_type']=$row_type;
+									$this->db->insert("payables_bill_detail",$d);
+									
+								}
 							}
+						} else {
+							if($q=$this->db->where("purchase_order_number",$no)->get("purchase_order")){
+								if($r=$q->row()){
+								    $amount=$r->amount;
+	                                if($r->potype=='R')$amount=$r->amount*-1;
+									$d['nomor']=$kontra_bon;
+									$d['faktur']=$no;
+									$d['tanggal']=$r->po_date;
+									$d['jumlah']=$amount;
+									$d['saldo']=$r->saldo_invoice;
+									if($r->potype=='R')$d['saldo']=$d['jumlah'];
+									$d['row_type']=$row_type;
+									$this->db->insert("payables_bill_detail",$d);
+								} 
+							} 
+							
 						}
 					}
 					$ok=true;
@@ -351,10 +380,48 @@ class Kontra_bon extends CI_Controller {
 
 		$this->load->model('purchase_invoice_model');
 
+		$sql="select i.purchase_order_number,po_date,due_date,amount,terms,
+		i.supplier_number,s.supplier_name,i.potype
+		from purchase_order i left join suppliers s on s.supplier_number=i.supplier_number
+		where potype='I'
+		and i.supplier_number='$supplier_number' 
+		and i.purchase_order_number not in (
+			select faktur from payables_bill_detail
+		)
+		";
+ // and (paid=false or isnull(paid))
+		$query=$this->db->query($sql);
+		$i=0;
+		$rows[0]='';
+		$ok=false;
+		if($query){ 
+			foreach($query->result_array() as $row){
+				$nomor=$row['purchase_order_number'];
+				$saldo=$this->purchase_invoice_model->recalc($nomor);
+                $amount=$row['amount'];
+                $row['recv_no']=$this->get_recv_no_invoice($nomor);
+                if($row['potype']=='R')$amount=-1*$amount;
+				if($saldo!=0){
+					$row['amount']=number_format($amount);
+					$row['saldo']=number_format($saldo);
+					$rows[$i++]=$row;
+				}
+				$ok=true;
+			};
+		}
+		$data['success']=$ok;
+		$data['faktur']=$rows;
+		echo json_encode($data);
+	} 
+	function select_retur($supplier_number){
+		$supplier_number=urldecode($supplier_number);
+
+		$this->load->model('purchase_invoice_model');
+
 		$sql="select purchase_order_number,po_date,due_date,amount,terms,
 		i.supplier_number,s.supplier_name,i.potype
 		from purchase_order i left join suppliers s on s.supplier_number=i.supplier_number
-		where potype in ('I','R')
+		where potype='R'
 		and i.supplier_number='$supplier_number'";
  // and (paid=false or isnull(paid))
 		$query=$this->db->query($sql);
@@ -380,6 +447,32 @@ class Kontra_bon extends CI_Controller {
 		$data['faktur']=$rows;
 		echo json_encode($data);
 	} 
+
+
+	function select_memo($supplier_number){
+		$supplier_number=urldecode($supplier_number);
+
+		$sql="select i.kodecrdb,i.tanggal,i.amount,
+		i.cust_supp,s.supplier_name
+		from crdb_memo i left join suppliers s on s.supplier_number=i.cust_supp
+		where transtype in ('PO-DEBIT MEMO','PO-CREDIT MEMO')
+		and i.cust_supp='$supplier_number'";
+		$query=$this->db->query($sql);
+		$i=0;
+		$rows[0]='';
+		$ok=false;
+		if($query){ 
+			foreach($query->result_array() as $row){
+				$rows[$i++]=$row;
+			};
+			$ok=true;
+		}
+		$data['success']=$ok;
+		$data['faktur']=$rows;
+		echo json_encode($data);
+	} 
+
+
     function get_recv_no_invoice($nomor_faktur){
         $ret="";
         $s="select from_line_doc from purchase_order_lineitems 

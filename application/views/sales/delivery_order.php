@@ -102,12 +102,13 @@ if($user_admin){
 			     <td>Nomor SO Ref#</td><td><?         
 			        echo form_input('sales_order_number',$sales_order_number,'id=sales_order_number');?>
 		
-		        	<? if($mode=='add') { ?>
+		        	<? //if($mode=='add') { ?>
 		
 					<a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="false" 
 						onclick="dlgsales_order_open_show();return false;"></a>
 		
-					<? } ?>
+					<? //} ?>
+					</br><i>*Pilih satu atau lebih nomor sales order</i>
 			     </td>
 		     </tr>
 	       
@@ -134,9 +135,13 @@ if($user_admin){
 						<th data-options="field:'item_number',width:80">Kode Barang</th>
 						<th data-options="field:'description',width:200">Nama Barang</th>
 						<th data-options="field:'quantity',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">Qty</th>
-						<th data-options="field:'unit',width:50,align:'left',editor:'text'">Unit</th>
+						<th data-options="field:'unit',width:30,align:'left',editor:'text'">Unit</th>
 						<th data-options="field:'mu_qty',width:50,align:'right',editor:{type:'numberbox',options:{precision:2}}">M Qty</th>
-						<th data-options="field:'multi_unit',width:50,align:'left',editor:'text'">M Unit</th>
+						<th data-options="field:'multi_unit',width:30,align:'left',editor:'text'">M Unit</th>
+						<th data-options="field:'no_urut',width:30,align:'right'">NoUrut</th>
+						<th data-options="field:'warehouse_code',width:30,align:'right'">Gudang</th>
+						<th data-options="field:'from_line_type',width:30,align:'right'">RefType</th>
+						<th data-options="field:'from_line_doc',width:30,align:'right'">Ref</th>
 						<th data-options="field:'line_number',width:30,align:'right'">Line</th>
 					</tr>
 				</thead>
@@ -158,6 +163,7 @@ if($user_admin){
 <?php
 	echo load_view("inventory/select_unit_jual");
 	include_once "do_item_input.php";
+	include_once "so_item_selected.php";
     echo $lookup_gudang;
 	echo $lookup_so_open;
 	echo $lookup_customers;
@@ -243,6 +249,11 @@ if($user_admin){
   	    
   		if($('#invoice_number').val()==''){log_err('Isi nomor bukti !');return false;}
   		if($('#sold_to_customer').val()==''){log_err('Isi pelanggan !');return false;}
+		if($('#warehouse_code').val()==''){
+			log_err("Isi kode gudang !");
+			return false;
+		}
+		
 		url='<?=base_url()?>index.php/delivery_order/save';
 		$('#frmDo').form('submit',{
 			url: url,
@@ -286,11 +297,15 @@ if($user_admin){
             $("#qty_id_"+i).val("");        
         }
     }
-	function load_so(nomor_so){
+	function load_so_old(nomor_so){
          get_this('<?=base_url()?>index.php/sales_order/list_item_delivery/'+nomor_so,'','divItem');					
 	}
-	function selected_so_number2(){
-		var so=$("#sales_order_number").val();
+	function load_so(nomor_so){
+			$('#dlgSoItems').dialog('open').dialog('setTitle','Pilih barang dari SO terpilih');
+			$('#dgSoItems').datagrid({url:'<?=base_url()?>index.php/sales_order/list_item_for_do/'+nomor_so});
+		
+	}
+	function selected_so_number2(so){
 		var cust=$("#sold_to_customer").val();		
 		get_this(CI_BASE+"index.php/customer/info/"+cust,null,"customer_info");			
 		load_so(so);

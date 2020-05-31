@@ -62,19 +62,26 @@ private $table_name='type_of_payment';
 		return $due_date;
 	}
     function lookup($param=null){        
-            $setsupp['dlgBindId']="terms";
-            $setsupp['dlgRetFunc']="$('#terms').val(row.type_of_payment);
-            ";
+            $setlookup['dlgBindId']="terms";
+            $setlookup['dlgRetFunc']="
+            	$('#terms').val(row.type_of_payment);
+            	$('#termin').val(row.type_of_payment);
+            	";
             if($param){
                 if(isset($param['dlgRetFunc'])){
-                    $setsupp['dlgRetFunc']=$param['dlgRetFunc'];
+                    $setlookup['dlgRetFunc']=$param['dlgRetFunc'];
                 }
             }
-            $setsupp['dlgCols']=array( 
+            $setlookup['dlgCols']=array( 
                         array("fieldname"=>"type_of_payment","caption"=>"Termin","width"=>"180px"),
                         array("fieldname"=>"days","caption"=>"Hari","width"=>"80px")
                     );          
-        return $this->list_of_values->render($setsupp);
+			$setlookup['modules']='type_of_payment';
+		//if(!is_ajax()){
+			return $this->list_of_values->render($setlookup);
+		//} else {
+		//	echo json_encode($setlookup);
+		//}
         
     }					
 }

@@ -6,15 +6,6 @@ private $table_name='kop_pinjaman';
 
 	function __construct(){
 		parent::__construct();        
-        $multi_company=$this->config->item('multi_company');
-       if($multi_company){
-            $company_code=$this->session->userdata("company_code","");
-            if($company_code!=""){
-               $this->db = $this->load->database($company_code, TRUE);
-           }
-       }         
-        
-        
 	}
 	function get_by_id($id){
 		$this->db->where($this->primary_key,$id);
@@ -42,7 +33,9 @@ private $table_name='kop_pinjaman';
 	}
 	function delete($kode){
 		$this->db->where($this->primary_key,$kode);
-		return $this->db->delete($this->table_name);
+		$ok = $this->db->delete($this->table_name);
+		$this->db->where("no_pinjaman",$kode)->delete("kop_cicilan");
+		return $ok;
 	}
 	function recalc($data) {
 		if($data['jangka_waktu']==0)$data['jangka_waktu']=12;
@@ -52,6 +45,9 @@ private $table_name='kop_pinjaman';
 	function save_cicilan($id) {
 		$table='kop_cicilan';
 		$loan=$this->get_by_id($id)->row();
+		if(!$loan){
+			return false;
+		}
 		$tanggal=$loan->tanggal;
 		$awal=$loan->jumlah;
 		$pokok=$loan->angsur_pokok;
@@ -59,7 +55,6 @@ private $table_name='kop_pinjaman';
 		
 		for($i=0;$i<$loan->jangka_waktu-1;$i++) {
 			$tanggal = date('Y-m-d', strtotime("+1 months", strtotime($tanggal)));
-
 		
 			$data['no_pinjaman']=$id;
 			$data['no_urut']=$i+1;
@@ -70,9 +65,6 @@ private $table_name='kop_pinjaman';
 			$data['angsuran']=$data['pokok']+$data['bunga'];
 			$data['akhir']=$awal-$data['angsuran'];
  
-
-			 
-			
 			$this->db->where('no_pinjaman',$id);
 			$this->db->where('no_urut',$i+1);
 			if($this->db->get($table)->row()){

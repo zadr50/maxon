@@ -4,7 +4,7 @@
 	
 $sql="CREATE  VIEW qry_kartu_piutang AS
    select invoice_type as jenis, sales_order_number as ref,invoice_number as no_bukti
-  ,invoice_date as tanggal,amount as jumlah,sold_to_customer as customer_number
+  ,invoice_date as tanggal,amount,sold_to_customer as customer_number
    From invoice
   where invoice_type='I'
 
@@ -14,9 +14,19 @@ $sql="CREATE  VIEW qry_kartu_piutang AS
   where invoice_type='R'
 
   Union All
-  select 'P' as jenis,p.invoice_number,no_bukti, date_paid, amount_paid*-1, i.sold_to_customer
+  select 'P' as jenis,p.invoice_number,p.no_bukti, p.date_paid, p.amount_paid*-1, i.sold_to_customer
   from payments p
   left join invoice i on p.invoice_number=i.invoice_number
+  where p.how_paid<>'1'
+  
+  Union All
+  select 'P' as jenis,p.invoice_number,p.no_bukti, p.date_paid, p.amount_paid*-1, i.sold_to_customer
+  from payments p
+  left join invoice i on p.invoice_number=i.invoice_number
+  left join check_writer cw on cw.voucher=p.no_bukti
+  where p.how_paid='1' and cw.cleared=1
+  
+  
 
   Union All
   select 'C' as jenis,docnumber,kodecrdb,tanggal,-1*c.amount,i.sold_to_customer

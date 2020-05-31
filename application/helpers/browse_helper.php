@@ -135,7 +135,7 @@ if(!function_exists('browse_simple')){
 
 if ( ! function_exists('browse2'))
 {
-    function browse2($sql,$caption="",$class="",$offset=0,$limit=50
+    function browse2($data,$caption="",$class="",$offset=0,$limit=50
             ,$order_column='',$order_type='asc',$header='',$style='',$param="")
     {
         echo '<script language="javascript">
@@ -145,12 +145,27 @@ if ( ! function_exists('browse2'))
                 
         </script>';    
         $CI =& get_instance();
-        
-        
+        $id="dg";
+        $toolbar="tb";
+        $height=500;
+		$allow_edit=false;
+        if(is_array($data)){
+            $sql=$data["sql"];
+            $caption=isset($data["caption"])?$data['caption']:'Data';
+            $class=$data["controller"];
+            if(isset($data['cols_width']))$cols_width=$data["cols_width"];
+            if(isset($data['fields_numeric']))$fields_numeric=$data["fields_numeric"];
+            if(isset($data['id']))$id=$data['id'];
+            if(isset($data['toolbar']))$toolbar=$data['toolbar'];
+            if(isset($data['height']))$height=$data['height'];
+            if(isset($data['allow_edit']))$allow_edit=$data['allow_edit'];
+        } else  {
+            $sql=$data;
+        }
         $query=$CI->db->query($sql.' limit 1');
         $flds=$query->list_fields();
-        
         $url=site_url().'/'.$class.'/browse_json/'.$offset.'/'.$limit.'/'.$param;
+        
         
         
         if($style=='')$style='width:100%';
@@ -160,21 +175,87 @@ if ( ! function_exists('browse2'))
         $thead='<tr>';
         for($i=0;$i<count($flds);$i++){
             $fld=$flds[$i];
-            $fld=str_replace('_',' ',$fld);
+            $fld1=str_replace('_',' ',$fld);
+            $width=80;
+            if(isset($cols_width)){
+                if(isset($cols_width[$fld]))$width=$cols_width[$fld];
+            }
+            $formatter="";
+            if(isset($fields_numeric[$fld])){
+                $formatter=",align:'right',editor:'numberbox', 
+                    formatter: function(value,row,index){
+                        if(isNumber(value)){
+                            return number_format(value,2,'.',',');
+                            return value;
+                        } else {
+                            return value;
+                        }
+                    }";
+                    
+            }
+            if($formatter=="" && isset($fields_numeric)){
+            	for($j=0;$j<count($fields_numeric);$j++){
+            		if($fields_numeric[$j]==$fld){
+		                $formatter=",align:'right',editor:'numberbox', 
+	                    formatter: function(value,row,index){
+	                        if(isNumber(value)){
+	                            return number_format(value,2,'.',',');
+	                            return value;
+	                        } else {
+	                            return value;
+	                        }
+	                    }";
+	            		//break;	
+            			
+            		}
+            	}
+            }
 			if($fld!=""){
-           		 $thead.='<th  data-options="field:\''.$flds[$i].'\'">
-            			<strong>'.ucfirst($fld).'</strong></th>';
+           		 $thead.='<th  data-options="field:\''.$flds[$i].'\', width:'.$width.$formatter.' ">
+            			<strong>'.ucfirst($fld1).'</strong>';
+            	 $thead.='</th>';
 			}
         }
+        
+		 if ( $allow_edit ){
+           		 $thead.="<th  data-options=\"field:'action', width:'80', 
+   								formatter:function(value,row,index){
+				                    if (row.editing){
+				                        var s = '<a href=\'javascript:void(0)\' onclick=\'saverow(this)\'>Save</a> ';
+				                        var c = '<a href=\'javascript:void(0)\' onclick=\'cancelrow(this)\'>Cancel</a>';
+				                        return s+c;
+				                    } else {
+				                        var e = '<a href=\'javascript:void(0)\' onclick=\'editrow(this)\'>Edit</a> ';
+				                        var d = '<a href=\'javascript:void(0)\' onclick=\'deleterow(this)\'>Delete</a>';
+				                        return e+'&nbsp|&nbsp'+d;
+				                    }
+				                }           		 			
+           		 		\" >
+            			<strong>Action</strong>";
+            	 $thead.="</th>";
+
+		 	
+		 }
+		 
+		
         $thead.='</tr>';
-        $tbl='<table id="dg" class="easyui-datagrid" , title=\''.$caption.'\' 
-              style="'.$style.'"
-              data-options="singleSelect:true,collapsible:true,fitColumns:true,
-              	url:\''.$url.'\' ,toolbar:\'#tb\' " >
-              <thead>'.$thead.'</thead>
-              </table>';
+        $tbl="<table id='$id' class='easyui-datagrid', title='$caption' 
+              style='max-height:$height;min-height:300px;$style'
+              data-options=\"
+               
+              singleSelect:true,collapsible:true,fitColumns:true,pagination:true,
+              height:$height,	url:'$url', toolbar:'#$toolbar',
+              idField:'id'
+               \" >
+              	
+              <thead>$thead</thead>
+              
+              </table>";
+              
         $retval=$tbl;
                
+
+        echo "<script language='javascript'></script>";
 
         return  $retval;
 

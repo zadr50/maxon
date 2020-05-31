@@ -7,6 +7,9 @@ class Template {
  private $jquery_easyui='';
  private $bootstrap='';
  private $flexslider='';
+ public $dont_load_js=false;
+ private $themes="standard";
+ 
  function _cjs($s,$l=true){
 	 return $this->_ci->jquery->script(base_url().$s,$l);
  }
@@ -19,7 +22,9 @@ class Template {
 	if($themes==""){
 		$themes="standard";
 	}
-	$versi_lib_js="5";	//ubah v1+1 apabila ada versi barunya libjs biar direload
+	$this->themes=$themes;
+	
+	$versi_lib_js="8";	//ubah v1+1 apabila ada versi barunya libjs biar direload
 	
 	$base=base_url();
 	$this->bootstrap='
@@ -29,46 +34,61 @@ class Template {
 	$this->bootstrap_only ="<link rel='stylesheet' type='text/css' href='".base_url()."assets/bootstrap-3.3.5/css/bootstrap.css'>";
 	$this->bootstrap_only.=$this->_cjs('assets/jquery/jquery-1.11.3.min.js',true);
     $this->bootstrap_only.=$this->_cjs('assets/bootstrap-3.3.5/js/bootstrap.min.js',true);
-    $this->bootstrap_only.=$this->_cjs('js/lib.js?v='.$versi_lib_js,true);
+    $this->bootstrap_only.=$this->_cjs('js/lib.js?v=11',true);
 	
 	$this->library_src =$this->_cjs('assets/jquery/jquery-1.11.3.min.js',true);
     $this->library_src.=$this->_cjs('assets/bootstrap-3.3.5/js/bootstrap.min.js',true);
     $this->library_src.=$this->_cjs('assets/datepicker/bootstrap-datepicker.js',true);
-    $this->library_src.=$this->_cjs('assets/jquery-easyui-1.4.3/jquery.easyui.min.js',true);
-    $this->library_src.=$this->_cjs('assets/jquery-easyui-1.4.3/plugins/jquery.edatagrid.js',true);
-    //$this->library_src.=$this->_cjs('assets/jquery-easyui-1.4.3/jquery.easyui.mobile.js',true);
-    $this->library_src.=$this->_cjs('js/autocomplete/jquery.autocomplete.min.js',true);
+	//if($this->themes!="admin"){
+		$this->library_src.=$this->_cjs('assets/jquery-easyui-1.4.3/jquery.easyui.min.js',true);
+		$this->library_src.=$this->_cjs('assets/jquery-easyui-1.4.3/plugins/jquery.edatagrid.js',true);
+	//}
+//  $this->library_src.=$this->_cjs('assets/flexslider/jquery.flexslider-min.js',true);
+//	$this->library_src.=$this->_cjs('assets/jquery-easyui-1.4.3/jquery.easyui.mobile.js',true);
+	$this->library_src.=$this->_cjs('js/autocomplete/jquery.autocomplete.min.js',true);
     $this->library_src.=$this->_cjs('js/jquery.formatNumber.js',true);
-    $this->library_src.=$this->_cjs('assets/flexslider/jquery.flexslider-min.js',true);
     $this->library_src.=$this->_cjs('assets/maphilight-master/jquery.maphilight.min.js',true);
     $this->library_src.=$this->_cjs('js/lib_error.js',true);
-    $this->library_src.=$this->_cjs('js/lib.js?v='.$versi_lib_js,true);
-    $this->library_src.=$this->_cjs('js/lib_input.js?v='.$versi_lib_js,true);
+    $this->library_src.=$this->_cjs('js/lib.js?v=12',true);
+    $this->library_src.=$this->_cjs('js/lib_input.js?v=11',true);
 
     $this->flexslider=$this->_cjs('assets/flexslider/jquery.flexslider.js',true);
 	
   /// $this->script_head=$this->_ci->jquery->_compile();
 	$this->script_head='
-	
+	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/fontawesome/css/font-awesome.min.css">	
 	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/bootstrap-3.3.5/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'js/autocomplete/jquery.autocomplete.css">
-	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/jquery-easyui-1.4.3/themes/'.$themes.'/easyui.css">
-	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/jquery-easyui-1.4.3/themes/icon.css">
-	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/datepicker/datepicker.css">
-	<link rel="stylesheet" type="text/css" href="'.base_url().'themes/'.$themes.'/style.css">
-	
 	';
+//	if($this->themes!="admin"){
+		if($themes=="admin"){
+			$this->script_head.='<link rel="stylesheet" type="text/css" href="'.base_url().'assets/jquery-easyui-1.4.3/themes/standard/easyui.css">';
+		} else {
+			$this->script_head.='<link rel="stylesheet" type="text/css" href="'.base_url().'assets/jquery-easyui-1.4.3/themes/'.$themes.'/easyui.css">';
+		}
+		$this->script_head.='<link rel="stylesheet" type="text/css" href="'.base_url().'assets/jquery-easyui-1.4.3/themes/icon.css">';
+		$this->script_head.='<link rel="stylesheet" type="text/css" href="'.base_url().'themes/'.$themes.'/style.css">';		
+//	}
+	$this->script_head.='<link rel="stylesheet" type="text/css" href="'.base_url().'assets/datepicker/datepicker.css">';
+	
 //	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/jquery-easyui-1.4.3/themes/mobile.css">
 //	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/flexslider/flexslider.css">
+
+//	if($this->themes!="admin"){
+		if($themes=="admin"){
+			$this->script_head.='<link rel="stylesheet" type="text/css" href="'.base_url().'assets/jquery-easyui-1.4.3/themes/standard/easyui.css">';
+		} else {
+			$this->script_head.='<link rel="stylesheet" type="text/css" href="'.base_url().'assets/jquery-easyui-1.4.3/themes/'.$themes.'/easyui.css">';
+		}
+		$this->jquery_easyui.='<link rel="stylesheet" type="text/css" href="'.base_url().'assets/jquery-easyui-1.4.3/themes/icon.css">';
+		$this->jquery_easyui.='<script type="text/javascript" charset="utf-8" src="'.base_url().'asset/jquery/jquery-1.11.3.min.js"></script>';
+		$this->jquery_easyui.='<script type="text/javascript" charset="utf-8" src="'.base_url().'assets/jquery-easyui-1.4.3/jquery.easyui.min.js"></script>';
+//	}
 	
-	$this->jquery_easyui='
- 	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/jquery-easyui-1.4.3/themes/'.$themes.'/easyui.css">
-	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/jquery-easyui-1.4.3/themes/icon.css">
-	<script type="text/javascript" charset="utf-8" src="'.base_url().'asset/jquery/jquery-1.11.3.min.js"></script>
-	<script type="text/javascript" charset="utf-8" src="'.base_url().'assets/jquery-easyui-1.4.3/jquery.easyui.min.js"></script>
-	';
     //$this->_ci->upgrade->process(); pindah ke sessionset.php
     //$this->_ci->alert->process();
+    
+    $this->dont_load_js=false;
 	
 }
 function display_main_config(){
@@ -80,7 +100,10 @@ function display_main_config(){
     $this->_ci->load->view('template/standard/template',$data);                         
 }
 function display_main($template="",$data=null){
+	
 	if($template=="")$template='blank';
+	
+	$data['title']="MaxOn ERP Online";
 	$data['library_src']=$this->library_src;
 	$data['script_head']=$this->script_head;
 	$data['body_class']='bg1';
@@ -107,6 +130,11 @@ function display_main($template="",$data=null){
     }
     if($hmh=$this->_ci->session->userdata("hide_menu_header")){
         $data["hide_menu_header"]=$hmh;
+    }
+    if($stop_background_process=$this->_ci->session->userdata("stop_background_process")){
+        $data["stop_background_process"]=$stop_background_process;        
+    } else {
+        $data["stop_background_process"]="false";
     }
 
 	
@@ -169,6 +197,7 @@ function display_main($template="",$data=null){
 		if($template=="welcome_message"){
 			$data["sidebar_show"]=false;
 			$data['hide_menu_header']=true;
+			$data['_left_menu']=load_view("menu_tree");
 		}  
 		$data['_content']=$this->_ci->load->view($template,$data, true);
 	}  			
@@ -176,18 +205,30 @@ function display_main($template="",$data=null){
 	if($hmh=$this->_ci->session->userdata("hide_menu_header")){
 		$data["hide_menu_header"]=$hmh;
 	}
-	
-	$this->_ci->load->view('template/standard/template',$data);              		
+	if($this->themes=="admin"){
+		$this->_ci->load->view('template/admin-lte/home',$data);              		
+		
+	} else {
+		$this->_ci->load->view('template/standard/template',$data);              		
+		
+	}
 }
  function display($template,$data=null)
  {
 	if($template=="")$template='blank';
 	$data['body_class']='';
-	 if(!$this->is_ajax())
-	 {
+
+    //if(is_ajax()) {
+	//	$data['google_ads_visible']=$this->_ci->sysvar->getvar('google_ads_visible','true');
+	//	echo json_encode($data);
+
+	//} else {
+				
 		if(!isset($data['user_id']))$data['user_id']=$this->_ci->access->user_id();
-	  	$data['library_src']=$this->library_src;
-	  	$data['script_head']=$this->script_head;
+		if(!is_ajax()){
+			$data['library_src']=$this->library_src;
+			$data['script_head']=$this->script_head;  
+		}
 		if(!isset($data['ajaxed']))$data['ajaxed']=true;
 		$header_visible=$this->_ci->session->userdata('header_visible');
 		if($header_visible){
@@ -198,7 +239,8 @@ function display_main($template="",$data=null){
 		
 		$data['_footer']=$this->_ci->load->view('template/standard/footer',$data, true);
 
-		$sql="select distinct controller,method,param1 from sys_log_run where user_id='".$this->_ci->access->user_id()."' order by id desc limit 10 ";
+		$sql="select distinct controller,method,param1 from sys_log_run 
+		where user_id='".$this->_ci->access->user_id()."' order by id desc limit 10 ";
 		$url=base_url()."/index.php/".$template;
 
 		add_log_run($url);
@@ -228,6 +270,12 @@ function display_main($template="",$data=null){
 			}
 		}
 		$data['_left_menu_caption']=$this->_ci->session->userdata('_left_menu_caption');
+        if($stop_background_process=$this->_ci->session->userdata("stop_background_process")){
+            $data["stop_background_process"]=$stop_background_process;        
+        } else {
+            $data["stop_background_process"]="false";
+        }
+        
 
 		if($template==$fm){
 			
@@ -258,16 +306,15 @@ function display_main($template="",$data=null){
 		if($hmh=$this->_ci->session->userdata("hide_menu_header")){
 			$data["hide_menu_header"]=$hmh;
 		}
-        
 		$this->_ci->load->view('template/standard/template',$data);              
-	 } else  {
-		$data['google_ads_visible']=$this->_ci->sysvar->getvar('google_ads_visible','true');
-		$this->_ci->load->view($template,$data);
-	 }
+
+	//}
  }
  function display_single($template,$data=null) {
   	$data['library_src']=$this->library_src;
   	$data['script_head']=$this->script_head;
+	$data['bootstrap_only']=$this->bootstrap_only;
+	
 	if($template=="")$template='blank';
 	$this->_ci->load->view($template,$data);
  }
@@ -286,12 +333,10 @@ function display_main($template="",$data=null){
 	';
 	
 	$script_head='
+	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/fontawesome/css/font-awesome.min.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'assets/bootstrap-3.3.5/css/bootstrap.css">
 	<link rel="stylesheet" type="text/css" href="'.base_url().'themes/standard/style.css">
 	';
-//  $data['library_src']=$library_src;
-// 	$data['script_head']=$script_head;
-
   	$data['library_src']=$this->library_src;
   	$data['script_head']=$this->script_head;
 		
@@ -300,22 +345,29 @@ function display_main($template="",$data=null){
 
  function display_form_input($template,$data=null,$template_right=null)
  {
-    //$data['message']='Ready';
-  	$data['library_src']=$this->library_src;
-  	$data['script_head']=$this->script_head;
- 	$data['jquery_easyui']=$this->jquery_easyui;
+	//$data['message']='Ready';
+	if(!is_ajax()){
+		$data['library_src']=$this->library_src;
+		$data['script_head']=$this->script_head;        
+	 	$data['jquery_easyui']=$this->jquery_easyui;	
+	}
 	$data['ajaxed']=true;
-	 if(!$this->is_ajax()) {	
-        $this->display($template,$data);
-	 } else {
-		 $this->_ci->load->view($template,$data);
-	 }
+    $data['dont_load_js']=$this->dont_load_js;
+		
+//	 if(is_ajax()) {	
+//		$data["template"]=$template;
+//		$this->_ci->load->view("template_ajax",$data);
+//	 } else {
+		$this->display($template,$data);
+//		echo json_encode($data);
+//	}
  }
+ 
  function display_browse2($data=null){
      
     if(session_company_code()=="" || session_outlet()=="" ){
     		
-    	 $cek_outlet=true;
+    	 $cek_outlet=$this->_ci->config->item("check_outlet_active");
 		if($global_module=$this->_ci->session->userdata("global_module")){
 			if($global_module=="sekolah"){
 				$cek_outlet=false;
@@ -333,19 +385,25 @@ function display_main($template="",$data=null){
     }        
      
 	$data['body_class']='panel-body';
-    $data['library_src']=$this->library_src;
-    $data['script_head']=$this->script_head;
 	$data['print_visible']=true;
+    $data['dont_load_js']=$this->dont_load_js;
     
 	if(isset($data['view_mode'])){
 		$view_mode=$data['view_mode'];
 	} else {
 		$view_mode="";
 	}
-	if($view_mode<>""){
-		$this->_ci->load->view('/'.$view_mode,$data);	
+	if(!is_ajax()){
+		$data['library_src']=$this->library_src;
+		$data['script_head']=$this->script_head;
+			if($view_mode<>""){
+			$this->_ci->load->view('/'.$view_mode,$data);	
+		} else {
+			$this->_ci->load->view('template/standard/template_browse',$data);				
+		}
+	
 	} else {
-		$this->_ci->load->view('template/standard/template_browse',$data);				
+		echo json_encode($data);
 	}
  }
  function display_browse($data=null)
@@ -377,7 +435,7 @@ function display_main($template="",$data=null){
 	    $this->_ci->load->view('template/standard/template_browse',$data);
 	 }
  }
- function display_table($data=null) {
+ function display_table($template,$data=null) {
     $data['message']='Ready';
 	  
 	 if(!$this->is_ajax())
@@ -456,6 +514,8 @@ function browse_sql($sql){
 		$this->_ci->load->view('template/pos/template',$data);              
 	 
  }
- 
+ 	function display_lte_admin($page,$data=null){
+		$this->_ci->load->view('template/admin-lte/home',$data);              
+ 	} 
  
 }

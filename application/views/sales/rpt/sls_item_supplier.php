@@ -13,11 +13,16 @@
          $data['fields1'][]=array("supplier_number","80","Kode");
          $data['fields1'][]=array("supplier_name","180","Nama Supplier");
          $data['ctr1']='lookup/query/suppliers';
+		 
 		$data['rpt_controller']="sales/rpt/$id";
 		$CI->template->display_form_input('criteria',$data,'');
 	} else {
 		$date_from=$CI->input->post("txtDateFrom");
 		$date_to=$CI->input->post("txtDateTo");
+		
+		$supplier=$CI->input->post("text1");
+		$category=$CI->input->post("text2");
+		$sistim=$CI->input->post("text3");
 		
 		$sql="select stk.supplier_number,s.supplier_name,
 		il.item_number,il.description,sum(il.quantity) as z_qty,
@@ -28,13 +33,16 @@
 		left join suppliers s on s.supplier_number=stk.supplier_number
 		where i.invoice_type in ('I','R') and i.invoice_date between '$date_from' and '$date_to' ";
 		
-		if($supplier=$CI->input->post("text1"))$sql.=" and stk.supplier_number='$supplier'";
+		if($supplier!="")$sql.=" and stk.supplier_number='$supplier'";
+		if($category!="")$sql.=" and stk.category='$category' ";
+		if($sistim!="")$sql.=" and stk.type_of_invoice='$sistim' ";
+		
 		$sql.=" group by stk.supplier_number,s.supplier_name,il.item_number,il.description";
 		
 		
 		$data['content']=browse_select(	
 			array('sql'=>$sql,'show_action'=>false,
-				"group_by"=>array("supplier_number"),
+				"group_by"=>array("supplier_name"),
 				"fields_sum"=>array("z_qty","z_amount")
 			)
 		);

@@ -8,7 +8,7 @@
 	<? echo $criteria_text; ?>
 	</form>
 </div>
-<?
+<?php
 	$s="select supplier_number,supplier_name,city,phone,email,plafon_hutang,credit_balance,street 
 			from suppliers where 1=1";
 	if(isset($sid_nama)){
@@ -27,7 +27,7 @@
 		$i=0;
 		foreach($q->result() as $row){
 			$i++;
-			echo "<div class='info thumbnail' onclick=on_view_supplier('$row->supplier_number');>";
+			echo "<div class='info-maxon thumbnail' onclick=on_view_supplier('$row->supplier_number');>";
 			echo "<div class='photo'>
 					   <img src='' />
 				  </div>";

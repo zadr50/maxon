@@ -39,23 +39,12 @@ CREATE TABLE IF NOT EXISTS `payments` (
   `angsur_lunas_bunga` int(11) default NULL,
   `from_bank` varchar(50) default NULL,
   `from_account` varchar(50) default NULL,
-  PRIMARY KEY  (`line_number`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=176 ;
-";
-if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
-
-$sql="
-
-INSERT INTO `payments` (`invoice_number`, `line_number`, `date_paid`, `how_paid`, `how_paid_acct_id`, `credit_card_number`, `expiration_date`, `authorization`, `amount_paid`, `amount_alloc`, `comments`, `check_type`, `curr_code`, `curr_rate`, `curr_rate_exc`, `curr_code_org`, `curr_rate_org`, `curr_selisih`, `no_bukti`, `trans_id`, `org_id`, `update_status`, `receipt_by`, `credit_card_type`, `sourceautonumber`, `sourcefile`, `jenisuangmuka`, `angsur_no_dari`, `angsur_no_sampai`, `angsur_sisa`, `angsur_lunas`, `angsur_lunas_bunga`, `from_bank`, `from_account`) VALUES
-('SO00055', 1, '2012-09-04 00:00:00', 'TRANS IN', NULL, NULL, NULL, 'dfasfda', 2000000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'abadfas', 'dasdf'),
-('PJL00106', 160, '2014-03-02 00:00:00', '0', NULL, NULL, NULL, NULL, 101300, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ARP00083', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('PJL00106', 161, '2014-03-02 00:00:00', '0', NULL, NULL, NULL, NULL, 6000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ARP00084', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('PJL00150', 162, '2014-03-02 00:00:00', '0', NULL, NULL, NULL, NULL, 9000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ARP00085', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('PJL00104', 163, '2014-03-02 07:00:00', '0', 0, NULL, NULL, NULL, 8000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ARP00086', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('PJL00104', 164, '2014-03-02 07:00:00', '0', 0, NULL, NULL, NULL, 8000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ARP00086', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('PJL00107', 140, '2014-02-28 00:00:00', '0', 0, NULL, NULL, NULL, 800000, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ARP00073', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('PJL00153', 175, '2014-03-25 07:00:00', '0', 0, NULL, NULL, NULL, 9500, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ARP00095', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-
+  `account_number` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`line_number`),
+  KEY `x1` (`invoice_number`),
+  KEY `x2` (`date_paid`),
+  KEY `x3` (`how_paid`)
+) ENGINE=MyISAM AUTO_INCREMENT=155 DEFAULT CHARSET=latin1;
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 

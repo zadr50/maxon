@@ -36,7 +36,12 @@ class Invoice extends CI_Controller {
 
     function next_number(){
         $ret=$this->nomor_bukti();
-        echo json_encode(array("success"=>true,"nomor"=>$ret));
+        $tanggal=date("Y-m-d H:i:s");
+        if($set_tanggal=$this->session->userdata("set_tanggal")){
+            $tanggal=$set_tanggal;
+        }
+		
+        echo json_encode(array("success"=>true,"nomor"=>$ret,"tanggal"=>$tanggal));
     }
 	function nomor_bukti($add=false)
 	{
@@ -147,6 +152,7 @@ class Invoice extends CI_Controller {
 		} else {
 			echo json_encode(array('msg'=>'Some errors occured.'));
 		}
+        $this->customer_model->recalc_piutang($id);
 	}
 	function update()
 	{
@@ -240,6 +246,8 @@ class Invoice extends CI_Controller {
 		 $data['subtotal']=$model->subtotal;
 		 $data['discount']=$model->discount;
          $data['cust_type']=$this->customer_model->customer_type($data['sold_to_customer']);
+         //$data['payment_terms']=$model->payment_terms;
+         //$data['type_of_invoice']=$model->type_of_invoice;
 			
 		$data['salesman_list']=$this->salesman_model->select_list();
         $data['payment_terms_list']=$this->type_of_payment_model->select_list();
@@ -465,7 +473,8 @@ class Invoice extends CI_Controller {
 		$sql="select invoice_number,invoice_date,due_date,amount,payment_terms 
 		from invoice
 		where invoice_type='I' and (paid=false or isnull(paid))
-		and sold_to_customer='$customer_number'";
+		and sold_to_customer='$customer_number' 
+		";
  
 		$query=$this->db->query($sql);
 		$i=0;
@@ -762,6 +771,7 @@ class Invoice extends CI_Controller {
 	}	
 	function save_pos()
 	{
+		
 		$this->load->model("promosi_model");
 		$data=$this->input->post();
         if(!isset($data['items'])){
@@ -788,11 +798,32 @@ class Invoice extends CI_Controller {
             $new=false;
             $id=$header['invoice_number'];
         }
+        if($qinv=$this->db->where("invoice_number",$id)->get("invoice")){
+            if($rinv=$qinv->row()){
+                $tanggal=$rinv->invoice_date;
+            }
+        }
 		$data_head['invoice_number']=$id;
 		$data_head['invoice_date']=$tanggal;
 		$data_head['sold_to_customer']=$header['cust'];
+		
+		customer_need_update($data_head['sold_to_customer']);
+		
 		$data_head['salesman']=user_id();
-		$data_head['payment_terms']="CASH";
+        $termin=$header['payment_terms'];
+        if($termin==''){
+            $termin="CASH";
+            if($qcust=$this->db->select("payment_terms")->where("customer_number",
+                $header['cust'])
+                ->get("customers")){
+                    if($rcust=$qcust->row()){
+                        if($rcust->payment_terms!=""){
+                            $termin=$rcust->payment_terms;                        
+                        }
+                    }
+            }
+        }
+		$data_head['payment_terms']=$termin;
 		$data_head['invoice_type']='I';
 		$data_head['type_of_invoice']=$header['cust_type'];
 		$data_head['due_date']=$data_head['invoice_date'];
@@ -836,16 +867,16 @@ class Invoice extends CI_Controller {
                 $data_detail['disc_amount_3']=c_($detail[14]); 
                 $data_detail['disc_amount_ex']=c_($detail[15]);               
                 $line_number=$detail[16];
+                $data_detail['line_number']=$line_number;
                 $data_detail['mu_qty']=c_($detail[17]);
                 $data_detail['multi_unit']=$detail[18];
                 $data_detail['mu_harga']=c_($detail[19]);
+                $data_detail['coa1amt']=c_($detail[20]);
                 $data_detail['warehouse_code']=$this->session->userdata("session_outlet","");
                 
-                if($line_number==0){
-				    $row_id=$this->invoice_lineitems_model->save($data_detail);
-                } else {
-                    $this->invoice_lineitems_model->update($line_number,$data_detail);                    
-                }
+			    $row_id=$this->invoice_lineitems_model->save($data_detail);
+
+                //$this->inventory_model->recalc($data_detail['item_number']);
 				//$data_detail['line_number']=$row_id;
 				if($qty_extra=$this->promosi_model->promo_qty_extra($data_detail['item_number'],$data_detail['quantity'])){
 					if($qty_extra>0){
@@ -857,9 +888,10 @@ class Invoice extends CI_Controller {
 						$data_detail['disc_3']=0;				$data_detail['disc_amount_3']=0;
                         $data_detail['disc_amount_ex']=0;
 						$this->invoice_lineitems_model->save($data_detail);
+                        $this->inventory_model->recalc($data_detail['item_number']);
 					}
 				}
-				
+								
 				$total=$total+$data_detail['amount'];
 			}
 			//$this->db->where('invoice_number',$id)
@@ -868,6 +900,7 @@ class Invoice extends CI_Controller {
 			if(isset($data['payment'])){
 					
 		        $payment=$data['payment'];
+                $tanggal_pay=date("Y-m-d H:i:s");   //tanggal saat ini server
 				$this->save_pos_payment($payment,$id,$tanggal);
 					    
 			}
@@ -888,10 +921,13 @@ class Invoice extends CI_Controller {
                     $dret[]=$row;
                 }   
             }
+        
 			echo json_encode(array('success'=>true,'invoice_number'=>$id,"arItem"=>$dret));
 		} else {
 			echo json_encode(array('msg'=>'Some errors occured.'));
 		}
+        
+        $this->customer_model->recalc_piutang($data_head['sold_to_customer']);        
 	}	
 	function save_pos_payment_split($payment_split,$invoice_number,$tanggal){
 		for($i=0;$i<count($payment_split);$i++){
@@ -918,6 +954,10 @@ class Invoice extends CI_Controller {
 			    $rec_pay["expiration_date"]=$card_expire;	    		
 	    	} else if($how_paid=="VOUCHER"){
 			    $rec_pay["credit_card_number"]=$card_voucher_no;
+				if(c_($card_author)>0){
+					$rec_pay["amount_paid"]=$amount_paid;
+					$rec_pay["amount_alloc"]=c_($card_author);					
+				} 
 			} else {
 	    		unset($rec_pay["credit_card_type"]);
 	    		unset($rec_pay["credit_card_number"]);
@@ -980,17 +1020,24 @@ class Invoice extends CI_Controller {
 		$data['success']=false;
 		$data['msg']="Invoice not found !";
         $data['invoice']['company']='';
+        $data['invoice']['credit_limit']=0;
+        $data['invoice']['credit_balance']=0;
+        $data['invoice']['current_balance']=0;                
         $this->invoice_model->recalc($invoice_number);
         //echo "<br>saldo: ".$this->invoice_model->saldo;
 		if($q=$this->db->where("invoice_number",$invoice_number)
 			->get("invoice")){
 			if($r=$q->row()){
 				$data['invoice']=(array)$r;
-				$sql="select company from customers where customer_number='$r->sold_to_customer'";
+                $data['invoice']['credit_limit']=0;
+				$sql="select company,credit_limit,credit_balance from customers 
+				    where customer_number='$r->sold_to_customer'";
 				if($qcst=$this->db->query($sql)){
 				    if($rcst=$qcst->row()){
 				        $data['invoice']['company']=$rcst->company;
-				    }
+                        $data['invoice']['credit_limit']=c_($rcst->credit_limit);
+                        $data['invoice']['credit_balance']=c_($rcst->credit_balance);
+			         }
 				}
 				if($q=$this->db->where("invoice_number",$invoice_number)
 					->order_by("line_number")
@@ -1013,42 +1060,50 @@ class Invoice extends CI_Controller {
 				$data['msg']="Invoice Found.";
 			}
 		}
+        if(!isset($data['invoice']['credit_limit']))$data['invoice']['credit_limit']=0;
+        if(!isset($data['invoice']['credit_balance']))$data['invoice']['credit_balance']=0;
+        if(!isset($data['invoice']['current_balance']))$data['invoice']['current_balance']=0;
+		
 		echo json_encode($data);
 		
 	}
     function print_nota($invoice_number,$reprint=false){
+        $ukuran_nota=getvar("ukuran_nota",0);
+        if($ukuran_nota==1){
+            $this->print_nota_besar($invoice_number,$reprint);
+        } else {
+            $this->print_nota_kecil($invoice_number,$reprint);
+            
+        }            
+    }
+    function print_nota_kecil($invoice_number,$reprint=false){
         $data['success']=false;
         $data['msg']="Invoice not found !";
         $this->invoice_model->recalc($invoice_number);
-
   
-    $company_code=$this->session->userdata('session_company_code','');
-    if($company_code=="")$company_code=$this->access->cid();
-    
-    $company_name=$this->company_model->company_name($company_code);
-    
-    $nama_toko=$company_name;
-    $alamat="";
-    $telp="";
-    $kota="";
-    $shipping_location=$this->session->userdata('session_outlet','');
-    if($shipping_location=="")$shipping_location=$this->session->userdata('default_warehouse','');
-    if($qgdg=$this->shipping_locations_model->get_by_id($shipping_location)){
-        if($rgdg=$qgdg->row()){
-            if($rgdg->attention_name!="")$nama_toko=$rgdg->attention_name;
-            $alamat=$rgdg->street;
-            $telp=$rgdg->phone;
-            $kota=$rgdg->city;
-        }        
-    }
-    $pembulatan=0;
-    
-    $item_counter=null;
-    $ukuran_nota=getvar("ukuran_nota",0);
-    $garis="================================="; 
-    if($ukuran_nota==1){
-        $garis="======================================================================================================="; 
-    }    
+	    $company_code=$this->session->userdata('session_company_code','');
+	    if($company_code=="")$company_code=$this->access->cid();
+	    
+	    $company_name=$this->company_model->company_name($company_code);
+	    
+	    $nama_toko=$company_name;
+	    $alamat="";
+	    $telp="";
+	    $kota="";
+	    $shipping_location=$this->session->userdata('session_outlet','');
+	    if($shipping_location=="")$shipping_location=$this->session->userdata('default_warehouse','');
+	    if($qgdg=$this->shipping_locations_model->get_by_id($shipping_location)){
+	        if($rgdg=$qgdg->row()){
+	            if($rgdg->attention_name!="")$nama_toko=$rgdg->attention_name;
+	            $alamat=$rgdg->street;
+	            $telp=$rgdg->phone;
+	            $kota=$rgdg->city;
+	        }        
+	    }
+	    $pembulatan=0;
+	    
+	    $item_counter=null;
+	    $garis="================================="; 
         if($q=$this->db->where("invoice_number",$invoice_number)
             ->get("invoice")){
                 
@@ -1061,13 +1116,8 @@ class Invoice extends CI_Controller {
                 $pembulatan=$r->other;
                 
                 $data['invoice']=$r;
-if($ukuran_nota==1){
-    echo "<table width='400px'>";
-    
-} else {
-    echo "<table width='200px'>";
-    
-}             
+				
+echo "<table width='100px'>";
 echo "<tr><td colspan='5' align='center'>$nama_toko</td></tr>";
 if($reprint)echo "<tr><td colspan='5' align='center'>*** REPRINT ***</td></tr>";
 
@@ -1095,17 +1145,6 @@ echo "<tr><td colspan='5' align='center'>$alamat</td></tr>
                             }
     $disc_amt=$r->discount_amount+$r->disc_amount_2+$r->disc_amount_3+$r->disc_amount_ex;
                                                         
-if($ukuran_nota==1){
-    
-    echo "<tr><td>$r->item_number</td>
-    <td>$r->description</td></tr>
-    <tr><td width=30>$r->quantity</td><td>$r->unit &nbsp x</td><td align='left'>".number_format($r->price)."</td>";
-    if($disc_amt>0){
-        echo "<td align='right'>-".number_format($disc_amt)."</td>";
-    }
-    echo "<td align='right'>= ".number_format($r->amount)."</td>";
-    echo "</tr>";    
-} else {                         
     echo "<tr><td colspan='5'>$r->item_number</td></tr>
     <td colspan='5'>$r->description</td></tr>
     <tr><td width=30>$r->quantity</td><td>$r->unit &nbsp x</td><td align='right'>".number_format($r->price)."</td>";
@@ -1114,7 +1153,6 @@ if($ukuran_nota==1){
     if($disc_amt>0){
         echo "<tr><td colspan='5'>-Disc: ".number_format($disc_amt)."</td></tr>";
     }
-}
 
                         }
                 }
@@ -1129,12 +1167,15 @@ $bayar_cash=0;
 $bank_name="";
 $split=false;
 $total_paid=0;
+$voucher_nominal=0;
+$gopay=0;
                 if($q=$this->db->where("invoice_number",$invoice_number)
                     ->get("payments")){
                         $cash=0;    $card=0;    $voucher=0;    $rekening="";
                         $total_paid=0;
                         $voucher_no="";
                         foreach($q->result() as $r){
+                            $total_paid+=$r->amount_paid;
                             if($r->how_paid=="CASH"){
                                 $cash+=$r->amount_paid;
                                 if($r->amount_alloc>0){
@@ -1144,43 +1185,56 @@ $total_paid=0;
                                     $bayar_cash+=$r->amount_paid;
                                     $kembali=0;
                                 }
+								if($r->amount_paid>0){                        
+								    echo "<tr><td>CASH Rp. </td><td align='right' colspan='4'>"
+								    	.number_format($r->amount_paid)."</td></tr>";
+								}
+                                                                
                             }
                             if($r->how_paid=="CARD"){
                             	$split=true;
                                 $card+=$r->amount_paid;
-                                if($rekening==""){
-                                    $rekening=$r->credit_card_type;   
-                                    if($qbank=$this->db->select("bank_name")->where("bank_account_number",$rekening)
-                                        ->get("bank_accounts")){
-                                        if($rbank=$qbank->row()){
-                                            $bank_name=$rbank->bank_name;
-                                        }        
-                                    }
+								$bank_name="";
+                                $rekening=$r->credit_card_type;   
+                                if($qbank=$this->db->select("bank_name")->where("bank_account_number",$rekening)
+                                    ->get("bank_accounts")){
+                                    if($rbank=$qbank->row()){
+                                        $bank_name=$rbank->bank_name;
+                                    }        
                                 }
+								if($r->amount_paid>0){
+								    echo "<tr><td>CARD Rp. </td><td align='right' colspan='4'>"
+								    	.number_format($r->amount_paid)."</td></tr>";
+								    echo "<tr><td colspan='4'>-- Rek: $rekening - $bank_name</td><td></td></tr>";    
+								}
+								
                             }
                             if($r->how_paid=="VOUCHER"){
                             	$split=true;
                                 $voucher+=$r->amount_paid;
                                 $voucher_no=$r->credit_card_number;
+								$voucher_nominal=$r->amount_alloc;
+							    echo "<tr><td>VOUCHER Rp. </td><td align='right' colspan='4'>"
+							    	.number_format($r->amount_paid)."</td></tr>";
+							    if($voucher_no!=""){
+							        echo "<tr><td colspan='5'>-- Voucher#: ".($voucher_no).", Nominal: "
+						        	.number_format($voucher_nominal)."</td></tr>";
+							    }        
                             }
-                            $total_paid+=$r->amount_paid;
+                            if($r->how_paid=="GOPAY"){
+                            	$split=true;
+                                $gopay+=$r->amount_paid;
+                                $gopay_no=$r->credit_card_number;
+							    echo "<tr><td>GO-PAY Rp. </td><td align='right' colspan='4'>"
+							    	.number_format($r->amount_paid)."</td></tr>";
+							    if($gopay_no!=""){
+							        echo "<tr><td colspan='5'>-- Ref#: ".($gopay_no)."</td></tr>";
+							    }        
+                            }
                         }
 
                         $sisa=$total-$total_paid;
 
-if($cash>0){                        
-    echo "<tr><td>CASH Rp. </td><td align='right' colspan='4'>".number_format($cash)."</td></tr>";
-}
-if($card>0){
-    echo "<tr><td>CARD Rp. </td><td align='right' colspan='4'>".number_format($card)."</td></tr>";
-    if($card>0)echo "<tr><td colspan='4'>-- Rek: $rekening - $bank_name</td><td></td></tr>";    
-}
-if($voucher>0){
-    echo "<tr><td>VOUCHER Rp. </td><td align='right' colspan='4'>".number_format($voucher)."</td></tr>";
-    if($voucher_no!=""){
-        echo "<tr><td colspan='5'>-- Voucher#: ".($voucher_no)."</td></tr>";
-    }        
-}
                                                 
                 }
                 
@@ -1228,6 +1282,241 @@ echo "<p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><t
             echo "</table><p>&nbsp</p><p>&nbsp</p>";
         }
     }    
+    
+function print_nota_besar($invoice_number,$reprint=false){
+    $data['success']=false;
+    $data['msg']="Invoice not found !";
+    $this->invoice_model->recalc($invoice_number);
+  
+    $company_code=$this->session->userdata('session_company_code','');
+    if($company_code=="")$company_code=$this->access->cid();
+    
+    
+    $company_name="";
+    $nama_toko="";
+    $alamat="";
+    $telp="";
+    $kota="";
+    if($qcom=$this->company_model->get_by_id($company_code)){
+        if($rcom=$qcom->row()){
+            $company_name=$rcom->company_name;
+            $nama_toko=$company_name;
+            $alamat=$rcom->street;
+            $telp=$rcom->phone_number;
+            $kota=$rcom->city_state_zip_code;
+        }
+    }
+    $shipping_location=$this->session->userdata('session_outlet','');
+    if($shipping_location=="")$shipping_location=$this->session->userdata('default_warehouse','');
+    if($qgdg=$this->shipping_locations_model->get_by_id($shipping_location)){
+        if($rgdg=$qgdg->row()){
+            //if($rgdg->attention_name!="")$nama_toko=$rgdg->attention_name;
+            //$alamat=$rgdg->street;
+            //$telp=$rgdg->phone;
+            //$kota=$rgdg->city;
+        }        
+    }
+    $pembulatan=0;
+    
+    $item_counter=null;
+	$tgl_jth_tempo="";
+        $garis="======================================================================================================="; 
+        if($q=$this->db->where("invoice_number",$invoice_number)
+            ->get("invoice")){
+                
+            if($q->num_rows()==0){
+                echo "<h1>Nomor nota [$invoice_number] tidak ada !";
+            }
+            if($r=$q->row()){
+                $tanggal=date("Y-m-d",strtotime($r->invoice_date));
+                $kasir=$r->salesman;
+                $pembulatan=$r->other;
+                $termin=$r->payment_terms;
+				if(strtoupper($termin)!="cash" || $termin!=""){
+					$tgl_jth_tempo=date("Y-m-d",strtotime($r->due_date));
+				}
+
+            //customer info
+            $cust_code="";
+            $cust_name="";
+            $cust_alamat="";
+            $cust_kota="";
+            $cust_phone="";
+            $cust_contact="";
+            if($qcust=$this->db->where("customer_number",$r->sold_to_customer)->get("customers")){
+                if($rcust=$qcust->row()){
+                    $cust_code=$rcust->customer_number;
+                    $cust_name=$rcust->company;
+                    $cust_alamat=$rcust->street;
+                    $cust_kota=$rcust->city;
+                    $cust_phone=$rcust->phone;
+                    $cust_contact=$rcust->first_name;
+                }
+            }
+        
+                
+                $data['invoice']=$r;
+    echo "<table  cellpadding=2>";
+echo "<tr><td colspan=3><strong>FAKTUR PENJUALAN</strong></td><td colspan=2><strong>$cust_name </strong></td></tr>";
+echo "<tr><td colspan=3><strong>$nama_toko</td><td colspan=2>$cust_alamat</td></tr>";
+if($reprint)echo "<tr><td  colspan=3 >*** REPRINT ***</td></tr>";
+echo "<tr><td colspan=3>$alamat</td>";
+//echo "<td colspan=2>$cust_kota - $cust_phone</td></tr>";
+echo "<tr><td colspan=3>$telp</td><td>Invoice No.</td><td><b>$invoice_number</b></td></tr>";
+echo "<tr><td colspan=3>$kota</td><td>Tanggal</td><td><b>$tanggal</b></td></tr>";
+if($tgl_jth_tempo!=""){
+//	echo "<tr><td colspan=3>&nbsp</td><td>JthTempo: </td><td><b>$tgl_jth_tempo</b>, Termin: <b>$termin</b></td></tr>";	
+}
+
+echo "<td colspan=7><table   cellpadding=2>";
+echo "<tr><td colspan=7>$garis</td></tr>";
+echo "<tr><td width=50><strong>NO</strong></td><td><strong>NAMA BARANG</strong></td>
+<td width=50><strong>QTY</strong></td><td width=50><strong>UNIT</strong></td><td align=right width=90><strong>HARGA</strong></td>
+<td width=50 align=right><strong>DISC</strong></td><td width=90 align='right'><strong>JUMLAH</strong></td></tr>";                                                    
+echo "<tr><td colspan=7>$garis</td></tr>";
+
+                $no=0;                
+                if($q=$this->db->where("invoice_number",$invoice_number)
+                    ->get("invoice_lineitems")){
+                        $total=0;
+                        foreach($q->result() as $r){
+                            $total+=$r->amount;
+                            if($qitem=$this->inventory_model->get_by_id($r->item_number)){
+                                if($ritem=$qitem->row()){
+                                    if($ritem->type_of_invoice=="0"){
+                                        $item_counter[]=$r;
+                                    }
+                                }
+                            }
+                            $no++;
+                            $disc_prc=$r->discount;
+                            if($disc_prc<1)$disc_prc*=100;
+                            $disc2_prc=c_($r->disc_2);
+                            if($disc2_prc<1)$disc2_prc*=100;
+                            if($disc2_prc>0){
+                            	$disc_prc.="+$disc2_prc";
+							}
+							$disc3_prc=c_($r->disc_3);
+							if($disc3_prc<1)$disc3_prc*=100;
+                            if($disc3_prc>0){
+                            	$disc_prc.="+$disc3_prc";
+							}                        
+                            $disc_amt=$r->discount_amount+$r->disc_amount_2+$r->disc_amount_3+$r->disc_amount_ex;
+                            echo "<tr><td width=10>$no</td>
+                            <td>$r->description [$r->item_number]</td>
+                            <td>$r->quantity</td><td>$r->unit</td><td align='right'>".number_format($r->price)."</td>";
+                            echo "<td align='right'>".($disc_prc)."</td>";
+                            echo "<td align='right'> ".number_format($r->amount)."</td>";
+                            echo "</tr>";    
+                        }
+                }
+                $baris_sisa=10-$no;
+                for($ibaris=0;$ibaris<$baris_sisa;$ibaris++){
+                    echo "<tr><td>&nbsp</td></tr>";
+                }
+echo "</table></td>";        
+
+echo "<tr><td colspan=5>$garis</td></tr>";
+echo "<tr><td></td><td></td><td></td><td><strong>GRAND TOTAL Rp. </strong></td><td align='right' colspan='4'><strong>".number_format($total+$pembulatan)."</strong></td></tr>";
+//echo "<tr><td></td><td></td><td></td><td><strong>---Payment Info---</strong></td></tr>";
+$kembali=0;
+$bayar_cash=0;
+$bank_name="";
+$split=false;
+$total_paid=0;
+$voucher_nominal=0;
+
+    if($q=$this->db->where("invoice_number",$invoice_number)->get("payments")){
+            $cash=0;    $card=0;    $voucher=0;    $rekening="";
+            $total_paid=0;
+            $voucher_no="";
+            foreach($q->result() as $r){
+                if($r->how_paid=="CASH"){
+                    $cash+=$r->amount_paid;
+                    if($r->amount_alloc>0){
+                        $bayar_cash+=$r->amount_paid+$r->amount_alloc;
+                        $kembali=$r->amount_alloc;    
+                    } else {
+                        $bayar_cash+=$r->amount_paid;
+                        $kembali=0;
+                    }
+                }
+                if($r->how_paid=="CARD"){
+                    $split=true;
+                    $card+=$r->amount_paid;
+                    if($rekening==""){
+                        $rekening=$r->credit_card_type;   
+                        if($qbank=$this->db->select("bank_name")->where("bank_account_number",$rekening)
+                            ->get("bank_accounts")){
+                            if($rbank=$qbank->row()){
+                                $bank_name=$rbank->bank_name;
+                            }        
+                        }
+                    }
+                }
+                if($r->how_paid=="VOUCHER"){
+                                $split=true;
+                                $voucher+=$r->amount_paid;
+                                $voucher_no=$r->credit_card_number;
+								$voucher_nominal=$r->amount_alloc;
+								
+                            }
+                            $total_paid+=$r->amount_paid;
+                        }
+
+                        $sisa=$total-$total_paid;
+
+if($cash>0){                        
+    echo "<tr><td></td><td></td><td></td><td><strong>CASH Rp. </strong></td><td align='right' >".number_format($cash)."</td></tr>";
+}
+if($card>0){
+    echo "<tr><td></td><td></td><td></td><td><strong>CARD Rp. </strong></td><td align='right'>".number_format($card)."</td></tr>";
+if($card>0)echo "<tr><td colspan='4'>-- Rek: $rekening - $bank_name</td></tr>";    
+}
+if($voucher>0){
+    echo "<tr><td></td><td></td><td></td><td><strong>VOUCHER Rp. </strong></td><td align='right'>".number_format($voucher)."</td></tr>";
+	if($voucher_no!=""){
+		echo "<tr><td></td><td></td><td></td><td>-- Voucher#: ".($voucher_no).", Nominal: " . number_format($voucher_nominal) . "</td></tr>";
+    }        
+}
+                                                
+                }
+    if($cash>0 && !$split){
+        
+        echo "
+        <tr><td colspan='5'>$garis</td></tr>
+        <tr><td></td><td></td><td></td><td>Bayar Cash Rp. </td><td align='right'>".number_format($bayar_cash)."</td></tr>";
+        if($kembali>0){        
+            echo "
+            <tr><td></td><td></td><td></td><td><strong>Kembalian  Rp. </strong></td><td align='right' >".number_format($kembali)."</td></tr>";
+        }
+    
+    }
+
+echo "<tr><td></td><td></td><td></td><td><strong>Total Pay Rp. </strong></td><td align='right' >".number_format($total_paid)."</td></tr>";
+
+echo "<tr><td><strong>Keterangan:</strong></td><td></td><td></td><td></td><td align='right'></td></tr>";
+echo "<tr><td colspan=5># Terdapat tambahan 2% setiap bulannya, JIKA pembayaran melebihi tanggal jatuh tempo</td></tr>";
+echo "<tr><td colspan=5># Barang yang sudah dibeli tidak dapat ditukar tanpa disertai faktur asli, retur maksimal 7 hari tanggal pembelian.</td></tr>";
+echo "<tr><td colspan=5># Faktur yang sudah ditandatangan secara lengkap oleh pelanggan akan menjadi bukti sah bahwa pelanggan telah menerima dan memeriksa jumlah dan harga barang.</td></tr>";
+echo "<tr><td>&nbsp</td>";
+echo "<tr><td align=center><strong>Tanggal Terima</strong></td><td></td><td align=center><strong>Barang telah dicek</strong></td><td align=center><strong>Barang telah dicek</strong></td><td><strong>Hormat kami</strong></td></tr>";
+echo "<tr><td></td><td></td><td align=center><strong>Expedisi</strong></td><td align=center><strong>Gudang</strong></td>";
+echo "<tr><td>&nbsp</td>";
+echo "<tr><td>&nbsp</td>";
+echo "<tr><td>&nbsp</td>";
+echo "<tr><td>&nbsp</td>";
+echo "<tr><td align=center><strong>Tanda Tangan & Nama</strong></td></tr>";
+
+
+
+                $data['success']=true;
+                $data['msg']="Invoice Found.";
+            }
+        }
+        
+        
+    }        
 	function new_sales_register() {
 		$sql="select il.quantity,il.unit,il.invoice_number,i.invoice_date
 		,il.item_number,il.description 
@@ -1265,4 +1554,18 @@ echo "<p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><t
         $data['list_nota']=$list_nota;
         echo json_encode($data);
 	}
+    function list_nota_open_all(){
+    	$d1=date("Y-m-d");
+		$d2=date("Y-m-d 23:59:59");
+        $sql="select invoice_number,invoice_date,i.amount,i.sold_to_customer,
+        i.salesman,c.company from invoice i 
+        left join customers c on c.customer_number=i.sold_to_customer 
+        where invoice_type='I' and (paid=0 or paid is null) 
+        and (saldo_invoice>0 or saldo_invoice is null) 
+		and i.invoice_date between '$d1' and '$d2' 
+        ";
+        $sql.=" order by invoice_date desc limit 100";
+        echo datasource($sql);
+    }
+		
 }

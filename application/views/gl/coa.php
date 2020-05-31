@@ -2,7 +2,7 @@
 <div class="thumbnail box-gradient">
 	<?php
 	echo link_button('Save', 'save_this()','save');		
-	echo link_button('Print', 'print()','print');		
+	echo link_button('Print', 'print_coa()','print');		
 	echo link_button('Add','','add','false',base_url().'index.php/coa/add');		
 	echo link_button('Search','','search','false',base_url().'index.php/coa');		
 	echo link_button('Help', 'load_help(\'coa\')','help');		

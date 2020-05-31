@@ -2,7 +2,8 @@
 
 class sales_crmemo extends CI_Controller {
     private $limit=10;
-    private $sql="select kodecrdb,tanggal,docnumber,amount,posted,keterangan,c.account, c.account_description
+    private $sql="select kodecrdb,tanggal,docnumber,amount,posted,keterangan,c.account, 
+    c.account_description,cm.cust_supp
      from crdb_memo cm left join chart_of_accounts c on c.id=cm.accountid where transtype='SO-CREDIT MEMO'";
     private $controller='sales_crmemo';
     private $primary_key='kodecrdb';
@@ -48,8 +49,10 @@ class sales_crmemo extends CI_Controller {
 	}
     function browse($offset=0,$limit=50,$order_column='',$order_type='asc'){
 		$data['controller']=$this->controller;
-		$data['fields_caption']=array('Nomor Bukti','Tanggal','Faktur','Jumlah','Posted','Keterangan','Kode Akun','Perkiraan');
-		$data['fields']=array('kodecrdb','tanggal','docnumber','amount','posted','keterangan','account','account_description');
+		$data['fields_caption']=array('Nomor Bukti','Tanggal','Faktur','Jumlah','Posted',
+		'Customer','Keterangan','Kode Akun','Perkiraan');
+		$data['fields']=array('kodecrdb','tanggal','docnumber','amount','posted',
+		'cust_supp','keterangan','account','account_description');
 					
 		if(!$data=set_show_columns($data['controller'],$data)) return false;
 			
@@ -100,6 +103,7 @@ class sales_crmemo extends CI_Controller {
 		$data['keterangan']="";
 		$data['posted']=false;
 		$data['mode']='add';
+		$data['customer_number']='';
 		$this->template->display_form_input('sales/credit_memo',$data,'');			
 		
 	}
@@ -115,6 +119,7 @@ class sales_crmemo extends CI_Controller {
 			$data['amount']=$this->input->post('amount');
 			$data['keterangan']=$this->input->post('keterangan');
 			$data['transtype']=$this->input->post('transtype');
+			$data['cust_supp']=$this->input->post('customer_number');
 			$this->crdb_model->save($data);
 			$this->nomor_bukti(true);
 			$this->syslog_model->add($data['kodecrdb'],"crdb","edit");
@@ -129,14 +134,39 @@ class sales_crmemo extends CI_Controller {
 		 $model=$this->crdb_model->get_by_id($id)->result_array();
 		 $data=$this->set_defaults($model[0]);
 		 $data['mode']='view';
+
+		 $customer_number=$data['cust_supp'];
+		 $amount=0;
+		 $invoice_date="";
+		 $company="";
+		 $street="";
+		 $city="";
+		 
+		 
 		$this->load->model('invoice_model');
 		$this->load->model("customer_model");
-		 $q=$this->invoice_model->get_by_id($data['docnumber'])->row();
-		 $data['customer_number']=$q->sold_to_customer;
-		 $data['faktur_info']=$q->invoice_date." Rp. ".number_format($q->amount);
-		 $q=$this->customer_model->get_by_id($data['customer_number'])->row();
-		 $data['customer_name']=$q->company;
-		 $data['customer_info']=$q->company." ".$q->street." ".$q->city;
+		
+		 if($q=$this->invoice_model->get_by_id($data['docnumber'])){
+		 	if($r=$q->row()){
+				$customer_number=$r->sold_to_customer;
+		 		$invoice_date=$r->invoice_date;
+				$amount=$r->amount;
+
+				
+		 	}	
+		 };
+		 if($q=$this->customer_model->get_by_id($customer_number)){
+		 	if($r=$q->row()){
+				$company=$r->company;
+				$street=$r->street;
+				$city=$r->city;
+			}	
+		 }
+		 
+		 $data['customer_number']=$customer_number;
+		 $data['faktur_info']=$invoice_date." Rp. ".number_format($amount);
+		 $data['customer_name']=$company;
+		 $data['customer_info']=$company." ".$street." ".$city;
 
          $this->template->display('sales/credit_memo',$data);                 
 	}
@@ -148,6 +178,7 @@ class sales_crmemo extends CI_Controller {
 		$data['customer_info']="";
 		$data['faktur_info']="";
 		$data['customer_number']="";
+		$data['lookup_customer']=$this->list_of_values->lookup_customers();
 			
 		return $data;
 	}

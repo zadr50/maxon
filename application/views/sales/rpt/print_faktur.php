@@ -1,8 +1,7 @@
-<?
-         $CI =& get_instance();
-         $CI->load->model('customer_model');
-         $cst=$CI->customer_model->get_by_id($sold_to_customer)->row();
-
+<?php
+     $CI =& get_instance();
+     $CI->load->model('customer_model');
+     $cst=$CI->customer_model->get_by_id($sold_to_customer)->row();
 ?>
 <h1>FAKTUR PENJUALAN</h2><h2>Nomor: <?=$invoice_number?></h2>
 <table cellspacing="0" cellpadding="1" border="0"> 

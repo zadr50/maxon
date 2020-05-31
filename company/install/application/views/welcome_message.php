@@ -1,4 +1,4 @@
-<div class="jumbotron text-center" style="margin-top:100px;margin-left:auto">
+<div class="jumbotron text-center" style="margin-top:10px;margin-left:auto">
   <h1>Welcome</h1>
   <h2>MaxOn ERP Software</h2>
   <p>
@@ -8,9 +8,9 @@
       Company code : <?=form_input("company","","id='company' 
             placeholder='ex: ABC' maxlength='10' 
             title='Fill in the short code and without punctuation'")?>
-      <a href="#" onclick="create_company();return false;" class="btn btn-primary btn-lg" 
+      <a href="#" onclick="create_company();return false;" class="btn btn-primary " 
             role="button"> Create</a>
-      <a class="btn btn-default btn-lg" href="http://help.maxonerp.com" target="_blank" role="button"> Learn more</a>
+      <a class="btn btn-default" href="http://help.maxonerp.com" target="_blank" role="button"> Learn more</a>
   </p>
 </div>
 <div class="center-text">
@@ -20,6 +20,15 @@
 </div>   
 <div class="col-lg-12">
     <?php $this->load->view("company_list") ?>
+</div>
+<div class="col-lg-12">
+    <div class="alert alert-warning text-center">
+        <p>This website for demo only, database and company after one week will be deleted, 
+        make sure you do not input your real transactions.
+        </p>
+        <p>Contact me WA: 082112829192 if you want build database company</p>
+        <p>Thanks You !</p>
+    </div>
 </div>
    
 <div id="dlgProcess" class="modal" tabindex="-1" role="dialog">

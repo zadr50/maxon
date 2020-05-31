@@ -2,17 +2,21 @@
 	echo $supplier_list;
 	echo $item_list;
 	echo $category_list;
-	
-	echo "<div class='alert alert-info'><p>Isi filter pilihan dibawah ini :</p>";
-	my_input(array("caption"=>"Supplier","field_name"=>"supplier",
-		"show_button"=>link_button("","dlgsupplier_show();return false","search")));
-	my_input(array("caption"=>"Category","field_name"=>"category",
-		"show_button"=>link_button("","dlgcategory_show();return false","search")));
-	my_input(array("caption"=>"Barang","field_name"=>"item_no",
-		"show_button"=>link_button("","dlgitem_no_show();return false","search")));
-	my_input(array("caption"=>"Umur","field_name"=>"umur","value"=>"30"));
-	echo link_button("Search","on_search();return false","filter");
-	echo "</div>";
+?>
+<div class='alert alert-info'>	
+	<table class='table'>
+		<tr><td colspan=4><b>Isi pilihan untuk filter dibawah ini</b></td>
+		<tr><td>Supplier</td><td><?=form_input("supplier","","id='supplier'")
+			.link_button("","dlgsupplier_show();return false","search")?></td>
+			<td>Category</td><td><?=form_input("category","","id='category'")
+				.link_button("","dlgcategory_show();return false","search")?></td></tr>
+		<tr><td>Kode Barang</td><td><?=form_input("item_no","","id='item_no'")
+			.link_button("","dlgitem_no_show();return false","search")?></td>
+			<td>Umur</td><td><?=form_input("supplier","30","id='umur'")?></td>
+		<td><?=link_button("Refresh Data","on_search();return false","reload")?></td></tr>			
+	</table>	
+</div>
+<?php
 	echo "<div class='row'><div class='col-md-12'>";
 	$this->browse->load_js(false);
 	$this->browse->set_fields(array("item_number","description","last_inventory_date",

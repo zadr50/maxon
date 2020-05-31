@@ -1,0 +1,23 @@
+.ta-right{
+	text-align:right;
+	width:100px;
+}
+.ta-right-qty{
+	text-align:right;
+	width:80px;
+}
+.table2 {
+	
+}
+.table2 tr {
+	padding:5px;
+}
+.tree-title {
+	color:white;
+}
+.sidebar {
+	overflow:scroll;
+}
+.tree-node-hover {
+	background: #444;
+}

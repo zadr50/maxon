@@ -4,7 +4,7 @@
 	echo link_button('Save', 'save_this()','save');		
 	echo link_button('Print', 'print()','print');		
 	echo link_button('Add','','add','true',base_url().'index.php/koperasi/petugas/add');		
-	echo link_button('Refresh','','reload','true',base_url().'index.php/koperasi/petugas/view/'.$kode);		
+	echo link_button('Refresh','','reload','true',base_url().'index.php/koperasi/petugas/view/'.$nip);		
 	echo link_button('Search','','search','true',base_url().'index.php/koperasi/petugas');		
 	echo link_button('Help', 'load_help()','help');		
 	
@@ -29,9 +29,9 @@
 					<?php
 					if($mode=='view'){
 						echo "<span class='thumbnail'><strong>$kode</strong></span>";
-						echo "<input type='hidden' id='nip' value='$kode'>";
+						echo "<input type='hidden' id='nip' value='$nip'>";
 					} else { 
-						echo form_input('kode',$kode,"id=kode");
+						echo form_input('nip',$nip,"id=nip");
 					}		
 					?>
 				</td>
@@ -46,7 +46,7 @@
  
 <script type="text/javascript">
     function save_this(){
-        if($('#kode').val()===''){alert('Isi dulu kode petugas !');return false;};
+        if($('#nip').val()===''){alert('Isi dulu kode/nip petugas !');return false;};
 
 		url='<?=base_url()?>index.php/koperasi/petugas/save';
 			$('#frm').form('submit',{

@@ -1,7 +1,7 @@
 <?php
  
 $table="payroll_link";
-
+$msg="";
 $sql="
 
 CREATE TABLE IF NOT EXISTS `payroll_link` (
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `payroll_link` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-
+$table="hr_emp_angsuran";
 $sql=" 
 
 CREATE TABLE hr_emp_angsuran (
@@ -38,6 +38,7 @@ CREATE TABLE hr_emp_angsuran (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="hr_emp_default_com";
 $sql=" 
 
 CREATE TABLE hr_emp_default_com (
@@ -48,6 +49,8 @@ CREATE TABLE hr_emp_default_com (
 	PRIMARY KEY  (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
+$table="hr_emp_level_com";
 
 $sql=" 
 
@@ -62,6 +65,8 @@ CREATE TABLE hr_emp_level_com (
 	PRIMARY KEY  (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
+$table="hr_loan";
 
 $sql=" 
 
@@ -84,15 +89,19 @@ CREATE TABLE hr_emp_loan (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="hr_pph";
+
 $sql=" 
 CREATE TABLE hr_pph (
-	kode varchar (50) character set utf8 NULL ,
+	kode varchar (50) character set utf8 NOT NULL ,
 	percent_value real NULL ,
 	low_value double NULL ,
 	high_value double NULL ,
 	PRIMARY KEY  (kode)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
+$table="hr_pph_form";
 
 $sql=" 
 
@@ -109,6 +118,8 @@ CREATE TABLE hr_pph_form (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="employee_pph";
+
 $sql=" 
 
 CREATE TABLE employee_pph (
@@ -122,6 +133,8 @@ CREATE TABLE employee_pph (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="hr_shift";
+
 $sql=" 
 
 CREATE TABLE hr_shift (
@@ -132,6 +145,8 @@ CREATE TABLE hr_shift (
 	PRIMARY KEY  (kode)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
+$table="employee_shift";
 
 $sql=" 
 
@@ -145,6 +160,8 @@ CREATE TABLE employee_shift (
 	PRIMARY KEY  (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
+
+$table="hr_ptkp";
 
 $sql=" 
 

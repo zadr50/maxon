@@ -1,5 +1,5 @@
 <?php
- 
+$msg="";
 $table="voucher";
 $sql="
 
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `wilayah` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
-
+$table="yescalendaricons";
 $sql="
 CREATE TABLE IF NOT EXISTS `yescalendaricons` (
   `noteiconname` varchar(50) character set utf8 default NULL,
@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS `yescalendaricons` (
 ";
 if(mysqli_query($link,$sql))$msg .="<br>-$table..OK";else $msg .="<br>-$table..<br>ERROR -" . mysqli_error($link);
 
+$table="yes_smartsearchdefinition";
 $sql="
 CREATE TABLE IF NOT EXISTS `yes_smartsearchdefinition` (
   `searchid` varchar(50) character set utf8 default NULL,

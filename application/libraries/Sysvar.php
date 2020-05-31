@@ -29,7 +29,18 @@ function __construct()
     	$this->db->where($this->primary_key,$id);
     	return $this->db->get($this->table_name);
     } 
+	function exist_var($varname){
+		$retval=false;
+		$sql="select * from system_variables where varname='$varname'";		
+    	if($q=$this->CI->db->query($sql)) {
+            $retval=$q->num_rows()>0;
+    	}
+		return $retval;		
+	}
     function getvar($varname, $varvalue="", $debug=false){
+    	if($varname=="COA Hutang Komisi"){
+    		$ret="";
+    	}
     	$ret="";
     	if($this->debug){
     		$sql="select * from system_variables_debug where varname='$varname'";
@@ -55,7 +66,7 @@ function __construct()
     function update($varname,$varvalue){
     	$this->save($varname,$varvalue);
     }
-    function save($varname,$varvalue){
+    function save($varname,$varvalue){    	
     	$data['varvalue']=$varvalue;
     	return $this->CI->db->where($this->primary_key,$varname)->update($this->table_name,$data);
     }
@@ -153,11 +164,11 @@ function __construct()
     			break;
     		case "?":	//reset 
     			if(($sFlagAdaCounter and strlen($sFlagDDMMYY))>0) {
-    				$nOldMM=strval(substr($a,4));
-    				$nl=substr($nilai,2,strlen($nilai));
+    				$nOldMM=strval(substr($a,0,4));
+    				$nl=substr($nilai,0,2);
     				if($nl=="MM"){
     					if(strval(date("m"))<>strval($nOldMM)){
-    						$sLF=substr($sVal,$nCtrPos);
+    						$sLF=substr($sVal,$nCtrPos,$nCtrLen);
     						$sMd=strzero(1,$nCtrLen);
     						$sRG=substr($sVal,$nCtrPos+$nCtrLen+1,strlen($sVal));
     						$sVal=$sLF.$sMd.$sRG;

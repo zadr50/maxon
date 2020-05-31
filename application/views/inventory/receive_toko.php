@@ -37,7 +37,9 @@
         </td>
 		<td>Terima di</td><td>
 		    <?php 
-                echo form_dropdown('warehouse_code', $warehouse_list,$warehouse_code,'id=warehouse_code');
+				echo form_input('warehouse_code',$warehouse_code,"id='warehouse_code'");
+               echo link_button("", "dlgwarehouse_show();return false;","search");                
+            				
             ?>
         </td>
 	</tr>	 
@@ -47,7 +49,11 @@
 			data-options="formatter:format_date,parser:parse_date"');?>
             </td>
             <td>Asal dari </td><td>
-                <?php echo form_dropdown('supplier_number',$warehouse_list,$supplier_number,'id=supplier_number');?></td>
+                <?php 
+				echo form_input('supplier_number',$supplier_number,"id='supplier_number'");
+               echo link_button("", "dlggudang_show();return false;","search");                
+            ?>
+            </td>
        </tr>
        <tr>
             <td>Keterangan</td><td colspan='4'><?php echo form_input('comments',$comments,'id=comments style="width:400px"');?></td>
@@ -98,8 +104,11 @@
     echo $lookup_do_gudang;
     echo load_view('inventory/input_qty'); 
     echo load_view("inventory/select_unit");
-    echo load_view("inventory/inventory_select_checkbox");
-    echo load_view("inventory/inventory_select");
+//    echo load_view("inventory/inventory_select_checkbox");
+//    echo load_view("inventory/inventory_select");
+	echo $lookup_gudang1;
+	echo $lookup_gudang2;
+	echo $lookup_inventory;
     
 ?>
 
@@ -109,7 +118,7 @@
  	var _grid = "dg";
 	var _url  =  CI_ROOT+'receive_toko';
 	
-  $().ready(function (){
+    $().ready(function (){
         load_items();
     });
     function simpan(){
@@ -237,6 +246,7 @@
             unit:$("#unit").val(),
             description:$("#description").val(),
             quantity_received:$("#quantity").val(),
+            cost:$("#cost").val(),total_amount:$("#total_amount").val(),
             id:$("#id").val()};
        return _param; 
     }
@@ -244,6 +254,7 @@
     function save_item(){
         if (!valid()) return false;
         var _param=get_input_values();
+        loading();
         $.ajax({
             type: "POST",
             url: _url+"/save_item",
@@ -251,6 +262,7 @@
             success: function(result){
                 var result = eval('('+result+')');
                 if (result.success){
+                	loading_close();
                     $("#shipment_id").val(result.shipment_id);
                     load_items();
                     $.messager.show({title: 'Success',msg: 'Success'});
@@ -268,6 +280,8 @@
         $('#line_number').val('');
         $('#quantity').val(1);
         $("#unit").val("Pcs");
+        $("#cost").val("");
+        $("#total_amount").val("");
         $("#id").val("");
     }
     function load_items(){
@@ -302,6 +316,8 @@
             $('#description').val(row.description);
             $('#quantity').val(row.quantity);
             $('#unit').val(row.unit);
+            $("#cost").val(row.cost);
+            $("#total_amount").val(row.total_amount);
             $('#id').val(row.line_number);
         }
     }
@@ -315,7 +331,7 @@
         to="";
         
         
-        var vUrl=CI_ROOT+'receive_toko/sj_from_gudang/'+from_gudang+'/'+to_gudang;
+        var vUrl=CI_ROOT+'receive_toko/sj_from_gudang/'+from_gudang+'/'+to_gudang+"?search="+search_id;
 		$('#dgdo_gudang').datagrid({url:vUrl});
 
 		idd_do_gudang="do_gudang";
@@ -328,6 +344,14 @@
 		recv_no();
 	}
 	function dlgdo_gudang_select(){
+        var row = $('#dgdo_gudang').datagrid('getSelected');
+        if (row){
+        	var nomor=row.shipment_id;	
+        	if ( nomor=="" ){
+        		log_err("Pilih satu baris !");return false;
+        	}
+        	add_sj_item(nomor);
+        }
 		
 	}
 	
@@ -337,8 +361,12 @@
         target=$("#shipment_id").val();
         gudang=$("#warehouse_code").val();
         supplier=$("#supplier_number").val();
+        xurl =  _url+"/add_item_with_recv_no/"+target+'/'+nomor+'/'+gudang+'/'+supplier;
+        
+        console.log(xurl);
+        
         $.ajax({
-            type: "GET",url: _url+"/add_item_with_recv_no/"+target+'/'+nomor+'/'+gudang+'/'+supplier,
+            type: "GET",url: xurl,
             success: function(result){
                 var result = eval('('+result+')');
                 if (result.success) {

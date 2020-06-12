@@ -15,4 +15,7 @@ nbproject
 pos
 tmp
 assets
-config
+application/config/database.php
+application/config/database_original.php
+application/config/routes.php
+application/config/routes_original.php

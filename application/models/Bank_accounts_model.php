@@ -51,7 +51,7 @@ function __construct(){
 	function save($data){
 		$id=$data[$this->primary_key];
 		rekening_need_update($id);
-	    $data=$this->cek_setting_no_bukti($data);
+		if(isset($data['no_bukti_in'])) $data=$this->cek_setting_no_bukti($data);
 		$this->db->insert($this->table_name,$data);
 		return $this->db->insert_id();
 	}
@@ -59,7 +59,7 @@ function __construct(){
 			
 		rekening_need_update($id);
 		
-        $data=$this->cek_setting_no_bukti($data);
+        if(isset($data['no_bukti_in'])) $data=$this->cek_setting_no_bukti($data);
 		$this->db->where($this->primary_key,$id);
 		$this->db->update($this->table_name,$data);
 	}

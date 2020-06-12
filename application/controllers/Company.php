@@ -76,8 +76,17 @@ class Company extends CI_Controller {
                     $this->template->display_form_input($this->file_view,$data,'company_menu');			
             }
     }
+    function update_json(){
+        $dpost=$this->input->post();
+        $mode=$dpost['mode'];
+        unset($dpost['mode']);
+        $id="C01";
+        $success=$this->company_model->update($id,$dpost);
+        $data['success']=$success;
+        $data['message']=$success!=null?'Success':'Error';
+        echo json_encode($data);
+    }
     function update()   {
-
              $data=$this->set_defaults();
              $this->_set_rules();
              $id=$this->input->post('company_code');
@@ -94,7 +103,15 @@ class Company extends CI_Controller {
 		            $this->view($id,$message);		
             }
     }
-
+    function view_json(){
+        $data['success']=false;
+        $data['message']='';
+        if($row=$this->db->get("preferences")->row()){
+            $data['row']=$row;
+            $data['success']=true;
+        }
+        echo json_encode($data);
+    }
     function view($id,$message=null)	{
 		if (!allow_mod2('_00000'))	exit;
 		$id=urldecode($id);

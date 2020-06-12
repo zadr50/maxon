@@ -2,8 +2,8 @@
 *.zip
 .vscode
 addins
-addins/website.zip
 api
+bak
 board
 bukutamu
 company
@@ -15,7 +15,4 @@ nbproject
 pos
 tmp
 assets
-
-
-
-
+config

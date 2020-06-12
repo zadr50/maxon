@@ -3,7 +3,7 @@
 class Banks extends CI_Controller {
     private $limit=10;
     private $table_name='bank_accounts';
-    private $sql="select bank_account_number,bank_name,street,suite,city,country
+    private $sql="select bank_account_number,bank_name,contact_name,street,suite,city,country
             ,phone_number,fax_number,org_id
                 from bank_accounts
                 ";
@@ -15,7 +15,7 @@ class Banks extends CI_Controller {
 	{
 		parent::__construct();
         
-		if(!$this->access->is_login())redirect(base_url());
+//		if(!$this->access->is_login())redirect(base_url());
 		
  		$this->load->helper(array('url','form','mylib_helper','browse_select_helper'));
 		$this->load->library('template');
@@ -100,6 +100,20 @@ class Banks extends CI_Controller {
 		} else {
 			$this->update();
 		}
+	}
+	function save_json(){
+		$data=$this->input->post();
+		if($data['bank_account_number']!=""){
+			$rek=$data['bank_account_number'];
+			if($drow=$this->bank_accounts_model->get_by_id($rek)){
+				$this->bank_accounts_model->update($rek,$data);
+				$data['success']=true;
+			} else {
+				$this->bank_accounts_model->save($data);
+				$data['success']=true;
+			}			
+		}
+		echo json_encode($data);
 	}
 	function view($id,$message=null){
 		if(!allow_mod2('_60010'))return false;   

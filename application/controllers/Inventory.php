@@ -240,12 +240,13 @@ Class Inventory extends CI_Controller {
 			$mode=$this->input->post("mode");
 			unset($data["mode"]);
 			
-			$data['sales_account']=$this->acc_id($data['sales_account']);
-			$data['inventory_account']=$this->acc_id($data['inventory_account']);
-			$data['cogs_account']=$this->acc_id($data['cogs_account']);
-			$data['tax_account']=$this->acc_id($data['tax_account']);
-			if($data['class']=='')$data['class']="Stock";
-            if($data['active']=='')$data['active']='1';
+			if(isset($data['sales_account']))$data['sales_account']=$this->acc_id($data['sales_account']);
+			if(isset($data['inventory_account']))$data['inventory_account']=$this->acc_id($data['inventory_account']);
+			if(isset($data['cogs_account']))$data['cogs_account']=$this->acc_id($data['cogs_account']);
+			if(isset($data['tax_account']))$data['tax_account']=$this->acc_id($data['tax_account']);
+			if(isset($data['class']))if($data['class']=='')$data['class']="Stock";
+			if(isset($data['active']))if($data['active']=='')$data['active']='1';
+			if(!isset($data['category']))$data['category']='X';
 			if($mode=="add" ){
 			    $data['item_number']=$id;
 				$ok=$this->inventory_model->save($data);
@@ -489,6 +490,7 @@ Class Inventory extends CI_Controller {
 	
 		}
 		$sql.=" order by item_number";
+		
         
         if($this->input->get("page"))$offset=$this->input->get("page");
         if($this->input->get("rows"))$limit=$this->input->get("rows");
@@ -609,7 +611,7 @@ Class Inventory extends CI_Controller {
 				}
 		}
 		if($cust_type=="undefined")$cust_type="";
-		$s="select item_number,description,retail,
+		$s="select item_number,description,retail,category,
 		unit_of_measure,cost,cost_from_mfg,multiple_pricing,margin,
 		quantity_in_stock,reorder_quantity,special_features,
 		supplier_number,item_picture,item_picture2,item_picture3,item_picture4,create_date,weight 
@@ -874,9 +876,8 @@ Class Inventory extends CI_Controller {
 		//var_dump($_POST);
 		//var_dump($_GET);
 		//var_dump($_FILES);
-		
 		$config['upload_path'] = './tmp/';
-		$config['allowed_types'] = 'gif|jpg|png';
+		$config['allowed_types'] = 'gif|jpg|png|jpeg';
 		$config['max_size']	= '1500';
 		//$config['max_width']  = '1024';
 		//$config['max_height']  = '768';

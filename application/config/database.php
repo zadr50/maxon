@@ -71,42 +71,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | the query builder class.
 */
 
-$active_group = 'C01';
-$default=$active_group;
-
-$query_builder = TRUE;
-
-for($i=0;$i<20;$i++){
-    if($i<10){
-        $c="C0".$i;
-        $dbc="kagum_".$c;
-    } else {
-        $c="C".$i;
-        $dbc="kagum_".$c;
-    }
-    $db[$c] = array(
-    'dsn'   => '',
-    'hostname' => '127.0.0.1',
-    'username' => 'root',
-    'password' => '',
-    'database' => $dbc,
-    'dbdriver' => 'mysqli',
-    'dbprefix' => '',
-    'pconnect' => false,
-    'db_debug' => (ENVIRONMENT !== 'production'),
-    'cache_on' => TRUE,
-    'cachedir' => '',
-    'char_set' => 'utf8',
-    'dbcollat' => 'utf8_general_ci',
-    'swap_pre' => '',
-    'encrypt' => FALSE,
-    'compress' => FALSE,
-    'stricton' => FALSE,
-    'failover' => array(),
-    'save_queries' => FALSE
-    );
-}
-
 $db["simak"] = array(
     'dsn'   => '',
     'hostname' => '127.0.0.1',
@@ -128,112 +92,8 @@ $db["simak"] = array(
     'failover' => array(),
     'save_queries' => FALSE
     );
-
-$db["rudy"] = array(
-    'dsn'   => '',
-    'hostname' => '127.0.0.1',
-    'username' => 'root',
-    'password' => '',
-    'database' => "rudy_c01",
-    'dbdriver' => 'mysqli',
-    'dbprefix' => '',
-    'pconnect' => false,
-    'db_debug' => (ENVIRONMENT !== 'production'),
-    'cache_on' => TRUE,
-    'cachedir' => '',
-    'char_set' => 'utf8',
-    'dbcollat' => 'utf8_general_ci',
-    'swap_pre' => '',
-    'encrypt' => FALSE,
-    'compress' => FALSE,
-    'stricton' => FALSE,
-    'failover' => array(),
-    'save_queries' => FALSE
-    );
-$db["tulen"] = array(
-    'dsn'   => '',
-    'hostname' => '127.0.0.1',
-    'username' => 'root',
-    'password' => '',
-    'database' => "tulen",
-    'dbdriver' => 'mysqli',
-    'dbprefix' => '',
-    'pconnect' => false,
-    'db_debug' => (ENVIRONMENT !== 'production'),
-    'cache_on' => TRUE,
-    'cachedir' => '',
-    'char_set' => 'utf8',
-    'dbcollat' => 'utf8_general_ci',
-    'swap_pre' => '',
-    'encrypt' => FALSE,
-    'compress' => FALSE,
-    'stricton' => FALSE,
-    'failover' => array(),
-    'save_queries' => FALSE
-    );
-$db["megatex"] = array(
-    'dsn'   => '',
-    'hostname' => '127.0.0.1',
-    'username' => 'root',
-    'password' => '',
-    'database' => "megatex",
-    'dbdriver' => 'mysqli',
-    'dbprefix' => '',
-    'pconnect' => false,
-    'db_debug' => (ENVIRONMENT !== 'production'),
-    'cache_on' => '',
-    'cachedir' => '',
-    'char_set' => 'utf8',
-    'dbcollat' => 'utf8_general_ci',
-    'swap_pre' => '',
-    'encrypt' => FALSE,
-    'compress' => FALSE,
-    'stricton' => FALSE,
-    'failover' => array(),
-    'save_queries' => FALSE
-    );
-
-$db["wiselpink"] = array(
-    'dsn'   => '',
-    'hostname' => '127.0.0.1',
-    'username' => 'root',
-    'password' => '',
-    'database' => "wiselpink",
-    'dbdriver' => 'mysqli',
-    'dbprefix' => '',
-    'pconnect' => false,
-    'db_debug' => (ENVIRONMENT !== 'production'),
-    'cache_on' => '',
-    'cachedir' => '',
-    'char_set' => 'utf8',
-    'dbcollat' => 'utf8_general_ci',
-    'swap_pre' => '',
-    'encrypt' => FALSE,
-    'compress' => FALSE,
-    'stricton' => FALSE,
-    'failover' => array(),
-    'save_queries' => FALSE
-    );
-
-$CI =& get_instance();  
-$multi_company=$CI->config->item('multi_company');
-if($multi_company){
-    $CI->load->library("session");
-    $company_code=$CI->session->userdata("company_code","");
-//    if($company_code==""){
-        $company_code=$CI->session->userdata("session_company_code","");        
-//    }
-    if($company_code!=""){
-        $active_group=$company_code;
-		$default=$active_group;
-    }
-}         
-//apabila multi_company=false aktifkan dibawah ini untuk hanya pilih satu database
-$active_group="simak";
-//$active_group="rudy";
-//$active_group="tulen";
-//$active_group="megatex";
-//$active_group="wiselpink";
+ 
+$active_group="simak"; 
 
 
 

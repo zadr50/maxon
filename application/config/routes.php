@@ -49,16 +49,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
-
-if($this->config->item("multi_company")){	
-	$route['default_controller']='company/select_databases';
-} else {
-	$route['default_controller'] = 'login';	
-}
-//$route['default_controller'] = 'frontend_eshop';
-//$route['default_controller'] = 'apps/sekolah';
-//$route['default_controller']='apps/resto';
-//$route['default_controller']='api';
-
+$route['default_controller']='company/select_databases';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
